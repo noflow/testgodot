@@ -16,5 +16,6 @@
   "quest_hooks": ["alder_bay_walk", "literary_magazine", "lost_manuscript", "relationship_definition"],
   "conversation_topics": ["books", "childhood", "college_fears", "writing", "relationships", "future_dreams"],
   "text_style": {"tone": "thoughtful_warm", "emoji_rate": "low", "response_delay": "variable_when_anxious"},
+  "quests": [], "conversations": [], "text_messages": [], "outcomes": [], "asset_refs": {"portraits": [], "sprites": [], "audio": []},
   "entry_event": "quest_before_everything_changes"
 }

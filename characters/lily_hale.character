@@ -16,5 +16,6 @@
   "quest_hooks": ["program_change", "campus_orientation", "sibling_secret", "moving_day"],
   "conversation_topics": ["college", "family_pressure", "dating_life", "music", "moving_out", "childhood_memories"],
   "text_style": {"tone": "teasing_rapid", "emoji_rate": "medium", "response_delay": "fast_unless_class"},
+  "quests": [], "conversations": [], "text_messages": [], "outcomes": [], "asset_refs": {"portraits": [], "sprites": [], "audio": []},
   "entry_event": "opening_day_lunch"
 }

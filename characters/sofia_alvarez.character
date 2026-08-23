@@ -16,5 +16,6 @@
   "quest_hooks": ["restaurant_job_interview", "shift_emergency", "management_conflict", "business_plan"],
   "conversation_topics": ["food", "work", "nightlife", "ambition", "dating_agreements", "family"],
   "text_style": {"tone": "bold_playful", "emoji_rate": "medium", "response_delay": "none_during_rush"},
+  "quests": [], "conversations": [], "text_messages": [], "outcomes": [], "asset_refs": {"portraits": [], "sprites": [], "audio": []},
   "entry_event": "restaurant_job_or_customer_visit"
 }

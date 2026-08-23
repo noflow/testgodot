@@ -16,5 +16,6 @@
   "quest_hooks": ["free_movie_pass", "student_film", "missed_shift", "festival_premiere"],
   "conversation_topics": ["movies", "friendship", "creative_work", "money", "dating", "city_nightlife"],
   "text_style": {"tone": "rapid_comedic", "emoji_rate": "high", "response_delay": "unpredictable_during_shifts"},
+  "quests": [], "conversations": [], "text_messages": [], "outcomes": [], "asset_refs": {"portraits": [], "sprites": [], "audio": []},
   "entry_event": "quest_one_last_summer_movie"
 }

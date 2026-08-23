@@ -16,5 +16,6 @@
   "quest_hooks": ["family_car_lesson", "garage_project", "transit_job_referral", "father_child_reconnection"],
   "conversation_topics": ["work", "cars", "responsibility", "family", "city_transit", "growing_older"],
   "text_style": {"tone": "brief_dry", "emoji_rate": "none", "response_delay": "slow_at_work"},
+  "quests": [], "conversations": [], "text_messages": [], "outcomes": [], "asset_refs": {"portraits": [], "sprites": [], "audio": []},
   "entry_event": "opening_day_evening"
 }

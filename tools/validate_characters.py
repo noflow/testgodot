@@ -21,7 +21,8 @@ REQUIRED_TOP_LEVEL = {
     "format_version", "id", "display_name", "profile", "home", "personality",
     "schedule", "skills", "goals", "connections", "relationship_defaults",
     "boundaries", "private_profile", "relationship_chapters", "quest_hooks",
-    "conversation_topics", "text_style", "entry_event"
+    "conversation_topics", "text_style", "quests", "conversations",
+    "text_messages", "outcomes", "asset_refs", "entry_event"
 }
 
 
@@ -92,6 +93,46 @@ def validate_file(path: Path, known_ids: set[str]) -> list[str]:
         if profile.get("role") in {"mother", "father", "older_sister"} and "romance_with_player" not in hard_limits:
             fail(errors, path, "family character must explicitly block player romance")
 
+    quests = data["quests"]
+    quest_ids = [quest.get("id") for quest in quests]
+    if len(quest_ids) != len(set(quest_ids)):
+        fail(errors, path, "quest ids must be unique within a package")
+    for quest in quests:
+        if not quest.get("id") or not quest.get("title") or not quest.get("category"):
+            fail(errors, path, "each quest needs id, title, and category")
+        objectives = quest.get("objectives", [])
+        objective_ids = [objective.get("id") for objective in objectives]
+        if not objectives or any(not item for item in objective_ids):
+            fail(errors, path, f"quest {quest.get('id')} needs identified objectives")
+        if len(objective_ids) != len(set(objective_ids)):
+            fail(errors, path, f"quest {quest.get('id')} has duplicate objective ids")
+
+    conversations = data["conversations"]
+    conversation_ids = [conversation.get("id") for conversation in conversations]
+    if len(conversation_ids) != len(set(conversation_ids)):
+        fail(errors, path, "conversation ids must be unique within a package")
+    for conversation in conversations:
+        conversation_id = conversation.get("id")
+        nodes = conversation.get("nodes", {})
+        start_node = conversation.get("start_node")
+        if not conversation_id or not conversation.get("type"):
+            fail(errors, path, "each conversation needs id and type")
+        if not nodes or start_node not in nodes:
+            fail(errors, path, f"conversation {conversation_id} has an invalid start node")
+            continue
+        for node_id, node in nodes.items():
+            targets = []
+            if node.get("next") is not None:
+                targets.append(node.get("next"))
+            for choice in node.get("choices", []):
+                if not choice.get("id") or not choice.get("text"):
+                    fail(errors, path, f"conversation {conversation_id} node {node_id} has an invalid choice")
+                if choice.get("next") is not None:
+                    targets.append(choice.get("next"))
+            for target in targets:
+                if target not in nodes:
+                    fail(errors, path, f"conversation {conversation_id} links to missing node {target}")
+
     return errors
 
 
@@ -130,4 +171,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

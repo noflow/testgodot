@@ -1,0 +1,62 @@
+# Character Content Authoring Guide
+
+Status: version 1 development format
+
+All content unique to a major character stays in that character's `.character`
+file. Save games store changing runtime state and never rewrite the source package.
+
+## Package sections
+
+- `profile`, `home`, `personality`, `schedule`, and `skills` define simulation data.
+- `relationship_defaults` supplies new-game meter values.
+- `relationship_chapters` identifies the five major relationship arcs.
+- `quests` contains complete quest definitions owned by the character.
+- `conversations` contains complete dialogue graphs owned by the character.
+- `text_messages` contains authored phone-message threads and contextual replies.
+- `outcomes` lists durable character endings or state transitions.
+- `asset_refs` points to portraits, sprites, voices, and character-specific audio.
+
+An empty section is valid. This lets a character ship before every later chapter is
+written while keeping the package forward-compatible.
+
+## Quest structure
+
+Each quest has an ID unique within its package, a category, title, summary,
+activation rules, ordered objectives, branches, rewards, failure behavior, and
+completion effects. Objectives use declarative events such as
+`conversation_completed`, `visit_location`, `obtain_item`, and `calendar_reached`.
+
+Quest branches may activate other quests. Failure should normally change later
+content rather than end the game.
+
+## Conversation structure
+
+A conversation is a directed graph. It contains:
+
+- `id`, `type`, and `start_node`
+- activation conditions and repetition rules
+- nodes keyed by unique node IDs
+- speaker and line text, or a stage direction
+- optional choices, conditions, effects, and next-node links
+- completion effects and memories
+
+Player choices carry one or more tone tags. Effects are declarative operations such
+as `add_meter`, `set_flag`, `set_value`, `start_quest`, `schedule_event`, or
+`complete_objective`. Content packages contain no executable scripts.
+
+Line tokens use braces, for example `{player_first_name}`. A later localization
+pass will replace raw text with localization keys without changing graph logic.
+
+## Relationship safety
+
+Family members and ineligible characters explicitly block player romance. Adult
+content remains non-graphic. A conversation cannot bypass a hard limit, an explicit
+refusal, or the rule that severely intoxicated characters cannot consent.
+
+## Validation
+
+Run `python3 tools/validate_characters.py`. The validator checks package identity,
+ages, meter and skill ranges, five relationship levels, schedules, unique quest and
+conversation IDs, valid dialogue links, valid start nodes, and valid character
+connections.
+

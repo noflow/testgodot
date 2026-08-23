@@ -16,5 +16,6 @@
   "quest_hooks": ["broken_phone", "campus_app_project", "internship_interview", "privacy_breach"],
   "conversation_topics": ["technology", "games", "privacy", "college", "identity", "career_plans"],
   "text_style": {"tone": "dry_precise", "emoji_rate": "very_low", "response_delay": "fast_online_slow_in_class"},
+  "quests": [], "conversations": [], "text_messages": [], "outcomes": [], "asset_refs": {"portraits": [], "sprites": [], "audio": []},
   "entry_event": "campus_phone_help"
 }

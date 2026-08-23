@@ -16,5 +16,6 @@
   "quest_hooks": ["first_aid_lesson", "clinical_practice", "family_grocery_run", "nursing_exam_support"],
   "conversation_topics": ["healthcare", "family", "burnout", "food", "college", "community"],
   "text_style": {"tone": "warm_practical", "emoji_rate": "low", "response_delay": "slow_during_care_shifts"},
+  "quests": [], "conversations": [], "text_messages": [], "outcomes": [], "asset_refs": {"portraits": [], "sprites": [], "audio": []},
   "entry_event": "st_maren_volunteer_orientation"
 }

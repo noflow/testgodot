@@ -28,5 +28,6 @@ Pre-production and design. No gameplay code has been started.
 - `tests/` — future tests and simulation fixtures
 
 The canonical design summary is in [docs/GAME_DESIGN_PLAYBOOK.md](docs/GAME_DESIGN_PLAYBOOK.md).
+Character quest and conversation authoring is documented in [docs/CONTENT_AUTHORING_GUIDE.md](docs/CONTENT_AUTHORING_GUIDE.md).
 
 Validate character data with `python3 tools/validate_characters.py`.

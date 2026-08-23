@@ -16,5 +16,6 @@
   "quest_hooks": ["licensed_industry_introduction", "client_safety_policy", "cooperative_business_plan", "public_stigma_conflict"],
   "conversation_topics": ["boundaries", "business", "city_law", "relationships", "privacy", "future_plans"],
   "text_style": {"tone": "composed_precise", "emoji_rate": "very_low", "response_delay": "scheduled_around_work"},
+  "quests": [], "conversations": [], "text_messages": [], "outcomes": [], "asset_refs": {"portraits": [], "sprites": [], "audio": []},
   "entry_event": "lantern_district_safety_event"
 }

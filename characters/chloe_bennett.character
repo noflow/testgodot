@@ -16,5 +16,6 @@
   "quest_hooks": ["portrait_commission", "gallery_setup", "freelance_deadline", "chosen_family_dinner"],
   "conversation_topics": ["art", "fashion", "identity", "college", "freelancing", "relationships"],
   "text_style": {"tone": "witty_visual", "emoji_rate": "medium", "response_delay": "fast_late_at_night"},
+  "quests": [], "conversations": [], "text_messages": [], "outcomes": [], "asset_refs": {"portraits": [], "sprites": [], "audio": []},
   "entry_event": "westshore_art_courtyard"
 }

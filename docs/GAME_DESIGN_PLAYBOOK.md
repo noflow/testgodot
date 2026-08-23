@@ -455,10 +455,13 @@ After Elena leaves, the sandbox begins immediately. Initial optional content inc
 - Ready for Port Alder — weather and wardrobe
 - Getting Around Port Alder — transportation
 
+The opening conversation, its three life-path branches, the first household quest,
+and Elena's first follow-up text are authored in `elena_reyes_hale.character`.
+
 ## Next design milestones
 
 1. Finish the opening-week quest pool and Sunday review
-2. Define the exact conversation data schema
+2. Expand the established conversation data schema across the opening cast
 3. Evolve the validated JSON `.character` development format into the compressed release container
 4. Create alternative starting households
 5. Map the first month through September 1

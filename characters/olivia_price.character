@@ -16,5 +16,6 @@
   "quest_hooks": ["legal_consultation", "corporate_event", "public_interest_case", "penthouse_invitation"],
   "conversation_topics": ["law", "career", "money", "privacy", "power", "relationships"],
   "text_style": {"tone": "formal_economical", "emoji_rate": "none", "response_delay": "long_during_business_hours"},
+  "quests": [], "conversations": [], "text_messages": [], "outcomes": [], "asset_refs": {"portraits": [], "sprites": [], "audio": []},
   "entry_event": "crown_point_professional_event"
 }

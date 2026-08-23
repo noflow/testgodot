@@ -16,5 +16,94 @@
   "quest_hooks": ["opening_future_choice", "household_rent", "weekly_allowance", "family_rules", "clinic_job_referral"],
   "conversation_topics": ["college", "employment", "money", "health", "family_history", "independence"],
   "text_style": {"tone": "concise_warm", "emoji_rate": "low", "response_delay": "fast_except_work"},
+  "quests": [
+    {
+      "id": "opening_future_choice",
+      "category": "main_life_goal",
+      "title": "Choose Your Direction",
+      "summary": "Decide whether to attend Westshore College, seek employment, or do both.",
+      "activation": {"event": "new_game_started", "date": "opening_tuesday", "block": "morning"},
+      "objectives": [
+        {"id": "hear_elena_out", "text": "Talk with Mom about your future.", "completion": {"event": "conversation_node_reached", "conversation": "opening_future_talk", "node": "future_choice"}},
+        {"id": "choose_life_path", "text": "Choose an initial direction.", "completion": {"event": "value_set", "key": "player.life_path", "allowed_values": ["college", "employment", "college_and_employment"]}}
+      ],
+      "branches": [
+        {"id": "college", "condition": {"value_equals": ["player.life_path", "college"]}, "start_quests": ["enroll_at_westshore"], "set_rules": {"household.rent_while_enrolled": 0, "household.weekly_allowance_active": true}},
+        {"id": "employment", "condition": {"value_equals": ["player.life_path", "employment"]}, "start_quests": ["find_employment"], "set_rules": {"household.rent_due_date": "09-01", "household.monthly_rent": 250, "household.weekly_allowance_active": false}},
+        {"id": "college_and_employment", "condition": {"value_equals": ["player.life_path", "college_and_employment"]}, "start_quests": ["enroll_at_westshore", "find_part_time_employment"], "set_rules": {"household.rent_while_enrolled": 0, "household.weekly_allowance_active": true}}
+      ],
+      "completion_effects": [{"operation": "unlock_phone_app", "value": "quests"}, {"operation": "set_flag", "key": "sandbox.active", "value": true}],
+      "failure": {"mode": "cannot_fail", "note": "The player must choose a starting direction, but may change direction later."}
+    },
+    {
+      "id": "under_this_roof",
+      "category": "character_story",
+      "title": "Under This Roof",
+      "summary": "Learn the Hale household rules and agree on chores, guests, and privacy.",
+      "activation": {"event": "quest_completed", "quest": "opening_future_choice"},
+      "objectives": [
+        {"id": "review_rules", "text": "Ask Mom about the household rules.", "completion": {"event": "conversation_completed", "conversation": "household_rules_talk"}},
+        {"id": "choose_chores", "text": "Choose two weekly household chores.", "completion": {"event": "list_size_at_least", "key": "player.household_chores", "value": 2}}
+      ],
+      "branches": [],
+      "completion_effects": [{"operation": "add_meter", "character": "elena_reyes_hale", "meter": "respect", "value": 3}, {"operation": "unlock_phone_app", "value": "household"}],
+      "failure": {"mode": "relationship_consequence", "after_days": 7, "effects": [{"operation": "add_meter", "character": "elena_reyes_hale", "meter": "resentment", "value": 4}]}
+    }
+  ],
+  "conversations": [
+    {
+      "id": "opening_future_talk",
+      "type": "major_vn_scene",
+      "start_node": "door_opens",
+      "activation": {"event": "new_game_started", "date": "opening_tuesday", "block": "morning", "location": "hale_home.player_bedroom"},
+      "repetition": {"once_only": true},
+      "nodes": {
+        "door_opens": {"stage_direction": "Morning light reaches across the bedroom as Elena knocks once and opens the door.", "next": "elena_good_morning"},
+        "elena_good_morning": {"speaker": "elena_reyes_hale", "line": "Good morning. I know summer isn't over yet, but we need to talk about what comes next.", "next": "player_wakeup_response"},
+        "player_wakeup_response": {"speaker": "player", "choices": [
+          {"id": "ready", "text": "I'm awake. What's going on?", "tone": ["honest"], "effects": [{"operation": "add_meter", "character": "elena_reyes_hale", "meter": "respect", "value": 1}], "next": "elena_future"},
+          {"id": "joke", "text": "That sounds dangerously like an adult conversation.", "tone": ["playful"], "effects": [{"operation": "add_meter", "character": "elena_reyes_hale", "meter": "comfort", "value": 1}], "next": "elena_joke_reply"},
+          {"id": "avoid", "text": "Can this wait?", "tone": ["avoidant"], "effects": [{"operation": "add_meter", "character": "elena_reyes_hale", "meter": "resentment", "value": 1}], "next": "elena_cannot_wait"}
+        ]},
+        "elena_joke_reply": {"speaker": "elena_reyes_hale", "line": "It is. Try to survive it for five minutes.", "next": "elena_future"},
+        "elena_cannot_wait": {"speaker": "elena_reyes_hale", "line": "Not much longer. September is close, and avoiding the decision won't make it disappear.", "next": "elena_future"},
+        "elena_future": {"speaker": "elena_reyes_hale", "line": "You need to decide whether you're going to college, finding a job, or trying to manage both.", "next": "elena_terms"},
+        "elena_terms": {"speaker": "elena_reyes_hale", "line": "If you're enrolled, your dad and I won't charge rent, and we'll give you a weekly allowance to help. If you choose not to study, that's your decision—but you'll need a job, and rent will be two hundred and fifty dollars a month starting September first.", "effects": [{"operation": "complete_objective", "quest": "opening_future_choice", "objective": "hear_elena_out"}], "next": "future_choice"},
+        "future_choice": {"speaker": "player", "choices": [
+          {"id": "choose_college", "text": "I'll enroll at Westshore College.", "tone": ["confident"], "effects": [{"operation": "set_value", "key": "player.life_path", "value": "college"}, {"operation": "start_quest", "value": "enroll_at_westshore"}], "next": "elena_college_reply"},
+          {"id": "choose_employment", "text": "I'm going to find a full-time job.", "tone": ["confident"], "effects": [{"operation": "set_value", "key": "player.life_path", "value": "employment"}, {"operation": "start_quest", "value": "find_employment"}], "next": "elena_job_reply"},
+          {"id": "choose_both", "text": "I'll enroll and find part-time work.", "tone": ["responsible", "confident"], "effects": [{"operation": "set_value", "key": "player.life_path", "value": "college_and_employment"}, {"operation": "start_quest", "value": "enroll_at_westshore"}, {"operation": "start_quest", "value": "find_part_time_employment"}, {"operation": "add_meter", "character": "elena_reyes_hale", "meter": "respect", "value": 2}], "next": "elena_both_reply"}
+        ]},
+        "elena_college_reply": {"speaker": "elena_reyes_hale", "line": "All right. Go to Westshore's administration office, look through the programs, and choose something you can commit to—not something you think we want to hear.", "next": "elena_closing"},
+        "elena_job_reply": {"speaker": "elena_reyes_hale", "line": "All right. Start with the Harbor Employment Centre or the jobs app. I mean what I said about rent, but I also mean this: I want you to succeed.", "next": "elena_closing"},
+        "elena_both_reply": {"speaker": "elena_reyes_hale", "line": "That's ambitious. Keep the job part-time until you know what your class load feels like. Burning out won't prove anything to us.", "next": "elena_closing"},
+        "elena_closing": {"speaker": "elena_reyes_hale", "line": "Your phone has the calendar and quest tracker set up. Make a plan, get dressed for the weather, and come downstairs when you're ready.", "effects": [{"operation": "complete_objective", "quest": "opening_future_choice", "objective": "choose_life_path"}, {"operation": "complete_quest", "quest": "opening_future_choice"}, {"operation": "set_flag", "key": "sandbox.active", "value": true}, {"operation": "create_memory", "character": "elena_reyes_hale", "value": "player_initial_life_path"}], "next": null}
+      }
+    },
+    {
+      "id": "household_rules_talk",
+      "type": "standard_topic",
+      "start_node": "rules_intro",
+      "activation": {"quest_active": "under_this_roof", "location": "hale_family_home", "blocks": ["evening", "late_evening"]},
+      "repetition": {"once_only": true},
+      "nodes": {
+        "rules_intro": {"speaker": "elena_reyes_hale", "line": "Living here as an adult comes with more freedom, but it also comes with responsibility. Let's make the expectations clear.", "next": "rules_list"},
+        "rules_list": {"speaker": "elena_reyes_hale", "line": "Choose two weekly chores, tell us before bringing guests over, replace shared groceries you finish, and let someone know if you won't be home that night.", "next": "rules_response"},
+        "rules_response": {"speaker": "player", "choices": [
+          {"id": "agree", "text": "That's fair. I'll do my share.", "tone": ["responsible", "honest"], "effects": [{"operation": "add_meter", "character": "elena_reyes_hale", "meter": "trust", "value": 2}], "next": "rules_end"},
+          {"id": "negotiate", "text": "Can we agree on privacy rules for everyone too?", "tone": ["assertive", "honest"], "effects": [{"operation": "add_meter", "character": "elena_reyes_hale", "meter": "respect", "value": 2}, {"operation": "set_flag", "key": "household.mutual_privacy_rule", "value": true}], "next": "privacy_reply"},
+          {"id": "resist", "text": "That sounds like a lot of rules.", "tone": ["defensive"], "effects": [{"operation": "add_meter", "character": "elena_reyes_hale", "meter": "resentment", "value": 2}], "next": "rules_firm"}
+        ]},
+        "privacy_reply": {"speaker": "elena_reyes_hale", "line": "That's reasonable. Closed doors get a knock, and private messages stay private. That applies to all of us.", "next": "rules_end"},
+        "rules_firm": {"speaker": "elena_reyes_hale", "line": "It's the minimum for four adults sharing a home. We can discuss the details, but everyone contributes.", "next": "rules_end"},
+        "rules_end": {"speaker": "elena_reyes_hale", "line": "Pick your chores in the Household app. Once that's done, we're settled.", "effects": [{"operation": "complete_objective", "quest": "under_this_roof", "objective": "review_rules"}], "next": null}
+      }
+    }
+  ],
+  "text_messages": [
+    {"id": "opening_followup", "trigger": {"hours_after_quest": ["opening_future_choice", 3]}, "sender": "elena_reyes_hale", "text": "How is the plan going? No pressure to finish everything today—just take the first real step.", "quick_replies": [{"text": "Working on it.", "tone": ["honest"], "effects": [{"operation": "add_meter", "character": "elena_reyes_hale", "meter": "trust", "value": 1}]}, {"text": "Already handled.", "tone": ["confident"]}, {"text": "Please stop checking in.", "tone": ["blunt"], "effects": [{"operation": "add_meter", "character": "elena_reyes_hale", "meter": "comfort", "value": -1}]}]}
+  ],
+  "outcomes": ["close_adult_family_bond", "respectful_independence", "strained_household_relationship"],
+  "asset_refs": {"portraits": [], "sprites": [], "audio": []},
   "entry_event": "opening_scene"
 }

@@ -16,5 +16,6 @@
   "quest_hooks": ["gym_orientation", "fitness_assessment", "coastal_run", "management_promotion"],
   "conversation_topics": ["fitness", "food", "discipline", "work", "body_image", "relationships"],
   "text_style": {"tone": "energetic_direct", "emoji_rate": "medium", "response_delay": "between_clients"},
+  "quests": [], "conversations": [], "text_messages": [], "outcomes": [], "asset_refs": {"portraits": [], "sprites": [], "audio": []},
   "entry_event": "quest_first_rep"
 }
