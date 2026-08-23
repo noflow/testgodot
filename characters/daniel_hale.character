@@ -1,0 +1,20 @@
+{
+  "format_version": 1,
+  "id": "daniel_hale",
+  "display_name": "Daniel Hale",
+  "profile": {"age": 47, "birthday": "11-02", "gender_identity": "male", "orientation": "straight", "romance_eligible": false, "role": "father", "occupation": "Transit Mechanic", "education": "Red Seal-equivalent trade certification"},
+  "home": {"district": "Alder Heights", "residence": "Hale Family Home", "household": ["elena_reyes_hale", "lily_hale", "player"]},
+  "personality": {"archetype": "quiet_provider", "traits": ["patient", "reserved", "dependable", "dry_humor", "conflict_avoidant"], "values": ["workmanship", "family", "honesty"], "social_style": "actions_over_words", "jealousy": 18},
+  "schedule": {"days_off": ["sunday", "monday"], "fixed_commitments": [{"days": ["tuesday", "wednesday", "thursday", "friday", "saturday"], "blocks": ["early_morning", "morning", "lunch", "afternoon"], "activity": "work_transit_depot", "unavailable": true}, {"days": ["thursday"], "blocks": ["evening"], "activity": "garage_project", "unavailable": false}], "preferred_social_blocks": ["evening"]},
+  "skills": {"mechanics": 154, "driving": 112, "home_repair": 104, "cooking": 31},
+  "goals": ["become_shop_foreman", "restore_old_family_car", "connect_with_children_as_adults"],
+  "connections": [{"character": "elena_reyes_hale", "relation": "spouse"}, {"character": "lily_hale", "relation": "daughter"}, {"character": "marcus_lee", "relation": "knows_family"}],
+  "relationship_defaults": {"friendship": 52, "love": 78, "attraction": 0, "lust": 0, "trust": 68, "respect": 58, "resentment": 2, "jealousy": 0, "comfort": 60, "commitment": 94, "compatibility": 55, "satisfaction": 67},
+  "boundaries": {"family_only": true, "alcohol_consent": "never_when_impaired", "hard_limits": ["romance_with_player", "sexual_content_with_player"]},
+  "private_profile": {"fertility_tier": "average", "reproductive_capability": "can_impregnate", "knowledge": "hidden_until_relevant"},
+  "relationship_chapters": [{"level": 1, "id": "a_quiet_check_in", "title": "A Quiet Check-In"}, {"level": 2, "id": "tools_of_the_trade", "title": "Tools of the Trade"}, {"level": 3, "id": "the_stalled_promotion", "title": "The Stalled Promotion"}, {"level": 4, "id": "words_not_said", "title": "Words Not Said"}, {"level": 5, "id": "the_long_way_home", "title": "The Long Way Home"}],
+  "quest_hooks": ["family_car_lesson", "garage_project", "transit_job_referral", "father_child_reconnection"],
+  "conversation_topics": ["work", "cars", "responsibility", "family", "city_transit", "growing_older"],
+  "text_style": {"tone": "brief_dry", "emoji_rate": "none", "response_delay": "slow_at_work"},
+  "entry_event": "opening_day_evening"
+}

@@ -1,0 +1,20 @@
+{
+  "format_version": 1,
+  "id": "nadia_flores",
+  "display_name": "Nadia Flores",
+  "profile": {"age": 20, "birthday": "07-23", "gender_identity": "female", "orientation": "lesbian", "romance_eligible": false, "role": "college_peer", "occupation": "Student and Care Aide", "education": "Westshore Nursing student"},
+  "home": {"district": "Greyport", "residence": "Flores Family Townhouse", "household": ["flores_mother", "flores_grandmother"]},
+  "personality": {"archetype": "grounded_caregiver", "traits": ["maternal", "patient", "blunt", "resilient", "overextended"], "values": ["care", "community", "competence"], "social_style": "warm_with_clear_limits", "jealousy": 34},
+  "schedule": {"days_off": ["friday"], "fixed_commitments": [{"days": ["monday", "tuesday", "wednesday", "thursday"], "blocks": ["morning", "lunch", "afternoon"], "activity": "westshore_nursing_program", "unavailable": true}, {"days": ["saturday", "sunday"], "blocks": ["morning", "lunch", "afternoon"], "activity": "care_aide_shift", "unavailable": true}, {"days": ["wednesday"], "blocks": ["evening"], "activity": "family_care", "unavailable": true}], "preferred_social_blocks": ["friday_afternoon", "friday_evening"]},
+  "skills": {"nursing": 91, "first_aid": 108, "cooking": 68, "empathy": 87},
+  "goals": ["complete_nursing_credential", "support_her_household", "build_a_life_that_includes_rest"],
+  "connections": [{"character": "maya_chen", "relation": "study_acquaintance"}, {"character": "hannah_brooks", "relation": "mentor"}, {"character": "sofia_alvarez", "relation": "cousin_friend"}],
+  "relationship_defaults": {"friendship": 2, "love": 0, "attraction": 0, "lust": 0, "trust": 1, "respect": 3, "resentment": 0, "jealousy": 0, "comfort": 1, "commitment": 0, "compatibility": 0, "satisfaction": 50},
+  "boundaries": {"dating_agreement_preference": "exclusive", "protection_policy": "requires_testing_and_discussion", "alcohol_consent": "never_when_impaired", "hard_limits": ["romance_with_player", "pressure", "mocking_care_work"]},
+  "private_profile": {"fertility_tier": "high", "reproductive_capability": "can_become_pregnant", "knowledge": "hidden_until_relevant"},
+  "relationship_chapters": [{"level": 1, "id": "steady_hands", "title": "Steady Hands"}, {"level": 2, "id": "the_only_day_off", "title": "The Only Day Off"}, {"level": 3, "id": "caregiver_down", "title": "Caregiver Down"}, {"level": 4, "id": "asking_for_help", "title": "Asking for Help"}, {"level": 5, "id": "room_to_breathe", "title": "Room to Breathe"}],
+  "quest_hooks": ["first_aid_lesson", "clinical_practice", "family_grocery_run", "nursing_exam_support"],
+  "conversation_topics": ["healthcare", "family", "burnout", "food", "college", "community"],
+  "text_style": {"tone": "warm_practical", "emoji_rate": "low", "response_delay": "slow_during_care_shifts"},
+  "entry_event": "st_maren_volunteer_orientation"
+}

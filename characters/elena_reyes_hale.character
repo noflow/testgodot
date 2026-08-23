@@ -1,0 +1,20 @@
+{
+  "format_version": 1,
+  "id": "elena_reyes_hale",
+  "display_name": "Elena Reyes-Hale",
+  "profile": {"age": 45, "birthday": "04-18", "gender_identity": "female", "orientation": "straight", "romance_eligible": false, "role": "mother", "occupation": "Clinic Administrator", "education": "Healthcare Administration diploma"},
+  "home": {"district": "Alder Heights", "residence": "Hale Family Home", "household": ["daniel_hale", "lily_hale", "player"]},
+  "personality": {"archetype": "protective_planner", "traits": ["maternal", "organized", "direct", "warm", "stubborn"], "values": ["family", "stability", "education"], "social_style": "practical_care", "jealousy": 12},
+  "schedule": {"days_off": ["saturday", "sunday"], "fixed_commitments": [{"days": ["monday", "tuesday", "wednesday", "thursday", "friday"], "blocks": ["morning", "lunch", "afternoon"], "activity": "work_st_maren_clinic", "unavailable": true}, {"days": ["wednesday"], "blocks": ["evening"], "activity": "grocery_and_errands", "unavailable": true}, {"days": ["sunday"], "blocks": ["evening"], "activity": "family_dinner", "unavailable": false}], "preferred_social_blocks": ["evening", "late_evening"]},
+  "skills": {"administration": 118, "budgeting": 82, "cooking": 76, "empathy": 91},
+  "goals": ["help_both_children_build_independent_lives", "earn_clinic_operations_promotion", "protect_family_closeness"],
+  "connections": [{"character": "daniel_hale", "relation": "spouse"}, {"character": "lily_hale", "relation": "daughter"}, {"character": "hannah_brooks", "relation": "coworker"}],
+  "relationship_defaults": {"friendship": 58, "love": 82, "attraction": 0, "lust": 0, "trust": 70, "respect": 62, "resentment": 4, "jealousy": 0, "comfort": 66, "commitment": 95, "compatibility": 58, "satisfaction": 70},
+  "boundaries": {"family_only": true, "alcohol_consent": "never_when_impaired", "hard_limits": ["romance_with_player", "sexual_content_with_player"]},
+  "private_profile": {"fertility_tier": "low", "reproductive_capability": "can_become_pregnant", "knowledge": "hidden_until_relevant"},
+  "relationship_chapters": [{"level": 1, "id": "under_this_roof", "title": "Under This Roof"}, {"level": 2, "id": "learning_to_listen", "title": "Learning to Listen"}, {"level": 3, "id": "the_family_ledger", "title": "The Family Ledger"}, {"level": 4, "id": "letting_go", "title": "Letting Go"}, {"level": 5, "id": "home_changes_shape", "title": "Home Changes Shape"}],
+  "quest_hooks": ["opening_future_choice", "household_rent", "weekly_allowance", "family_rules", "clinic_job_referral"],
+  "conversation_topics": ["college", "employment", "money", "health", "family_history", "independence"],
+  "text_style": {"tone": "concise_warm", "emoji_rate": "low", "response_delay": "fast_except_work"},
+  "entry_event": "opening_scene"
+}

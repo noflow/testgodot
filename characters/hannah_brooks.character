@@ -1,0 +1,20 @@
+{
+  "format_version": 1,
+  "id": "hannah_brooks",
+  "display_name": "Hannah Brooks",
+  "profile": {"age": 27, "birthday": "03-19", "gender_identity": "female", "orientation": "bisexual", "romance_eligible": true, "role": "healthcare_contact", "occupation": "Registered Nurse", "education": "Bachelor of Nursing"},
+  "home": {"district": "St. Maren Medical District", "residence": "One-Bedroom Apartment", "household": []},
+  "personality": {"archetype": "tired_optimist", "traits": ["maternal", "calm", "wry", "responsible", "workaholic"], "values": ["care", "honesty", "balance"], "social_style": "reassuring_with_dark_humor", "jealousy": 37},
+  "schedule": {"days_off": ["variable"], "rotation": "four_on_three_off", "fixed_commitments": [{"days": ["rotation_day_1", "rotation_day_2", "rotation_day_3", "rotation_day_4"], "blocks": ["early_morning", "morning", "lunch", "afternoon"], "activity": "st_maren_nursing_shift", "unavailable": true}, {"days": ["first_day_off"], "blocks": ["morning", "lunch"], "activity": "sleep_recovery", "unavailable": true}, {"days": ["third_day_off"], "blocks": ["evening"], "activity": "friends_or_date", "unavailable": false}], "preferred_social_blocks": ["second_day_off_evening", "third_day_off_evening"]},
+  "skills": {"nursing": 146, "first_aid": 164, "empathy": 119, "cooking": 53},
+  "goals": ["qualify_as_a_nurse_educator", "recover_from_burnout", "make_room_for_a_family_if_she_chooses"],
+  "connections": [{"character": "elena_reyes_hale", "relation": "coworker"}, {"character": "nadia_flores", "relation": "mentor"}, {"character": "maya_chen", "relation": "volunteer_supervisor"}, {"character": "jade_mercer", "relation": "healthcare_contact"}],
+  "relationship_defaults": {"friendship": 0, "love": 0, "attraction": 3, "lust": 1, "trust": 0, "respect": 2, "resentment": 0, "jealousy": 0, "comfort": 0, "commitment": 0, "compatibility": 0, "satisfaction": 50},
+  "boundaries": {"dating_agreement_preference": "exclusive_or_carefully_open", "protection_policy": "requires_testing_disclosure_and_protection", "alcohol_consent": "never_when_impaired", "hard_limits": ["medical_roleplay_tied_to_real_patients", "dishonesty_about_health", "workplace_pressure"]},
+  "private_profile": {"fertility_tier": "average", "reproductive_capability": "can_become_pregnant", "knowledge": "medically_known_but_private", "adult_preferences": {"established": ["care_and_reassurance"], "discoverable": ["gentle_roleplay"], "hard_limits": ["unsafe_health_practices", "coercion"]}},
+  "relationship_chapters": [{"level": 1, "id": "waiting_room", "title": "Waiting Room"}, {"level": 2, "id": "four_on_three_off", "title": "Four On, Three Off"}, {"level": 3, "id": "compassion_fatigue", "title": "Compassion Fatigue"}, {"level": 4, "id": "care_plan", "title": "Care Plan"}, {"level": 5, "id": "life_after_shift", "title": "Life After Shift"}],
+  "quest_hooks": ["hospital_orientation", "health_screening", "nurse_mentor_support", "burnout_intervention"],
+  "conversation_topics": ["health", "work", "burnout", "family", "ethics", "city_life"],
+  "text_style": {"tone": "warm_wry", "emoji_rate": "low", "response_delay": "unavailable_on_shift"},
+  "entry_event": "st_maren_first_visit"
+}

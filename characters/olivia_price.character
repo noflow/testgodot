@@ -1,0 +1,20 @@
+{
+  "format_version": 1,
+  "id": "olivia_price",
+  "display_name": "Olivia Price",
+  "profile": {"age": 32, "birthday": "09-26", "gender_identity": "female", "orientation": "bisexual", "romance_eligible": true, "role": "professional_contact", "occupation": "Senior Corporate Attorney", "education": "Law degree"},
+  "home": {"district": "Crown Point", "residence": "Luxury Penthouse", "household": []},
+  "personality": {"archetype": "controlled_strategist", "traits": ["intelligent", "ambitious", "polished", "intimidating", "privately_lonely"], "values": ["competence", "discretion", "success"], "social_style": "formal_and_testing", "jealousy": 57},
+  "schedule": {"days_off": ["sunday"], "fixed_commitments": [{"days": ["monday", "tuesday", "wednesday", "thursday", "friday"], "blocks": ["morning", "lunch", "afternoon", "evening"], "activity": "crown_point_law_office", "unavailable": true}, {"days": ["saturday"], "blocks": ["morning", "lunch"], "activity": "work_or_professional_events", "unavailable": true}, {"days": ["tuesday", "thursday"], "blocks": ["early_morning"], "activity": "personal_training", "unavailable": true}], "preferred_social_blocks": ["saturday_evening", "sunday_afternoon"]},
+  "skills": {"law": 186, "negotiation": 171, "business": 148, "public_speaking": 137},
+  "goals": ["make_equity_partner", "win_a_public_interest_case", "build_a_private_life_not_run_like_a_contract"],
+  "connections": [{"character": "jade_mercer", "relation": "legal_advisor"}, {"character": "rachel_morgan", "relation": "training_client"}, {"character": "theo_grant", "relation": "future_technology_contact"}],
+  "relationship_defaults": {"friendship": 0, "love": 0, "attraction": 2, "lust": 1, "trust": 0, "respect": 1, "resentment": 0, "jealousy": 0, "comfort": 0, "commitment": 0, "compatibility": 0, "satisfaction": 50},
+  "boundaries": {"dating_agreement_preference": "explicit_and_discreet", "protection_policy": "requires_testing_protection_and_confidentiality", "alcohol_consent": "never_when_impaired", "hard_limits": ["career_interference", "public_disclosure", "financial_manipulation"]},
+  "private_profile": {"fertility_tier": "low", "reproductive_capability": "can_become_pregnant", "knowledge": "medically_known_but_private", "adult_preferences": {"established": ["formal_negotiation", "light_dominance"], "discoverable": ["role_reversal"], "hard_limits": ["public_exposure", "loss_of_control_without_agreement"]}},
+  "relationship_chapters": [{"level": 1, "id": "billable_hour", "title": "The Billable Hour"}, {"level": 2, "id": "terms_and_conditions", "title": "Terms and Conditions"}, {"level": 3, "id": "conflict_of_interest", "title": "Conflict of Interest"}, {"level": 4, "id": "without_prejudice", "title": "Without Prejudice"}, {"level": 5, "id": "the_private_clause", "title": "The Private Clause"}],
+  "quest_hooks": ["legal_consultation", "corporate_event", "public_interest_case", "penthouse_invitation"],
+  "conversation_topics": ["law", "career", "money", "privacy", "power", "relationships"],
+  "text_style": {"tone": "formal_economical", "emoji_rate": "none", "response_delay": "long_during_business_hours"},
+  "entry_event": "crown_point_professional_event"
+}

@@ -1,0 +1,20 @@
+{
+  "format_version": 1,
+  "id": "emma_rowan",
+  "display_name": "Emma Rowan",
+  "profile": {"age": 18, "birthday": "01-29", "gender_identity": "female", "orientation": "bisexual", "romance_eligible": true, "role": "childhood_friend", "occupation": "Student", "education": "Westshore Literature student"},
+  "home": {"district": "Alder Heights", "residence": "Rowan Family Home", "household": ["rowan_parents"]},
+  "personality": {"archetype": "gentle_observer", "traits": ["kind", "bookish", "funny", "anxious", "loyal"], "values": ["authenticity", "creativity", "security"], "social_style": "soft_spoken_then_playful", "jealousy": 54},
+  "schedule": {"days_off": ["friday", "sunday"], "fixed_commitments": [{"days": ["monday", "tuesday", "thursday"], "blocks": ["morning", "lunch", "afternoon"], "activity": "westshore_classes", "unavailable": true}, {"days": ["wednesday"], "blocks": ["afternoon", "evening"], "activity": "literary_magazine", "unavailable": true}, {"days": ["saturday"], "blocks": ["morning"], "activity": "family_errands", "unavailable": true}], "preferred_social_blocks": ["evening", "late_evening"]},
+  "skills": {"writing": 78, "literature": 83, "photography": 38, "cooking": 44},
+  "goals": ["publish_a_short_story", "make_new_friends_without_losing_old_ones", "become_more_confident"],
+  "connections": [{"character": "player", "relation": "childhood_friend"}, {"character": "marcus_lee", "relation": "old_friend"}, {"character": "lily_hale", "relation": "friendly_acquaintance"}],
+  "relationship_defaults": {"friendship": 48, "love": 8, "attraction": 18, "lust": 5, "trust": 46, "respect": 42, "resentment": 0, "jealousy": 12, "comfort": 52, "commitment": 8, "compatibility": 48, "satisfaction": 50},
+  "boundaries": {"dating_agreement_preference": "exclusive_after_discussion", "protection_policy": "requires_protection_until_testing_and_commitment", "alcohol_consent": "never_when_impaired", "hard_limits": ["dishonesty", "public_pressure"]},
+  "private_profile": {"fertility_tier": "average", "reproductive_capability": "can_become_pregnant", "knowledge": "hidden_until_discovered", "adult_preferences": {"established": ["romantic_atmosphere"], "discoverable": ["playful_roleplay"], "hard_limits": ["humiliation", "public_exposure"]}},
+  "relationship_chapters": [{"level": 1, "id": "before_everything_changes", "title": "Before Everything Changes"}, {"level": 2, "id": "margin_notes", "title": "Margin Notes"}, {"level": 3, "id": "the_story_she_hid", "title": "The Story She Hid"}, {"level": 4, "id": "old_friend_new_rules", "title": "Old Friend, New Rules"}, {"level": 5, "id": "our_next_chapter", "title": "Our Next Chapter"}],
+  "quest_hooks": ["alder_bay_walk", "literary_magazine", "lost_manuscript", "relationship_definition"],
+  "conversation_topics": ["books", "childhood", "college_fears", "writing", "relationships", "future_dreams"],
+  "text_style": {"tone": "thoughtful_warm", "emoji_rate": "low", "response_delay": "variable_when_anxious"},
+  "entry_event": "quest_before_everything_changes"
+}

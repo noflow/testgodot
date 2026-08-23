@@ -1,0 +1,32 @@
+# Port Alder Life Sim
+
+A dramatic, mature, non-graphic life-simulation and visual-novel game planned for Godot 4 and GDScript.
+
+The protagonist begins at age 18 in the fictional coastal city of Port Alder. The game combines an open life sandbox with authored character stories, education, careers, housing, relationships, marriage, parenting, health, and long-term aging.
+
+## Project status
+
+Pre-production and design. No gameplay code has been started.
+
+## Planned technology
+
+- Godot 4, latest stable release
+- GDScript
+- 2D top-down exploration
+- VN-style dialogue presentation
+- PC first: Windows, macOS, and Linux
+- Data-driven quests, schedules, and character packages
+- One importable `.character` file per major character
+
+## Repository layout
+
+- `docs/` — game-design playbook and technical specifications
+- `characters/` — 15 validated opening-cast `.character` packages
+- `mods/` — local mod-development workspace
+- `assets/` — art, audio, and fonts
+- `src/` — future Godot source files
+- `tests/` — future tests and simulation fixtures
+
+The canonical design summary is in [docs/GAME_DESIGN_PLAYBOOK.md](docs/GAME_DESIGN_PLAYBOOK.md).
+
+Validate character data with `python3 tools/validate_characters.py`.

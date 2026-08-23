@@ -1,0 +1,20 @@
+{
+  "format_version": 1,
+  "id": "marcus_lee",
+  "display_name": "Marcus Lee",
+  "profile": {"age": 19, "birthday": "09-08", "gender_identity": "male", "orientation": "bisexual", "romance_eligible": true, "role": "childhood_friend", "occupation": "Cinema Employee", "education": "Westshore Film student"},
+  "home": {"district": "Greyport", "residence": "Lee Family Apartment", "household": ["lee_parent", "lee_roommate_cousin"]},
+  "personality": {"archetype": "social_dreamer", "traits": ["charismatic", "creative", "impulsive", "generous", "unreliable"], "values": ["friendship", "art", "freedom"], "social_style": "fast_jokes_and_big_plans", "jealousy": 28},
+  "schedule": {"days_off": ["monday"], "fixed_commitments": [{"days": ["tuesday", "thursday"], "blocks": ["morning", "lunch", "afternoon"], "activity": "westshore_classes", "unavailable": true}, {"days": ["friday", "saturday", "sunday"], "blocks": ["evening", "late_evening"], "activity": "work_harborlight_cinema", "unavailable": true}, {"days": ["wednesday"], "blocks": ["evening"], "activity": "student_film_club", "unavailable": true}], "preferred_social_blocks": ["afternoon", "late_evening"]},
+  "skills": {"filmmaking": 74, "humor": 81, "editing": 55, "customer_service": 47},
+  "goals": ["finish_first_short_film", "earn_a_festival_screening", "become_reliable_without_losing_spontaneity"],
+  "connections": [{"character": "player", "relation": "childhood_friend"}, {"character": "emma_rowan", "relation": "old_friend"}, {"character": "claire_donovan", "relation": "cinema_regular"}],
+  "relationship_defaults": {"friendship": 46, "love": 3, "attraction": 8, "lust": 4, "trust": 38, "respect": 39, "resentment": 0, "jealousy": 5, "comfort": 48, "commitment": 4, "compatibility": 45, "satisfaction": 48},
+  "boundaries": {"dating_agreement_preference": "open_to_discussion", "protection_policy": "requires_protection", "alcohol_consent": "never_when_impaired", "hard_limits": ["controlling_behavior", "outing_private_information"]},
+  "private_profile": {"fertility_tier": "high", "reproductive_capability": "can_impregnate", "knowledge": "hidden_until_discovered", "adult_preferences": {"established": ["spontaneity"], "discoverable": ["costume_roleplay"], "hard_limits": ["degradation", "coercion"]}},
+  "relationship_chapters": [{"level": 1, "id": "one_last_summer_movie", "title": "One Last Summer Movie"}, {"level": 2, "id": "after_the_credits", "title": "After the Credits"}, {"level": 3, "id": "missing_scene", "title": "The Missing Scene"}, {"level": 4, "id": "festival_cut", "title": "Festival Cut"}, {"level": 5, "id": "picture_lock", "title": "Picture Lock"}],
+  "quest_hooks": ["free_movie_pass", "student_film", "missed_shift", "festival_premiere"],
+  "conversation_topics": ["movies", "friendship", "creative_work", "money", "dating", "city_nightlife"],
+  "text_style": {"tone": "rapid_comedic", "emoji_rate": "high", "response_delay": "unpredictable_during_shifts"},
+  "entry_event": "quest_one_last_summer_movie"
+}

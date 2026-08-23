@@ -1,0 +1,20 @@
+{
+  "format_version": 1,
+  "id": "claire_donovan",
+  "display_name": "Claire Donovan",
+  "profile": {"age": 21, "birthday": "10-09", "gender_identity": "female", "orientation": "straight", "romance_eligible": true, "role": "retail_contact", "occupation": "Clothing Store Associate", "education": "Some college; currently paused"},
+  "home": {"district": "Greyport", "residence": "Donovan Family Apartment", "household": ["donovan_mother"]},
+  "personality": {"archetype": "sharp_edged_survivor", "traits": ["sarcastic", "observant", "guarded", "resourceful", "secretly_kind"], "values": ["self_reliance", "fairness", "financial_security"], "social_style": "cool_until_trust_is_earned", "jealousy": 72},
+  "schedule": {"days_off": ["wednesday", "thursday"], "fixed_commitments": [{"days": ["monday", "tuesday", "friday"], "blocks": ["afternoon", "evening"], "activity": "mariner_row_retail_shift", "unavailable": true}, {"days": ["saturday", "sunday"], "blocks": ["morning", "lunch", "afternoon", "evening"], "activity": "mariner_row_retail_shift", "unavailable": true}, {"days": ["thursday"], "blocks": ["morning"], "activity": "household_errands", "unavailable": true}], "preferred_social_blocks": ["wednesday_evening", "thursday_evening"]},
+  "skills": {"retail": 86, "fashion": 79, "budgeting": 62, "photography": 41},
+  "goals": ["return_to_college_without_debt", "move_into_her_own_place", "learn_to_rely_on_someone_safely"],
+  "connections": [{"character": "sofia_alvarez", "relation": "former_coworker"}, {"character": "marcus_lee", "relation": "cinema_acquaintance"}, {"character": "rachel_morgan", "relation": "store_customer"}],
+  "relationship_defaults": {"friendship": 0, "love": 0, "attraction": 3, "lust": 1, "trust": 0, "respect": 0, "resentment": 0, "jealousy": 0, "comfort": 0, "commitment": 0, "compatibility": 0, "satisfaction": 50},
+  "boundaries": {"dating_agreement_preference": "exclusive_once_serious", "protection_policy": "requires_protection", "alcohol_consent": "never_when_impaired", "hard_limits": ["financial_control", "public_embarrassment", "cheating"]},
+  "private_profile": {"fertility_tier": "average", "reproductive_capability": "can_become_pregnant", "knowledge": "hidden_until_discovered", "adult_preferences": {"established": ["verbal_teasing"], "discoverable": ["fashion_and_lingerie"], "hard_limits": ["humiliation", "financial_pressure"]}},
+  "relationship_chapters": [{"level": 1, "id": "wrong_size", "title": "Wrong Size"}, {"level": 2, "id": "employee_discount", "title": "Employee Discount"}, {"level": 3, "id": "past_due", "title": "Past Due"}, {"level": 4, "id": "no_returns", "title": "No Returns"}, {"level": 5, "id": "something_that_fits", "title": "Something That Fits"}],
+  "quest_hooks": ["weather_wardrobe", "store_inventory_night", "college_return_application", "housing_search"],
+  "conversation_topics": ["fashion", "money", "family", "college", "trust", "movies"],
+  "text_style": {"tone": "dry_guarded", "emoji_rate": "low", "response_delay": "deliberately_slow_at_first"},
+  "entry_event": "ready_for_port_alder_wardrobe_quest"
+}

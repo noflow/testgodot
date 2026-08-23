@@ -1,0 +1,41 @@
+# Godot 4 generated files
+.godot/
+/.godot/
+
+# Exported builds
+builds/
+exports/
+dist/
+
+# Imported/source-art caches
+*.tmp
+*.temp
+*.bak
+*.autosave
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Local logs and test output
+logs/
+test-results/
+coverage/
+
+# Local secrets and machine-specific settings
+.env
+.env.*
+!.env.example
+local_settings.cfg
+
+# Optional locally downloaded AI/model experiments are never committed
+models/
+*.gguf
+*.safetensors
+

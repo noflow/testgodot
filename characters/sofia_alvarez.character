@@ -1,0 +1,20 @@
+{
+  "format_version": 1,
+  "id": "sofia_alvarez",
+  "display_name": "Sofia Alvarez",
+  "profile": {"age": 23, "birthday": "05-30", "gender_identity": "female", "orientation": "bisexual", "romance_eligible": true, "role": "workplace_contact", "occupation": "Restaurant Shift Supervisor", "education": "Hospitality certificate"},
+  "home": {"district": "Greyport", "residence": "Shared Two-Bedroom Apartment", "household": ["restaurant_coworker_roommate"]},
+  "personality": {"archetype": "fiery_manager", "traits": ["confident", "protective", "flirtatious", "demanding", "generous"], "values": ["loyalty", "hard_work", "pleasure"], "social_style": "direct_and_energetic", "jealousy": 61},
+  "schedule": {"days_off": ["monday", "tuesday"], "fixed_commitments": [{"days": ["wednesday", "thursday", "friday"], "blocks": ["afternoon", "evening", "late_evening"], "activity": "restaurant_shift", "unavailable": true}, {"days": ["saturday", "sunday"], "blocks": ["lunch", "afternoon", "evening", "late_evening"], "activity": "restaurant_shift", "unavailable": true}, {"days": ["tuesday"], "blocks": ["evening"], "activity": "friends_and_dancing", "unavailable": false}], "preferred_social_blocks": ["monday_evening", "tuesday_late_evening"]},
+  "skills": {"hospitality": 121, "leadership": 88, "cooking": 82, "dancing": 69},
+  "goals": ["become_assistant_manager", "open_a_small_tapas_bar", "decide_what_commitment_means_to_her"],
+  "connections": [{"character": "nadia_flores", "relation": "family_friend"}, {"character": "jade_mercer", "relation": "nightlife_acquaintance"}, {"character": "claire_donovan", "relation": "former_coworker"}],
+  "relationship_defaults": {"friendship": 0, "love": 0, "attraction": 8, "lust": 6, "trust": 0, "respect": 1, "resentment": 0, "jealousy": 0, "comfort": 0, "commitment": 0, "compatibility": 0, "satisfaction": 50},
+  "boundaries": {"dating_agreement_preference": "casual_then_define", "protection_policy": "prefers_protection_but_may_reconsider_after_testing_and_trust", "alcohol_consent": "never_when_impaired", "hard_limits": ["workplace_humiliation", "lying_about_other_partners"]},
+  "private_profile": {"fertility_tier": "high", "reproductive_capability": "can_become_pregnant", "knowledge": "hidden_until_discovered", "adult_preferences": {"established": ["risk_aware_spontaneity"], "discoverable": ["light_dominance", "lingerie"], "hard_limits": ["coercion", "recording"]}},
+  "relationship_chapters": [{"level": 1, "id": "table_for_one", "title": "Table for One"}, {"level": 2, "id": "after_closing", "title": "After Closing"}, {"level": 3, "id": "the_bad_review", "title": "The Bad Review"}, {"level": 4, "id": "terms_of_the_night", "title": "Terms of the Night"}, {"level": 5, "id": "reserved_table", "title": "Reserved Table"}],
+  "quest_hooks": ["restaurant_job_interview", "shift_emergency", "management_conflict", "business_plan"],
+  "conversation_topics": ["food", "work", "nightlife", "ambition", "dating_agreements", "family"],
+  "text_style": {"tone": "bold_playful", "emoji_rate": "medium", "response_delay": "none_during_rush"},
+  "entry_event": "restaurant_job_or_customer_visit"
+}

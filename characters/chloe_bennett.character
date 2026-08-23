@@ -1,0 +1,20 @@
+{
+  "format_version": 1,
+  "id": "chloe_bennett",
+  "display_name": "Chloe Bennett",
+  "profile": {"age": 19, "birthday": "12-14", "gender_identity": "trans_female", "orientation": "bisexual", "romance_eligible": true, "role": "college_peer", "occupation": "Student and Freelance Illustrator", "education": "Westshore Visual Arts student"},
+  "home": {"district": "Westshore College District", "residence": "Shared Student Apartment", "household": ["two_student_roommates"]},
+  "personality": {"archetype": "bold_creator", "traits": ["expressive", "witty", "confident", "sensitive", "independent"], "values": ["creativity", "dignity", "chosen_family"], "social_style": "playful_and_candid", "jealousy": 26},
+  "schedule": {"days_off": ["monday", "sunday"], "fixed_commitments": [{"days": ["tuesday", "wednesday", "thursday"], "blocks": ["morning", "lunch", "afternoon"], "activity": "westshore_studio_classes", "unavailable": true}, {"days": ["friday"], "blocks": ["afternoon", "evening"], "activity": "freelance_commissions", "unavailable": true}, {"days": ["saturday"], "blocks": ["evening", "late_evening"], "activity": "lantern_gallery_events", "unavailable": false}], "preferred_social_blocks": ["evening", "late_evening"]},
+  "skills": {"illustration": 96, "painting": 73, "fashion": 64, "social_media": 57},
+  "goals": ["mount_a_student_gallery_show", "build_a_stable_freelance_career", "create_a_trustworthy_chosen_family"],
+  "connections": [{"character": "lily_hale", "relation": "campus_friend"}, {"character": "theo_grant", "relation": "trusted_friend"}, {"character": "sofia_alvarez", "relation": "gallery_event_acquaintance"}],
+  "relationship_defaults": {"friendship": 3, "love": 0, "attraction": 7, "lust": 3, "trust": 1, "respect": 4, "resentment": 0, "jealousy": 0, "comfort": 2, "commitment": 0, "compatibility": 0, "satisfaction": 50},
+  "boundaries": {"dating_agreement_preference": "open_or_exclusive_by_agreement", "protection_policy": "discuss_and_agree_before_intimacy", "alcohol_consent": "never_when_impaired", "hard_limits": ["misgendering", "fetishization", "outing", "dishonesty"]},
+  "private_profile": {"fertility_tier": "infertile", "reproductive_capability": "cannot_cause_or_carry_pregnancy", "knowledge": "private_until_shared", "adult_preferences": {"established": ["fashion_play", "affirmation"], "discoverable": ["light_power_exchange"], "hard_limits": ["identity_degradation", "public_exposure"]}},
+  "relationship_chapters": [{"level": 1, "id": "unfinished_portrait", "title": "Unfinished Portrait"}, {"level": 2, "id": "colors_after_dark", "title": "Colors After Dark"}, {"level": 3, "id": "the_gallery_wall", "title": "The Gallery Wall"}, {"level": 4, "id": "seen_clearly", "title": "Seen Clearly"}, {"level": 5, "id": "chosen_home", "title": "Chosen Home"}],
+  "quest_hooks": ["portrait_commission", "gallery_setup", "freelance_deadline", "chosen_family_dinner"],
+  "conversation_topics": ["art", "fashion", "identity", "college", "freelancing", "relationships"],
+  "text_style": {"tone": "witty_visual", "emoji_rate": "medium", "response_delay": "fast_late_at_night"},
+  "entry_event": "westshore_art_courtyard"
+}

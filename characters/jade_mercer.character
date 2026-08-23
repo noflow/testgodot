@@ -1,0 +1,20 @@
+{
+  "format_version": 1,
+  "id": "jade_mercer",
+  "display_name": "Jade Mercer",
+  "profile": {"age": 25, "birthday": "08-27", "gender_identity": "female", "orientation": "bisexual", "romance_eligible": true, "role": "nightlife_contact", "occupation": "Licensed Professional Companion", "education": "Business certificate"},
+  "home": {"district": "Harbor Centre", "residence": "Secure Downtown Condo", "household": []},
+  "personality": {"archetype": "composed_boundary_setter", "traits": ["perceptive", "elegant", "pragmatic", "private", "compassionate"], "values": ["consent", "autonomy", "professionalism"], "social_style": "calm_and_deliberate", "jealousy": 16},
+  "schedule": {"days_off": ["monday", "sunday"], "fixed_commitments": [{"days": ["tuesday", "wednesday", "thursday"], "blocks": ["evening", "late_evening"], "activity": "licensed_client_appointments", "unavailable": true}, {"days": ["friday", "saturday"], "blocks": ["late_evening", "night"], "activity": "licensed_client_appointments", "unavailable": true}, {"days": ["wednesday"], "blocks": ["afternoon"], "activity": "health_and_admin_appointments", "unavailable": true}], "preferred_social_blocks": ["monday_afternoon", "sunday_evening"]},
+  "skills": {"emotional_intelligence": 132, "negotiation": 116, "business": 81, "fashion": 91},
+  "goals": ["build_a_financial_exit_plan", "open_a_client_safety_cooperative", "find_relationships_that_respect_her_work"],
+  "connections": [{"character": "sofia_alvarez", "relation": "nightlife_acquaintance"}, {"character": "hannah_brooks", "relation": "healthcare_contact"}, {"character": "olivia_price", "relation": "legal_advisor"}],
+  "relationship_defaults": {"friendship": 0, "love": 0, "attraction": 5, "lust": 4, "trust": 0, "respect": 2, "resentment": 0, "jealousy": 0, "comfort": 0, "commitment": 0, "compatibility": 0, "satisfaction": 50},
+  "boundaries": {"dating_agreement_preference": "explicitly_negotiated_open_or_exclusive", "protection_policy": "requires_protection_testing_and_disclosure", "alcohol_consent": "never_when_impaired", "hard_limits": ["client_boundary_crossing", "stigma", "financial_coercion", "recording"]},
+  "private_profile": {"fertility_tier": "low", "reproductive_capability": "can_become_pregnant", "knowledge": "hidden_until_discovered", "adult_preferences": {"established": ["structured_negotiation", "roleplay"], "discoverable": ["light_power_exchange"], "hard_limits": ["unsafe_practices", "coercion", "public_exposure"]}},
+  "relationship_chapters": [{"level": 1, "id": "professional_distance", "title": "Professional Distance"}, {"level": 2, "id": "off_the_clock", "title": "Off the Clock"}, {"level": 3, "id": "the_safety_list", "title": "The Safety List"}, {"level": 4, "id": "terms_rewritten", "title": "Terms Rewritten"}, {"level": 5, "id": "a_name_on_the_door", "title": "A Name on the Door"}],
+  "quest_hooks": ["licensed_industry_introduction", "client_safety_policy", "cooperative_business_plan", "public_stigma_conflict"],
+  "conversation_topics": ["boundaries", "business", "city_law", "relationships", "privacy", "future_plans"],
+  "text_style": {"tone": "composed_precise", "emoji_rate": "very_low", "response_delay": "scheduled_around_work"},
+  "entry_event": "lantern_district_safety_event"
+}

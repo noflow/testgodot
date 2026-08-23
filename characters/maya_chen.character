@@ -1,0 +1,20 @@
+{
+  "format_version": 1,
+  "id": "maya_chen",
+  "display_name": "Maya Chen",
+  "profile": {"age": 18, "birthday": "03-06", "gender_identity": "female", "orientation": "straight", "romance_eligible": true, "role": "college_peer", "occupation": "Student", "education": "Westshore Pre-Medical student"},
+  "home": {"district": "Westshore College District", "residence": "Cypress Hall Dorm", "household": ["dorm_roommate_unassigned"]},
+  "personality": {"archetype": "driven_perfectionist", "traits": ["intelligent", "disciplined", "competitive", "considerate", "self_critical"], "values": ["achievement", "service", "integrity"], "social_style": "polite_and_focused", "jealousy": 44},
+  "schedule": {"days_off": ["sunday"], "fixed_commitments": [{"days": ["monday", "tuesday", "wednesday", "thursday", "friday"], "blocks": ["morning", "lunch", "afternoon"], "activity": "westshore_classes_and_labs", "unavailable": true}, {"days": ["tuesday", "thursday"], "blocks": ["evening"], "activity": "study_group", "unavailable": true}, {"days": ["saturday"], "blocks": ["morning"], "activity": "hospital_volunteering", "unavailable": true}], "preferred_social_blocks": ["friday_evening", "sunday_afternoon"]},
+  "skills": {"biology": 88, "chemistry": 72, "study": 94, "cooking": 29},
+  "goals": ["qualify_for_health_sciences_transfer", "earn_a_scholarship", "learn_to_accept_imperfection"],
+  "connections": [{"character": "nadia_flores", "relation": "study_acquaintance"}, {"character": "hannah_brooks", "relation": "volunteer_supervisor"}, {"character": "emma_rowan", "relation": "dorm_acquaintance"}],
+  "relationship_defaults": {"friendship": 4, "love": 0, "attraction": 6, "lust": 1, "trust": 2, "respect": 5, "resentment": 0, "jealousy": 0, "comfort": 1, "commitment": 0, "compatibility": 0, "satisfaction": 50},
+  "boundaries": {"dating_agreement_preference": "exclusive", "protection_policy": "requires_protection_and_testing", "alcohol_consent": "never_when_impaired", "hard_limits": ["academic_sabotage", "dishonesty", "public_scenes"]},
+  "private_profile": {"fertility_tier": "low", "reproductive_capability": "can_become_pregnant", "knowledge": "hidden_until_discovered", "adult_preferences": {"established": ["slow_trust_building"], "discoverable": ["structured_roleplay"], "hard_limits": ["risk_without_planning", "humiliation"]}},
+  "relationship_chapters": [{"level": 1, "id": "lab_partners", "title": "Lab Partners"}, {"level": 2, "id": "the_impossible_standard", "title": "The Impossible Standard"}, {"level": 3, "id": "white_coat_dreams", "title": "White-Coat Dreams"}, {"level": 4, "id": "results_pending", "title": "Results Pending"}, {"level": 5, "id": "a_life_beyond_grades", "title": "A Life Beyond Grades"}],
+  "quest_hooks": ["campus_lab_partner", "scholarship_pressure", "hospital_volunteer_shift", "exam_crisis"],
+  "conversation_topics": ["science", "college", "family_expectations", "healthcare", "study_habits", "future_plans"],
+  "text_style": {"tone": "precise_polite", "emoji_rate": "very_low", "response_delay": "scheduled"},
+  "entry_event": "westshore_science_orientation"
+}
