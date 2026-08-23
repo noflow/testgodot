@@ -16,6 +16,60 @@
   "quest_hooks": ["free_movie_pass", "student_film", "missed_shift", "festival_premiere"],
   "conversation_topics": ["movies", "friendship", "creative_work", "money", "dating", "city_nightlife"],
   "text_style": {"tone": "rapid_comedic", "emoji_rate": "high", "response_delay": "unpredictable_during_shifts"},
-  "quests": [], "conversations": [], "text_messages": [], "outcomes": [], "asset_refs": {"portraits": [], "sprites": [], "audio": []},
+  "quests": [
+    {
+      "id": "one_last_summer_movie",
+      "category": "character_story",
+      "title": "One Last Summer Movie",
+      "summary": "Join Marcus for a late screening and learn about the film he is afraid to finish.",
+      "activation": {"event": "sandbox_activated"},
+      "availability": {"days": ["opening_tuesday", "wednesday", "thursday"], "blocks": ["evening", "late_evening"], "location": "harborlight_cinema.lobby"},
+      "objectives": [
+        {"id": "answer_invitation", "text": "Reply to Marcus about the movie.", "completion": {"event": "text_replied", "thread": "marcus_movie_invitation"}},
+        {"id": "schedule_movie", "text": "Add the screening to your calendar.", "completion": {"event": "calendar_event_created", "participant": "marcus_lee", "tag": "movie"}},
+        {"id": "attend_screening", "text": "Meet Marcus at Harborlight Cinema.", "completion": {"event": "conversation_completed", "conversation": "marcus_after_screening"}}
+      ],
+      "branches": [
+        {"id": "encourage_film", "condition": {"flag": "marcus.showed_rough_cut"}, "effects": [{"operation": "start_quest", "value": "marcus_student_film"}, {"operation": "add_meter", "character": "marcus_lee", "meter": "trust", "value": 4}]},
+        {"id": "just_a_movie", "condition": {"flag": "marcus.kept_film_private"}, "effects": [{"operation": "add_meter", "character": "marcus_lee", "meter": "friendship", "value": 3}]}
+      ],
+      "completion_effects": [{"operation": "create_memory", "character": "marcus_lee", "value": "shared_last_summer_screening"}, {"operation": "unlock_relationship_chapter", "character": "marcus_lee", "level": 2}],
+      "failure": {"mode": "relationship_consequence", "on_no_show": [{"operation": "add_meter", "character": "marcus_lee", "meter": "trust", "value": -7}, {"operation": "add_meter", "character": "marcus_lee", "meter": "resentment", "value": 4}]}
+    }
+  ],
+  "conversations": [
+    {
+      "id": "marcus_after_screening",
+      "type": "major_vn_scene",
+      "start_node": "lobby_intro",
+      "activation": {"quest_active": "one_last_summer_movie", "location": "harborlight_cinema.lobby", "calendar_participant": "marcus_lee"},
+      "repetition": {"once_only": true},
+      "nodes": {
+        "lobby_intro": {"stage_direction": "Marcus waves from behind the concession counter, already holding two tickets and a bag of popcorn he clearly did not pay full price for.", "next": "marcus_welcome"},
+        "marcus_welcome": {"speaker": "marcus_lee", "line": "You made it. Employee perk number one: terrible movies become free terrible movies.", "next": "movie_response"},
+        "movie_response": {"speaker": "player", "choices": [
+          {"id": "joke", "text": "I came for the illegally generous popcorn portions.", "tone": ["playful"], "effects": [{"operation": "add_meter", "character": "marcus_lee", "meter": "comfort", "value": 2}], "next": "after_movie"},
+          {"id": "warm", "text": "I came because you asked.", "tone": ["honest"], "effects": [{"operation": "add_meter", "character": "marcus_lee", "meter": "friendship", "value": 2}], "next": "after_movie"},
+          {"id": "flirty", "text": "Free movie, dim lights, just us—you're setting expectations.", "tone": ["flirty"], "effects": [{"operation": "add_meter", "character": "marcus_lee", "meter": "attraction", "value": 2}], "next": "marcus_flirt_reply"}
+        ]},
+        "marcus_flirt_reply": {"speaker": "marcus_lee", "line": "Then I should warn you the carpet destroys at least half the atmosphere.", "effects": [{"operation": "set_flag", "key": "marcus.opening_flirt", "value": true}], "next": "after_movie"},
+        "after_movie": {"stage_direction": "After the credits, Marcus leads the way into an empty side auditorium instead of returning to the lobby.", "next": "marcus_confession"},
+        "marcus_confession": {"speaker": "marcus_lee", "line": "I told everyone my short film is almost finished. It isn't. I keep editing the same forty seconds because finishing means people can finally tell me it isn't good.", "next": "film_response"},
+        "film_response": {"speaker": "player", "choices": [
+          {"id": "ask_to_see", "text": "Show me the rough cut. I'll be honest and constructive.", "tone": ["supportive", "honest"], "effects": [{"operation": "set_flag", "key": "marcus.showed_rough_cut", "value": true}, {"operation": "add_meter", "character": "marcus_lee", "meter": "trust", "value": 3}], "next": "marcus_agrees"},
+          {"id": "encourage", "text": "Finish the imperfect version. You can improve the next one.", "tone": ["confident", "supportive"], "effects": [{"operation": "set_flag", "key": "marcus.showed_rough_cut", "value": true}, {"operation": "add_meter", "character": "marcus_lee", "meter": "respect", "value": 3}], "next": "marcus_agrees"},
+          {"id": "leave_it", "text": "We don't have to turn tonight into a project meeting.", "tone": ["supportive"], "effects": [{"operation": "set_flag", "key": "marcus.kept_film_private", "value": true}, {"operation": "add_meter", "character": "marcus_lee", "meter": "comfort", "value": 2}], "next": "marcus_relief"}
+        ]},
+        "marcus_agrees": {"speaker": "marcus_lee", "line": "Okay. Not tonight, because I need time to regret agreeing. Tomorrow I'll send you a link.", "next": "cinema_end"},
+        "marcus_relief": {"speaker": "marcus_lee", "line": "Thank you. I wanted to tell somebody without immediately turning it into another deadline.", "next": "cinema_end"},
+        "cinema_end": {"speaker": "marcus_lee", "line": "Come on. I have to lock up, and you have an entire adult life to begin badly tomorrow.", "effects": [{"operation": "complete_objective", "quest": "one_last_summer_movie", "objective": "attend_screening"}, {"operation": "complete_quest", "quest": "one_last_summer_movie"}], "next": null}
+      }
+    }
+  ],
+  "text_messages": [
+    {"id": "marcus_movie_invitation", "trigger": {"quest_started": "one_last_summer_movie"}, "sender": "marcus_lee", "text": "One last bad summer movie before college ruins our schedules? I can sneak you into the late show Tue/Wed/Thu.", "quick_replies": [{"text": "Pick a night.", "tone": ["playful"], "effects": [{"operation": "open_calendar_scheduler", "participant": "marcus_lee", "valid_quest": "one_last_summer_movie"}]}, {"text": "Only if this counts as a date.", "tone": ["flirty"], "effects": [{"operation": "add_meter", "character": "marcus_lee", "meter": "attraction", "value": 1}, {"operation": "open_calendar_scheduler", "participant": "marcus_lee", "valid_quest": "one_last_summer_movie"}]}, {"text": "Can't this week.", "tone": ["honest"], "effects": [{"operation": "set_quest_state", "quest": "one_last_summer_movie", "value": "deferred"}]}]}
+  ],
+  "outcomes": ["lifelong_creative_partner", "romantic_partnership", "successful_filmmaker_friend", "friendship_lost_to_unreliability"],
+  "asset_refs": {"portraits": [], "sprites": [], "audio": []},
   "entry_event": "quest_one_last_summer_movie"
 }

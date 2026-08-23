@@ -16,6 +16,60 @@
   "quest_hooks": ["program_change", "campus_orientation", "sibling_secret", "moving_day"],
   "conversation_topics": ["college", "family_pressure", "dating_life", "music", "moving_out", "childhood_memories"],
   "text_style": {"tone": "teasing_rapid", "emoji_rate": "medium", "response_delay": "fast_unless_class"},
-  "quests": [], "conversations": [], "text_messages": [], "outcomes": [], "asset_refs": {"portraits": [], "sprites": [], "audio": []},
+  "quests": [
+    {
+      "id": "one_year_ahead",
+      "category": "character_story",
+      "title": "One Year Ahead",
+      "summary": "Help Lily confront her doubts about Social Sciences and decide whether to change programs.",
+      "activation": {"event": "quest_completed", "quest": "opening_future_choice", "earliest_block": "lunch"},
+      "availability": {"location": "hale_home.kitchen", "days": ["opening_tuesday", "wednesday", "friday"], "blocks": ["lunch", "evening", "late_evening"]},
+      "objectives": [
+        {"id": "talk_in_kitchen", "text": "Talk to Lily in the kitchen.", "completion": {"event": "conversation_completed", "conversation": "lily_program_doubts"}},
+        {"id": "review_programs", "text": "Send Lily information about two possible programs.", "completion": {"event": "phone_content_shared", "recipient": "lily_hale", "tag": "westshore_program", "minimum": 2}},
+        {"id": "follow_up", "text": "Check in after Lily reviews the options.", "completion": {"event": "text_thread_completed", "thread": "lily_program_followup"}}
+      ],
+      "branches": [
+        {"id": "encourage_change", "condition": {"flag": "lily.supported_program_change"}, "effects": [{"operation": "set_value", "key": "lily_hale.goal_program", "value": "arts_and_humanities"}, {"operation": "add_meter", "character": "lily_hale", "meter": "trust", "value": 4}]},
+        {"id": "encourage_patience", "condition": {"flag": "lily.supported_research_first"}, "effects": [{"operation": "schedule_event", "value": "lily_advisor_appointment"}, {"operation": "add_meter", "character": "lily_hale", "meter": "respect", "value": 3}]}
+      ],
+      "completion_effects": [{"operation": "create_memory", "character": "lily_hale", "value": "player_listened_to_program_doubts"}, {"operation": "unlock_relationship_chapter", "character": "lily_hale", "level": 2}],
+      "failure": {"mode": "relationship_consequence", "after_days": 6, "effects": [{"operation": "add_meter", "character": "lily_hale", "meter": "resentment", "value": 2}]}
+    }
+  ],
+  "conversations": [
+    {
+      "id": "lily_program_doubts",
+      "type": "major_vn_scene",
+      "start_node": "kitchen_intro",
+      "activation": {"quest_active": "one_year_ahead", "location": "hale_home.kitchen"},
+      "repetition": {"once_only": true},
+      "nodes": {
+        "kitchen_intro": {"stage_direction": "Lily sits at the kitchen table with three program pages open on her laptop and an untouched mug beside her.", "next": "lily_opening"},
+        "lily_opening": {"speaker": "lily_hale", "line": "Mom told me about your big future talk. Congratulations. Now there are two of us pretending we know what we're doing.", "next": "player_reply"},
+        "player_reply": {"speaker": "player", "choices": [
+          {"id": "ask", "text": "What's wrong with your program?", "tone": ["curious"], "next": "lily_doubt"},
+          {"id": "tease", "text": "You're a year ahead. You're supposed to have all the answers.", "tone": ["playful"], "effects": [{"operation": "add_meter", "character": "lily_hale", "meter": "comfort", "value": 1}], "next": "lily_tease"},
+          {"id": "support", "text": "You don't have to pretend with me.", "tone": ["supportive"], "effects": [{"operation": "add_meter", "character": "lily_hale", "meter": "trust", "value": 2}], "next": "lily_doubt"}
+        ]},
+        "lily_tease": {"speaker": "lily_hale", "line": "Exactly. I had twelve whole months to become wise and mysterious. Total failure.", "next": "lily_doubt"},
+        "lily_doubt": {"speaker": "lily_hale", "line": "Social Sciences looked right on paper. But every time I imagine another year of it, I feel like I'm following a plan somebody else wrote.", "next": "advice_choice"},
+        "advice_choice": {"speaker": "player", "choices": [
+          {"id": "change", "text": "Then explore a program that actually excites you.", "tone": ["supportive", "confident"], "effects": [{"operation": "set_flag", "key": "lily.supported_program_change", "value": true}, {"operation": "add_meter", "character": "lily_hale", "meter": "respect", "value": 2}], "next": "lily_change"},
+          {"id": "research", "text": "Don't rush. Talk to an advisor and compare the options first.", "tone": ["responsible", "supportive"], "effects": [{"operation": "set_flag", "key": "lily.supported_research_first", "value": true}], "next": "lily_research"},
+          {"id": "dismiss", "text": "Everyone gets bored. Just finish what you started.", "tone": ["blunt"], "effects": [{"operation": "add_meter", "character": "lily_hale", "meter": "resentment", "value": 3}, {"operation": "add_meter", "character": "lily_hale", "meter": "trust", "value": -2}], "next": "lily_dismissed"}
+        ]},
+        "lily_change": {"speaker": "lily_hale", "line": "Visual Arts keeps pulling me back. I haven't told Mom because I can already hear the questions about jobs.", "next": "lily_close"},
+        "lily_research": {"speaker": "lily_hale", "line": "Annoyingly sensible. Fine. I'll make the appointment if you help me compare the programs.", "next": "lily_close"},
+        "lily_dismissed": {"speaker": "lily_hale", "line": "Right. I forgot you became the family guidance counselor this morning.", "next": "lily_close"},
+        "lily_close": {"speaker": "lily_hale", "line": "Send me anything useful you find. And don't mention this to Mom yet. I need it to be my conversation.", "effects": [{"operation": "create_memory", "character": "lily_hale", "value": "shared_program_change_secret"}, {"operation": "complete_objective", "quest": "one_year_ahead", "objective": "talk_in_kitchen"}], "next": null}
+      }
+    }
+  ],
+  "text_messages": [
+    {"id": "lily_program_followup", "trigger": {"objective_completed": ["one_year_ahead", "review_programs"]}, "sender": "lily_hale", "text": "I read both program pages. One of them actually made me want to go back to campus. That's probably a sign, right?", "quick_replies": [{"text": "A pretty strong one.", "tone": ["supportive"], "effects": [{"operation": "add_meter", "character": "lily_hale", "meter": "trust", "value": 1}]}, {"text": "Talk to the advisor before deciding.", "tone": ["responsible"]}, {"text": "You owe me for the research.", "tone": ["playful"], "effects": [{"operation": "add_meter", "character": "lily_hale", "meter": "comfort", "value": 1}]}]}
+  ],
+  "outcomes": ["changes_program_with_family_support", "stays_in_program_after_review", "changes_program_without_player_support"],
+  "asset_refs": {"portraits": [], "sprites": [], "audio": []},
   "entry_event": "opening_day_lunch"
 }

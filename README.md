@@ -22,6 +22,7 @@ Pre-production and design. No gameplay code has been started.
 
 - `docs/` — game-design playbook and technical specifications
 - `characters/` — 15 validated opening-cast `.character` packages
+- `content/` — global quests and conversations owned by locations or institutions
 - `mods/` — local mod-development workspace
 - `assets/` — art, audio, and fonts
 - `src/` — future Godot source files
@@ -30,4 +31,4 @@ Pre-production and design. No gameplay code has been started.
 The canonical design summary is in [docs/GAME_DESIGN_PLAYBOOK.md](docs/GAME_DESIGN_PLAYBOOK.md).
 Character quest and conversation authoring is documented in [docs/CONTENT_AUTHORING_GUIDE.md](docs/CONTENT_AUTHORING_GUIDE.md).
 
-Validate character data with `python3 tools/validate_characters.py`.
+Validate all character and global content data with `python3 tools/validate_characters.py`.

@@ -16,6 +16,61 @@
   "quest_hooks": ["alder_bay_walk", "literary_magazine", "lost_manuscript", "relationship_definition"],
   "conversation_topics": ["books", "childhood", "college_fears", "writing", "relationships", "future_dreams"],
   "text_style": {"tone": "thoughtful_warm", "emoji_rate": "low", "response_delay": "variable_when_anxious"},
-  "quests": [], "conversations": [], "text_messages": [], "outcomes": [], "asset_refs": {"portraits": [], "sprites": [], "audio": []},
+  "quests": [
+    {
+      "id": "before_everything_changes",
+      "category": "character_story",
+      "title": "Before Everything Changes",
+      "summary": "Meet Emma for a walk at Alder Bay before the semester begins.",
+      "activation": {"event": "sandbox_activated"},
+      "availability": {"days": ["opening_tuesday", "wednesday", "friday", "sunday"], "blocks": ["afternoon", "evening"], "location": "alder_bay.waterfront_path", "weather_excludes": ["severe_storm"]},
+      "objectives": [
+        {"id": "answer_invitation", "text": "Reply to Emma's invitation.", "completion": {"event": "text_replied", "thread": "emma_walk_invitation"}},
+        {"id": "schedule_walk", "text": "Add the Alder Bay walk to your calendar.", "completion": {"event": "calendar_event_created", "tag": "date_or_hangout", "participant": "emma_rowan"}},
+        {"id": "meet_emma", "text": "Meet Emma at Alder Bay Park.", "completion": {"event": "conversation_completed", "conversation": "emma_alder_bay_walk"}}
+      ],
+      "branches": [
+        {"id": "romantic_spark", "condition": {"flag": "emma.walk_romantic_spark"}, "effects": [{"operation": "add_meter", "character": "emma_rowan", "meter": "attraction", "value": 6}, {"operation": "unlock_topic", "character": "emma_rowan", "value": "what_are_we"}]},
+        {"id": "close_friendship", "condition": {"flag": "emma.walk_friendship_focus"}, "effects": [{"operation": "add_meter", "character": "emma_rowan", "meter": "friendship", "value": 6}, {"operation": "add_meter", "character": "emma_rowan", "meter": "trust", "value": 3}]}
+      ],
+      "completion_effects": [{"operation": "create_memory", "character": "emma_rowan", "value": "walked_alder_bay_before_college"}, {"operation": "unlock_relationship_chapter", "character": "emma_rowan", "level": 2}],
+      "failure": {"mode": "relationship_consequence", "on_no_show": [{"operation": "add_meter", "character": "emma_rowan", "meter": "trust", "value": -6}, {"operation": "add_meter", "character": "emma_rowan", "meter": "resentment", "value": 5}]}
+    }
+  ],
+  "conversations": [
+    {
+      "id": "emma_alder_bay_walk",
+      "type": "major_vn_scene",
+      "start_node": "park_intro",
+      "activation": {"quest_active": "before_everything_changes", "location": "alder_bay.waterfront_path", "calendar_participant": "emma_rowan"},
+      "repetition": {"once_only": true},
+      "nodes": {
+        "park_intro": {"stage_direction": "Emma waits beside the waterfront railing with two juice bottles and a paperback tucked under one arm.", "next": "emma_greeting"},
+        "emma_greeting": {"speaker": "emma_rowan", "line": "You came. I bought the same juice we used to get after school, which is either thoughtful or proof that I fear change.", "next": "greeting_choice"},
+        "greeting_choice": {"speaker": "player", "choices": [
+          {"id": "warm", "text": "It's thoughtful. I missed this.", "tone": ["honest", "supportive"], "effects": [{"operation": "add_meter", "character": "emma_rowan", "meter": "friendship", "value": 2}], "next": "walk_start"},
+          {"id": "playful", "text": "Depends. Did you remember my favorite flavor?", "tone": ["playful"], "effects": [{"operation": "add_meter", "character": "emma_rowan", "meter": "comfort", "value": 2}], "next": "emma_flavor"},
+          {"id": "flirty", "text": "You waiting by the water makes it feel suspiciously like a date.", "tone": ["flirty"], "conditions": [{"meter_at_least": ["emma_rowan", "comfort", 35]}], "effects": [{"operation": "add_meter", "character": "emma_rowan", "meter": "attraction", "value": 3}], "next": "emma_date_reaction"}
+        ]},
+        "emma_flavor": {"speaker": "emma_rowan", "line": "Obviously. I may be anxious, but I'm not a monster.", "next": "walk_start"},
+        "emma_date_reaction": {"speaker": "emma_rowan", "line": "I was calling it a walk. But I guess we can decide what it was after it happens.", "effects": [{"operation": "set_flag", "key": "emma.walk_flirted", "value": true}], "next": "walk_start"},
+        "walk_start": {"speaker": "emma_rowan", "line": "Everything is about to split into schedules and assignments and new people. I'm scared we'll keep saying we should meet until we don't know each other anymore.", "next": "future_response"},
+        "future_response": {"speaker": "player", "choices": [
+          {"id": "promise", "text": "Then we'll make time instead of hoping it appears.", "tone": ["supportive", "responsible"], "effects": [{"operation": "set_flag", "key": "emma.walk_friendship_focus", "value": true}, {"operation": "add_meter", "character": "emma_rowan", "meter": "trust", "value": 3}], "next": "emma_relieved"},
+          {"id": "romantic", "text": "I don't want to lose whatever this could become.", "tone": ["romantic", "honest"], "conditions": [{"flag": "emma.walk_flirted"}], "effects": [{"operation": "set_flag", "key": "emma.walk_romantic_spark", "value": true}, {"operation": "add_meter", "character": "emma_rowan", "meter": "love", "value": 2}], "next": "emma_spark"},
+          {"id": "avoid", "text": "People drift apart. That's just what happens.", "tone": ["avoidant"], "effects": [{"operation": "add_meter", "character": "emma_rowan", "meter": "trust", "value": -3}, {"operation": "add_meter", "character": "emma_rowan", "meter": "resentment", "value": 2}], "next": "emma_hurt"}
+        ]},
+        "emma_relieved": {"speaker": "emma_rowan", "line": "Good. Put it in the calendar and make it official. Future us doesn't get to quietly cancel everything.", "next": "walk_end"},
+        "emma_spark": {"speaker": "emma_rowan", "line": "I was hoping you might say that. I don't need a label today. I just don't want us to pretend the possibility isn't there.", "next": "walk_end"},
+        "emma_hurt": {"speaker": "emma_rowan", "line": "Maybe. I was hoping we'd at least try before deciding that for us.", "next": "walk_end"},
+        "walk_end": {"stage_direction": "The two continue along the waterfront as the city lights begin to reflect across the bay.", "effects": [{"operation": "complete_objective", "quest": "before_everything_changes", "objective": "meet_emma"}, {"operation": "complete_quest", "quest": "before_everything_changes"}], "next": null}
+      }
+    }
+  ],
+  "text_messages": [
+    {"id": "emma_walk_invitation", "trigger": {"quest_started": "before_everything_changes"}, "sender": "emma_rowan", "text": "Before college swallows both of us, want to walk by Alder Bay? I can do Tuesday, Wednesday, Friday, or Sunday afternoon.", "quick_replies": [{"text": "Yes. Let's choose a time.", "tone": ["supportive"], "effects": [{"operation": "open_calendar_scheduler", "participant": "emma_rowan", "valid_quest": "before_everything_changes"}]}, {"text": "Is this a date?", "tone": ["flirty"], "effects": [{"operation": "add_meter", "character": "emma_rowan", "meter": "attraction", "value": 1}, {"operation": "open_calendar_scheduler", "participant": "emma_rowan", "valid_quest": "before_everything_changes"}]}, {"text": "Not this week.", "tone": ["honest"], "effects": [{"operation": "set_quest_state", "quest": "before_everything_changes", "value": "deferred"}]}]}
+  ],
+  "outcomes": ["lifelong_friendship", "romantic_partnership", "gradual_distance", "estrangement_after_broken_trust"],
+  "asset_refs": {"portraits": [], "sprites": [], "audio": []},
   "entry_event": "quest_before_everything_changes"
 }

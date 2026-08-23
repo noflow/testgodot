@@ -1,0 +1,97 @@
+{
+  "format_version": 1,
+  "package_id": "opening_global_quests",
+  "quests": [
+    {
+      "id": "enroll_at_westshore",
+      "category": "main_life_goal",
+      "title": "Enroll at Westshore",
+      "summary": "Choose a program, arrange tuition, and build your first-semester schedule.",
+      "activation": {"value_in": ["player.life_path", ["college", "college_and_employment"]]},
+      "availability": {"days": ["monday", "tuesday", "wednesday", "thursday", "friday"], "blocks": ["morning", "lunch", "afternoon"], "location": "westshore.administration_office"},
+      "objectives": [
+        {"id": "travel_to_administration", "text": "Visit the Westshore administration office.", "completion": {"event": "location_entered", "location": "westshore.administration_office"}},
+        {"id": "review_programs", "text": "Review the available programs with an enrollment advisor.", "completion": {"event": "conversation_node_reached", "conversation": "westshore_enrollment_advisor", "node": "program_choice"}},
+        {"id": "choose_program", "text": "Choose your starting program.", "completion": {"event": "value_set", "key": "education.program", "allowed_values": ["arts_and_humanities", "business", "computer_systems", "education", "health_sciences", "social_sciences", "undeclared_studies"]}},
+        {"id": "arrange_tuition", "text": "Choose how to handle the $4,000 semester tuition.", "completion": {"event": "value_set", "key": "education.tuition_plan"}},
+        {"id": "confirm_schedule", "text": "Confirm a full-time or part-time class schedule.", "completion": {"event": "calendar_events_created", "tag": "westshore_class", "minimum": 1}}
+      ],
+      "branches": [
+        {"id": "full_time", "condition": {"value_equals": ["education.load", "full_time"]}, "effects": [{"operation": "set_value", "key": "household.rent_while_enrolled", "value": 0}, {"operation": "set_value", "key": "household.weekly_allowance_active", "value": true}]},
+        {"id": "part_time", "condition": {"value_equals": ["education.load", "part_time"]}, "effects": [{"operation": "set_value", "key": "household.rent_while_enrolled", "value": 0}, {"operation": "set_value", "key": "household.weekly_allowance_active", "value": true}]}
+      ],
+      "costs": {"tuition": 4000, "currency": "port_alder_dollar"},
+      "completion_effects": [{"operation": "set_flag", "key": "education.enrolled", "value": true}, {"operation": "unlock_phone_app", "value": "education"}, {"operation": "schedule_event", "value": "westshore_orientation"}],
+      "failure": {"mode": "branch", "deadline": "fall_registration_deadline", "result": "late_enrollment_or_defer_to_next_term"}
+    },
+    {
+      "id": "find_employment",
+      "category": "main_life_goal",
+      "title": "Find Employment",
+      "summary": "Search job listings, submit applications, interview, and accept a suitable full-time position.",
+      "activation": {"value_equals": ["player.life_path", "employment"]},
+      "availability": {"phone_app": "jobs", "alternate_location": "harbor_employment_centre"},
+      "objectives": [
+        {"id": "open_jobs", "text": "Open the Jobs app or visit Harbor Employment Centre.", "completion": {"event": "job_board_opened"}},
+        {"id": "review_requirements", "text": "Review at least three job listings and their requirements.", "completion": {"event": "job_listings_viewed", "minimum": 3}},
+        {"id": "submit_applications", "text": "Submit at least two applications.", "completion": {"event": "job_applications_submitted", "minimum": 2}},
+        {"id": "attend_interview", "text": "Attend a job interview.", "completion": {"event": "job_interview_completed"}},
+        {"id": "accept_offer", "text": "Accept a full-time job offer.", "completion": {"event": "employment_contract_accepted", "hours_minimum": 30}}
+      ],
+      "branches": [],
+      "completion_effects": [{"operation": "set_flag", "key": "employment.employed", "value": true}, {"operation": "create_calendar_from_work_schedule"}, {"operation": "set_value", "key": "household.monthly_rent", "value": 250}, {"operation": "set_value", "key": "household.rent_due_date", "value": "09-01"}],
+      "failure": {"mode": "continue_with_consequences", "deadline": "09-01", "result": "rent_due_without_stable_income"}
+    },
+    {
+      "id": "find_part_time_employment",
+      "category": "opportunity",
+      "title": "Find Part-Time Employment",
+      "summary": "Find work that fits around Westshore classes.",
+      "activation": {"value_equals": ["player.life_path", "college_and_employment"]},
+      "availability": {"phone_app": "jobs", "alternate_locations": ["westshore.career_board", "harbor_employment_centre"]},
+      "objectives": [
+        {"id": "review_calendar", "text": "Review your class schedule and mark available work blocks.", "completion": {"event": "availability_profile_saved"}},
+        {"id": "review_part_time_jobs", "text": "Review at least three part-time listings.", "completion": {"event": "job_listings_viewed", "filter": "part_time", "minimum": 3}},
+        {"id": "submit_application", "text": "Submit a part-time application.", "completion": {"event": "job_applications_submitted", "filter": "part_time", "minimum": 1}},
+        {"id": "accept_compatible_offer", "text": "Accept an offer that does not conflict with your classes.", "completion": {"event": "compatible_employment_contract_accepted", "hours_maximum": 24}}
+      ],
+      "branches": [],
+      "completion_effects": [{"operation": "set_flag", "key": "employment.employed", "value": true}, {"operation": "create_calendar_from_work_schedule"}],
+      "failure": {"mode": "optional", "result": "remain_supported_by_allowance_and_other_funding"}
+    },
+    {
+      "id": "ready_for_port_alder",
+      "category": "routine_activity",
+      "title": "Ready for Port Alder",
+      "summary": "Use the forecast and wardrobe to dress safely for the weather.",
+      "activation": {"event": "sandbox_activated"},
+      "availability": {"location": "hale_home.player_bedroom", "blocks": ["early_morning", "morning", "lunch", "afternoon", "evening", "late_evening", "night"]},
+      "objectives": [
+        {"id": "check_forecast", "text": "Check today's forecast on your phone.", "completion": {"event": "phone_weather_opened"}},
+        {"id": "open_wardrobe", "text": "Open your wardrobe.", "completion": {"event": "wardrobe_opened"}},
+        {"id": "dress_for_weather", "text": "Equip clothing suitable for today's temperature and precipitation.", "completion": {"event": "outfit_weather_score_at_least", "value": 70}},
+        {"id": "step_outside", "text": "Leave the house wearing the selected outfit.", "completion": {"event": "location_entered", "location": "alder_heights.residential_street"}}
+      ],
+      "branches": [{"id": "poor_outfit", "condition": {"value_below": ["outfit.weather_score", 70]}, "effects": [{"operation": "add_status", "value": "weather_exposure"}, {"operation": "show_tutorial", "value": "weather_health_risk"}]}],
+      "completion_effects": [{"operation": "unlock_phone_app", "value": "shopping"}, {"operation": "set_flag", "key": "tutorials.wardrobe_complete", "value": true}],
+      "failure": {"mode": "retryable", "result": "weather_exposure_and_illness_risk"}
+    },
+    {
+      "id": "getting_around_port_alder",
+      "category": "routine_activity",
+      "title": "Getting Around Port Alder",
+      "summary": "Learn how walking, buses, taxis, and cars consume time and money.",
+      "activation": {"event": "first_exit_from_hale_home"},
+      "availability": {"locations": ["alder_heights.residential_street", "alder_heights.bus_stop"]},
+      "objectives": [
+        {"id": "open_city_map", "text": "Open the City Map on your phone.", "completion": {"event": "phone_map_opened"}},
+        {"id": "compare_routes", "text": "Compare walking and bus travel to Westshore College.", "completion": {"event": "routes_compared", "minimum": 2}},
+        {"id": "take_bus", "text": "Take a bus to Westshore College or Harbor Centre.", "completion": {"event": "trip_completed", "mode": "bus"}},
+        {"id": "review_other_modes", "text": "Review taxi and car travel information.", "completion": {"event": "transport_modes_viewed", "values": ["taxi", "car"]}}
+      ],
+      "branches": [],
+      "completion_effects": [{"operation": "unlock_phone_app", "value": "transportation"}, {"operation": "set_flag", "key": "tutorials.transportation_complete", "value": true}],
+      "failure": {"mode": "cannot_fail"}
+    }
+  ]
+}

@@ -16,6 +16,65 @@
   "quest_hooks": ["gym_orientation", "fitness_assessment", "coastal_run", "management_promotion"],
   "conversation_topics": ["fitness", "food", "discipline", "work", "body_image", "relationships"],
   "text_style": {"tone": "energetic_direct", "emoji_rate": "medium", "response_delay": "between_clients"},
-  "quests": [], "conversations": [], "text_messages": [], "outcomes": [], "asset_refs": {"portraits": [], "sprites": [], "audio": []},
+  "quests": [
+    {
+      "id": "first_rep",
+      "category": "opportunity",
+      "title": "First Rep",
+      "summary": "Complete a safe fitness assessment with Rachel and choose an initial training goal.",
+      "activation": {"event": "location_discovered", "location": "forge_fitness"},
+      "availability": {"days": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday"], "blocks": ["early_morning", "morning", "lunch", "afternoon", "evening"], "location": "forge_fitness.front_desk", "requires_npc_free": "rachel_morgan"},
+      "objectives": [
+        {"id": "visit_gym", "text": "Visit Forge Fitness when Rachel is available.", "completion": {"event": "npc_encounter_started", "character": "rachel_morgan", "location": "forge_fitness"}},
+        {"id": "complete_assessment", "text": "Complete Rachel's introductory fitness assessment.", "completion": {"event": "conversation_completed", "conversation": "rachel_fitness_assessment"}},
+        {"id": "finish_first_workout", "text": "Complete the beginner workout Rachel adds to your calendar.", "completion": {"event": "activity_completed", "activity": "beginner_forge_workout"}}
+      ],
+      "branches": [
+        {"id": "strength", "condition": {"value_equals": ["fitness.primary_goal", "strength"]}, "effects": [{"operation": "unlock_activity", "value": "beginner_strength_training"}, {"operation": "set_value", "key": "fitness.training_focus", "value": "strength"}]},
+        {"id": "stamina", "condition": {"value_equals": ["fitness.primary_goal", "stamina"]}, "effects": [{"operation": "unlock_activity", "value": "beginner_endurance_training"}, {"operation": "set_value", "key": "fitness.training_focus", "value": "stamina"}]},
+        {"id": "balanced", "condition": {"value_equals": ["fitness.primary_goal", "balanced"]}, "effects": [{"operation": "unlock_activity", "value": "beginner_balanced_training"}, {"operation": "set_value", "key": "fitness.training_focus", "value": "balanced"}]}
+      ],
+      "completion_effects": [{"operation": "add_attribute", "attribute": "strength", "value": 1}, {"operation": "add_attribute", "attribute": "stamina", "value": 1}, {"operation": "unlock_phone_section", "value": "fitness_progress"}, {"operation": "unlock_relationship_chapter", "character": "rachel_morgan", "level": 2}],
+      "failure": {"mode": "retryable", "result": "assessment_can_be_rescheduled"}
+    }
+  ],
+  "conversations": [
+    {
+      "id": "rachel_fitness_assessment",
+      "type": "major_vn_scene",
+      "start_node": "front_desk_intro",
+      "activation": {"quest_active": "first_rep", "location": "forge_fitness", "npc_available": "rachel_morgan"},
+      "repetition": {"once_only": true},
+      "nodes": {
+        "front_desk_intro": {"stage_direction": "Rachel finishes checking a client's form, wipes down the equipment, and approaches with a tablet in hand.", "next": "rachel_intro"},
+        "rachel_intro": {"speaker": "rachel_morgan", "line": "First visit? I'm Rachel. Before you touch anything heavy, I need to know what you want and what your body can safely do today.", "next": "attitude_choice"},
+        "attitude_choice": {"speaker": "player", "choices": [
+          {"id": "honest", "text": "I'm new. I want to learn properly.", "tone": ["honest"], "effects": [{"operation": "add_meter", "character": "rachel_morgan", "meter": "respect", "value": 2}], "next": "health_check"},
+          {"id": "confident", "text": "Give me something challenging.", "tone": ["confident"], "effects": [{"operation": "add_meter", "character": "rachel_morgan", "meter": "attraction", "value": 1}], "next": "rachel_challenge"},
+          {"id": "flirty", "text": "I was hoping for some personal attention.", "tone": ["flirty"], "effects": [{"operation": "add_meter", "character": "rachel_morgan", "meter": "attraction", "value": 1}], "next": "rachel_boundary"}
+        ]},
+        "rachel_challenge": {"speaker": "rachel_morgan", "line": "Challenge comes after technique. Ego injuries are still injuries.", "next": "health_check"},
+        "rachel_boundary": {"speaker": "rachel_morgan", "line": "During an assessment, you get professional attention. Keep it respectful and we'll get along.", "effects": [{"operation": "create_memory", "character": "rachel_morgan", "value": "player_flirted_during_assessment"}], "next": "health_check"},
+        "health_check": {"speaker": "rachel_morgan", "line": "Any pain, old injuries, dizziness, or medical restrictions I should know about? Honesty changes the workout, not my opinion of you.", "next": "health_response"},
+        "health_response": {"speaker": "player", "choices": [
+          {"id": "disclose", "text": "I'll tell you anything relevant.", "tone": ["honest", "responsible"], "effects": [{"operation": "set_flag", "key": "fitness.health_screen_complete", "value": true}, {"operation": "add_meter", "character": "rachel_morgan", "meter": "trust", "value": 2}], "next": "goal_choice"},
+          {"id": "private", "text": "I'd rather keep medical details private.", "tone": ["assertive"], "effects": [{"operation": "set_flag", "key": "fitness.restricted_to_low_risk_intro", "value": true}], "next": "rachel_privacy"}
+        ]},
+        "rachel_privacy": {"speaker": "rachel_morgan", "line": "Your choice. Then we stay conservative today, and you can speak with a doctor before increasing intensity.", "next": "goal_choice"},
+        "goal_choice": {"speaker": "rachel_morgan", "line": "Pick the reason you'll still care about when motivation drops: strength, stamina, or a balanced foundation.", "next": "goal_response"},
+        "goal_response": {"speaker": "player", "choices": [
+          {"id": "strength", "text": "I want to become stronger.", "effects": [{"operation": "set_value", "key": "fitness.primary_goal", "value": "strength"}], "next": "assessment_end"},
+          {"id": "stamina", "text": "I want more stamina.", "effects": [{"operation": "set_value", "key": "fitness.primary_goal", "value": "stamina"}], "next": "assessment_end"},
+          {"id": "balanced", "text": "I want a balanced foundation.", "effects": [{"operation": "set_value", "key": "fitness.primary_goal", "value": "balanced"}], "next": "assessment_end"}
+        ]},
+        "assessment_end": {"speaker": "rachel_morgan", "line": "Good. I added a beginner session to your calendar. Show up hydrated, wear proper shoes, and don't mistake soreness for progress.", "effects": [{"operation": "schedule_event", "value": "beginner_forge_workout"}, {"operation": "complete_objective", "quest": "first_rep", "objective": "complete_assessment"}, {"operation": "create_memory", "character": "rachel_morgan", "value": "completed_first_assessment"}], "next": null}
+      }
+    }
+  ],
+  "text_messages": [
+    {"id": "rachel_workout_reminder", "trigger": {"hours_before_calendar_event": ["beginner_forge_workout", 2]}, "sender": "rachel_morgan", "text": "Reminder: first workout in two hours. Eat something light, bring water, and wear training shoes.", "quick_replies": [{"text": "I'll be there.", "tone": ["responsible"], "effects": [{"operation": "add_meter", "character": "rachel_morgan", "meter": "respect", "value": 1}]}, {"text": "Need to reschedule.", "tone": ["honest"], "effects": [{"operation": "open_calendar_rescheduler", "event": "beginner_forge_workout"}]}, {"text": "I don't need the reminders.", "tone": ["blunt"]}]}
+  ],
+  "outcomes": ["trusted_long_term_trainer", "fitness_business_partner", "romantic_partnership", "professional_distance"],
+  "asset_refs": {"portraits": [], "sprites": [], "audio": []},
   "entry_event": "quest_first_rep"
 }

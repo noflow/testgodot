@@ -1,0 +1,60 @@
+{
+  "format_version": 1,
+  "package_id": "opening_global_conversations",
+  "conversations": [
+    {
+      "id": "westshore_enrollment_advisor",
+      "type": "service_conversation",
+      "start_node": "advisor_welcome",
+      "activation": {"quest_active": "enroll_at_westshore", "location": "westshore.administration_office"},
+      "repetition": {"once_only": false, "cooldown_blocks": 1},
+      "nodes": {
+        "advisor_welcome": {"speaker": "westshore_enrollment_advisor", "line": "Welcome to Westshore. Are you ready to choose a program, or do you want to compare your options first?", "next": "advisor_options"},
+        "advisor_options": {"speaker": "player", "choices": [
+          {"id": "compare", "text": "Walk me through every program.", "tone": ["curious"], "next": "program_overview"},
+          {"id": "ready", "text": "I already have an area in mind.", "tone": ["confident"], "next": "program_choice"},
+          {"id": "uncertain", "text": "I honestly don't know what fits me yet.", "tone": ["honest"], "next": "undeclared_advice"}
+        ]},
+        "program_overview": {"speaker": "westshore_enrollment_advisor", "line": "We offer Arts and Humanities, Business, Computer Systems, Education, Health Sciences, Social Sciences, and Undeclared Studies. Every route has different class loads and career options.", "next": "program_choice"},
+        "undeclared_advice": {"speaker": "westshore_enrollment_advisor", "line": "Undeclared Studies is a real choice, not a failure to choose. It lets you test introductory courses before committing.", "next": "program_choice"},
+        "program_choice": {"speaker": "player", "choices": [
+          {"id": "arts", "text": "Arts and Humanities.", "effects": [{"operation": "set_value", "key": "education.program", "value": "arts_and_humanities"}], "next": "load_choice"},
+          {"id": "business", "text": "Business.", "effects": [{"operation": "set_value", "key": "education.program", "value": "business"}], "next": "load_choice"},
+          {"id": "computers", "text": "Computer Systems.", "effects": [{"operation": "set_value", "key": "education.program", "value": "computer_systems"}], "next": "load_choice"},
+          {"id": "education", "text": "Education.", "effects": [{"operation": "set_value", "key": "education.program", "value": "education"}], "next": "load_choice"},
+          {"id": "health", "text": "Health Sciences.", "effects": [{"operation": "set_value", "key": "education.program", "value": "health_sciences"}], "next": "load_choice"},
+          {"id": "social", "text": "Social Sciences.", "effects": [{"operation": "set_value", "key": "education.program", "value": "social_sciences"}], "next": "load_choice"},
+          {"id": "undeclared", "text": "Undeclared Studies.", "effects": [{"operation": "set_value", "key": "education.program", "value": "undeclared_studies"}], "next": "load_choice"}
+        ]},
+        "load_choice": {"speaker": "westshore_enrollment_advisor", "line": "Would you like a full-time schedule or a lighter part-time load? Classes only run during Morning, Lunch, and Afternoon blocks.", "next": "load_response"},
+        "load_response": {"speaker": "player", "choices": [
+          {"id": "full_time", "text": "Full-time.", "effects": [{"operation": "set_value", "key": "education.load", "value": "full_time"}], "next": "tuition"},
+          {"id": "part_time", "text": "Part-time.", "effects": [{"operation": "set_value", "key": "education.load", "value": "part_time"}], "next": "tuition"}
+        ]},
+        "tuition": {"speaker": "westshore_enrollment_advisor", "line": "Tuition is four thousand dollars for the semester. You can pay now, combine savings and family help, apply for aid, or arrange a student loan.", "next": "tuition_choice"},
+        "tuition_choice": {"speaker": "player", "choices": [
+          {"id": "pay", "text": "Pay from available funds.", "conditions": [{"money_at_least": 4000}], "effects": [{"operation": "spend_money", "value": 4000}, {"operation": "set_value", "key": "education.tuition_plan", "value": "paid"}], "next": "enrolled"},
+          {"id": "aid", "text": "Apply for scholarships and financial aid.", "effects": [{"operation": "set_value", "key": "education.tuition_plan", "value": "aid_pending"}, {"operation": "start_quest", "value": "westshore_financial_aid"}], "next": "enrolled"},
+          {"id": "loan", "text": "Arrange a student loan.", "effects": [{"operation": "set_value", "key": "education.tuition_plan", "value": "student_loan"}, {"operation": "create_debt", "principal": 4000, "type": "student_loan"}], "next": "enrolled"}
+        ]},
+        "enrolled": {"speaker": "westshore_enrollment_advisor", "line": "You're provisionally enrolled. Your classes and orientation will appear on your calendar as soon as the schedule is confirmed.", "effects": [{"operation": "create_calendar_from_class_schedule"}, {"operation": "complete_conversation"}], "next": null}
+      }
+    },
+    {
+      "id": "harbor_employment_orientation",
+      "type": "service_conversation",
+      "start_node": "clerk_intro",
+      "activation": {"location": "harbor_employment_centre", "quest_any_active": ["find_employment", "find_part_time_employment"]},
+      "repetition": {"once_only": true},
+      "nodes": {
+        "clerk_intro": {"speaker": "employment_centre_clerk", "line": "We can match you with entry-level work, but employers still care about availability, skills, traits, and interview performance.", "next": "work_type"},
+        "work_type": {"speaker": "player", "choices": [
+          {"id": "full_time", "text": "I need full-time work.", "effects": [{"operation": "set_value", "key": "employment.search_filter", "value": "full_time"}], "next": "clerk_advice"},
+          {"id": "part_time", "text": "I need work that fits around college.", "effects": [{"operation": "set_value", "key": "employment.search_filter", "value": "part_time"}], "next": "clerk_advice"},
+          {"id": "unsure", "text": "Show me everything I qualify for.", "effects": [{"operation": "set_value", "key": "employment.search_filter", "value": "qualified"}], "next": "clerk_advice"}
+        ]},
+        "clerk_advice": {"speaker": "employment_centre_clerk", "line": "Read every schedule before applying. Missing class or work because you double-booked yourself will hurt both records.", "effects": [{"operation": "unlock_phone_app", "value": "jobs"}, {"operation": "complete_objective_if_active", "objective": "open_jobs"}], "next": null}
+      }
+    }
+  ]
+}

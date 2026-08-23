@@ -10,6 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 CHARACTER_DIR = ROOT / "characters"
+GLOBAL_CONTENT_DIR = ROOT / "content"
 VALID_GENDERS = {"male", "female", "trans_male", "trans_female"}
 VALID_ORIENTATIONS = {"straight", "bisexual", "lesbian", "gay", "asexual"}
 PRIMARY_METERS = {"friendship", "love", "attraction", "lust"}
@@ -136,6 +137,63 @@ def validate_file(path: Path, known_ids: set[str]) -> list[str]:
     return errors
 
 
+def validate_global_content() -> list[str]:
+    errors: list[str] = []
+    package_ids: set[str] = set()
+    quest_ids: set[str] = set()
+    conversation_ids: set[str] = set()
+
+    for path in sorted(GLOBAL_CONTENT_DIR.rglob("*.json")):
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            errors.append(f"{path.relative_to(ROOT)}: invalid JSON: {exc}")
+            continue
+
+        package_id = data.get("package_id")
+        if not package_id or package_id in package_ids:
+            errors.append(f"{path.relative_to(ROOT)}: missing or duplicate package_id")
+        package_ids.add(package_id)
+        if data.get("format_version") != 1:
+            errors.append(f"{path.relative_to(ROOT)}: format_version must be 1")
+
+        for quest in data.get("quests", []):
+            quest_id = quest.get("id")
+            if not quest_id or quest_id in quest_ids:
+                errors.append(f"{path.relative_to(ROOT)}: missing or duplicate global quest id {quest_id}")
+            quest_ids.add(quest_id)
+            objectives = quest.get("objectives", [])
+            objective_ids = [objective.get("id") for objective in objectives]
+            if not quest.get("title") or not quest.get("category") or not objectives:
+                errors.append(f"{path.relative_to(ROOT)}: quest {quest_id} is incomplete")
+            if any(not item for item in objective_ids) or len(objective_ids) != len(set(objective_ids)):
+                errors.append(f"{path.relative_to(ROOT)}: quest {quest_id} has invalid objective ids")
+
+        for conversation in data.get("conversations", []):
+            conversation_id = conversation.get("id")
+            if not conversation_id or conversation_id in conversation_ids:
+                errors.append(f"{path.relative_to(ROOT)}: missing or duplicate global conversation id {conversation_id}")
+            conversation_ids.add(conversation_id)
+            nodes = conversation.get("nodes", {})
+            if not conversation.get("type") or conversation.get("start_node") not in nodes:
+                errors.append(f"{path.relative_to(ROOT)}: conversation {conversation_id} has an invalid start node")
+                continue
+            for node_id, node in nodes.items():
+                targets = []
+                if node.get("next") is not None:
+                    targets.append(node.get("next"))
+                choices = node.get("choices", [])
+                choice_ids = [choice.get("id") for choice in choices]
+                if any(not item for item in choice_ids) or len(choice_ids) != len(set(choice_ids)):
+                    errors.append(f"{path.relative_to(ROOT)}: conversation {conversation_id} node {node_id} has invalid choice ids")
+                targets.extend(choice.get("next") for choice in choices if choice.get("next") is not None)
+                for target in targets:
+                    if target not in nodes:
+                        errors.append(f"{path.relative_to(ROOT)}: conversation {conversation_id} links to missing node {target}")
+
+    return errors
+
+
 def main() -> int:
     paths = sorted(CHARACTER_DIR.glob("*.character"))
     if not paths:
@@ -158,6 +216,7 @@ def main() -> int:
     known_ids = set(ids)
     for path in paths:
         errors.extend(validate_file(path, known_ids))
+    errors.extend(validate_global_content())
 
     if errors:
         print("Character validation failed:", file=sys.stderr)
@@ -165,7 +224,8 @@ def main() -> int:
             print(f"- {error}", file=sys.stderr)
         return 1
 
-    print(f"Validated {len(paths)} character packages successfully.")
+    global_files = len(list(GLOBAL_CONTENT_DIR.rglob("*.json")))
+    print(f"Validated {len(paths)} character packages and {global_files} global content packages successfully.")
     return 0
 
 

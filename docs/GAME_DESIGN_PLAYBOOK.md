@@ -458,6 +458,12 @@ After Elena leaves, the sandbox begins immediately. Initial optional content inc
 The opening conversation, its three life-path branches, the first household quest,
 and Elena's first follow-up text are authored in `elena_reyes_hale.character`.
 
+The first content milestone also includes complete opening quests and conversations
+for Lily, Emma, Marcus, and Rachel. Global packages define Westshore enrollment,
+full-time and part-time job searches, weather-aware wardrobe onboarding, city
+transportation onboarding, the Westshore enrollment advisor, and the Harbor
+Employment Centre orientation.
+
 ## Next design milestones
 
 1. Finish the opening-week quest pool and Sunday review
