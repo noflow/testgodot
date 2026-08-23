@@ -1,0 +1,188 @@
+{
+  "format_version": 1,
+  "package_id": "opening_week_calendar",
+  "calendar": {
+    "opening_date": {"year": 1, "month": 8, "day": 20, "weekday": "tuesday"},
+    "final_date": {"year": 1, "month": 8, "day": 25, "weekday": "sunday"},
+    "season": "summer",
+    "semester_phase": "pre_fall_orientation",
+    "blocks": ["early_morning", "morning", "lunch", "afternoon", "evening", "late_evening", "night"]
+  },
+  "days": [
+    {
+      "date": "Y1-08-20",
+      "weekday": "tuesday",
+      "weather": {"condition": "partly_cloudy", "low_c": 14, "high_c": 23, "rain_chance": 10, "wind_kph": 12, "clothing": {"minimum_warmth": 20, "rain_protection": 0, "recommended": ["shirt", "pants_or_weather_suitable_bottom", "socks", "shoes"], "warning": null}},
+      "blocks": {
+        "early_morning": ["sleep_or_wake_early"],
+        "morning": ["opening_future_talk", "morning_hygiene", "breakfast_at_home"],
+        "lunch": ["one_year_ahead", "lunch_at_home", "check_phone_and_calendar"],
+        "afternoon": ["ready_for_port_alder", "getting_around_port_alder", "enroll_at_westshore", "find_employment", "find_part_time_employment", "first_rep", "before_everything_changes"],
+        "evening": ["under_this_roof", "before_everything_changes", "one_last_summer_movie", "family_meal", "free_sandbox_time"],
+        "late_evening": ["one_last_summer_movie", "phone_messages", "home_relaxation"],
+        "night": ["sleep", "stay_up_late"]
+      },
+      "required_events": ["opening_future_talk"],
+      "notes": "The sandbox activates when the opening conversation ends. Institutional offices close after Afternoon."
+    },
+    {
+      "date": "Y1-08-21",
+      "weekday": "wednesday",
+      "weather": {"condition": "rain", "low_c": 12, "high_c": 18, "rain_chance": 80, "wind_kph": 20, "clothing": {"minimum_warmth": 40, "rain_protection": 60, "recommended": ["shirt", "pants", "socks", "closed_shoes", "rain_jacket"], "warning": "Low rain protection increases Wetness, Energy loss, and illness risk."}},
+      "blocks": {
+        "early_morning": ["sleep_or_wake_early", "morning_hygiene", "breakfast_at_home"],
+        "morning": ["enroll_at_westshore", "find_employment", "find_part_time_employment", "household_chores"],
+        "lunch": ["campus_or_downtown_lunch", "check_phone_and_calendar", "job_applications"],
+        "afternoon": ["enroll_at_westshore", "find_employment", "first_rep", "before_everything_changes", "weather_shopping"],
+        "evening": ["under_this_roof", "before_everything_changes", "one_last_summer_movie", "cook_basic_meal", "free_sandbox_time"],
+        "late_evening": ["one_last_summer_movie", "phone_messages", "study_or_resume_work"],
+        "night": ["sleep", "stay_up_late"]
+      },
+      "required_events": [],
+      "notes": "The rainy day demonstrates weather exposure and bus-delay risk."
+    },
+    {
+      "date": "Y1-08-22",
+      "weekday": "thursday",
+      "weather": {"condition": "clear", "low_c": 15, "high_c": 25, "rain_chance": 5, "wind_kph": 8, "clothing": {"minimum_warmth": 10, "rain_protection": 0, "recommended": ["light_shirt", "weather_suitable_bottom", "socks", "shoes"], "warning": "Heavy layers increase Hydration and Hygiene loss."}},
+      "blocks": {
+        "early_morning": ["sleep_or_wake_early", "park_run", "morning_hygiene"],
+        "morning": ["enroll_at_westshore", "find_employment", "find_part_time_employment", "job_interview_practice"],
+        "lunch": ["campus_or_downtown_lunch", "check_phone_and_calendar", "first_rep"],
+        "afternoon": ["enroll_at_westshore", "find_employment", "job_applications", "first_rep"],
+        "evening": ["one_last_summer_movie", "under_this_roof", "beginner_forge_workout", "free_sandbox_time"],
+        "late_evening": ["one_last_summer_movie", "phone_messages", "home_relaxation"],
+        "night": ["sleep", "stay_up_late"]
+      },
+      "required_events": [],
+      "notes": "A clear day favors walking, running, and low-cost travel."
+    },
+    {
+      "date": "Y1-08-23",
+      "weekday": "friday",
+      "weather": {"condition": "cloudy_windy", "low_c": 13, "high_c": 20, "rain_chance": 25, "wind_kph": 32, "clothing": {"minimum_warmth": 35, "wind_protection": 45, "rain_protection": 20, "recommended": ["shirt", "pants", "socks", "closed_shoes", "light_jacket"], "warning": "Exposed waterfront routes feel colder than the forecast."}},
+      "blocks": {
+        "early_morning": ["sleep_or_wake_early", "morning_hygiene", "breakfast_at_home"],
+        "morning": ["enroll_at_westshore", "find_employment", "find_part_time_employment", "household_chores"],
+        "lunch": ["campus_or_downtown_lunch", "check_phone_and_calendar", "job_applications"],
+        "afternoon": ["enroll_at_westshore", "find_employment", "before_everything_changes", "first_rep"],
+        "evening": ["before_everything_changes", "family_meal", "beginner_forge_workout", "free_sandbox_time"],
+        "late_evening": ["phone_messages", "cinema_visit", "home_relaxation"],
+        "night": ["sleep", "stay_up_late"]
+      },
+      "required_events": [],
+      "notes": "Friday is the last weekday opportunity for enrollment and employment-centre service before Monday."
+    },
+    {
+      "date": "Y1-08-24",
+      "weekday": "saturday",
+      "weather": {"condition": "heavy_rain", "low_c": 11, "high_c": 16, "rain_chance": 95, "wind_kph": 28, "clothing": {"minimum_warmth": 50, "rain_protection": 80, "wind_protection": 35, "recommended": ["warm_shirt", "pants", "socks", "water_resistant_shoes", "raincoat"], "warning": "Long outdoor activity without protection creates severe Wetness and elevated illness risk."}},
+      "blocks": {
+        "early_morning": ["sleep_or_wake_early", "morning_hygiene"],
+        "morning": ["household_chores", "laundry", "first_rep", "breakfast_at_home"],
+        "lunch": ["family_groceries", "cook_basic_meal", "check_phone_and_calendar"],
+        "afternoon": ["first_rep", "beginner_forge_workout", "weather_shopping", "free_sandbox_time"],
+        "evening": ["cinema_visit", "family_meal", "friends_and_social", "home_relaxation"],
+        "late_evening": ["cinema_visit", "phone_messages", "friends_and_social"],
+        "night": ["sleep", "stay_up_late"]
+      },
+      "required_events": [],
+      "notes": "Westshore administration and Harbor Employment Centre are closed. Indoor activities are emphasized."
+    },
+    {
+      "date": "Y1-08-25",
+      "weekday": "sunday",
+      "weather": {"condition": "clear_cool", "low_c": 10, "high_c": 19, "rain_chance": 10, "wind_kph": 10, "clothing": {"minimum_warmth": 40, "rain_protection": 0, "recommended": ["shirt", "pants", "socks", "shoes", "light_jacket_for_early_or_late"], "warning": null}},
+      "blocks": {
+        "early_morning": ["sleep_or_wake_early", "park_run", "morning_hygiene"],
+        "morning": ["household_chores", "laundry", "first_rep", "breakfast_at_home"],
+        "lunch": ["before_everything_changes", "park_picnic", "check_phone_and_calendar"],
+        "afternoon": ["before_everything_changes", "beginner_forge_workout", "prepare_next_week", "free_sandbox_time"],
+        "evening": ["sunday_family_dinner", "sunday_review"],
+        "late_evening": ["prepare_next_week", "phone_messages", "home_relaxation"],
+        "night": ["sleep", "stay_up_late"]
+      },
+      "required_events": ["sunday_review"],
+      "notes": "The review summarizes consequences without ending or grading the player's life path."
+    }
+  ],
+  "event_catalog": [
+    {"id": "opening_future_talk", "duration_blocks": 1, "location": "hale_home.player_bedroom", "quest": "opening_future_choice", "mandatory": true},
+    {"id": "sleep_or_wake_early", "duration_blocks": 1, "location": "hale_home.player_bedroom", "activity_group": "sleep"},
+    {"id": "morning_hygiene", "duration_blocks": 0.25, "location": "hale_home.family_bathroom", "activity_group": "hygiene"},
+    {"id": "breakfast_at_home", "duration_blocks": 0.25, "location": "hale_home.kitchen", "activity_group": "food"},
+    {"id": "lunch_at_home", "duration_blocks": 0.25, "location": "hale_home.kitchen", "activity_group": "food"},
+    {"id": "one_year_ahead", "duration_blocks": 0.5, "location": "hale_home.kitchen", "quest": "one_year_ahead", "npc": "lily_hale"},
+    {"id": "ready_for_port_alder", "duration_blocks": 0.5, "location": "hale_home.player_bedroom", "quest": "ready_for_port_alder"},
+    {"id": "getting_around_port_alder", "duration_blocks": 0.75, "location": "alder_heights_residential_street", "quest": "getting_around_port_alder"},
+    {"id": "enroll_at_westshore", "duration_blocks": 1, "location": "westshore_administration_office", "quest": "enroll_at_westshore"},
+    {"id": "find_employment", "duration_blocks": 1, "location": "harbor_employment_centre", "quest": "find_employment"},
+    {"id": "find_part_time_employment", "duration_blocks": 1, "location": "harbor_employment_centre", "quest": "find_part_time_employment"},
+    {"id": "job_applications", "duration_blocks": 0.5, "location": "variable_phone_or_employment_centre", "activity_group": "employment"},
+    {"id": "job_interview_practice", "duration_blocks": 0.5, "location": "harbor_employment_centre.interview_room", "activity_group": "employment"},
+    {"id": "first_rep", "duration_blocks": 0.75, "location": "forge_fitness.front_desk", "quest": "first_rep", "npc": "rachel_morgan"},
+    {"id": "beginner_forge_workout", "duration_blocks": 1, "location": "forge_fitness", "activity_group": "fitness"},
+    {"id": "before_everything_changes", "duration_blocks": 1, "location": "alder_bay_park.waterfront_path", "quest": "before_everything_changes", "npc": "emma_rowan"},
+    {"id": "one_last_summer_movie", "duration_blocks": 2, "location": "harborlight_cinema", "quest": "one_last_summer_movie", "npc": "marcus_lee", "cost_unless_comped": 16},
+    {"id": "under_this_roof", "duration_blocks": 0.5, "location": "hale_home", "quest": "under_this_roof", "npc": "elena_reyes_hale"},
+    {"id": "household_chores", "duration_blocks": 0.5, "location": "hale_home", "activity_group": "household"},
+    {"id": "laundry", "duration_blocks": 0.5, "location": "hale_home.laundry_room", "activity_group": "household"},
+    {"id": "family_groceries", "duration_blocks": 1, "location": "mariner_row_grocery_placeholder", "activity_group": "household"},
+    {"id": "weather_shopping", "duration_blocks": 1, "location": "mariner_row_clothing_placeholder", "activity_group": "shopping", "npc": "claire_donovan"},
+    {"id": "family_meal", "duration_blocks": 0.5, "location": "hale_home.dining_room", "activity_group": "family"},
+    {"id": "sunday_family_dinner", "duration_blocks": 0.5, "location": "hale_home.dining_room", "activity_group": "family"},
+    {"id": "sunday_review", "duration_blocks": 0.5, "location": "phone", "mandatory": true},
+    {"id": "park_run", "duration_blocks": 0.5, "location": "alder_bay_park.waterfront_path", "activity_group": "fitness"},
+    {"id": "park_picnic", "duration_blocks": 1, "location": "alder_bay_park.picnic_lawn", "activity_group": "social"},
+    {"id": "campus_or_downtown_lunch", "duration_blocks": 0.25, "location": "variable_food_vendor", "activity_group": "food"},
+    {"id": "cook_basic_meal", "duration_blocks": 0.5, "location": "hale_home.kitchen", "activity_group": "food"},
+    {"id": "cinema_visit", "duration_blocks": 2, "location": "harborlight_cinema", "activity_group": "entertainment"},
+    {"id": "friends_and_social", "duration_blocks": 1, "location": "variable_social_location", "activity_group": "social"},
+    {"id": "check_phone_and_calendar", "duration_blocks": 0.1, "location": "phone", "activity_group": "phone"},
+    {"id": "phone_messages", "duration_blocks": 0.1, "location": "phone", "activity_group": "phone"},
+    {"id": "study_or_resume_work", "duration_blocks": 0.5, "location": "hale_home.player_bedroom", "activity_group": "productive"},
+    {"id": "prepare_next_week", "duration_blocks": 0.5, "location": "phone", "activity_group": "planning"},
+    {"id": "home_relaxation", "duration_blocks": 0.5, "location": "hale_home.living_room", "activity_group": "leisure"},
+    {"id": "free_sandbox_time", "duration_blocks": 1, "location": "variable", "activity_group": "sandbox"},
+    {"id": "sleep", "duration_blocks": 1, "location": "hale_home.player_bedroom", "activity_group": "sleep"},
+    {"id": "stay_up_late", "duration_blocks": 1, "location": "variable", "activity_group": "sleep_tradeoff"}
+  ],
+  "named_npc_windows": [
+    {"character": "elena_reyes_hale", "windows": [{"days": ["tuesday"], "blocks": ["morning"], "location": "hale_home", "status": "opening_scene"}, {"days": ["tuesday", "wednesday", "thursday", "friday"], "blocks": ["lunch", "afternoon"], "location": "st_maren_clinic_placeholder", "status": "working_unavailable"}, {"days": ["tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"], "blocks": ["evening"], "location": "hale_home", "status": "usually_available"}]},
+    {"character": "daniel_hale", "windows": [{"days": ["tuesday", "wednesday", "thursday", "friday", "saturday"], "blocks": ["early_morning", "morning", "lunch", "afternoon"], "location": "transit_depot_placeholder", "status": "working_unavailable"}, {"days": ["tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"], "blocks": ["evening"], "location": "hale_home", "status": "usually_available"}]},
+    {"character": "lily_hale", "windows": [{"days": ["tuesday"], "blocks": ["lunch"], "location": "hale_home.kitchen", "status": "quest_available"}, {"days": ["tuesday", "thursday"], "blocks": ["afternoon", "evening"], "location": "westshore_campus.library", "status": "working_unavailable"}, {"days": ["friday", "sunday"], "blocks": ["afternoon", "evening"], "location": "hale_home", "status": "usually_available"}]},
+    {"character": "emma_rowan", "windows": [{"days": ["tuesday", "wednesday", "friday", "sunday"], "blocks": ["afternoon", "evening"], "location": "alder_bay_park", "status": "available_by_calendar"}, {"days": ["thursday"], "blocks": ["afternoon", "evening"], "location": "westshore_campus.library", "status": "literary_magazine_unavailable"}]},
+    {"character": "marcus_lee", "windows": [{"days": ["tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"], "blocks": ["evening", "late_evening"], "location": "harborlight_cinema", "status": "working_or_quest_available"}, {"days": ["friday", "saturday"], "blocks": ["evening", "late_evening"], "location": "harborlight_cinema", "status": "working_unavailable_for_dates"}]},
+    {"character": "maya_chen", "windows": [{"days": ["tuesday", "thursday"], "blocks": ["morning", "lunch", "afternoon"], "location": "westshore_campus.library", "status": "studying_unavailable"}, {"days": ["saturday"], "blocks": ["morning"], "location": "st_maren_medical_center_placeholder", "status": "volunteering_unavailable"}]},
+    {"character": "chloe_bennett", "windows": [{"days": ["tuesday", "wednesday", "thursday"], "blocks": ["afternoon"], "location": "westshore_campus.courtyard", "status": "usually_available"}, {"days": ["friday"], "blocks": ["afternoon", "evening"], "location": "home_offscreen", "status": "freelance_unavailable"}, {"days": ["saturday"], "blocks": ["evening", "late_evening"], "location": "lantern_gallery_placeholder", "status": "event_available"}]},
+    {"character": "nadia_flores", "windows": [{"days": ["tuesday", "wednesday", "thursday"], "blocks": ["morning", "lunch", "afternoon"], "location": "westshore_campus", "status": "clinical_preparation_unavailable"}, {"days": ["saturday", "sunday"], "blocks": ["morning", "lunch", "afternoon"], "location": "care_facility_placeholder", "status": "working_unavailable"}, {"days": ["friday"], "blocks": ["afternoon", "evening"], "location": "greyport_offscreen", "status": "usually_available"}]},
+    {"character": "theo_grant", "windows": [{"days": ["tuesday", "thursday"], "blocks": ["afternoon", "evening"], "location": "westshore_campus", "status": "it_helpdesk_unavailable"}, {"days": ["wednesday", "friday", "sunday"], "blocks": ["evening", "late_evening"], "location": "online_or_dorm_offscreen", "status": "text_available"}]},
+    {"character": "sofia_alvarez", "windows": [{"days": ["wednesday", "thursday", "friday"], "blocks": ["afternoon", "evening", "late_evening"], "location": "restaurant_placeholder", "status": "working_unavailable"}, {"days": ["saturday", "sunday"], "blocks": ["lunch", "afternoon", "evening", "late_evening"], "location": "restaurant_placeholder", "status": "working_unavailable"}, {"days": ["tuesday"], "blocks": ["evening"], "location": "lantern_district_placeholder", "status": "social_available"}]},
+    {"character": "claire_donovan", "windows": [{"days": ["tuesday", "friday"], "blocks": ["afternoon", "evening"], "location": "mariner_row_clothing_placeholder", "status": "working_unavailable_except_store_interaction"}, {"days": ["saturday", "sunday"], "blocks": ["morning", "lunch", "afternoon", "evening"], "location": "mariner_row_clothing_placeholder", "status": "working_unavailable_except_store_interaction"}, {"days": ["wednesday", "thursday"], "blocks": ["evening"], "location": "greyport_offscreen", "status": "usually_available"}]},
+    {"character": "jade_mercer", "windows": [{"days": ["tuesday", "wednesday", "thursday"], "blocks": ["evening", "late_evening"], "location": "licensed_workplace_placeholder", "status": "working_unavailable"}, {"days": ["friday", "saturday"], "blocks": ["late_evening", "night"], "location": "licensed_workplace_placeholder", "status": "working_unavailable"}, {"days": ["sunday"], "blocks": ["afternoon", "evening"], "location": "harbor_centre_offscreen", "status": "usually_available_after_introduction"}]},
+    {"character": "hannah_brooks", "windows": [{"days": ["tuesday", "wednesday", "thursday", "friday"], "blocks": ["early_morning", "morning", "lunch", "afternoon"], "location": "st_maren_medical_center_placeholder", "status": "working_unavailable"}, {"days": ["saturday"], "blocks": ["morning", "lunch"], "location": "home_offscreen", "status": "sleep_recovery_unavailable"}, {"days": ["sunday"], "blocks": ["afternoon", "evening"], "location": "st_maren_district_offscreen", "status": "usually_available_after_introduction"}]},
+    {"character": "rachel_morgan", "windows": [{"days": ["tuesday", "thursday"], "blocks": ["afternoon"], "location": "forge_fitness", "status": "quest_available_between_clients"}, {"days": ["wednesday", "friday"], "blocks": ["early_morning", "morning", "evening"], "location": "forge_fitness", "status": "working_unavailable_except_booking"}, {"days": ["saturday"], "blocks": ["morning", "lunch"], "location": "forge_fitness", "status": "group_training_unavailable"}, {"days": ["sunday"], "blocks": ["afternoon", "evening"], "location": "variable", "status": "usually_available_after_introduction"}]},
+    {"character": "olivia_price", "windows": [{"days": ["tuesday", "wednesday", "thursday", "friday"], "blocks": ["morning", "lunch", "afternoon", "evening"], "location": "crown_point_law_office_placeholder", "status": "working_unavailable"}, {"days": ["saturday"], "blocks": ["morning", "lunch"], "location": "crown_point_law_office_placeholder", "status": "working_unavailable"}, {"days": ["sunday"], "blocks": ["afternoon"], "location": "crown_point_offscreen", "status": "available_by_invitation_after_introduction"}]}
+  ],
+  "conflict_rules": {
+    "double_booking": {"allowed": true, "warning_minutes_before": 180, "resolution_choices": ["keep_first", "keep_second", "attempt_reschedule", "cancel_both"], "no_show_effects": ["reliability_loss", "trust_loss", "possible_resentment", "quest_branch"]},
+    "late_arrival": {"grace_minutes": 10, "minor_penalty_until_minutes": 25, "no_show_after_minutes": 45},
+    "closed_location": {"action": "block_entry", "show_next_open_time": true},
+    "npc_unavailable": {"action": "prevent_date_confirmation", "allow_future_calendar_search": true},
+    "travel_time": {"must_fit_before_event": true, "warn_if_weather_delay_risk": true}
+  },
+  "sunday_review": {
+    "id": "opening_week_review",
+    "sections": [
+      {"id": "direction", "tracks": ["player.life_path", "education.enrolled", "employment.employed"]},
+      {"id": "money", "tracks": ["cash_balance", "week_income", "week_spending", "tuition_plan", "rent_due"]},
+      {"id": "time", "tracks": ["completed_blocks", "missed_events", "late_arrivals", "sleep_average"]},
+      {"id": "health", "tracks": ["hygiene_average", "energy_average", "weather_exposure", "workouts", "inebriation_incidents"]},
+      {"id": "relationships", "tracks": ["new_contacts", "meter_changes", "kept_plans", "broken_plans", "relationship_chapters_unlocked"]},
+      {"id": "quests", "tracks": ["completed", "active", "deferred", "expired", "branch_changes"]}
+    ],
+    "choices": ["set_next_week_priorities", "schedule_key_commitments", "continue_without_changes"],
+    "tone": "reflective_not_judgmental",
+    "completion_effects": [{"operation": "save_week_summary"}, {"operation": "advance_week_counter"}, {"operation": "generate_next_week_calendar"}]
+  }
+}

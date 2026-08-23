@@ -137,11 +137,13 @@ def validate_file(path: Path, known_ids: set[str]) -> list[str]:
     return errors
 
 
-def validate_global_content() -> list[str]:
+def validate_global_content(known_character_ids: set[str], character_quest_ids: set[str]) -> list[str]:
     errors: list[str] = []
     package_ids: set[str] = set()
     quest_ids: set[str] = set()
     conversation_ids: set[str] = set()
+    packages: list[tuple[Path, dict]] = []
+    valid_blocks = {"early_morning", "morning", "lunch", "afternoon", "evening", "late_evening", "night"}
 
     for path in sorted(GLOBAL_CONTENT_DIR.rglob("*.json")):
         try:
@@ -149,6 +151,7 @@ def validate_global_content() -> list[str]:
         except (OSError, json.JSONDecodeError) as exc:
             errors.append(f"{path.relative_to(ROOT)}: invalid JSON: {exc}")
             continue
+        packages.append((path, data))
 
         package_id = data.get("package_id")
         if not package_id or package_id in package_ids:
@@ -191,6 +194,113 @@ def validate_global_content() -> list[str]:
                     if target not in nodes:
                         errors.append(f"{path.relative_to(ROOT)}: conversation {conversation_id} links to missing node {target}")
 
+    location_ids: set[str] = set()
+    room_ids: set[str] = set()
+    for path, data in packages:
+        for location in data.get("locations", []):
+            location_id = location.get("id")
+            if not location_id or location_id in location_ids:
+                errors.append(f"{path.relative_to(ROOT)}: missing or duplicate location id {location_id}")
+                continue
+            location_ids.add(location_id)
+            for room in location.get("rooms", []):
+                room_id = room.get("id")
+                full_room_id = f"{location_id}.{room_id}"
+                if not room_id or full_room_id in room_ids:
+                    errors.append(f"{path.relative_to(ROOT)}: missing or duplicate room id {full_room_id}")
+                room_ids.add(full_room_id)
+            access = location.get("access", {})
+            for block in access.get("open_blocks", []) + access.get("closed_blocks", []):
+                if block not in valid_blocks:
+                    errors.append(f"{path.relative_to(ROOT)}: location {location_id} uses invalid block {block}")
+
+    def location_is_valid(value: str) -> bool:
+        return (
+            value in location_ids
+            or value in room_ids
+            or value in {"phone", "variable"}
+            or value.startswith("variable_")
+            or value.endswith("_placeholder")
+            or value.endswith("_offscreen")
+        )
+
+    def check_location_references(path: Path, value: object) -> None:
+        if isinstance(value, dict):
+            for key, child in value.items():
+                if key in {"location", "alternate_location"} and isinstance(child, str):
+                    if not location_is_valid(child):
+                        errors.append(f"{path.relative_to(ROOT)}: unknown location reference {child}")
+                elif key in {"locations", "alternate_locations"} and isinstance(child, list):
+                    for item in child:
+                        if isinstance(item, str) and not location_is_valid(item):
+                            errors.append(f"{path.relative_to(ROOT)}: unknown location reference {item}")
+                check_location_references(path, child)
+        elif isinstance(value, list):
+            for child in value:
+                check_location_references(path, child)
+
+    for path, data in packages:
+        check_location_references(path, data)
+
+        modes = {mode.get("id") for mode in data.get("modes", [])}
+        for link in data.get("local_links", []):
+            if link.get("from") not in location_ids or link.get("to") not in location_ids:
+                errors.append(f"{path.relative_to(ROOT)}: local link has an unknown endpoint")
+            if link.get("mode") not in modes or link.get("minutes", 0) <= 0 or link.get("cost", -1) < 0:
+                errors.append(f"{path.relative_to(ROOT)}: local link has invalid travel data")
+        route_ids: set[str] = set()
+        for route in data.get("routes", []):
+            route_id = route.get("id")
+            if not route_id or route_id in route_ids:
+                errors.append(f"{path.relative_to(ROOT)}: missing or duplicate route id {route_id}")
+            route_ids.add(route_id)
+            if route.get("from") not in location_ids or route.get("to") not in location_ids:
+                errors.append(f"{path.relative_to(ROOT)}: route {route_id} has an unknown endpoint")
+            for option in route.get("options", []):
+                if option.get("mode") not in modes or option.get("minutes", 0) <= 0 or option.get("cost", -1) < 0:
+                    errors.append(f"{path.relative_to(ROOT)}: route {route_id} has invalid travel data")
+
+        if "calendar" in data:
+            calendar_blocks = data["calendar"].get("blocks", [])
+            if set(calendar_blocks) != valid_blocks or len(calendar_blocks) != 7:
+                errors.append(f"{path.relative_to(ROOT)}: calendar must define all seven unique activity blocks")
+            events = data.get("event_catalog", [])
+            event_ids = [event.get("id") for event in events]
+            if any(not item for item in event_ids) or len(event_ids) != len(set(event_ids)):
+                errors.append(f"{path.relative_to(ROOT)}: event catalog contains missing or duplicate ids")
+            all_quest_ids = quest_ids | character_quest_ids
+            for event in events:
+                if event.get("duration_blocks", 0) <= 0:
+                    errors.append(f"{path.relative_to(ROOT)}: event {event.get('id')} has invalid duration")
+                if event.get("quest") and event["quest"] not in all_quest_ids:
+                    errors.append(f"{path.relative_to(ROOT)}: event {event.get('id')} references unknown quest {event['quest']}")
+                if event.get("npc") and event["npc"] not in known_character_ids:
+                    errors.append(f"{path.relative_to(ROOT)}: event {event.get('id')} references unknown character {event['npc']}")
+            days = data.get("days", [])
+            expected_weekdays = ["tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+            if [day.get("weekday") for day in days] != expected_weekdays:
+                errors.append(f"{path.relative_to(ROOT)}: opening week must run Tuesday through Sunday")
+            for day in days:
+                day_blocks = day.get("blocks", {})
+                if set(day_blocks) != valid_blocks:
+                    errors.append(f"{path.relative_to(ROOT)}: {day.get('date')} does not define all seven blocks")
+                for block, offered_events in day_blocks.items():
+                    if block not in valid_blocks:
+                        errors.append(f"{path.relative_to(ROOT)}: {day.get('date')} uses invalid block {block}")
+                    for event_id in offered_events:
+                        if event_id not in event_ids:
+                            errors.append(f"{path.relative_to(ROOT)}: {day.get('date')} references unknown event {event_id}")
+            scheduled_characters = [item.get("character") for item in data.get("named_npc_windows", [])]
+            if set(scheduled_characters) != known_character_ids:
+                missing = sorted(known_character_ids - set(scheduled_characters))
+                extra = sorted(set(scheduled_characters) - known_character_ids)
+                errors.append(f"{path.relative_to(ROOT)}: NPC schedule mismatch; missing={missing}, extra={extra}")
+            for item in data.get("named_npc_windows", []):
+                for window in item.get("windows", []):
+                    for block in window.get("blocks", []):
+                        if block not in valid_blocks:
+                            errors.append(f"{path.relative_to(ROOT)}: NPC {item.get('character')} uses invalid block {block}")
+
     return errors
 
 
@@ -214,9 +324,15 @@ def main() -> int:
         errors.append(f"duplicate character ids: {', '.join(duplicate_ids)}")
 
     known_ids = set(ids)
+    character_quest_ids: set[str] = set()
     for path in paths:
         errors.extend(validate_file(path, known_ids))
-    errors.extend(validate_global_content())
+        try:
+            character_data = json.loads(path.read_text(encoding="utf-8"))
+            character_quest_ids.update(quest.get("id") for quest in character_data.get("quests", []) if quest.get("id"))
+        except (OSError, json.JSONDecodeError):
+            pass
+    errors.extend(validate_global_content(known_ids, character_quest_ids))
 
     if errors:
         print("Character validation failed:", file=sys.stderr)

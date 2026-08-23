@@ -6,7 +6,7 @@
       "id": "westshore_enrollment_advisor",
       "type": "service_conversation",
       "start_node": "advisor_welcome",
-      "activation": {"quest_active": "enroll_at_westshore", "location": "westshore.administration_office"},
+      "activation": {"quest_active": "enroll_at_westshore", "location": "westshore_administration_office"},
       "repetition": {"once_only": false, "cooldown_blocks": 1},
       "nodes": {
         "advisor_welcome": {"speaker": "westshore_enrollment_advisor", "line": "Welcome to Westshore. Are you ready to choose a program, or do you want to compare your options first?", "next": "advisor_options"},

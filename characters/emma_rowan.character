@@ -23,7 +23,7 @@
       "title": "Before Everything Changes",
       "summary": "Meet Emma for a walk at Alder Bay before the semester begins.",
       "activation": {"event": "sandbox_activated"},
-      "availability": {"days": ["opening_tuesday", "wednesday", "friday", "sunday"], "blocks": ["afternoon", "evening"], "location": "alder_bay.waterfront_path", "weather_excludes": ["severe_storm"]},
+      "availability": {"days": ["opening_tuesday", "wednesday", "friday", "sunday"], "blocks": ["afternoon", "evening"], "location": "alder_bay_park.waterfront_path", "weather_excludes": ["severe_storm"]},
       "objectives": [
         {"id": "answer_invitation", "text": "Reply to Emma's invitation.", "completion": {"event": "text_replied", "thread": "emma_walk_invitation"}},
         {"id": "schedule_walk", "text": "Add the Alder Bay walk to your calendar.", "completion": {"event": "calendar_event_created", "tag": "date_or_hangout", "participant": "emma_rowan"}},
@@ -42,7 +42,7 @@
       "id": "emma_alder_bay_walk",
       "type": "major_vn_scene",
       "start_node": "park_intro",
-      "activation": {"quest_active": "before_everything_changes", "location": "alder_bay.waterfront_path", "calendar_participant": "emma_rowan"},
+      "activation": {"quest_active": "before_everything_changes", "location": "alder_bay_park.waterfront_path", "calendar_participant": "emma_rowan"},
       "repetition": {"once_only": true},
       "nodes": {
         "park_intro": {"stage_direction": "Emma waits beside the waterfront railing with two juice bottles and a paperback tucked under one arm.", "next": "emma_greeting"},

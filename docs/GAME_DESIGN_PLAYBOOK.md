@@ -464,13 +464,18 @@ full-time and part-time job searches, weather-aware wardrobe onboarding, city
 transportation onboarding, the Westshore enrollment advisor, and the Harbor
 Employment Centre orientation.
 
+The opening Tuesday-through-Sunday calendar is now mapped across all seven daily
+blocks. Initial location data defines the Hale home room by room, Alder Heights,
+Westshore, Harbor Employment Centre, Forge Fitness, Harborlight Cinema, and Alder
+Bay Park. Transportation data supplies walking, bus, taxi, and car time and cost.
+
 ## Next design milestones
 
-1. Finish the opening-week quest pool and Sunday review
+1. Expand the validated opening-week foundation with job listings, interviews, class schedules, and repeatable activities
 2. Expand the established conversation data schema across the opening cast
 3. Evolve the validated JSON `.character` development format into the compressed release container
 4. Create alternative starting households
-5. Map the first month through September 1
+5. Extend the mapped opening week through September 1
 6. Finalize visual direction and UI wireframes
 7. Define save-game and simulation architecture
 8. Build the vertical-slice specification

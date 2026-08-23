@@ -8,9 +8,9 @@
       "title": "Enroll at Westshore",
       "summary": "Choose a program, arrange tuition, and build your first-semester schedule.",
       "activation": {"value_in": ["player.life_path", ["college", "college_and_employment"]]},
-      "availability": {"days": ["monday", "tuesday", "wednesday", "thursday", "friday"], "blocks": ["morning", "lunch", "afternoon"], "location": "westshore.administration_office"},
+      "availability": {"days": ["monday", "tuesday", "wednesday", "thursday", "friday"], "blocks": ["morning", "lunch", "afternoon"], "location": "westshore_administration_office"},
       "objectives": [
-        {"id": "travel_to_administration", "text": "Visit the Westshore administration office.", "completion": {"event": "location_entered", "location": "westshore.administration_office"}},
+        {"id": "travel_to_administration", "text": "Visit the Westshore administration office.", "completion": {"event": "location_entered", "location": "westshore_administration_office"}},
         {"id": "review_programs", "text": "Review the available programs with an enrollment advisor.", "completion": {"event": "conversation_node_reached", "conversation": "westshore_enrollment_advisor", "node": "program_choice"}},
         {"id": "choose_program", "text": "Choose your starting program.", "completion": {"event": "value_set", "key": "education.program", "allowed_values": ["arts_and_humanities", "business", "computer_systems", "education", "health_sciences", "social_sciences", "undeclared_studies"]}},
         {"id": "arrange_tuition", "text": "Choose how to handle the $4,000 semester tuition.", "completion": {"event": "value_set", "key": "education.tuition_plan"}},
@@ -48,7 +48,7 @@
       "title": "Find Part-Time Employment",
       "summary": "Find work that fits around Westshore classes.",
       "activation": {"value_equals": ["player.life_path", "college_and_employment"]},
-      "availability": {"phone_app": "jobs", "alternate_locations": ["westshore.career_board", "harbor_employment_centre"]},
+      "availability": {"phone_app": "jobs", "alternate_locations": ["westshore_campus.career_board", "harbor_employment_centre"]},
       "objectives": [
         {"id": "review_calendar", "text": "Review your class schedule and mark available work blocks.", "completion": {"event": "availability_profile_saved"}},
         {"id": "review_part_time_jobs", "text": "Review at least three part-time listings.", "completion": {"event": "job_listings_viewed", "filter": "part_time", "minimum": 3}},
@@ -70,7 +70,7 @@
         {"id": "check_forecast", "text": "Check today's forecast on your phone.", "completion": {"event": "phone_weather_opened"}},
         {"id": "open_wardrobe", "text": "Open your wardrobe.", "completion": {"event": "wardrobe_opened"}},
         {"id": "dress_for_weather", "text": "Equip clothing suitable for today's temperature and precipitation.", "completion": {"event": "outfit_weather_score_at_least", "value": 70}},
-        {"id": "step_outside", "text": "Leave the house wearing the selected outfit.", "completion": {"event": "location_entered", "location": "alder_heights.residential_street"}}
+        {"id": "step_outside", "text": "Leave the house wearing the selected outfit.", "completion": {"event": "location_entered", "location": "alder_heights_residential_street"}}
       ],
       "branches": [{"id": "poor_outfit", "condition": {"value_below": ["outfit.weather_score", 70]}, "effects": [{"operation": "add_status", "value": "weather_exposure"}, {"operation": "show_tutorial", "value": "weather_health_risk"}]}],
       "completion_effects": [{"operation": "unlock_phone_app", "value": "shopping"}, {"operation": "set_flag", "key": "tutorials.wardrobe_complete", "value": true}],
@@ -82,7 +82,7 @@
       "title": "Getting Around Port Alder",
       "summary": "Learn how walking, buses, taxis, and cars consume time and money.",
       "activation": {"event": "first_exit_from_hale_home"},
-      "availability": {"locations": ["alder_heights.residential_street", "alder_heights.bus_stop"]},
+      "availability": {"locations": ["alder_heights_residential_street", "alder_heights_bus_stop"]},
       "objectives": [
         {"id": "open_city_map", "text": "Open the City Map on your phone.", "completion": {"event": "phone_map_opened"}},
         {"id": "compare_routes", "text": "Compare walking and bus travel to Westshore College.", "completion": {"event": "routes_compared", "minimum": 2}},

@@ -84,7 +84,7 @@
       "id": "household_rules_talk",
       "type": "standard_topic",
       "start_node": "rules_intro",
-      "activation": {"quest_active": "under_this_roof", "location": "hale_family_home", "blocks": ["evening", "late_evening"]},
+      "activation": {"quest_active": "under_this_roof", "location": "hale_home", "blocks": ["evening", "late_evening"]},
       "repetition": {"once_only": true},
       "nodes": {
         "rules_intro": {"speaker": "elena_reyes_hale", "line": "Living here as an adult comes with more freedom, but it also comes with responsibility. Let's make the expectations clear.", "next": "rules_list"},
