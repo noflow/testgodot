@@ -478,14 +478,18 @@ four account types, recurring bills and income, inventory containers, starting
 loadouts, thirty clothing items, food and alcohol, general supplies, and seven
 initial stores. All prices remain provisional until simulation balancing.
 
+The technical architecture milestone defines the complete new-game runtime state,
+declarative simulation operations, snapshot-plus-event-log saves, atomic writes,
+recovery backups, content manifests, and forward-only version migration.
+
 ## Next design milestones
 
-1. Define player state, save-game data, simulation events, and version migration
+1. Write the first playable vertical-slice specification and acceptance tests
 2. Expand the established conversation data schema across the opening cast
 3. Evolve the validated JSON `.character` development format into the compressed release container
 4. Create alternative starting households
 5. Extend the mapped opening week through September 1
 6. Finalize visual direction and UI wireframes
-7. Define save-game and simulation architecture
+7. Implement the validated save-game and simulation architecture in Godot
 8. Build the vertical-slice specification
 9. Begin Godot implementation only after the playbook is approved

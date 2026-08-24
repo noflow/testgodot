@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://port-alder.invalid/schemas/save_game.schema.json",
+  "title": "Port Alder Save Game",
+  "type": "object",
+  "required": ["save_format_version", "content_version", "metadata", "clock", "player", "npc_states", "relationships", "quest_state", "conversation_state", "calendar_state", "world_state", "household_state", "family_state", "simulation", "content_state"],
+  "properties": {
+    "save_format_version": {"type": "integer", "minimum": 1},
+    "content_version": {"type": "string", "minLength": 1},
+    "metadata": {
+      "type": "object",
+      "required": ["save_id", "slot_id", "created_at_utc", "updated_at_utc", "playtime_seconds", "build_version", "active_mods", "checksum"],
+      "properties": {
+        "save_id": {"type": "string", "minLength": 1},
+        "slot_id": {"type": ["string", "integer"]},
+        "created_at_utc": {"type": "string"},
+        "updated_at_utc": {"type": "string"},
+        "playtime_seconds": {"type": "integer", "minimum": 0},
+        "build_version": {"type": "string"},
+        "active_mods": {"type": "array", "items": {"type": "string"}},
+        "checksum": {"type": "string"}
+      },
+      "additionalProperties": true
+    },
+    "clock": {
+      "type": "object",
+      "required": ["year", "month", "day", "weekday", "block", "minute_within_block", "season", "week_number"],
+      "properties": {
+        "year": {"type": "integer", "minimum": 1},
+        "month": {"type": "integer", "minimum": 1, "maximum": 12},
+        "day": {"type": "integer", "minimum": 1, "maximum": 31},
+        "weekday": {"enum": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]},
+        "block": {"enum": ["early_morning", "morning", "lunch", "afternoon", "evening", "late_evening", "night"]},
+        "minute_within_block": {"type": "integer", "minimum": 0, "maximum": 119},
+        "season": {"enum": ["spring", "summer", "autumn", "winter"]},
+        "week_number": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": true
+    },
+    "player": {
+      "type": "object",
+      "required": ["identity", "appearance", "selected_traits", "needs", "attributes", "skills", "reputations", "health", "reproductive_health", "education", "employment", "economy", "inventory", "housing", "transportation", "phone", "life_path", "flags"],
+      "properties": {
+        "needs": {"$ref": "#/$defs/needs"},
+        "attributes": {"type": "object", "additionalProperties": {"$ref": "#/$defs/skillValue"}},
+        "skills": {"type": "object", "additionalProperties": {"$ref": "#/$defs/skillValue"}},
+        "reputations": {"type": "object", "additionalProperties": {"type": "number", "minimum": -100, "maximum": 100}},
+        "life_path": {"type": ["string", "null"]}
+      },
+      "additionalProperties": true
+    },
+    "npc_states": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["character_id", "discovered", "phone_contact", "current_location", "schedule_phase"],
+        "properties": {"character_id": {"type": "string"}, "discovered": {"type": "boolean"}, "phone_contact": {"type": "boolean"}, "current_location": {"type": "string"}, "schedule_phase": {"type": "string"}},
+        "additionalProperties": true
+      }
+    },
+    "relationships": {"type": "object", "additionalProperties": {"$ref": "#/$defs/relationshipState"}},
+    "quest_state": {"type": "object", "required": ["active", "completed", "failed", "deferred", "objectives", "branch_history"], "additionalProperties": true},
+    "conversation_state": {"type": "object", "required": ["active", "completed", "seen_nodes", "cooldowns", "once_only_flags"], "additionalProperties": true},
+    "calendar_state": {"type": "object", "required": ["events", "reminders", "conflicts"], "additionalProperties": true},
+    "world_state": {"type": "object", "required": ["current_location", "unlocked_locations", "discovered_locations", "weather", "store_state", "world_flags", "random_seed"], "additionalProperties": true},
+    "household_state": {"type": "object", "required": ["household_id", "members", "shared_inventory", "rules", "contribution_score"], "additionalProperties": true},
+    "family_state": {"type": "object", "required": ["pregnancies", "children", "custody_arrangements", "child_support_orders"], "additionalProperties": true},
+    "simulation": {"type": "object", "required": ["pending_events", "recent_event_log", "next_event_sequence", "last_daily_tick", "last_weekly_tick", "last_monthly_tick"], "additionalProperties": true},
+    "content_state": {"type": "object", "required": ["loaded_packages", "missing_optional_packages", "disabled_content_ids"], "additionalProperties": true}
+  },
+  "$defs": {
+    "needValue": {"type": "number", "minimum": 0, "maximum": 100},
+    "skillValue": {"type": "number", "minimum": 0, "maximum": 250},
+    "needs": {
+      "type": "object",
+      "required": ["energy", "fatigue", "hunger", "hydration", "hygiene", "mood", "stress", "loneliness", "inebriation"],
+      "properties": {
+        "energy": {"$ref": "#/$defs/needValue"}, "fatigue": {"$ref": "#/$defs/needValue"}, "hunger": {"$ref": "#/$defs/needValue"}, "hydration": {"$ref": "#/$defs/needValue"}, "hygiene": {"$ref": "#/$defs/needValue"}, "mood": {"$ref": "#/$defs/needValue"}, "stress": {"$ref": "#/$defs/needValue"}, "loneliness": {"$ref": "#/$defs/needValue"}, "inebriation": {"$ref": "#/$defs/needValue"}
+      },
+      "additionalProperties": false
+    },
+    "relationshipState": {
+      "type": "object",
+      "required": ["friendship", "love", "attraction", "lust", "trust", "respect", "resentment", "jealousy", "comfort", "commitment", "compatibility", "satisfaction"],
+      "properties": {
+        "friendship": {"$ref": "#/$defs/needValue"}, "love": {"$ref": "#/$defs/needValue"}, "attraction": {"$ref": "#/$defs/needValue"}, "lust": {"$ref": "#/$defs/needValue"}, "trust": {"$ref": "#/$defs/needValue"}, "respect": {"$ref": "#/$defs/needValue"}, "resentment": {"$ref": "#/$defs/needValue"}, "jealousy": {"$ref": "#/$defs/needValue"}, "comfort": {"$ref": "#/$defs/needValue"}, "commitment": {"$ref": "#/$defs/needValue"}, "compatibility": {"$ref": "#/$defs/needValue"}, "satisfaction": {"$ref": "#/$defs/needValue"}
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

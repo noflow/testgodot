@@ -1,0 +1,81 @@
+{
+  "format_version": 1,
+  "package_id": "port_alder_save_system",
+  "storage": {
+    "root": "user://saves",
+    "slot_directory": "slot_{slot_id}",
+    "state_file": "save.json",
+    "temporary_file": "save.json.tmp",
+    "backup_file": "save.json.bak",
+    "preview_file": "preview.png",
+    "manifest_file": "content_manifest.json",
+    "encoding": "UTF-8 JSON",
+    "future_compression": "optional_after_profiling"
+  },
+  "slots": {
+    "manual_slots": 8,
+    "autosave_slots": 3,
+    "quicksave_slots": 1,
+    "newest_autosave_replaces_oldest": true,
+    "manual_overwrite_requires_confirmation": true,
+    "delete_requires_confirmation": true
+  },
+  "autosave_triggers": [
+    "start_of_new_day",
+    "end_of_day_before_sleep",
+    "before_major_vn_scene",
+    "after_major_vn_scene",
+    "after_quest_completion",
+    "after_relationship_agreement_change",
+    "after_employment_or_enrollment_change",
+    "after_pregnancy_or_birth_state_change"
+  ],
+  "save_safety": {
+    "write_sequence": ["validate_in_memory_state", "write_temporary_file", "flush_and_close", "validate_temporary_file", "move_current_to_backup", "atomically_replace_current", "write_preview_and_manifest"],
+    "checksum": "SHA-256 excluding metadata.checksum field",
+    "recovery_sequence": ["try_primary", "try_backup", "offer_other_autosave", "report_unrecoverable_without_deleting_files"],
+    "never_modify_character_packages": true,
+    "unknown_fields_preserved_during_migration": true,
+    "privacy": "local_save_files_only_unless_player_exports_them"
+  },
+  "safe_save_states": {
+    "normal_exploration": true,
+    "phone_interface": true,
+    "conversation": "save_current_conversation_id_node_and_pending_choice_state",
+    "travel": "save_origin_destination_mode_and_remaining_minutes",
+    "transaction": "finish_or_rollback_atomic_event_before_write",
+    "loading_or_migrating": false
+  },
+  "content_manifest": {
+    "required_fields": ["content_id", "version", "checksum", "required", "load_order"],
+    "base_game_required": true,
+    "character_packages_recorded_individually": true,
+    "missing_required_content": "block_load_and_explain_missing_package",
+    "missing_optional_content": "load_with_disabled_content_report_if_safe",
+    "changed_mod_content": "require_compatibility_or_migration_declaration"
+  },
+  "validation_on_load": [
+    "parse_json",
+    "verify_checksum",
+    "verify_required_top_level_sections",
+    "verify_save_format_version",
+    "resolve_content_manifest",
+    "run_migrations_in_order",
+    "validate_ranges_and_references",
+    "rebuild_derived_caches",
+    "resume_pending_safe_state"
+  ],
+  "migrations": [
+    {"from": 0, "to": 1, "id": "create_initial_runtime_shape", "status": "baseline_only", "operations": ["establish_required_sections", "set_default_ranges", "record_content_manifest"]}
+  ],
+  "migration_rules": {
+    "only_forward_one_version_at_a_time": true,
+    "backup_before_first_migration": true,
+    "migration_is_idempotent": true,
+    "migration_log_saved": true,
+    "failed_migration_does_not_replace_original": true,
+    "downgrade_not_supported": true
+  },
+  "preview_fields": ["player_name", "portrait_or_avatar", "game_date", "current_location", "life_path", "playtime", "last_updated", "active_mod_count", "warning_state"],
+  "export_import": {"export_extension": ".portaldersave", "contains": ["save_state", "preview", "content_manifest"], "private_health_data_warning": true, "import_never_overwrites_without_confirmation": true}
+}

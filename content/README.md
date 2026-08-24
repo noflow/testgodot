@@ -18,6 +18,9 @@ unnamed service NPCs lives here.
 - `systems/food.json` defines food, drinks, alcohol, and inebriation thresholds.
 - `systems/general_items.json` defines hygiene, health, school, and ticket items.
 - `systems/stores.json` defines shop hours, prices, stock, and discounts.
+- `runtime/new_game_state.json` defines the complete initial runtime snapshot.
+- `systems/simulation_events.json` defines all legal state-changing operations.
+- `systems/save_system.json` defines slots, atomic writes, recovery, and migrations.
 
 Global content follows the same declarative rules as character packages and cannot
 contain executable code.

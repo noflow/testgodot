@@ -418,6 +418,37 @@ def validate_global_content(known_character_ids: set[str], character_quest_ids: 
             if activity.get("cost", 0) < 0:
                 errors.append(f"{path.relative_to(ROOT)}: activity {activity.get('id')} has invalid cost")
 
+        operations = data.get("operations", [])
+        operation_ids = [operation.get("id") for operation in operations]
+        if any(not item or "." not in item for item in operation_ids) or len(operation_ids) != len(set(operation_ids)):
+            errors.append(f"{path.relative_to(ROOT)}: simulation operations contain missing, malformed, or duplicate ids")
+
+        template = data.get("new_game_template")
+        if template is not None:
+            required_sections = {"save_format_version", "content_version", "metadata", "clock", "player", "npc_states", "relationships", "quest_state", "conversation_state", "calendar_state", "world_state", "household_state", "family_state", "simulation", "content_state"}
+            missing_sections = sorted(required_sections - template.keys())
+            if missing_sections:
+                errors.append(f"{path.relative_to(ROOT)}: new-game template is missing {missing_sections}")
+            for need, value in template.get("player", {}).get("needs", {}).items():
+                if not isinstance(value, (int, float)) or not 0 <= value <= 100:
+                    errors.append(f"{path.relative_to(ROOT)}: player need {need} is outside 0-100")
+            for attribute, value in template.get("player", {}).get("attributes", {}).items():
+                if not isinstance(value, (int, float)) or not 0 <= value <= 250:
+                    errors.append(f"{path.relative_to(ROOT)}: player attribute {attribute} is outside 0-250")
+            state_ids = [state.get("character_id") for state in template.get("npc_states", [])]
+            if len(state_ids) != len(set(state_ids)) or set(state_ids) != known_character_ids:
+                errors.append(f"{path.relative_to(ROOT)}: new-game NPC states must contain each opening character exactly once")
+
+        if "slots" in data and "save_safety" in data:
+            slots = data["slots"]
+            for slot_type in ("manual_slots", "autosave_slots", "quicksave_slots"):
+                if not isinstance(slots.get(slot_type), int) or slots[slot_type] < 1:
+                    errors.append(f"{path.relative_to(ROOT)}: save system has invalid {slot_type}")
+            migrations = data.get("migrations", [])
+            for migration in migrations:
+                if migration.get("to") != migration.get("from", -1) + 1:
+                    errors.append(f"{path.relative_to(ROOT)}: migration {migration.get('id')} must advance exactly one version")
+
     return errors
 
 
@@ -450,6 +481,14 @@ def main() -> int:
         except (OSError, json.JSONDecodeError):
             pass
     errors.extend(validate_global_content(known_ids, character_quest_ids))
+
+    schema_path = ROOT / "schemas" / "save_game.schema.json"
+    try:
+        schema = json.loads(schema_path.read_text(encoding="utf-8"))
+        if not schema.get("$schema") or schema.get("type") != "object" or not schema.get("required"):
+            errors.append("save_game.schema.json: incomplete JSON Schema declaration")
+    except (OSError, json.JSONDecodeError) as exc:
+        errors.append(f"save_game.schema.json: cannot load schema: {exc}")
 
     if errors:
         print("Character validation failed:", file=sys.stderr)
