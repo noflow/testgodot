@@ -1,0 +1,71 @@
+{
+  "format_version": 1,
+  "suite_id": "vertical_slice_acceptance",
+  "build_name": "First Week Foundations",
+  "priorities": {"0": "release_blocker", "1": "required", "2": "deferrable_with_issue"},
+  "tests": [
+    {"id": "VS-BOOT-001", "area": "boot", "priority": 0, "setup": "Clean installation with valid base content", "action": "Launch the game", "expected": "Content validates and Main Menu appears without an error."},
+    {"id": "VS-BOOT-002", "area": "boot", "priority": 0, "setup": "One required content reference is intentionally invalid", "action": "Launch the game", "expected": "Play is blocked by Content Error with file, content ID, and field; the game does not crash."},
+    {"id": "VS-BOOT-003", "area": "menu", "priority": 1, "setup": "No saves exist", "action": "Open Main Menu", "expected": "New Game is enabled and Continue is disabled."},
+
+    {"id": "VS-CREATE-001", "area": "character_creation", "priority": 0, "setup": "Start New Game", "action": "Attempt to continue with missing required choices", "expected": "Creation remains open and identifies every missing choice."},
+    {"id": "VS-CREATE-002", "area": "character_creation", "priority": 1, "setup": "Start New Game", "action": "Select four positive traits", "expected": "The fourth selection is rejected until another positive trait is deselected."},
+    {"id": "VS-CREATE-003", "area": "character_creation", "priority": 1, "setup": "Start New Game", "action": "Choose a birthday that would not make the protagonist 18", "expected": "The date is rejected with an age requirement message."},
+    {"id": "VS-CREATE-004", "area": "character_creation", "priority": 0, "setup": "Complete every required field with Standard background", "action": "Confirm creation", "expected": "A version-1 runtime state is created with the Standard budget, loadout, traits, and opening date."},
+
+    {"id": "VS-OPEN-001", "area": "opening", "priority": 0, "setup": "Fresh runtime state", "action": "Enter the opening scene", "expected": "The player begins in the bedroom Tuesday Morning and Elena's opening conversation starts."},
+    {"id": "VS-OPEN-002", "area": "opening", "priority": 1, "setup": "Opening conversation at wake-up response", "action": "Choose playful response", "expected": "Elena Comfort increases once and the correct next node appears."},
+    {"id": "VS-OPEN-003", "area": "opening", "priority": 0, "setup": "Opening conversation at life choice", "action": "Choose College", "expected": "Enroll at Westshore starts, rent is waived while enrolled, and allowance is active."},
+    {"id": "VS-OPEN-004", "area": "opening", "priority": 0, "setup": "Opening conversation at life choice", "action": "Choose Employment", "expected": "Find Employment starts, allowance is inactive, and $250 rent is due September 1."},
+    {"id": "VS-OPEN-005", "area": "opening", "priority": 0, "setup": "Opening conversation at life choice", "action": "Choose College and Employment", "expected": "Enrollment and part-time employment quests start without conflicting initial rules."},
+    {"id": "VS-OPEN-006", "area": "opening", "priority": 0, "setup": "Complete opening conversation", "action": "Return to world", "expected": "Sandbox movement and phone quest tracker unlock exactly once."},
+
+    {"id": "VS-HOME-001", "area": "home", "priority": 0, "setup": "Sandbox active in player bedroom", "action": "Walk through every required Hale home room", "expected": "Collision and room transitions work without trapping or teleporting the player."},
+    {"id": "VS-HOME-002", "area": "home", "priority": 1, "setup": "Lily's door is closed and permission is absent", "action": "Interact with the door", "expected": "The player knocks or receives a privacy response and cannot walk through."},
+    {"id": "VS-HOME-003", "area": "hygiene", "priority": 0, "setup": "Player Hygiene below maximum", "action": "Take a shower", "expected": "Time and Hygiene change once and the bathroom becomes available afterward."},
+    {"id": "VS-HOME-004", "area": "food", "priority": 1, "setup": "Basic food is available", "action": "Cook and eat a basic meal", "expected": "Ingredients are consumed and Hunger, time, Energy, and Cooking experience update."},
+    {"id": "VS-HOME-005", "area": "wardrobe", "priority": 0, "setup": "Rain forecast and low-protection outfit", "action": "Attempt to leave home", "expected": "A weather warning identifies missing protection but still permits the deliberate choice."},
+    {"id": "VS-HOME-006", "area": "inventory", "priority": 1, "setup": "Dirty clothing exists", "action": "Wash a valid laundry batch", "expected": "Detergent uses and time are consumed and clothing cleanliness increases."},
+
+    {"id": "VS-PHONE-001", "area": "phone", "priority": 0, "setup": "Sandbox active", "action": "Open and close the phone using keyboard and controller", "expected": "Phone focus works and world input does not move the player while it is open."},
+    {"id": "VS-PHONE-002", "area": "phone", "priority": 1, "setup": "Open Character Profile", "action": "Inspect needs, attributes, skills, traits, and outfit", "expected": "Values match runtime state and use text or icons as well as color."},
+    {"id": "VS-PHONE-003", "area": "contacts", "priority": 1, "setup": "New game", "action": "Open Contacts", "expected": "Family, Emma, and Marcus appear; undiscovered NPCs do not expose private information."},
+    {"id": "VS-PHONE-004", "area": "messages", "priority": 0, "setup": "Emma invitation has triggered", "action": "Choose a scheduling quick reply", "expected": "The calendar scheduler opens with Emma's valid availability."},
+    {"id": "VS-PHONE-005", "area": "calendar", "priority": 0, "setup": "Two events use the same block", "action": "Confirm the second event", "expected": "A double-booking warning appears and the player may confirm or cancel."},
+    {"id": "VS-PHONE-006", "area": "calendar", "priority": 0, "setup": "NPC has a work commitment", "action": "Attempt to schedule that NPC during work", "expected": "The time cannot be confirmed and alternative free windows are shown."},
+    {"id": "VS-PHONE-007", "area": "quests", "priority": 1, "setup": "At least two quests active", "action": "Track a quest and select its location", "expected": "Tracker and City Map identify the correct objective and destination."},
+    {"id": "VS-PHONE-008", "area": "weather", "priority": 1, "setup": "Wednesday rain forecast", "action": "Open Weather", "expected": "Temperature, rain, wind, and clothing guidance match opening-week data."},
+
+    {"id": "VS-TRAVEL-001", "area": "travel", "priority": 0, "setup": "Player at Hale home with route unlocked", "action": "Walk to Alder Bay Park", "expected": "Time, needs, location, and weather exposure update using the selected route."},
+    {"id": "VS-TRAVEL-002", "area": "travel", "priority": 0, "setup": "Player has at least $3 and bus is operating", "action": "Take bus to Westshore", "expected": "$3 is charged, travel time advances, and player arrives at Westshore."},
+    {"id": "VS-TRAVEL-003", "area": "travel", "priority": 1, "setup": "Night block when bus is closed", "action": "Select bus travel", "expected": "Bus is unavailable and next operating block is shown."},
+    {"id": "VS-TRAVEL-004", "area": "travel", "priority": 1, "setup": "Destination closes before projected arrival", "action": "Confirm route", "expected": "Arrival warning appears before money or time is consumed."},
+    {"id": "VS-TRAVEL-005", "area": "economy", "priority": 0, "setup": "Insufficient cash and checking funds with credit disabled", "action": "Attempt a paid trip or purchase", "expected": "Transaction is declined atomically without consuming the item or advancing travel."},
+
+    {"id": "VS-QUEST-001", "area": "education", "priority": 0, "setup": "Enroll at Westshore active during office hours", "action": "Choose program, load, and tuition plan", "expected": "Enrollment state and non-conflicting class calendar events are created."},
+    {"id": "VS-QUEST-002", "area": "employment", "priority": 0, "setup": "Employment quest active", "action": "Review a listing and submit a valid application", "expected": "Requirements are shown and a single application record is created."},
+    {"id": "VS-QUEST-003", "area": "employment", "priority": 1, "setup": "Player lacks a hard job requirement", "action": "Submit application", "expected": "The missing requirement is explained and application does not advance to interview."},
+    {"id": "VS-QUEST-004", "area": "relationships", "priority": 0, "setup": "Emma walk scheduled", "action": "Arrive on time and complete the conversation", "expected": "Quest, memory, meters, and chosen friendship or romantic branch update once."},
+    {"id": "VS-QUEST-005", "area": "relationships", "priority": 1, "setup": "Emma walk scheduled", "action": "Arrive after no-show threshold", "expected": "No-show consequences apply and the original scene does not play as on-time."},
+    {"id": "VS-QUEST-006", "area": "fitness", "priority": 1, "setup": "Rachel is available at Forge Fitness", "action": "Complete assessment and choose Strength", "expected": "Strength plan unlocks and beginner workout is added to calendar."},
+
+    {"id": "VS-SIM-001", "area": "time", "priority": 0, "setup": "Known initial needs", "action": "Advance one full activity block", "expected": "Clock, needs, schedules, and due events update exactly once."},
+    {"id": "VS-SIM-002", "area": "events", "priority": 0, "setup": "Atomic event with one invalid sub-effect", "action": "Apply event", "expected": "No sub-effects persist and a recoverable validation error is recorded."},
+    {"id": "VS-SIM-003", "area": "schedules", "priority": 1, "setup": "Observe a named NPC across two scheduled blocks", "action": "Advance time", "expected": "NPC location and availability follow opening-week schedule data."},
+    {"id": "VS-SIM-004", "area": "sunday_review", "priority": 1, "setup": "Reach Sunday Evening", "action": "Open weekly review", "expected": "Money, health, time, relationship, and quest summaries match recorded state without a victory score."},
+
+    {"id": "VS-SAVE-001", "area": "save", "priority": 0, "setup": "Changed money, needs, quest, relationship, inventory, and location", "action": "Manual save, quit, and load", "expected": "All changed values and current context match exactly with no duplicate effects."},
+    {"id": "VS-SAVE-002", "area": "save", "priority": 0, "setup": "Conversation waiting at a choice", "action": "Save, quit, and load", "expected": "Conversation resumes at the same node with effects applied neither zero nor twice."},
+    {"id": "VS-SAVE-003", "area": "save", "priority": 1, "setup": "Travel in progress", "action": "Save, quit, and load", "expected": "Origin, destination, mode, cost state, and remaining travel time resume correctly."},
+    {"id": "VS-SAVE-004", "area": "save", "priority": 0, "setup": "Primary save checksum intentionally corrupted with valid backup", "action": "Load slot", "expected": "Backup is offered or recovered and corrupted file is not deleted."},
+    {"id": "VS-SAVE-005", "area": "save", "priority": 1, "setup": "Autosave triggers repeatedly", "action": "Create four autosaves", "expected": "Three autosave slots remain and the oldest is replaced."},
+    {"id": "VS-SAVE-006", "area": "save", "priority": 1, "setup": "Version-0 migration fixture", "action": "Load fixture", "expected": "Backup is created, migration advances to version 1 once, and migration log is stored."},
+
+    {"id": "VS-A11Y-001", "area": "accessibility", "priority": 1, "setup": "Dialogue and phone open", "action": "Set text to 175%", "expected": "Text remains readable without clipping required controls or choices."},
+    {"id": "VS-A11Y-002", "area": "accessibility", "priority": 1, "setup": "Controller connected", "action": "Complete menu, dialogue choice, phone navigation, and interaction without mouse", "expected": "Visible focus and all required actions work with controller."},
+    {"id": "VS-A11Y-003", "area": "accessibility", "priority": 2, "setup": "Reduce Motion enabled", "action": "Open phone and change scenes", "expected": "Large transitions and camera shake are replaced by reduced-motion alternatives."},
+
+    {"id": "VS-PERF-001", "area": "performance", "priority": 1, "setup": "Development target hardware and full current content", "action": "Launch and enter Hale home", "expected": "Content validation finishes under three seconds and required location transition under two seconds."},
+    {"id": "VS-PERF-002", "area": "performance", "priority": 2, "setup": "Normal gameplay in required locations", "action": "Profile for ten minutes", "expected": "Game sustains target frame rate and remains below the slice memory target."}
+  ]
+}

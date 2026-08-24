@@ -482,14 +482,18 @@ The technical architecture milestone defines the complete new-game runtime state
 declarative simulation operations, snapshot-plus-event-log saves, atomic writes,
 recovery backups, content manifests, and forward-only version migration.
 
-## Next design milestones
+The First Week Foundations vertical slice is fully specified with its playable
+scope, controls, accessibility baseline, Godot architecture, implementation phases,
+explicit exclusions, completion gate, and machine-readable acceptance tests.
 
-1. Write the first playable vertical-slice specification and acceptance tests
-2. Expand the established conversation data schema across the opening cast
-3. Evolve the validated JSON `.character` development format into the compressed release container
-4. Create alternative starting households
-5. Extend the mapped opening week through September 1
-6. Finalize visual direction and UI wireframes
-7. Implement the validated save-game and simulation architecture in Godot
-8. Build the vertical-slice specification
-9. Begin Godot implementation only after the playbook is approved
+## Next milestones
+
+1. Create the Godot project foundation, input map, boot scene, and test runner
+2. Implement content loading, validation, runtime-state creation, and simulation events
+3. Implement the VN dialogue and quest systems with Elena's opening scene
+4. Implement Hale home exploration, needs, wardrobe, food, and hygiene
+5. Implement the phone, calendar, messages, relationships, map, and weather
+6. Implement city travel and the required institutional and NPC activities
+7. Implement saves, recovery, Sunday review, settings, and accessibility
+8. Stabilize the vertical slice against all acceptance tests
+9. Resume broader content expansion, alternative households, and the September calendar

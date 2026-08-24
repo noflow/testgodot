@@ -21,6 +21,7 @@ unnamed service NPCs lives here.
 - `runtime/new_game_state.json` defines the complete initial runtime snapshot.
 - `systems/simulation_events.json` defines all legal state-changing operations.
 - `systems/save_system.json` defines slots, atomic writes, recovery, and migrations.
+- `vertical_slice/manifest.json` locks the required first-playable content scope.
 
 Global content follows the same declarative rules as character packages and cannot
 contain executable code.

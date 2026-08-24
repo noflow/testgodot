@@ -25,8 +25,8 @@ Pre-production and design. No gameplay code has been started.
 - `content/` — global quests and conversations owned by locations or institutions
 - `mods/` — local mod-development workspace
 - `assets/` — art, audio, and fonts
-- `src/` — future Godot source files
-- `tests/` — future tests and simulation fixtures
+- `src/` — Godot source files beginning with the vertical-slice implementation
+- `tests/` — acceptance tests and future simulation fixtures
 
 The canonical design summary is in [docs/GAME_DESIGN_PLAYBOOK.md](docs/GAME_DESIGN_PLAYBOOK.md).
 Character quest and conversation authoring is documented in [docs/CONTENT_AUTHORING_GUIDE.md](docs/CONTENT_AUTHORING_GUIDE.md).
@@ -34,5 +34,6 @@ Opening-week pacing and world scope are summarized in [docs/OPENING_WEEK_PLAYBOO
 Education, jobs, interviews, and repeatable actions are summarized in [docs/EDUCATION_EMPLOYMENT_PLAYBOOK.md](docs/EDUCATION_EMPLOYMENT_PLAYBOOK.md).
 Economy, inventory, clothing, food, and stores are summarized in [docs/ECONOMY_INVENTORY_PLAYBOOK.md](docs/ECONOMY_INVENTORY_PLAYBOOK.md).
 Runtime state, simulation events, saves, and migrations are described in [docs/RUNTIME_SAVE_ARCHITECTURE.md](docs/RUNTIME_SAVE_ARCHITECTURE.md).
+The first playable build is defined in [docs/VERTICAL_SLICE_SPECIFICATION.md](docs/VERTICAL_SLICE_SPECIFICATION.md).
 
 Validate all character and global content data with `python3 tools/validate_characters.py`.

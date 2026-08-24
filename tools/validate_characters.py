@@ -137,7 +137,7 @@ def validate_file(path: Path, known_ids: set[str]) -> list[str]:
     return errors
 
 
-def validate_global_content(known_character_ids: set[str], character_quest_ids: set[str]) -> list[str]:
+def validate_global_content(known_character_ids: set[str], character_quest_ids: set[str], character_conversation_ids: set[str]) -> list[str]:
     errors: list[str] = []
     package_ids: set[str] = set()
     quest_ids: set[str] = set()
@@ -449,6 +449,28 @@ def validate_global_content(known_character_ids: set[str], character_quest_ids: 
                 if migration.get("to") != migration.get("from", -1) + 1:
                     errors.append(f"{path.relative_to(ROOT)}: migration {migration.get('id')} must advance exactly one version")
 
+    all_quest_ids = quest_ids | character_quest_ids
+    all_conversation_ids = conversation_ids | character_conversation_ids
+    all_operation_ids = {operation.get("id") for _, data in packages for operation in data.get("operations", []) if operation.get("id")}
+    for path, data in packages:
+        if "completion_gate" not in data:
+            continue
+        for character_id in data.get("required_characters", []) + data.get("background_simulation_characters", []):
+            if character_id not in known_character_ids:
+                errors.append(f"{path.relative_to(ROOT)}: vertical slice references unknown character {character_id}")
+        for location_id in data.get("required_locations", []):
+            if location_id not in location_ids:
+                errors.append(f"{path.relative_to(ROOT)}: vertical slice references unknown location {location_id}")
+        for quest_id in data.get("required_quests", []):
+            if quest_id not in all_quest_ids:
+                errors.append(f"{path.relative_to(ROOT)}: vertical slice references unknown quest {quest_id}")
+        for conversation_id in data.get("required_conversations", []):
+            if conversation_id not in all_conversation_ids:
+                errors.append(f"{path.relative_to(ROOT)}: vertical slice references unknown conversation {conversation_id}")
+        for operation_id in data.get("required_simulation_operations", []):
+            if operation_id not in all_operation_ids:
+                errors.append(f"{path.relative_to(ROOT)}: vertical slice references unknown operation {operation_id}")
+
     return errors
 
 
@@ -473,14 +495,16 @@ def main() -> int:
 
     known_ids = set(ids)
     character_quest_ids: set[str] = set()
+    character_conversation_ids: set[str] = set()
     for path in paths:
         errors.extend(validate_file(path, known_ids))
         try:
             character_data = json.loads(path.read_text(encoding="utf-8"))
             character_quest_ids.update(quest.get("id") for quest in character_data.get("quests", []) if quest.get("id"))
+            character_conversation_ids.update(conversation.get("id") for conversation in character_data.get("conversations", []) if conversation.get("id"))
         except (OSError, json.JSONDecodeError):
             pass
-    errors.extend(validate_global_content(known_ids, character_quest_ids))
+    errors.extend(validate_global_content(known_ids, character_quest_ids, character_conversation_ids))
 
     schema_path = ROOT / "schemas" / "save_game.schema.json"
     try:
@@ -489,6 +513,21 @@ def main() -> int:
             errors.append("save_game.schema.json: incomplete JSON Schema declaration")
     except (OSError, json.JSONDecodeError) as exc:
         errors.append(f"save_game.schema.json: cannot load schema: {exc}")
+
+    acceptance_path = ROOT / "tests" / "acceptance" / "vertical_slice.json"
+    try:
+        acceptance = json.loads(acceptance_path.read_text(encoding="utf-8"))
+        tests = acceptance.get("tests", [])
+        test_ids = [test.get("id") for test in tests]
+        if not tests or any(not item for item in test_ids) or len(test_ids) != len(set(test_ids)):
+            errors.append("vertical_slice.json: tests contain missing or duplicate ids")
+        for test in tests:
+            if test.get("priority") not in {0, 1, 2} or not all(test.get(field) for field in ("area", "setup", "action", "expected")):
+                errors.append(f"vertical_slice.json: test {test.get('id')} is incomplete")
+        if not any(test.get("priority") == 0 for test in tests) or not any(test.get("priority") == 1 for test in tests):
+            errors.append("vertical_slice.json: suite needs priority-zero and priority-one coverage")
+    except (OSError, json.JSONDecodeError) as exc:
+        errors.append(f"vertical_slice.json: cannot load acceptance suite: {exc}")
 
     if errors:
         print("Character validation failed:", file=sys.stderr)

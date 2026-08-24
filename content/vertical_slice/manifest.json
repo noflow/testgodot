@@ -1,0 +1,15 @@
+{
+  "format_version": 1,
+  "package_id": "vertical_slice_scope",
+  "build_name": "First Week Foundations",
+  "target_engine": "Godot 4.x stable",
+  "target_platforms": ["windows", "macos", "linux"],
+  "required_characters": ["elena_reyes_hale", "daniel_hale", "lily_hale", "emma_rowan", "marcus_lee", "rachel_morgan"],
+  "background_simulation_characters": ["maya_chen", "chloe_bennett", "nadia_flores", "theo_grant", "sofia_alvarez", "claire_donovan", "jade_mercer", "hannah_brooks", "olivia_price"],
+  "required_locations": ["hale_home", "alder_heights_residential_street", "alder_heights_bus_stop", "westshore_administration_office", "harbor_employment_centre", "forge_fitness", "harborlight_cinema", "alder_bay_park"],
+  "required_quests": ["opening_future_choice", "under_this_roof", "one_year_ahead", "before_everything_changes", "one_last_summer_movie", "first_rep", "enroll_at_westshore", "find_employment", "find_part_time_employment", "ready_for_port_alder", "getting_around_port_alder"],
+  "required_conversations": ["opening_future_talk", "household_rules_talk", "lily_program_doubts", "emma_alder_bay_walk", "marcus_after_screening", "rachel_fitness_assessment", "westshore_enrollment_advisor", "harbor_employment_orientation"],
+  "required_phone_apps": ["character_profile", "contacts", "messages", "calendar", "quests", "relationships", "city_map", "weather", "settings"],
+  "required_simulation_operations": ["time.advance", "need.adjust", "relationship.adjust_meter", "memory.create", "quest.start", "quest.objective_complete", "quest.complete", "quest.fail_or_defer", "conversation.begin", "conversation.choose", "conversation.end", "calendar.schedule", "calendar.cancel_or_reschedule", "calendar.arrival", "travel.begin", "travel.complete", "economy.transaction", "inventory.add", "inventory.remove", "inventory.transfer", "inventory.equip", "world.weather_update", "save.checkpoint"],
+  "completion_gate": {"all_priority_zero_tests_pass": true, "all_priority_one_tests_pass": true, "no_data_validation_errors": true, "save_load_round_trip_passes": true, "opening_flow_has_no_blocking_placeholder": true}
+}
