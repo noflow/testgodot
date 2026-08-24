@@ -12,6 +12,12 @@ unnamed service NPCs lives here.
 - `systems/education.json` defines Westshore programs, courses, schedules, and grading.
 - `systems/employment.json` defines jobs, requirements, interviews, and promotions.
 - `systems/repeatable_activities.json` defines routine actions and simulation effects.
+- `systems/economy.json` defines accounts, budgets, recurring bills, debt, and income.
+- `systems/inventory.json` defines containers, item rules, and starting loadouts.
+- `systems/clothing.json` defines wardrobe items and weather ratings.
+- `systems/food.json` defines food, drinks, alcohol, and inebriation thresholds.
+- `systems/general_items.json` defines hygiene, health, school, and ticket items.
+- `systems/stores.json` defines shop hours, prices, stock, and discounts.
 
 Global content follows the same declarative rules as character packages and cannot
 contain executable code.

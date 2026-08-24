@@ -473,9 +473,14 @@ The initial playable systems catalog defines seven Westshore programs, fifteen
 first-semester courses, thirteen jobs with requirements and promotions, a scored
 interview model, and twenty-seven repeatable life activities.
 
+The economy and ownership milestone defines three starting financial backgrounds,
+four account types, recurring bills and income, inventory containers, starting
+loadouts, thirty clothing items, food and alcohol, general supplies, and seven
+initial stores. All prices remain provisional until simulation balancing.
+
 ## Next design milestones
 
-1. Add the economy ledger, stores, inventory items, clothing catalog, food catalog, and starting budgets
+1. Define player state, save-game data, simulation events, and version migration
 2. Expand the established conversation data schema across the opening cast
 3. Evolve the validated JSON `.character` development format into the compressed release container
 4. Create alternative starting households

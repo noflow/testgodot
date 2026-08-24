@@ -1,0 +1,18 @@
+{
+  "format_version": 1,
+  "package_id": "port_alder_general_item_catalog",
+  "items": [
+    {"id": "hygiene_toothbrush", "name": "Toothbrush", "category": "hygiene", "base_price": 4, "weight": 0.04, "stack_limit": 1, "uses": 120},
+    {"id": "hygiene_toothpaste", "name": "Toothpaste", "category": "hygiene", "base_price": 5, "weight": 0.15, "stack_limit": 3, "uses": 40},
+    {"id": "hygiene_soap", "name": "Body Wash", "category": "hygiene", "base_price": 7, "weight": 0.35, "stack_limit": 3, "uses": 24},
+    {"id": "household_detergent", "name": "Laundry Detergent", "category": "household", "base_price": 12, "weight": 1.2, "stack_limit": 2, "uses": 20},
+    {"id": "school_notebook", "name": "Notebook", "category": "school_supply", "base_price": 4, "weight": 0.25, "stack_limit": 10, "uses": 80},
+    {"id": "school_textbook_access", "name": "Semester Textbook Access", "category": "school_supply", "base_price": 110, "weight": 0, "stack_limit": 1, "digital": true},
+    {"id": "health_condoms_3", "name": "Condoms, Pack of 3", "category": "medicine", "base_price": 8, "weight": 0.05, "stack_limit": 6, "uses": 3, "minimum_age": 18, "effects": ["pregnancy_risk_reduction", "sti_risk_reduction"], "failure_rate_affected_by": ["expiration", "condition", "correct_use"]},
+    {"id": "health_home_test", "name": "Home Pregnancy Test", "category": "medicine", "base_price": 14, "weight": 0.08, "stack_limit": 4, "uses": 1, "privacy": "private"},
+    {"id": "health_pain_reliever", "name": "Basic Pain Reliever", "category": "medicine", "base_price": 9, "weight": 0.1, "stack_limit": 4, "uses": 20, "requires_safe_dosage": true},
+    {"id": "transit_bus_pass_weekly", "name": "Weekly Bus Pass", "category": "key_item", "base_price": 24, "weight": 0, "stack_limit": 1, "duration_days": 7},
+    {"id": "gym_day_pass", "name": "Forge Fitness Day Pass", "category": "key_item", "base_price": 18, "weight": 0, "stack_limit": 1, "duration_days": 1},
+    {"id": "cinema_ticket", "name": "Harborlight Movie Ticket", "category": "key_item", "base_price": 16, "weight": 0, "stack_limit": 6, "event_bound": true}
+  ]
+}

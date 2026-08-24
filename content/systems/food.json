@@ -1,0 +1,32 @@
+{
+  "format_version": 1,
+  "package_id": "port_alder_food_catalog",
+  "nutrition_rules": {"effect_scale": [0, 100], "food_groups": ["snack", "junk_food", "basic_meal", "healthy_meal"], "drink_groups": ["water", "juice", "beer", "wine", "spirits"], "alcohol_purchase_age": 18, "spoiled_food_can_cause_illness": true},
+  "items": [
+    {"id": "food_granola_bar", "name": "Granola Bar", "category": "food", "food_group": "snack", "base_price": 2.5, "weight": 0.06, "stack_limit": 12, "shelf_life_days": 180, "effects": {"hunger": -12, "energy": 3, "mood": 1, "health_pressure": 0}},
+    {"id": "food_fruit_cup", "name": "Fresh Fruit Cup", "category": "food", "food_group": "snack", "base_price": 4, "weight": 0.25, "stack_limit": 6, "shelf_life_days": 3, "effects": {"hunger": -15, "hydration": 4, "energy": 3, "health_pressure": -1}},
+    {"id": "food_chips", "name": "Bag of Chips", "category": "food", "food_group": "junk_food", "base_price": 3.5, "weight": 0.15, "stack_limit": 8, "shelf_life_days": 120, "effects": {"hunger": -18, "mood": 4, "hydration": -3, "health_pressure": 1}},
+    {"id": "food_candy_bar", "name": "Candy Bar", "category": "food", "food_group": "junk_food", "base_price": 2.25, "weight": 0.06, "stack_limit": 12, "shelf_life_days": 240, "effects": {"hunger": -10, "energy": 5, "mood": 4, "health_pressure": 1}},
+    {"id": "food_fast_food_combo", "name": "Fast-Food Combo", "category": "food", "food_group": "junk_food", "base_price": 14, "weight": 0.7, "stack_limit": 1, "shelf_life_days": 1, "effects": {"hunger": -48, "hydration": 8, "mood": 6, "energy": 2, "health_pressure": 2}},
+    {"id": "food_instant_meal", "name": "Instant Meal", "category": "food", "food_group": "basic_meal", "base_price": 5, "weight": 0.35, "stack_limit": 8, "shelf_life_days": 240, "effects": {"hunger": -38, "hydration": -2, "energy": 2, "health_pressure": 1}},
+    {"id": "food_sandwich", "name": "Prepared Sandwich", "category": "food", "food_group": "basic_meal", "base_price": 8, "weight": 0.4, "stack_limit": 3, "shelf_life_days": 2, "effects": {"hunger": -42, "energy": 4, "health_pressure": 0}},
+    {"id": "food_pasta_ingredients", "name": "Pasta Meal Ingredients", "category": "food", "food_group": "basic_meal", "base_price": 7, "weight": 0.8, "stack_limit": 6, "shelf_life_days": 30, "requires_cooking": true, "effects": {"hunger": -50, "energy": 5, "mood": 2, "health_pressure": 0}},
+    {"id": "food_healthy_bowl_ingredients", "name": "Healthy Bowl Ingredients", "category": "food", "food_group": "healthy_meal", "base_price": 11, "weight": 0.9, "stack_limit": 4, "shelf_life_days": 5, "requires_cooking": true, "effects": {"hunger": -55, "hydration": 4, "energy": 8, "mood": 3, "health_pressure": -2}},
+    {"id": "food_salad", "name": "Prepared Salad", "category": "food", "food_group": "healthy_meal", "base_price": 9, "weight": 0.45, "stack_limit": 3, "shelf_life_days": 2, "effects": {"hunger": -36, "hydration": 5, "energy": 6, "health_pressure": -2}},
+    {"id": "drink_water_bottle", "name": "Bottled Water", "category": "drink", "drink_group": "water", "base_price": 1.5, "weight": 0.55, "stack_limit": 12, "shelf_life_days": 730, "effects": {"hydration": 25, "health_pressure": 0}},
+    {"id": "drink_juice_apple", "name": "Apple Juice", "category": "drink", "drink_group": "juice", "base_price": 3.5, "weight": 0.5, "stack_limit": 8, "shelf_life_days": 30, "effects": {"hydration": 18, "energy": 3, "mood": 2, "health_pressure": 0}},
+    {"id": "drink_soda", "name": "Soda", "category": "drink", "drink_group": "junk_drink", "base_price": 2.75, "weight": 0.4, "stack_limit": 12, "shelf_life_days": 240, "effects": {"hydration": 10, "energy": 4, "mood": 3, "health_pressure": 1}},
+    {"id": "drink_beer_can", "name": "Beer", "category": "drink", "drink_group": "beer", "base_price": 4, "weight": 0.4, "stack_limit": 12, "shelf_life_days": 365, "minimum_age": 18, "alcohol_units": 1, "effects": {"hydration": -4, "inebriation_base": 8, "inhibition": -3, "mood": 2}},
+    {"id": "drink_wine_bottle", "name": "Bottle of Wine", "category": "drink", "drink_group": "wine", "base_price": 18, "weight": 1.2, "stack_limit": 4, "shelf_life_days": 730, "minimum_age": 18, "servings": 5, "alcohol_units_per_serving": 1, "effects_per_serving": {"hydration": -5, "inebriation_base": 9, "inhibition": -4, "mood": 2}},
+    {"id": "drink_spirits_bottle", "name": "Bottle of Spirits", "category": "drink", "drink_group": "spirits", "base_price": 28, "weight": 1.1, "stack_limit": 3, "shelf_life_days": 1825, "minimum_age": 18, "servings": 16, "alcohol_units_per_serving": 1, "effects_per_serving": {"hydration": -6, "inebriation_base": 11, "inhibition": -5, "mood": 2}}
+  ],
+  "inebriation_thresholds": [
+    {"minimum": 0, "maximum": 9, "level": "sober"},
+    {"minimum": 10, "maximum": 24, "level": "relaxed"},
+    {"minimum": 25, "maximum": 44, "level": "tipsy"},
+    {"minimum": 45, "maximum": 64, "level": "drunk"},
+    {"minimum": 65, "maximum": 84, "level": "very_drunk"},
+    {"minimum": 85, "maximum": 100, "level": "severely_intoxicated"}
+  ],
+  "alcohol_rules": {"effective_gain_formula": "inebriation_base * body_factor / alcohol_tolerance", "decay_per_block": 8, "water_and_food_reduce_symptoms_not_blood_alcohol_instantly": true, "driving_blocked_at": 25, "intimate_consent_blocked_at": 65, "hangover_risk_begins_at": 45}
+}

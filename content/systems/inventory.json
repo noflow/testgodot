@@ -1,0 +1,38 @@
+{
+  "format_version": 1,
+  "package_id": "port_alder_inventory_system",
+  "containers": [
+    {"id": "carried_inventory", "name": "Carried Items", "capacity_weight": 12, "capacity_slots": 20, "access": "player"},
+    {"id": "wardrobe_storage", "name": "Bedroom Wardrobe", "capacity_weight": 80, "capacity_slots": 120, "access": "hale_home.player_bedroom"},
+    {"id": "bathroom_storage", "name": "Bathroom Storage", "capacity_weight": 15, "capacity_slots": 30, "access": "hale_home.family_bathroom"},
+    {"id": "kitchen_storage", "name": "Kitchen Storage", "capacity_weight": 100, "capacity_slots": 80, "access": "hale_home.kitchen", "shared": true},
+    {"id": "garage_storage", "name": "Garage Storage", "capacity_weight": 300, "capacity_slots": 100, "access": "hale_home.garage", "shared": true}
+  ],
+  "item_rules": {
+    "required_fields": ["id", "name", "category", "base_price", "weight", "stack_limit"],
+    "condition_range": [0, 100],
+    "cleanliness_range": [0, 100],
+    "freshness_range": [0, 100],
+    "default_condition": 100,
+    "default_cleanliness": 100,
+    "ownership_states": ["owned", "borrowed", "rented", "household_shared", "quest_only"],
+    "transfer_actions": ["carry", "store", "give", "sell", "discard", "return"],
+    "discard_requires_confirmation": true
+  },
+  "categories": [
+    {"id": "clothing", "default_stack_limit": 1, "tracks_condition": true, "tracks_cleanliness": true},
+    {"id": "food", "default_stack_limit": 12, "tracks_freshness": true},
+    {"id": "drink", "default_stack_limit": 12, "tracks_freshness": true},
+    {"id": "medicine", "default_stack_limit": 20, "tracks_expiration": true},
+    {"id": "hygiene", "default_stack_limit": 6, "tracks_uses": true},
+    {"id": "school_supply", "default_stack_limit": 10},
+    {"id": "key_item", "default_stack_limit": 1, "cannot_discard": true},
+    {"id": "gift", "default_stack_limit": 6},
+    {"id": "household", "default_stack_limit": 10}
+  ],
+  "starting_loadouts": [
+    {"budget": "limited_background", "items": [{"item": "shirt_basic_white", "quantity": 1}, {"item": "shirt_basic_navy", "quantity": 1}, {"item": "pants_jeans_basic", "quantity": 1}, {"item": "pants_chinos_basic", "quantity": 1}, {"item": "underwear_boxers_basic", "quantity": 5}, {"item": "socks_crew_basic", "quantity": 5}, {"item": "shoes_sneakers_basic", "quantity": 1}, {"item": "jacket_rain_shell_basic", "quantity": 1}, {"item": "food_instant_meal", "quantity": 2}, {"item": "drink_water_bottle", "quantity": 2}, {"item": "hygiene_toothbrush", "quantity": 1}]},
+    {"budget": "standard_background", "items": [{"item": "shirt_basic_white", "quantity": 1}, {"item": "shirt_oxford_blue", "quantity": 1}, {"item": "shirt_hoodie_grey", "quantity": 1}, {"item": "pants_jeans_basic", "quantity": 1}, {"item": "pants_chinos_basic", "quantity": 1}, {"item": "underwear_boxers_basic", "quantity": 7}, {"item": "socks_crew_basic", "quantity": 7}, {"item": "shoes_sneakers_basic", "quantity": 1}, {"item": "shoes_dress_black", "quantity": 1}, {"item": "jacket_rain_shell_basic", "quantity": 1}, {"item": "jacket_winter_parka", "quantity": 1}, {"item": "drink_water_bottle", "quantity": 2}, {"item": "hygiene_toothbrush", "quantity": 1}]},
+    {"budget": "comfortable_background", "items": [{"item": "shirt_basic_white", "quantity": 1}, {"item": "shirt_oxford_blue", "quantity": 1}, {"item": "shirt_hoodie_grey", "quantity": 1}, {"item": "shirt_dress_white", "quantity": 1}, {"item": "pants_jeans_basic", "quantity": 1}, {"item": "pants_chinos_basic", "quantity": 2}, {"item": "underwear_boxers_premium", "quantity": 7}, {"item": "socks_crew_basic", "quantity": 7}, {"item": "shoes_sneakers_premium", "quantity": 1}, {"item": "shoes_dress_black", "quantity": 1}, {"item": "jacket_rain_shell_premium", "quantity": 1}, {"item": "jacket_winter_parka", "quantity": 1}, {"item": "hat_beanie_wool", "quantity": 1}, {"item": "drink_water_bottle", "quantity": 2}, {"item": "hygiene_toothbrush", "quantity": 1}]}
+  ]
+}

@@ -214,6 +214,63 @@ def validate_global_content(known_character_ids: set[str], character_quest_ids: 
                 if block not in valid_blocks:
                     errors.append(f"{path.relative_to(ROOT)}: location {location_id} uses invalid block {block}")
 
+    account_ids: set[str] = set()
+    budget_ids: set[str] = set()
+    item_ids: set[str] = set()
+    store_ids: set[str] = set()
+    valid_clothing_slots = {"underwear", "bra", "shirt", "pants", "socks", "shoes", "hat", "jacket", "gloves", "scarf"}
+    for path, data in packages:
+        for account in data.get("accounts", []):
+            account_id = account.get("id")
+            if not account_id or account_id in account_ids:
+                errors.append(f"{path.relative_to(ROOT)}: missing or duplicate account id {account_id}")
+            account_ids.add(account_id)
+        for budget in data.get("starting_budgets", []):
+            budget_id = budget.get("id")
+            if not budget_id or budget_id in budget_ids:
+                errors.append(f"{path.relative_to(ROOT)}: missing or duplicate starting budget id {budget_id}")
+            budget_ids.add(budget_id)
+            for account_id, amount in budget.get("accounts", {}).items():
+                if account_id not in account_ids or not isinstance(amount, (int, float)) or amount < 0:
+                    errors.append(f"{path.relative_to(ROOT)}: budget {budget_id} has invalid account balance {account_id}")
+        for item in data.get("items", []):
+            item_id = item.get("id")
+            if not item_id or item_id in item_ids:
+                errors.append(f"{path.relative_to(ROOT)}: missing or duplicate item id {item_id}")
+            item_ids.add(item_id)
+            if not item.get("name") or not item.get("category"):
+                errors.append(f"{path.relative_to(ROOT)}: item {item_id} has incomplete core data")
+            if item.get("base_price", -1) < 0 or item.get("weight", -1) < 0 or item.get("stack_limit", 0) < 1:
+                errors.append(f"{path.relative_to(ROOT)}: item {item_id} has invalid price, weight, or stack limit")
+            if item.get("category") == "clothing":
+                if item.get("slot") not in valid_clothing_slots:
+                    errors.append(f"{path.relative_to(ROOT)}: clothing item {item_id} has an invalid slot")
+                for rating in ("warmth", "rain_protection", "wind_protection", "comfort", "formality", "style"):
+                    if not 0 <= item.get(rating, -1) <= 100:
+                        errors.append(f"{path.relative_to(ROOT)}: clothing item {item_id} has invalid {rating}")
+            if item.get("minimum_age") is not None and item["minimum_age"] < 18:
+                errors.append(f"{path.relative_to(ROOT)}: restricted item {item_id} has an invalid minimum age")
+        for store in data.get("stores", []):
+            store_id = store.get("id")
+            if not store_id or store_id in store_ids:
+                errors.append(f"{path.relative_to(ROOT)}: missing or duplicate store id {store_id}")
+            store_ids.add(store_id)
+
+    for path, data in packages:
+        for loadout in data.get("starting_loadouts", []):
+            if loadout.get("budget") not in budget_ids:
+                errors.append(f"{path.relative_to(ROOT)}: loadout references unknown budget {loadout.get('budget')}")
+            for entry in loadout.get("items", []):
+                if entry.get("item") not in item_ids or not isinstance(entry.get("quantity"), int) or entry["quantity"] < 1:
+                    errors.append(f"{path.relative_to(ROOT)}: loadout has invalid item entry {entry}")
+        for store in data.get("stores", []):
+            for item_id in store.get("stock", []):
+                if item_id not in item_ids:
+                    errors.append(f"{path.relative_to(ROOT)}: store {store.get('id')} references unknown item {item_id}")
+            for block in store.get("open_blocks", []):
+                if block not in valid_blocks:
+                    errors.append(f"{path.relative_to(ROOT)}: store {store.get('id')} uses invalid block {block}")
+
     def location_is_valid(value: str) -> bool:
         return (
             value in location_ids

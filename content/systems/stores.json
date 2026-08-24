@@ -1,0 +1,71 @@
+{
+  "format_version": 1,
+  "package_id": "port_alder_initial_stores",
+  "stores": [
+    {
+      "id": "mariner_market",
+      "name": "Mariner Market",
+      "location": "mariner_row_grocery_placeholder",
+      "open_days": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
+      "open_blocks": ["early_morning", "morning", "lunch", "afternoon", "evening", "late_evening"],
+      "price_multiplier": 1.0,
+      "stock": ["food_granola_bar", "food_fruit_cup", "food_chips", "food_candy_bar", "food_instant_meal", "food_sandwich", "food_pasta_ingredients", "food_healthy_bowl_ingredients", "food_salad", "drink_water_bottle", "drink_juice_apple", "drink_soda", "drink_beer_can", "drink_wine_bottle", "drink_spirits_bottle", "hygiene_toothbrush", "hygiene_toothpaste", "hygiene_soap", "household_detergent"]
+    },
+    {
+      "id": "northline_outfitters",
+      "name": "Northline Outfitters",
+      "location": "mariner_row_clothing_placeholder",
+      "open_days": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
+      "open_blocks": ["morning", "lunch", "afternoon", "evening"],
+      "price_multiplier": 1.0,
+      "stock": ["underwear_boxers_basic", "underwear_boxers_premium", "underwear_panties_basic", "underwear_panties_premium", "bra_basic", "bra_sports", "shirt_basic_white", "shirt_basic_navy", "shirt_oxford_blue", "shirt_hoodie_grey", "shirt_work_polo", "pants_jeans_basic", "pants_chinos_basic", "pants_athletic", "socks_crew_basic", "socks_wool_winter", "shoes_sneakers_basic", "shoes_sneakers_premium", "shoes_rain_boots", "jacket_rain_shell_basic", "jacket_rain_shell_premium", "jacket_winter_parka", "hat_beanie_wool", "hat_baseball_cap", "gloves_winter_basic", "scarf_wool_basic"]
+    },
+    {
+      "id": "harbor_formalwear",
+      "name": "Harbor Formalwear",
+      "location": "harbor_formalwear_placeholder",
+      "open_days": ["tuesday", "wednesday", "thursday", "friday", "saturday"],
+      "open_blocks": ["morning", "lunch", "afternoon", "evening"],
+      "price_multiplier": 1.15,
+      "stock": ["shirt_oxford_blue", "shirt_dress_white", "pants_chinos_basic", "pants_dress_black", "shoes_dress_black", "jacket_blazer_navy"]
+    },
+    {
+      "id": "bay_pharmacy",
+      "name": "Bay Pharmacy",
+      "location": "st_maren_pharmacy_placeholder",
+      "open_days": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
+      "open_blocks": ["morning", "lunch", "afternoon", "evening"],
+      "price_multiplier": 1.0,
+      "stock": ["hygiene_toothbrush", "hygiene_toothpaste", "hygiene_soap", "health_condoms_3", "health_home_test", "health_pain_reliever"]
+    },
+    {
+      "id": "westshore_bookshop",
+      "name": "Westshore Bookshop",
+      "location": "westshore_campus",
+      "open_days": ["monday", "tuesday", "wednesday", "thursday", "friday"],
+      "open_blocks": ["morning", "lunch", "afternoon"],
+      "price_multiplier": 1.0,
+      "stock": ["school_notebook", "school_textbook_access"]
+    },
+    {
+      "id": "forge_fitness_desk",
+      "name": "Forge Fitness Front Desk",
+      "location": "forge_fitness.front_desk",
+      "open_days": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
+      "open_blocks": ["early_morning", "morning", "lunch", "afternoon", "evening", "late_evening"],
+      "price_multiplier": 1.0,
+      "stock": ["gym_day_pass", "drink_water_bottle", "food_granola_bar", "shirt_work_polo", "pants_athletic", "shoes_sneakers_premium", "bra_sports"]
+    },
+    {
+      "id": "harborlight_concessions",
+      "name": "Harborlight Concessions",
+      "location": "harborlight_cinema.concessions",
+      "open_days": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
+      "open_blocks": ["afternoon", "evening", "late_evening"],
+      "price_multiplier": 1.45,
+      "stock": ["cinema_ticket", "food_chips", "food_candy_bar", "drink_water_bottle", "drink_soda"]
+    }
+  ],
+  "stock_rules": {"daily_restock": true, "staples_always_available": true, "weather_items_more_visible_before_storms": true, "seasonal_stock_changes": true, "sold_out_state_allowed": true},
+  "discounts": [{"id": "westshore_student", "percent": 10, "eligible_stores": ["westshore_bookshop", "harborlight_concessions"], "requires": "active_student_id"}, {"id": "employee_discount", "percent": 15, "eligible_store": "current_employer", "requires": "active_employment"}]
+}

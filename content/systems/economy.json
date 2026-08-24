@@ -1,0 +1,60 @@
+{
+  "format_version": 1,
+  "package_id": "port_alder_economy_system",
+  "currency": {"name": "Port Alder Dollar", "symbol": "$", "decimal_places": 2},
+  "accounts": [
+    {"id": "wallet_cash", "name": "Cash", "type": "cash", "minimum_balance": 0, "interest_rate": 0},
+    {"id": "checking", "name": "Checking Account", "type": "bank", "minimum_balance": 0, "interest_rate": 0},
+    {"id": "savings", "name": "Savings Account", "type": "bank", "minimum_balance": 0, "annual_interest_rate": 0.015},
+    {"id": "credit_card", "name": "Starter Credit Card", "type": "credit", "credit_limit": 1000, "annual_interest_rate": 0.1999, "minimum_payment_percent": 3}
+  ],
+  "starting_budgets": [
+    {"id": "limited_background", "accounts": {"wallet_cash": 40, "checking": 260, "savings": 200, "credit_card": 0}, "weekly_school_allowance": 60, "family_car_access": "permission_required", "starting_clothing_tier": "basic", "financial_traits": ["careful_spending_pressure"]},
+    {"id": "standard_background", "accounts": {"wallet_cash": 75, "checking": 625, "savings": 800, "credit_card": 0}, "weekly_school_allowance": 100, "family_car_access": "shared_by_permission", "starting_clothing_tier": "standard", "financial_traits": []},
+    {"id": "comfortable_background", "accounts": {"wallet_cash": 120, "checking": 1380, "savings": 3000, "credit_card": 0}, "weekly_school_allowance": 150, "family_car_access": "regular_shared_access", "starting_clothing_tier": "comfortable", "financial_traits": ["higher_family_expectations"]}
+  ],
+  "ledger": {
+    "transaction_types": ["income", "purchase", "rent", "tuition", "utility", "healthcare", "transportation", "tax", "debt_payment", "transfer", "refund", "child_support", "gift"],
+    "required_fields": ["id", "timestamp", "type", "amount", "account", "description", "category"],
+    "negative_amount_means_expense": true,
+    "history_never_rewritten": true
+  },
+  "recurring_rules": [
+    {"id": "parental_rent", "amount": 250, "frequency": "monthly", "first_due": "Y1-09-01", "condition": {"education.enrolled": false}, "grace_days": 3, "late_effects": [{"household_resentment": 3}, {"relationship_meter": ["elena_reyes_hale", "trust", -2]}]},
+    {"id": "school_allowance", "frequency": "weekly", "day": "monday", "amount_from": "starting_budget.weekly_school_allowance", "condition": {"education.enrolled": true}, "destination": "checking"},
+    {"id": "credit_card_payment", "frequency": "monthly", "day": 15, "amount_formula": "max(balance * minimum_payment_percent, 25)", "condition": {"credit_card.balance": ">0"}},
+    {"id": "student_loan_interest", "frequency": "monthly", "amount_formula": "principal * annual_rate / 12", "condition": {"student_loan.active": true}}
+  ],
+  "income_rules": {
+    "hourly_gross": "hourly_pay * hours_worked",
+    "tips": "tracked_separately_then_added_to_taxable_income",
+    "payday": "friday",
+    "withholding_brackets": [{"weekly_gross_max": 400, "rate": 0.08}, {"weekly_gross_max": 800, "rate": 0.13}, {"weekly_gross_max": 1500, "rate": 0.18}, {"weekly_gross_max": null, "rate": 0.24}],
+    "net_pay": "gross + tips - withholding - benefit_deductions"
+  },
+  "purchase_rules": {
+    "payment_priority": ["wallet_cash", "checking", "credit_card"],
+    "decline_if_no_valid_funds": true,
+    "sales_tax_rate": 0.07,
+    "groceries_tax_exempt": true,
+    "prescription_tax_exempt": true,
+    "receipt_saved_to_phone": true,
+    "returns_require_receipt_and_item_condition": true
+  },
+  "debt_and_credit": {
+    "credit_score_range": [300, 850],
+    "starting_score": 650,
+    "positive_factors": ["on_time_payment", "low_utilization", "account_age"],
+    "negative_factors": ["late_payment", "missed_payment", "high_utilization", "default"],
+    "student_loan": {"annual_interest_rate": 0.045, "payments_begin": "after_leaving_school_plus_180_days"}
+  },
+  "child_support": {
+    "activation": "unmarried_parents_living_separately",
+    "monthly_formula_factors": ["payer_net_income", "recipient_net_income", "custody_share", "number_of_children", "childcare_costs", "medical_costs"],
+    "base_share_of_combined_income_per_child": 0.12,
+    "minimum_monthly_payment": 100,
+    "review_interval_days": 180,
+    "missed_payment_effects": ["debt_balance", "relationship_resentment", "legal_enforcement_risk"]
+  },
+  "weekly_summary": ["starting_balance", "gross_income", "net_income", "allowance", "purchases", "transportation", "healthcare", "tuition", "rent", "debt", "ending_balance"]
+}
