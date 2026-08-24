@@ -9,6 +9,9 @@ unnamed service NPCs lives here.
 - `opening/opening_week.json` maps Tuesday through Sunday across all seven blocks.
 - `world/locations.json` defines walkable locations, rooms, hours, and actions.
 - `world/transportation.json` defines travel modes, routes, time, cost, and delays.
+- `systems/education.json` defines Westshore programs, courses, schedules, and grading.
+- `systems/employment.json` defines jobs, requirements, interviews, and promotions.
+- `systems/repeatable_activities.json` defines routine actions and simulation effects.
 
 Global content follows the same declarative rules as character packages and cannot
 contain executable code.

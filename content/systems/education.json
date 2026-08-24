@@ -1,0 +1,50 @@
+{
+  "format_version": 1,
+  "package_id": "westshore_education_system",
+  "institution": {
+    "id": "westshore_college",
+    "name": "Westshore College",
+    "fall_semester": {"orientation": "Y1-08-30", "classes_begin": "Y1-09-03", "classes_end": "Y1-12-13", "exam_week_begins": "Y1-12-16"},
+    "operating_days": ["monday", "tuesday", "wednesday", "thursday", "friday"],
+    "teaching_blocks": ["morning", "lunch", "afternoon"],
+    "closed_blocks": ["evening", "late_evening", "night"],
+    "tuition": {"full_time_per_semester": 4000, "part_time_per_semester": 2200, "books_and_supplies_estimate": 450},
+    "course_load": {"full_time_courses": 4, "part_time_courses": 2, "maximum_courses": 5},
+    "allowance_while_enrolled": {"limited_background": 60, "standard_background": 100, "comfortable_background": 150, "frequency": "weekly"}
+  },
+  "programs": [
+    {"id": "arts_and_humanities", "name": "Arts and Humanities", "credential": "Bachelor-equivalent degree", "duration_semesters": 8, "core_skills": ["writing", "literature", "history", "creativity"], "first_semester_courses": ["ENG101", "ART105", "HIS110", "UNI100"], "career_tags": ["writing", "arts", "communications", "public_service"]},
+    {"id": "business", "name": "Business", "credential": "Bachelor-equivalent degree", "duration_semesters": 8, "core_skills": ["business", "accounting", "negotiation", "leadership"], "first_semester_courses": ["BUS101", "ACC110", "MAT110", "UNI100"], "career_tags": ["management", "finance", "sales", "entrepreneurship"]},
+    {"id": "computer_systems", "name": "Computer Systems", "credential": "Diploma", "duration_semesters": 4, "core_skills": ["programming", "computer_repair", "networking", "problem_solving"], "first_semester_courses": ["CST101", "CST115", "MAT110", "UNI100"], "career_tags": ["information_technology", "software", "support", "networking"]},
+    {"id": "education", "name": "Education", "credential": "Bachelor-equivalent degree", "duration_semesters": 8, "core_skills": ["teaching", "communication", "empathy", "organization"], "first_semester_courses": ["EDU100", "PSY101", "ENG101", "UNI100"], "career_tags": ["teaching", "training", "youth_services", "administration"]},
+    {"id": "health_sciences", "name": "Health Sciences", "credential": "Bachelor-equivalent degree", "duration_semesters": 8, "core_skills": ["biology", "chemistry", "first_aid", "study"], "first_semester_courses": ["BIO101", "CHEM101", "MAT110", "UNI100"], "career_tags": ["healthcare", "research", "clinical_programs", "public_health"]},
+    {"id": "social_sciences", "name": "Social Sciences", "credential": "Bachelor-equivalent degree", "duration_semesters": 8, "core_skills": ["research", "psychology", "sociology", "writing"], "first_semester_courses": ["SOC101", "PSY101", "POL105", "UNI100"], "career_tags": ["research", "government", "community_services", "counseling_pathway"]},
+    {"id": "undeclared_studies", "name": "Undeclared Studies", "credential": "Transfer pathway", "duration_semesters": 2, "core_skills": ["study", "research", "self_knowledge"], "first_semester_courses": ["UNI100", "ENG101", "BUS101", "PSY101"], "career_tags": ["program_exploration", "transfer"]}
+  ],
+  "courses": [
+    {"id": "UNI100", "name": "College Foundations", "skills": {"study": 5, "organization": 4}, "difficulty": 20, "sections": [{"id": "A", "days": ["monday", "wednesday"], "block": "lunch"}, {"id": "B", "days": ["tuesday", "thursday"], "block": "lunch"}]},
+    {"id": "ENG101", "name": "Academic Writing", "skills": {"writing": 7, "research": 3}, "difficulty": 32, "sections": [{"id": "A", "days": ["monday", "wednesday"], "block": "morning"}, {"id": "B", "days": ["tuesday", "thursday"], "block": "afternoon"}]},
+    {"id": "ART105", "name": "Visual Culture", "skills": {"creativity": 6, "art_history": 5}, "difficulty": 30, "sections": [{"id": "A", "days": ["tuesday", "thursday"], "block": "morning"}]},
+    {"id": "HIS110", "name": "Port Alder and the Coast", "skills": {"history": 7, "research": 3}, "difficulty": 34, "sections": [{"id": "A", "days": ["monday", "wednesday"], "block": "afternoon"}]},
+    {"id": "BUS101", "name": "Introduction to Business", "skills": {"business": 7, "communication": 3}, "difficulty": 32, "sections": [{"id": "A", "days": ["monday", "wednesday"], "block": "morning"}, {"id": "B", "days": ["tuesday", "thursday"], "block": "afternoon"}]},
+    {"id": "ACC110", "name": "Financial Accounting I", "skills": {"accounting": 8, "budgeting": 3}, "difficulty": 45, "sections": [{"id": "A", "days": ["tuesday", "thursday"], "block": "morning"}]},
+    {"id": "MAT110", "name": "Applied Mathematics", "skills": {"mathematics": 8, "problem_solving": 3}, "difficulty": 46, "sections": [{"id": "A", "days": ["monday", "wednesday"], "block": "afternoon"}, {"id": "B", "days": ["tuesday", "thursday"], "block": "morning"}]},
+    {"id": "CST101", "name": "Programming Foundations", "skills": {"programming": 9, "problem_solving": 4}, "difficulty": 48, "sections": [{"id": "A", "days": ["monday", "wednesday"], "block": "morning"}]},
+    {"id": "CST115", "name": "Computer Hardware and Networks", "skills": {"computer_repair": 8, "networking": 6}, "difficulty": 44, "sections": [{"id": "A", "days": ["tuesday", "thursday"], "block": "afternoon"}]},
+    {"id": "EDU100", "name": "Foundations of Education", "skills": {"teaching": 7, "empathy": 3}, "difficulty": 34, "sections": [{"id": "A", "days": ["tuesday", "thursday"], "block": "morning"}]},
+    {"id": "PSY101", "name": "Introduction to Psychology", "skills": {"psychology": 7, "emotional_intelligence": 3}, "difficulty": 38, "sections": [{"id": "A", "days": ["monday", "wednesday"], "block": "afternoon"}, {"id": "B", "days": ["tuesday", "thursday"], "block": "morning"}]},
+    {"id": "BIO101", "name": "General Biology", "skills": {"biology": 9, "laboratory": 4}, "difficulty": 52, "sections": [{"id": "A", "days": ["monday", "wednesday"], "block": "morning"}], "lab": {"day": "friday", "block": "afternoon"}},
+    {"id": "CHEM101", "name": "General Chemistry", "skills": {"chemistry": 9, "laboratory": 4}, "difficulty": 55, "sections": [{"id": "A", "days": ["tuesday", "thursday"], "block": "morning"}], "lab": {"day": "friday", "block": "morning"}},
+    {"id": "SOC101", "name": "Introduction to Sociology", "skills": {"sociology": 8, "research": 3}, "difficulty": 36, "sections": [{"id": "A", "days": ["monday", "wednesday"], "block": "morning"}]},
+    {"id": "POL105", "name": "Government and Public Life", "skills": {"politics": 7, "public_speaking": 3}, "difficulty": 39, "sections": [{"id": "A", "days": ["tuesday", "thursday"], "block": "afternoon"}]}
+  ],
+  "academic_rules": {
+    "grade_components": {"attendance": 15, "assignments": 30, "projects": 25, "exams": 30},
+    "letter_grades": [{"minimum": 90, "grade": "A"}, {"minimum": 80, "grade": "B"}, {"minimum": 70, "grade": "C"}, {"minimum": 60, "grade": "D"}, {"minimum": 0, "grade": "F"}],
+    "attendance": {"late_penalty": 1, "absence_penalty": 4, "three_unexcused_absences_flag": "academic_warning"},
+    "performance_factors": ["focus", "energy", "study_skill", "course_skill", "attendance", "assignment_completion", "stress"],
+    "schedule_conflict_policy": "class_and_work_may_overlap_but_both_cannot_be_attended",
+    "program_change": {"allowed_between_semesters": true, "mid_semester_requires_advisor": true, "credits_may_transfer": true},
+    "withdrawal_and_return": true
+  }
+}

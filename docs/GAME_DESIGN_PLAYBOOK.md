@@ -469,9 +469,13 @@ blocks. Initial location data defines the Hale home room by room, Alder Heights,
 Westshore, Harbor Employment Centre, Forge Fitness, Harborlight Cinema, and Alder
 Bay Park. Transportation data supplies walking, bus, taxi, and car time and cost.
 
+The initial playable systems catalog defines seven Westshore programs, fifteen
+first-semester courses, thirteen jobs with requirements and promotions, a scored
+interview model, and twenty-seven repeatable life activities.
+
 ## Next design milestones
 
-1. Expand the validated opening-week foundation with job listings, interviews, class schedules, and repeatable activities
+1. Add the economy ledger, stores, inventory items, clothing catalog, food catalog, and starting budgets
 2. Expand the established conversation data schema across the opening cast
 3. Evolve the validated JSON `.character` development format into the compressed release container
 4. Create alternative starting households

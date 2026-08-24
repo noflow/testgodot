@@ -1,0 +1,192 @@
+{
+  "format_version": 1,
+  "package_id": "port_alder_employment_system",
+  "economy": {"minimum_wage": 18, "standard_pay_frequency": "weekly", "overtime_after_weekly_hours": 40, "overtime_multiplier": 1.5, "tips_taxable": true},
+  "jobs": [
+    {
+      "id": "grocery_stock_clerk",
+      "title": "Grocery Stock Clerk",
+      "employer": "Mariner Market",
+      "location": "mariner_row_grocery_placeholder",
+      "employment_types": ["part_time", "full_time"],
+      "hourly_pay": 18,
+      "requirements": {"skills": {}, "traits_any": ["reliable", "responsible", "disciplined"], "minimum_stamina": 20, "education": "none", "availability": ["early_morning", "evening", "weekend"]},
+      "schedule_options": [{"id": "weekday_early", "days": ["monday", "tuesday", "wednesday", "thursday", "friday"], "blocks": ["early_morning", "morning"], "weekly_hours": 20}, {"id": "weekend_full", "days": ["saturday", "sunday"], "blocks": ["morning", "lunch", "afternoon", "evening"], "weekly_hours": 16}],
+      "promotion_path": [{"title": "Senior Stock Clerk", "hourly_pay": 20, "requires_performance": 65}, {"title": "Department Lead", "hourly_pay": 24, "requires_performance": 78, "requires_skill": ["leadership", 35]}]
+    },
+    {
+      "id": "clothing_sales_associate",
+      "title": "Clothing Sales Associate",
+      "employer": "Northline Outfitters",
+      "location": "mariner_row_clothing_placeholder",
+      "employment_types": ["part_time"],
+      "hourly_pay": 18.5,
+      "requirements": {"skills": {"fashion": 10}, "traits_any": ["charismatic", "helpful", "observant"], "minimum_manners": 20, "education": "none", "availability": ["afternoon", "evening", "weekend"]},
+      "schedule_options": [{"id": "weekday_close", "days": ["monday", "wednesday", "friday"], "blocks": ["afternoon", "evening"], "weekly_hours": 18}, {"id": "weekend_retail", "days": ["saturday", "sunday"], "blocks": ["morning", "lunch", "afternoon"], "weekly_hours": 14}],
+      "promotion_path": [{"title": "Senior Sales Associate", "hourly_pay": 20.5, "requires_performance": 68}, {"title": "Assistant Store Manager", "hourly_pay": 25, "requires_performance": 82, "requires_skill": ["leadership", 45]}]
+    },
+    {
+      "id": "cinema_attendant",
+      "title": "Cinema Attendant",
+      "employer": "Harborlight Cinema",
+      "location": "harborlight_cinema",
+      "employment_types": ["part_time"],
+      "hourly_pay": 18,
+      "requirements": {"skills": {}, "traits_any": ["friendly", "reliable", "patient"], "minimum_manners": 15, "education": "none", "availability": ["evening", "late_evening", "weekend"]},
+      "schedule_options": [{"id": "weekday_evenings", "days": ["tuesday", "wednesday", "thursday"], "blocks": ["evening", "late_evening"], "weekly_hours": 15}, {"id": "weekend_nights", "days": ["friday", "saturday", "sunday"], "blocks": ["evening", "late_evening"], "weekly_hours": 18}],
+      "promotion_path": [{"title": "Shift Lead", "hourly_pay": 21, "requires_performance": 72}, {"title": "Assistant Cinema Manager", "hourly_pay": 26, "requires_performance": 84, "requires_skill": ["leadership", 40]}],
+      "referral_character": "marcus_lee"
+    },
+    {
+      "id": "restaurant_dishwasher",
+      "title": "Restaurant Dishwasher",
+      "employer": "La Brisa Kitchen",
+      "location": "restaurant_placeholder",
+      "employment_types": ["part_time", "full_time"],
+      "hourly_pay": 18.5,
+      "requirements": {"skills": {}, "traits_any": ["disciplined", "reliable"], "minimum_stamina": 25, "education": "none", "availability": ["evening", "late_evening", "weekend"]},
+      "schedule_options": [{"id": "part_time_close", "days": ["wednesday", "friday", "saturday"], "blocks": ["evening", "late_evening"], "weekly_hours": 18}, {"id": "full_time_kitchen", "days": ["wednesday", "thursday", "friday", "saturday", "sunday"], "blocks": ["afternoon", "evening"], "weekly_hours": 38}],
+      "promotion_path": [{"title": "Prep Cook", "hourly_pay": 21, "requires_performance": 65, "requires_skill": ["cooking", 25]}, {"title": "Line Cook", "hourly_pay": 25, "requires_performance": 78, "requires_skill": ["cooking", 60]}],
+      "referral_character": "sofia_alvarez"
+    },
+    {
+      "id": "restaurant_server",
+      "title": "Restaurant Server",
+      "employer": "La Brisa Kitchen",
+      "location": "restaurant_placeholder",
+      "employment_types": ["part_time", "full_time"],
+      "hourly_pay": 18,
+      "expected_tips_per_hour": 7,
+      "requirements": {"skills": {"hospitality": 15}, "traits_any": ["charismatic", "patient", "confident"], "minimum_manners": 30, "education": "none", "availability": ["lunch", "evening", "weekend"]},
+      "schedule_options": [{"id": "student_server", "days": ["friday", "saturday", "sunday"], "blocks": ["evening", "late_evening"], "weekly_hours": 18}, {"id": "full_time_server", "days": ["wednesday", "thursday", "friday", "saturday", "sunday"], "blocks": ["lunch", "evening"], "weekly_hours": 36}],
+      "promotion_path": [{"title": "Senior Server", "hourly_pay": 20, "requires_performance": 72}, {"title": "Shift Supervisor", "hourly_pay": 25, "requires_performance": 84, "requires_skill": ["leadership", 45]}],
+      "referral_character": "sofia_alvarez"
+    },
+    {
+      "id": "campus_library_assistant",
+      "title": "Campus Library Assistant",
+      "employer": "Westshore College",
+      "location": "westshore_campus.library",
+      "employment_types": ["part_time"],
+      "hourly_pay": 19,
+      "requirements": {"skills": {"research": 15}, "traits_any": ["organized", "patient", "responsible"], "minimum_focus": 25, "education": "actively_enrolled_at_westshore", "availability": ["afternoon", "evening"]},
+      "schedule_options": [{"id": "two_evenings", "days": ["tuesday", "thursday"], "blocks": ["afternoon", "evening"], "weekly_hours": 14}, {"id": "three_afternoons", "days": ["monday", "wednesday", "friday"], "blocks": ["afternoon"], "weekly_hours": 12}],
+      "promotion_path": [{"title": "Senior Student Assistant", "hourly_pay": 21, "requires_performance": 75}]
+    },
+    {
+      "id": "campus_it_assistant",
+      "title": "Campus IT Helpdesk Assistant",
+      "employer": "Westshore College",
+      "location": "westshore_campus",
+      "employment_types": ["part_time"],
+      "hourly_pay": 21,
+      "requirements": {"skills_any": [["computer_repair", 25], ["programming", 25]], "traits_any": ["patient", "analytical", "helpful"], "minimum_focus": 30, "education": "actively_enrolled_at_westshore", "availability": ["afternoon", "evening"]},
+      "schedule_options": [{"id": "helpdesk_tue_thu", "days": ["tuesday", "thursday"], "blocks": ["afternoon", "evening"], "weekly_hours": 16}],
+      "promotion_path": [{"title": "Senior Student Technician", "hourly_pay": 24, "requires_performance": 76, "requires_skill": ["computer_repair", 55]}],
+      "referral_character": "theo_grant"
+    },
+    {
+      "id": "forge_front_desk",
+      "title": "Gym Front Desk Associate",
+      "employer": "Forge Fitness",
+      "location": "forge_fitness.front_desk",
+      "employment_types": ["part_time"],
+      "hourly_pay": 19,
+      "requirements": {"skills": {"customer_service": 10}, "traits_any": ["friendly", "reliable", "energetic"], "minimum_manners": 20, "education": "none", "availability": ["early_morning", "evening", "weekend"]},
+      "schedule_options": [{"id": "early_open", "days": ["monday", "wednesday", "friday"], "blocks": ["early_morning", "morning"], "weekly_hours": 15}, {"id": "weekend_desk", "days": ["saturday", "sunday"], "blocks": ["morning", "lunch", "afternoon"], "weekly_hours": 14}],
+      "promotion_path": [{"title": "Member Services Lead", "hourly_pay": 23, "requires_performance": 75}, {"title": "Assistant Operations Manager", "hourly_pay": 28, "requires_performance": 85, "requires_skill": ["leadership", 50]}],
+      "referral_character": "rachel_morgan"
+    },
+    {
+      "id": "clinic_records_clerk",
+      "title": "Clinic Records Clerk",
+      "employer": "St. Maren Community Clinic",
+      "location": "st_maren_clinic_placeholder",
+      "employment_types": ["part_time", "full_time"],
+      "hourly_pay": 21,
+      "requirements": {"skills": {"administration": 25}, "traits_any": ["organized", "discreet", "reliable"], "minimum_focus": 35, "education": "high_school_equivalent", "availability": ["morning", "lunch", "afternoon"]},
+      "schedule_options": [{"id": "part_time_clinic", "days": ["monday", "wednesday", "friday"], "blocks": ["morning", "lunch"], "weekly_hours": 18}, {"id": "full_time_clinic", "days": ["monday", "tuesday", "wednesday", "thursday", "friday"], "blocks": ["morning", "lunch", "afternoon"], "weekly_hours": 37.5}],
+      "promotion_path": [{"title": "Senior Records Clerk", "hourly_pay": 24, "requires_performance": 76}, {"title": "Records Coordinator", "hourly_pay": 29, "requires_performance": 86, "requires_skill": ["administration", 70]}],
+      "referral_character": "elena_reyes_hale"
+    },
+    {
+      "id": "transit_maintenance_helper",
+      "title": "Transit Maintenance Helper",
+      "employer": "Port Alder Transit",
+      "location": "transit_depot_placeholder",
+      "employment_types": ["full_time"],
+      "hourly_pay": 23,
+      "requirements": {"skills": {"mechanics": 25}, "traits_any": ["reliable", "careful", "disciplined"], "minimum_strength": 25, "minimum_stamina": 30, "education": "high_school_equivalent", "availability": ["early_morning", "morning", "lunch", "afternoon"]},
+      "schedule_options": [{"id": "tue_sat_day", "days": ["tuesday", "wednesday", "thursday", "friday", "saturday"], "blocks": ["early_morning", "morning", "lunch", "afternoon"], "weekly_hours": 40}],
+      "promotion_path": [{"title": "Apprentice Mechanic", "hourly_pay": 27, "requires_performance": 72, "requires_skill": ["mechanics", 55]}, {"title": "Certified Transit Mechanic", "hourly_pay": 36, "requires_performance": 85, "requires_skill": ["mechanics", 110]}],
+      "referral_character": "daniel_hale"
+    },
+    {
+      "id": "warehouse_associate",
+      "title": "Warehouse Associate",
+      "employer": "Greyport Distribution",
+      "location": "greyport_warehouse_placeholder",
+      "employment_types": ["full_time"],
+      "hourly_pay": 22,
+      "requirements": {"skills": {}, "traits_any": ["reliable", "disciplined"], "minimum_strength": 30, "minimum_stamina": 35, "education": "none", "availability": ["early_morning", "morning", "lunch", "afternoon"]},
+      "schedule_options": [{"id": "weekday_day", "days": ["monday", "tuesday", "wednesday", "thursday", "friday"], "blocks": ["early_morning", "morning", "lunch", "afternoon"], "weekly_hours": 40}, {"id": "weekend_shift", "days": ["thursday", "friday", "saturday", "sunday"], "blocks": ["morning", "lunch", "afternoon", "evening"], "weekly_hours": 40}],
+      "promotion_path": [{"title": "Inventory Specialist", "hourly_pay": 25, "requires_performance": 74, "requires_skill": ["organization", 35]}, {"title": "Shift Supervisor", "hourly_pay": 30, "requires_performance": 84, "requires_skill": ["leadership", 50]}]
+    },
+    {
+      "id": "junior_office_assistant",
+      "title": "Junior Office Assistant",
+      "employer": "Harbor Centre Business Services",
+      "location": "harbor_office_placeholder",
+      "employment_types": ["full_time"],
+      "hourly_pay": 22,
+      "requirements": {"skills": {"administration": 20}, "traits_any": ["organized", "professional", "reliable"], "minimum_focus": 30, "minimum_manners": 30, "education": "high_school_equivalent", "availability": ["morning", "lunch", "afternoon"]},
+      "schedule_options": [{"id": "weekday_office", "days": ["monday", "tuesday", "wednesday", "thursday", "friday"], "blocks": ["morning", "lunch", "afternoon"], "weekly_hours": 37.5}],
+      "promotion_path": [{"title": "Administrative Assistant", "hourly_pay": 26, "requires_performance": 74, "requires_skill": ["administration", 55]}, {"title": "Office Coordinator", "hourly_pay": 31, "requires_performance": 85, "requires_skill": ["leadership", 45]}]
+    },
+    {
+      "id": "licensed_professional_companion",
+      "title": "Licensed Professional Companion",
+      "employer": "Self-Employed or Licensed Cooperative",
+      "location": "licensed_workplace_placeholder",
+      "employment_types": ["independent_variable"],
+      "booking_pay_range": [120, 450],
+      "requirements": {"minimum_age": 18, "licenses": ["port_alder_adult_services_license", "business_registration"], "health": ["current_screening", "safety_plan"], "skills": {"emotional_intelligence": 45, "negotiation": 40}, "traits_any": ["assertive", "discreet", "perceptive"], "hard_requirement": "voluntary_informed_choice"},
+      "schedule_options": [{"id": "self_scheduled", "days": ["player_selected"], "blocks": ["afternoon", "evening", "late_evening", "night"], "weekly_hours": "variable"}],
+      "promotion_path": [{"title": "Established Independent Professional", "booking_pay_range": [250, 700], "requires_reputation": 60}, {"title": "Licensed Cooperative Partner", "booking_pay_range": [300, 900], "requires_reputation": 80, "requires_skill": ["business", 65]}],
+      "content_rules": ["adult_only", "non_graphic_presentation", "consent_required", "protection_and_health_policy", "right_to_refuse_any_booking", "no_debt_coercion"]
+    }
+  ],
+  "application_system": {
+    "stages": ["discovered", "reviewed", "application_started", "submitted", "screening", "interview_scheduled", "interviewed", "offer_or_rejection", "accepted_or_declined"],
+    "resume_factors": ["education", "skills", "experience", "certifications", "reputation", "referral"],
+    "automatic_rejection": ["missing_hard_requirement", "unavailable_for_required_schedule", "false_application_discovered"],
+    "reapply_cooldown_days": 30
+  },
+  "interview_system": {
+    "score_range": [0, 100],
+    "offer_threshold": 65,
+    "strong_offer_threshold": 82,
+    "factors": [
+      {"id": "requirements_match", "maximum": 30},
+      {"id": "answer_quality", "maximum": 20},
+      {"id": "reliability_and_punctuality", "maximum": 15},
+      {"id": "manners_and_presentation", "maximum": 10},
+      {"id": "relevant_traits", "maximum": 10},
+      {"id": "reputation_and_referral", "maximum": 10},
+      {"id": "weather_appropriate_clean_outfit", "maximum": 5}
+    ],
+    "penalties": {"late_under_15_minutes": -8, "late_15_to_30_minutes": -18, "no_show": -100, "intoxicated": -100, "dishonesty_discovered": -30},
+    "choice_tones": ["honest", "confident", "professional", "curious", "blunt", "deceptive", "defensive"],
+    "questions": ["why_this_job", "relevant_experience", "schedule_availability", "handling_conflict", "reliability_example", "candidate_questions"],
+    "outcomes": ["rejected", "waitlisted", "standard_offer", "strong_offer", "alternate_role_offer"]
+  },
+  "employment_rules": {
+    "probation_days": 30,
+    "performance_range": [0, 100],
+    "performance_factors": ["attendance", "punctuality", "task_quality", "relevant_skill", "energy", "focus", "customer_or_team_feedback"],
+    "raises": {"review_interval_days": 90, "typical_percent_range": [2, 8]},
+    "promotion_requires_opening": true,
+    "shift_trade_requires_approval": true,
+    "possible_separations": ["resignation", "layoff", "termination", "contract_end"]
+  }
+}

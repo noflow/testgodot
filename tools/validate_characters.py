@@ -219,7 +219,7 @@ def validate_global_content(known_character_ids: set[str], character_quest_ids: 
             value in location_ids
             or value in room_ids
             or value in {"phone", "variable"}
-            or value.startswith("variable_")
+            or value.startswith(("variable_", "any_", "legal_"))
             or value.endswith("_placeholder")
             or value.endswith("_offscreen")
         )
@@ -300,6 +300,66 @@ def validate_global_content(known_character_ids: set[str], character_quest_ids: 
                     for block in window.get("blocks", []):
                         if block not in valid_blocks:
                             errors.append(f"{path.relative_to(ROOT)}: NPC {item.get('character')} uses invalid block {block}")
+
+        courses = data.get("courses", [])
+        course_ids = [course.get("id") for course in courses]
+        if any(not item for item in course_ids) or len(course_ids) != len(set(course_ids)):
+            errors.append(f"{path.relative_to(ROOT)}: courses contain missing or duplicate ids")
+        teaching_blocks = set(data.get("institution", {}).get("teaching_blocks", []))
+        for course in courses:
+            if not course.get("name") or not 0 <= course.get("difficulty", -1) <= 100:
+                errors.append(f"{path.relative_to(ROOT)}: course {course.get('id')} has invalid core data")
+            for section in course.get("sections", []):
+                if section.get("block") not in teaching_blocks:
+                    errors.append(f"{path.relative_to(ROOT)}: course {course.get('id')} uses a block outside teaching hours")
+        program_ids: set[str] = set()
+        for program in data.get("programs", []):
+            program_id = program.get("id")
+            if not program_id or program_id in program_ids:
+                errors.append(f"{path.relative_to(ROOT)}: missing or duplicate program id {program_id}")
+            program_ids.add(program_id)
+            for course_id in program.get("first_semester_courses", []):
+                if course_id not in course_ids:
+                    errors.append(f"{path.relative_to(ROOT)}: program {program_id} references unknown course {course_id}")
+
+        jobs = data.get("jobs", [])
+        job_ids = [job.get("id") for job in jobs]
+        minimum_wage = data.get("economy", {}).get("minimum_wage", 0)
+        if any(not item for item in job_ids) or len(job_ids) != len(set(job_ids)):
+            errors.append(f"{path.relative_to(ROOT)}: jobs contain missing or duplicate ids")
+        for job in jobs:
+            job_id = job.get("id")
+            if not job.get("title") or not job.get("employer") or not job.get("employment_types"):
+                errors.append(f"{path.relative_to(ROOT)}: job {job_id} has incomplete core data")
+            if "hourly_pay" in job and job["hourly_pay"] < minimum_wage:
+                errors.append(f"{path.relative_to(ROOT)}: job {job_id} pays below the configured minimum wage")
+            if "booking_pay_range" in job and (len(job["booking_pay_range"]) != 2 or min(job["booking_pay_range"]) <= 0):
+                errors.append(f"{path.relative_to(ROOT)}: job {job_id} has an invalid booking range")
+            requirements = job.get("requirements", {})
+            skill_requirements = list(requirements.get("skills", {}).items())
+            skill_requirements.extend(requirements.get("skills_any", []))
+            for skill, level in skill_requirements:
+                if not isinstance(level, int) or not 0 <= level <= 250:
+                    errors.append(f"{path.relative_to(ROOT)}: job {job_id} has invalid skill requirement {skill}")
+            for schedule in job.get("schedule_options", []):
+                for block in schedule.get("blocks", []):
+                    if block not in valid_blocks:
+                        errors.append(f"{path.relative_to(ROOT)}: job {job_id} uses invalid block {block}")
+                weekly_hours = schedule.get("weekly_hours")
+                if weekly_hours != "variable" and (not isinstance(weekly_hours, (int, float)) or not 0 < weekly_hours <= 60):
+                    errors.append(f"{path.relative_to(ROOT)}: job {job_id} has invalid weekly hours")
+
+        activities = data.get("activities", [])
+        activity_ids = [activity.get("id") for activity in activities]
+        if any(not item for item in activity_ids) or len(activity_ids) != len(set(activity_ids)):
+            errors.append(f"{path.relative_to(ROOT)}: activities contain missing or duplicate ids")
+        for activity in activities:
+            if not activity.get("name") or not activity.get("category"):
+                errors.append(f"{path.relative_to(ROOT)}: activity {activity.get('id')} has incomplete core data")
+            if not 0 < activity.get("duration_blocks", 0) <= 3:
+                errors.append(f"{path.relative_to(ROOT)}: activity {activity.get('id')} has invalid duration")
+            if activity.get("cost", 0) < 0:
+                errors.append(f"{path.relative_to(ROOT)}: activity {activity.get('id')} has invalid cost")
 
     return errors
 
