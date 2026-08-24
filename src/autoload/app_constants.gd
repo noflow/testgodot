@@ -1,0 +1,26 @@
+extends Node
+
+const APP_NAME: String = "Port Alder Life Sim"
+const APP_VERSION: String = "0.1.0-dev"
+const TARGET_GODOT_VERSION: String = "4.7.2"
+
+const MAIN_MENU_SCENE: String = "res://scenes/menus/main_menu.tscn"
+const BOOT_SCENE: String = "res://scenes/boot/boot.tscn"
+
+const COLOR_BACKGROUND: Color = Color("#091016")
+const COLOR_PANEL: Color = Color("#13232c")
+const COLOR_PRIMARY: Color = Color("#67c6c3")
+const COLOR_ACCENT: Color = Color("#e9a86c")
+const COLOR_TEXT: Color = Color("#eef6f5")
+const COLOR_MUTED: Color = Color("#9eb4b5")
+const COLOR_ERROR: Color = Color("#ef7777")
+
+const REQUIRED_FOUNDATION_FILES: PackedStringArray = [
+	"res://content/vertical_slice/manifest.json",
+	"res://content/runtime/new_game_state.json",
+	"res://content/systems/simulation_events.json",
+	"res://content/systems/save_system.json",
+	"res://schemas/save_game.schema.json",
+	"res://tests/acceptance/vertical_slice.json",
+]
+

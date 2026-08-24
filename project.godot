@@ -1,0 +1,92 @@
+; Engine configuration file.
+; Target engine: Godot 4.7.2 stable.
+; Edit through the Godot editor when possible.
+
+config_version=5
+
+[application]
+
+config/name="Port Alder Life Sim"
+config/description="A dramatic, mature, non-graphic life simulation and visual novel."
+run/main_scene="res://scenes/boot/boot.tscn"
+config/features=PackedStringArray("4.7", "GL Compatibility")
+boot_splash/bg_color=Color(0.035, 0.063, 0.086, 1)
+boot_splash/show_image=false
+
+[autoload]
+
+AppConstants="*res://src/autoload/app_constants.gd"
+ContentRegistry="*res://src/autoload/content_registry.gd"
+SettingsService="*res://src/autoload/settings_service.gd"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/size/window_width_override=1280
+window/size/window_height_override=720
+window/stretch/mode="canvas_items"
+window/handheld/orientation=1
+
+[gui]
+
+theme/default_font_multichannel_signed_distance_field=true
+
+[input]
+
+move_up={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"physical_keycode":87), Object(InputEventKey,"keycode":4194320), Object(InputEventJoypadMotion,"axis":1,"axis_value":-1.0)]
+}
+move_down={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"physical_keycode":83), Object(InputEventKey,"keycode":4194322), Object(InputEventJoypadMotion,"axis":1,"axis_value":1.0)]
+}
+move_left={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"physical_keycode":65), Object(InputEventKey,"keycode":4194319), Object(InputEventJoypadMotion,"axis":0,"axis_value":-1.0)]
+}
+move_right={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"physical_keycode":68), Object(InputEventKey,"keycode":4194321), Object(InputEventJoypadMotion,"axis":0,"axis_value":1.0)]
+}
+interact={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"physical_keycode":69), Object(InputEventKey,"physical_keycode":32), Object(InputEventJoypadButton,"button_index":0)]
+}
+cancel={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"physical_keycode":4194305), Object(InputEventJoypadButton,"button_index":1)]
+}
+phone={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"physical_keycode":4194308), Object(InputEventJoypadButton,"button_index":4)]
+}
+quest_tracker={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"physical_keycode":81), Object(InputEventJoypadButton,"button_index":9)]
+}
+city_map={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"physical_keycode":77), Object(InputEventJoypadButton,"button_index":10)]
+}
+dialogue_history={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"physical_keycode":72), Object(InputEventJoypadButton,"button_index":11)]
+}
+pause={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"physical_keycode":4194305), Object(InputEventJoypadButton,"button_index":6)]
+}
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+textures/default_filters/use_nearest_mipmap_filter=false
+environment/defaults/default_clear_color=Color(0.035, 0.063, 0.086, 1)
+
+[audio]
+
+default_bus_layout="res://default_bus_layout.tres"
+

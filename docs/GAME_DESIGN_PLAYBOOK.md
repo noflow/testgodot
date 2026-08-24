@@ -486,14 +486,17 @@ The First Week Foundations vertical slice is fully specified with its playable
 scope, controls, accessibility baseline, Godot architecture, implementation phases,
 explicit exclusions, completion gate, and machine-readable acceptance tests.
 
+Godot 4.7.2 Phase 0 is implemented with the project configuration, boot validation,
+main menu, input map, audio buses, macOS export preset, coding conventions, and a
+headless foundation test runner.
+
 ## Next milestones
 
-1. Create the Godot project foundation, input map, boot scene, and test runner
-2. Implement content loading, validation, runtime-state creation, and simulation events
-3. Implement the VN dialogue and quest systems with Elena's opening scene
-4. Implement Hale home exploration, needs, wardrobe, food, and hygiene
-5. Implement the phone, calendar, messages, relationships, map, and weather
-6. Implement city travel and the required institutional and NPC activities
-7. Implement saves, recovery, Sunday review, settings, and accessibility
-8. Stabilize the vertical slice against all acceptance tests
-9. Resume broader content expansion, alternative households, and the September calendar
+1. Implement content loading, validation, runtime-state creation, and simulation events
+2. Implement the VN dialogue and quest systems with Elena's opening scene
+3. Implement Hale home exploration, needs, wardrobe, food, and hygiene
+4. Implement the phone, calendar, messages, relationships, map, and weather
+5. Implement city travel and the required institutional and NPC activities
+6. Implement saves, recovery, Sunday review, settings, and accessibility
+7. Stabilize the vertical slice against all acceptance tests
+8. Resume broader content expansion, alternative households, and the September calendar

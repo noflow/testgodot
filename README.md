@@ -6,11 +6,12 @@ The protagonist begins at age 18 in the fictional coastal city of Port Alder. Th
 
 ## Project status
 
-Pre-production and design. No gameplay code has been started.
+Godot foundation implementation. Phase 0 of the First Week Foundations vertical
+slice is complete; gameplay systems begin in Phase 1.
 
 ## Planned technology
 
-- Godot 4, latest stable release
+- Godot 4.7.2 stable
 - GDScript
 - 2D top-down exploration
 - VN-style dialogue presentation
@@ -37,3 +38,20 @@ Runtime state, simulation events, saves, and migrations are described in [docs/R
 The first playable build is defined in [docs/VERTICAL_SLICE_SPECIFICATION.md](docs/VERTICAL_SLICE_SPECIFICATION.md).
 
 Validate all character and global content data with `python3 tools/validate_characters.py`.
+
+## Running the Godot foundation
+
+1. Install [Godot 4.7.2 stable](https://godotengine.org/download/archive/4.7.2-stable/).
+2. Import `project.godot` in the Godot Project Manager.
+3. Run the project to validate content and open the main menu.
+
+Command-line checks:
+
+```sh
+python3 tools/validate_characters.py
+tools/test_godot.sh
+tools/test_all.sh
+```
+
+The repository includes a macOS export preset. Export templates are installed
+through Godot and are not committed.

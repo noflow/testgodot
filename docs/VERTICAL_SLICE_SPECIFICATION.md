@@ -5,6 +5,9 @@ Build name: First Week Foundations
 Engine: Godot 4.x stable with GDScript  
 Presentation: 2D top-down exploration with VN-style conversations
 
+Implementation status: Phase 0 project foundation complete. Phase 1 content and
+runtime-state implementation is next.
+
 ## Purpose
 
 The vertical slice must prove that authored character content and the life
@@ -404,4 +407,3 @@ Machine-readable acceptance cases live in
 `tests/acceptance/vertical_slice.json`. Priority 0 represents a release blocker;
 Priority 1 is required for the slice; Priority 2 may be deferred only with a written
 issue and no effect on the required loop.
-
