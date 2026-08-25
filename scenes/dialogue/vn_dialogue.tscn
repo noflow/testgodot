@@ -1,0 +1,203 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/dialogue/vn_dialogue.gd" id="1_vn"]
+
+[node name="VNDialogue" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_vn")
+
+[node name="BedroomBackdrop" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.118, 0.188, 0.224, 1)
+mouse_filter = 2
+
+[node name="MorningLight" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(0, 0, 720, 0, 390, 720, 0, 720)
+color = Color(0.91, 0.659, 0.424, 0.16)
+
+[node name="TopBar" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 58.0
+grow_horizontal = 2
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 28
+
+[node name="SceneTitle" type="Label" parent="TopBar"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.85, 0.86, 1)
+theme_override_font_sizes/font_size = 16
+text = "AUGUST 20 • TUESDAY MORNING • PLAYER BEDROOM"
+
+[node name="PortraitArea" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -260.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PortraitCard" type="PanelContainer" parent="PortraitArea"]
+custom_minimum_size = Vector2(340, 390)
+layout_mode = 2
+
+[node name="PortraitMargin" type="MarginContainer" parent="PortraitArea/PortraitCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 26
+theme_override_constants/margin_top = 26
+theme_override_constants/margin_right = 26
+theme_override_constants/margin_bottom = 26
+
+[node name="PortraitPlaceholder" type="Label" parent="PortraitArea/PortraitCard/PortraitMargin"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.404, 0.776, 0.765, 1)
+theme_override_font_sizes/font_size = 30
+text = "ELENA\nREYES-HALE"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DialogueMargin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -295.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/margin_left = 54
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 54
+theme_override_constants/margin_bottom = 28
+
+[node name="DialoguePanel" type="PanelContainer" parent="DialogueMargin"]
+layout_mode = 2
+
+[node name="PanelMargin" type="MarginContainer" parent="DialogueMargin/DialoguePanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 20
+
+[node name="DialogueContent" type="VBoxContainer" parent="DialogueMargin/DialoguePanel/PanelMargin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="SpeakerLabel" type="Label" parent="DialogueMargin/DialoguePanel/PanelMargin/DialogueContent"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.914, 0.659, 0.424, 1)
+theme_override_font_sizes/font_size = 21
+text = "ELENA REYES-HALE"
+
+[node name="LineLabel" type="Label" parent="DialogueMargin/DialoguePanel/PanelMargin/DialogueContent"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 88)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.933, 0.965, 0.961, 1)
+theme_override_font_sizes/font_size = 20
+text = "Dialogue"
+autowrap_mode = 2
+
+[node name="ChoicesBox" type="VBoxContainer" parent="DialogueMargin/DialoguePanel/PanelMargin/DialogueContent"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Controls" type="HBoxContainer" parent="DialogueMargin/DialoguePanel/PanelMargin/DialogueContent"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ContinueButton" type="Button" parent="DialogueMargin/DialoguePanel/PanelMargin/DialogueContent/Controls"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(180, 42)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Continue"
+
+[node name="AutoButton" type="Button" parent="DialogueMargin/DialoguePanel/PanelMargin/DialogueContent/Controls"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(110, 42)
+layout_mode = 2
+text = "Auto: Off"
+
+[node name="SkipButton" type="Button" parent="DialogueMargin/DialoguePanel/PanelMargin/DialogueContent/Controls"]
+custom_minimum_size = Vector2(110, 42)
+layout_mode = 2
+text = "Skip Line"
+
+[node name="HistoryButton" type="Button" parent="DialogueMargin/DialoguePanel/PanelMargin/DialogueContent/Controls"]
+custom_minimum_size = Vector2(110, 42)
+layout_mode = 2
+text = "History"
+
+[node name="ErrorLabel" type="Label" parent="DialogueMargin/DialoguePanel/PanelMargin/DialogueContent"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.937, 0.467, 0.467, 1)
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="HistoryPanel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 0.12
+anchor_top = 0.08
+anchor_right = 0.88
+anchor_bottom = 0.92
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HistoryMargin" type="MarginContainer" parent="HistoryPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_top = 26
+theme_override_constants/margin_right = 30
+theme_override_constants/margin_bottom = 26
+
+[node name="HistoryLayout" type="VBoxContainer" parent="HistoryPanel/HistoryMargin"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="HistoryTitle" type="Label" parent="HistoryPanel/HistoryMargin/HistoryLayout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.404, 0.776, 0.765, 1)
+theme_override_font_sizes/font_size = 28
+text = "Dialogue History"
+
+[node name="HistoryText" type="RichTextLabel" parent="HistoryPanel/HistoryMargin/HistoryLayout"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+bbcode_enabled = true
+fit_content = false
+scroll_active = true
+
+[node name="CloseHistoryButton" type="Button" parent="HistoryPanel/HistoryMargin/HistoryLayout"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+text = "Close History (H)"
+
+[connection signal="pressed" from="DialogueMargin/DialoguePanel/PanelMargin/DialogueContent/Controls/ContinueButton" to="." method="_on_continue_pressed"]
+[connection signal="pressed" from="DialogueMargin/DialoguePanel/PanelMargin/DialogueContent/Controls/AutoButton" to="." method="_on_auto_pressed"]
+[connection signal="pressed" from="DialogueMargin/DialoguePanel/PanelMargin/DialogueContent/Controls/SkipButton" to="." method="_on_skip_pressed"]
+[connection signal="pressed" from="DialogueMargin/DialoguePanel/PanelMargin/DialogueContent/Controls/HistoryButton" to="." method="_on_history_pressed"]
+[connection signal="pressed" from="HistoryPanel/HistoryMargin/HistoryLayout/CloseHistoryButton" to="." method="_on_history_pressed"]

@@ -494,15 +494,16 @@ headless foundation test runner.
 
 Phase 1 now includes recursive content loading and typed indexes, complete new-game
 state resolution, distributed starting inventory, the seven-block calendar clock,
-and an atomic event processor for the first playable state changes.
+an atomic event processor for the first playable state changes, the VN dialogue and
+quest engines, and Elena's playable college, employment, or combined opening path.
 
 ## Next milestones
 
-1. Expand event handlers as their gameplay systems come online
-2. Implement the VN dialogue and quest systems with Elena's opening scene
-3. Implement Hale home exploration, needs, wardrobe, food, and hygiene
-4. Implement the phone, calendar, messages, relationships, map, and weather
-5. Implement city travel and the required institutional and NPC activities
+1. Implement required character creation and validation
+2. Implement Hale home exploration, needs, wardrobe, food, and hygiene
+3. Implement the phone, calendar, messages, relationships, map, and weather
+4. Implement city travel and the required institutional and NPC activities
+5. Expand event and dialogue effects as those gameplay systems come online
 6. Implement saves, recovery, Sunday review, settings, and accessibility
 7. Stabilize the vertical slice against all acceptance tests
 8. Resume broader content expansion, alternative households, and the September calendar

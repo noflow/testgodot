@@ -61,6 +61,14 @@ func _apply_to_working_state(state: Dictionary, operation: String, payload: Dict
 			return _complete_objective(state, payload)
 		"quest.complete":
 			return _complete_quest(state, payload)
+		"conversation.begin":
+			return _begin_conversation(state, payload)
+		"conversation.choose":
+			return _record_conversation_choice(state, payload)
+		"conversation.end":
+			return _end_conversation(state, payload)
+		"memory.create":
+			return _create_memory(state, payload)
 		"travel.complete":
 			return _complete_travel(state, payload)
 		"world.unlock_location":
@@ -255,6 +263,80 @@ func _complete_quest(state: Dictionary, payload: Dictionary) -> String:
 		"quest_id": quest_id,
 		"branch_id": payload.get("branch_id"),
 		"completed_on": _date_string(state["clock"]),
+	})
+	return ""
+
+
+func _begin_conversation(state: Dictionary, payload: Dictionary) -> String:
+	var conversation_id: String = str(payload.get("conversation_id", ""))
+	var start_node: String = str(payload.get("start_node", ""))
+	var conversation: Variant = _registry.get_content("conversations", conversation_id)
+	if not conversation is Dictionary:
+		return "Unknown conversation: %s" % conversation_id
+	if not conversation.get("nodes", {}).has(start_node):
+		return "Conversation %s has unknown start node %s." % [conversation_id, start_node]
+	if state["conversation_state"].get("active") != null:
+		return "Another conversation is already active."
+	state["conversation_state"]["active"] = {
+		"conversation_id": conversation_id,
+		"node_id": start_node,
+		"applied_nodes": [],
+		"choice_history": [],
+		"participants": payload.get("participants", []).duplicate(true),
+	}
+	return ""
+
+
+func _record_conversation_choice(state: Dictionary, payload: Dictionary) -> String:
+	var active: Variant = state["conversation_state"].get("active")
+	if not active is Dictionary:
+		return "No conversation is active."
+	if str(active.get("conversation_id", "")) != str(payload.get("conversation_id", "")):
+		return "Conversation choice does not match the active conversation."
+	active["choice_history"].append({
+		"node_id": payload.get("node_id"),
+		"choice_id": payload.get("choice_id"),
+	})
+	active["node_id"] = payload.get("next_node")
+	return ""
+
+
+func _end_conversation(state: Dictionary, payload: Dictionary) -> String:
+	var active: Variant = state["conversation_state"].get("active")
+	if not active is Dictionary:
+		return "No conversation is active."
+	var conversation_id: String = str(active.get("conversation_id", ""))
+	if conversation_id != str(payload.get("conversation_id", conversation_id)):
+		return "Conversation end does not match the active conversation."
+	if conversation_id not in state["conversation_state"]["completed"]:
+		state["conversation_state"]["completed"].append(conversation_id)
+	var conversation: Dictionary = _registry.get_content("conversations", conversation_id)
+	if bool(conversation.get("repetition", {}).get("once_only", false)):
+		var once_flag: String = "conversation:%s" % conversation_id
+		if once_flag not in state["conversation_state"]["once_only_flags"]:
+			state["conversation_state"]["once_only_flags"].append(once_flag)
+	state["conversation_state"]["active"] = null
+	return ""
+
+
+func _create_memory(state: Dictionary, payload: Dictionary) -> String:
+	var character_id: String = str(payload.get("character_id", ""))
+	var memory_id: String = str(payload.get("memory_id", ""))
+	if not state["relationships"].has(character_id):
+		return "Unknown memory owner: %s" % character_id
+	if memory_id.is_empty():
+		return "Memory requires an id."
+	var relationship: Dictionary = state["relationships"][character_id]
+	if not relationship.has("memories"):
+		relationship["memories"] = []
+	for memory: Variant in relationship["memories"]:
+		if memory is Dictionary and str(memory.get("id", "")) == memory_id:
+			return ""
+	relationship["memories"].append({
+		"id": memory_id,
+		"importance": payload.get("importance", 50),
+		"tags": payload.get("tags", []).duplicate(true),
+		"created_on": _date_string(state["clock"]),
 	})
 	return ""
 

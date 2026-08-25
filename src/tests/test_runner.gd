@@ -3,6 +3,8 @@ extends SceneTree
 const ContentRegistryScript: GDScript = preload("res://src/autoload/content_registry.gd")
 const NewGameStateFactoryScript: GDScript = preload("res://src/core/new_game_state_factory.gd")
 const SimulationEngineScript: GDScript = preload("res://src/simulation/simulation_engine.gd")
+const QuestEngineScript: GDScript = preload("res://src/quests/quest_engine.gd")
+const DialogueEngineScript: GDScript = preload("res://src/dialogue/dialogue_engine.gd")
 
 var _failures: PackedStringArray = []
 var _tests_run: int = 0
@@ -17,12 +19,14 @@ func _initialize() -> void:
 
 func _run_all() -> void:
 	_test_project_configuration()
+	_test_dialogue_ui_scenes()
 	_test_required_json_documents()
 	_test_character_packages()
 	_test_vertical_slice_acceptance_suite()
 	_test_content_registry()
 	_test_new_game_state_factory()
 	_test_clock_and_simulation_engine()
+	_test_opening_dialogue_branches()
 
 	if _failures.is_empty():
 		print("PASS: %d foundation tests completed." % _tests_run)
@@ -61,6 +65,20 @@ func _test_required_json_documents() -> void:
 	for path: String in paths:
 		var document: Variant = _parse_json(path)
 		_expect(document is Dictionary, "JSON object parses: %s" % path)
+
+
+func _test_dialogue_ui_scenes() -> void:
+	_expect(ProjectSettings.has_setting("autoload/DialogueService"), "Dialogue service is configured as an autoload.")
+	_expect(ProjectSettings.has_setting("autoload/QuestService"), "Quest service is configured as an autoload.")
+	var dialogue_scene: PackedScene = load("res://scenes/dialogue/vn_dialogue.tscn")
+	_expect(dialogue_scene != null, "VN dialogue scene loads.")
+	if dialogue_scene != null:
+		var dialogue_instance: Node = dialogue_scene.instantiate()
+		_expect(dialogue_instance.get_node_or_null("DialogueMargin/DialoguePanel/PanelMargin/DialogueContent/SpeakerLabel") != null, "VN scene contains a speaker label.")
+		_expect(dialogue_instance.get_node_or_null("DialogueMargin/DialoguePanel/PanelMargin/DialogueContent/ChoicesBox") != null, "VN scene contains dynamic dialogue choices.")
+		dialogue_instance.free()
+	var sandbox_scene: PackedScene = load("res://scenes/world/sandbox_placeholder.tscn")
+	_expect(sandbox_scene != null, "Post-opening sandbox scene loads.")
 
 
 func _test_character_packages() -> void:
@@ -170,6 +188,7 @@ func _test_clock_and_simulation_engine() -> void:
 	var factory: RefCounted = NewGameStateFactoryScript.new(_registry)
 	var engine: RefCounted = SimulationEngineScript.new(_registry)
 	var state: Dictionary = factory.create_new_game({}, {"random_seed": 44, "save_id": "simulation-test"})
+	state["clock"]["block"] = "early_morning"
 
 	var initial_hunger: float = state["player"]["needs"]["hunger"]
 	var result: Dictionary = engine.apply_operation(state, "time.advance", {"blocks": 1}, "test.clock")
@@ -258,6 +277,95 @@ func _test_clock_and_simulation_engine() -> void:
 	_expect(calendar_state["simulation"]["last_weekly_tick"] == 2, "Week rollover records the weekly tick.")
 
 	_expect(state["simulation"]["recent_event_log"].size() == state["simulation"]["next_event_sequence"] - 1, "Successful operations produce one monotonic event each.")
+
+
+func _test_opening_dialogue_branches() -> void:
+	var factory: RefCounted = NewGameStateFactoryScript.new(_registry)
+	var simulation: RefCounted = SimulationEngineScript.new(_registry)
+	var quests: RefCounted = QuestEngineScript.new(_registry, simulation)
+	var dialogue: RefCounted = DialogueEngineScript.new(_registry, simulation, quests)
+
+	var state: Dictionary = factory.create_new_game({"first_name": "Morgan"}, {"random_seed": 77})
+	_expect(state["clock"]["block"] == "morning", "A new game begins Tuesday Morning for Elena's scene.")
+	_expect("quests" not in state["player"]["phone"]["unlocked_apps"], "Quest tracker begins locked.")
+	var result: Dictionary = dialogue.begin(state, "opening_future_talk")
+	_expect(result.get("ok", false), "Elena's opening conversation begins from content.")
+	state = result["state"]
+	_expect(result["view"]["node_id"] == "door_opens", "Opening scene begins with Elena entering the bedroom.")
+	result = dialogue.advance(state)
+	state = result["state"]
+	result = dialogue.advance(state)
+	state = result["state"]
+	var comfort_before: float = state["relationships"]["elena_reyes_hale"]["comfort"]
+	result = dialogue.choose(state, "joke")
+	state = result["state"]
+	_expect(state["relationships"]["elena_reyes_hale"]["comfort"] == comfort_before + 1.0, "Playful wake-up response raises Elena Comfort exactly once.")
+	_expect(result["view"]["node_id"] == "elena_joke_reply", "Playful response reaches Elena's authored reply.")
+	var resumed: Dictionary = dialogue.resume(state)
+	_expect(resumed["view"]["node_id"] == "elena_joke_reply", "Dialogue resume restores the exact active node.")
+	_expect(resumed["state"]["relationships"]["elena_reyes_hale"]["comfort"] == comfort_before + 1.0, "Dialogue resume does not replay choice effects.")
+
+	var branch_cases: Array = [
+		{
+			"choice": "choose_college",
+			"life_path": "college",
+			"required_quests": ["enroll_at_westshore"],
+			"allowance": true,
+			"rent": 0,
+		},
+		{
+			"choice": "choose_employment",
+			"life_path": "employment",
+			"required_quests": ["find_employment"],
+			"allowance": false,
+			"rent": 250,
+		},
+		{
+			"choice": "choose_both",
+			"life_path": "college_and_employment",
+			"required_quests": ["enroll_at_westshore", "find_part_time_employment"],
+			"allowance": true,
+			"rent": 0,
+		},
+	]
+	for branch: Dictionary in branch_cases:
+		state = factory.create_new_game({}, {"random_seed": 88})
+		result = dialogue.begin(state, "opening_future_talk")
+		state = result["state"]
+		result = dialogue.advance(state)
+		state = result["state"]
+		result = dialogue.advance(state)
+		state = result["state"]
+		result = dialogue.choose(state, "ready")
+		state = result["state"]
+		result = dialogue.advance(state)
+		state = result["state"]
+		result = dialogue.advance(state)
+		state = result["state"]
+		_expect(result["view"]["node_id"] == "future_choice", "Opening dialogue reaches the life-path choice.")
+		_expect(state["quest_state"]["objectives"]["opening_future_choice"]["hear_elena_out"], "Hearing Elena completes the first opening objective.")
+
+		result = dialogue.choose(state, branch["choice"])
+		state = result["state"]
+		_expect(state["player"]["life_path"] == branch["life_path"], "Life-path choice stores %s." % branch["life_path"])
+		for quest_id: String in branch["required_quests"]:
+			_expect(quest_id in state["quest_state"]["active"], "Life path starts quest %s." % quest_id)
+		_expect(state["player"]["flags"]["weekly_allowance_active"] == branch["allowance"], "Life path applies its allowance rule.")
+		_expect(state["player"]["housing"]["monthly_rent"] == branch["rent"], "Life path applies its rent rule.")
+
+		result = dialogue.advance(state)
+		state = result["state"]
+		_expect(result["view"]["node_id"] == "elena_closing", "Life-path response reaches Elena's closing line.")
+		_expect("opening_future_choice" in state["quest_state"]["completed"], "Opening quest completes at Elena's closing line.")
+		_expect(bool(state["player"]["flags"].get("sandbox.active", false)), "Opening completion activates the sandbox.")
+		_expect("quests" in state["player"]["phone"]["unlocked_apps"], "Opening completion unlocks the quest tracker.")
+		result = dialogue.advance(state)
+		state = result["state"]
+		_expect(result.get("ended", false), "Elena's opening conversation ends cleanly.")
+		_expect(state["conversation_state"]["active"] == null, "Finished dialogue clears active conversation state.")
+		_expect("conversation:opening_future_talk" in state["conversation_state"]["once_only_flags"], "Opening dialogue records its once-only flag.")
+		result = dialogue.begin(state, "opening_future_talk")
+		_expect(not result.get("ok", true), "Elena's opening conversation cannot run twice.")
 
 
 func _contains_placeholder(value: Variant) -> bool:

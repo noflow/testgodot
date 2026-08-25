@@ -14,7 +14,15 @@ func _has_valid_save() -> bool:
 
 
 func _on_new_game_pressed() -> void:
-	_show_foundation_message("Character creation arrives in Phase 1.")
+	var state: Dictionary = GameState.start_new_game()
+	if state.is_empty():
+		_show_foundation_message("New game could not be created. Check Content for errors.")
+		return
+	var result: Dictionary = DialogueService.begin("opening_future_talk")
+	if not result.get("ok", false):
+		_show_foundation_message("Opening scene could not start: %s" % result.get("errors", ["Unknown error"])[0])
+		return
+	get_tree().change_scene_to_file(AppConstants.VN_DIALOGUE_SCENE)
 
 
 func _on_continue_pressed() -> void:

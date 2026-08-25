@@ -47,6 +47,18 @@ as `add_meter`, `set_flag`, `set_value`, `start_quest`, `schedule_event`, or
 Line tokens use braces, for example `{player_first_name}`. A later localization
 pass will replace raw text with localization keys without changing graph logic.
 
+## Runtime implementation
+
+The Godot dialogue engine now loads these graphs directly, filters conditional
+choices, resolves player-name tokens, applies node and choice effects atomically,
+records history and seen nodes, and preserves the active node for save/resume.
+Once-only conversations receive a durable completion flag.
+
+The quest engine starts quests, completes objectives, selects branches from runtime
+values, applies branch-specific household rules, starts linked quests, and exposes
+active quest definitions and progress to the phone UI. Elena's opening scene is the
+first complete production path through both engines.
+
 ## Relationship safety
 
 Family members and ineligible characters explicitly block player romance. Adult
@@ -59,4 +71,3 @@ Run `python3 tools/validate_characters.py`. The validator checks package identit
 ages, meter and skill ranges, five relationship levels, schedules, unique quest and
 conversation IDs, valid dialogue links, valid start nodes, and valid character
 connections.
-

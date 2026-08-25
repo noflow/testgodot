@@ -6,6 +6,8 @@ const TARGET_GODOT_VERSION: String = "4.7.2"
 
 const MAIN_MENU_SCENE: String = "res://scenes/menus/main_menu.tscn"
 const BOOT_SCENE: String = "res://scenes/boot/boot.tscn"
+const VN_DIALOGUE_SCENE: String = "res://scenes/dialogue/vn_dialogue.tscn"
+const SANDBOX_SCENE: String = "res://scenes/world/sandbox_placeholder.tscn"
 
 const COLOR_BACKGROUND: Color = Color("#091016")
 const COLOR_PANEL: Color = Color("#13232c")
