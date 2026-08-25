@@ -492,9 +492,13 @@ Godot 4.7.2 Phase 0 is implemented with the project configuration, boot validati
 main menu, input map, audio buses, macOS export preset, coding conventions, and a
 headless foundation test runner.
 
+Phase 1 now includes recursive content loading and typed indexes, complete new-game
+state resolution, distributed starting inventory, the seven-block calendar clock,
+and an atomic event processor for the first playable state changes.
+
 ## Next milestones
 
-1. Implement content loading, validation, runtime-state creation, and simulation events
+1. Expand event handlers as their gameplay systems come online
 2. Implement the VN dialogue and quest systems with Elena's opening scene
 3. Implement Hale home exploration, needs, wardrobe, food, and hygiene
 4. Implement the phone, calendar, messages, relationships, map, and weather

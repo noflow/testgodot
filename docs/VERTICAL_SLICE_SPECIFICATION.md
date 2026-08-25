@@ -5,8 +5,9 @@ Build name: First Week Foundations
 Engine: Godot 4.x stable with GDScript  
 Presentation: 2D top-down exploration with VN-style conversations
 
-Implementation status: Phase 0 project foundation complete. Phase 1 content and
-runtime-state implementation is next.
+Implementation status: Phase 0 project foundation complete. Phase 1 content loading,
+new-game state creation, seven-block clock, and core atomic simulation operations
+are implemented; dialogue, quests, and player-facing gameplay screens are next.
 
 ## Purpose
 

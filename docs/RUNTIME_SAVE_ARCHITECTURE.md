@@ -25,6 +25,13 @@ seed, imports opening weather, initializes all fifteen relationships, and record
 the loaded content manifest. The resulting state contains no unresolved template
 tokens and is held by the `GameState` autoload without modifying source content.
 
+The first simulation processor now applies atomic time, need, attribute, skill,
+reputation, relationship, economy, inventory, quest, travel, and map-unlock events.
+Rejected events leave the prior snapshot unchanged. Successful events receive a
+monotonic sequence and game timestamp and enter the bounded event log. The clock
+supports both minute-based short actions and full activity blocks, with real month
+lengths, weekdays, four seasons, and daily, weekly, and monthly tick markers.
+
 ## Runtime state
 
 The root state contains:

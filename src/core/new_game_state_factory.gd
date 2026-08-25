@@ -119,6 +119,24 @@ func _apply_inventory(state: Dictionary, choices: Dictionary) -> void:
 	player_inventory["containers"] = inventory_package.get("containers", []).duplicate(true)
 	player_inventory["starting_loadout"] = loadout.get("items", []).duplicate(true)
 	player_inventory["equipped_outfit"] = choices.get("equipped_outfit", {}).duplicate(true)
+	for container: Variant in player_inventory["containers"]:
+		if container is Dictionary:
+			container["items"] = []
+	for entry: Variant in player_inventory["starting_loadout"]:
+		if not entry is Dictionary:
+			continue
+		var item_id: String = str(entry.get("item", ""))
+		var item: Variant = _registry.get_content("items", item_id)
+		var container_id: String = "carried_inventory"
+		if item is Dictionary:
+			match str(item.get("category", "")):
+				"clothing":
+					container_id = "wardrobe_storage"
+				"food", "drink":
+					container_id = "kitchen_storage"
+				"hygiene", "medicine":
+					container_id = "bathroom_storage"
+		_add_starting_item(player_inventory["containers"], container_id, item_id, int(entry.get("quantity", 1)))
 
 
 func _apply_opening_weather(state: Dictionary) -> void:
@@ -155,6 +173,13 @@ func _find_by_key(entries: Array, key: String, expected: String) -> Dictionary:
 		if entry is Dictionary and str(entry.get(key, "")) == expected:
 			return entry
 	return {}
+
+
+func _add_starting_item(containers: Array, container_id: String, item_id: String, quantity: int) -> void:
+	for container: Variant in containers:
+		if container is Dictionary and str(container.get("id", "")) == container_id:
+			container["items"].append({"item_id": item_id, "quantity": quantity, "item_state": {}})
+			return
 
 
 func _copy_array(value: Variant, maximum_size: int = -1) -> Array:

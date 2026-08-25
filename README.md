@@ -7,8 +7,8 @@ The protagonist begins at age 18 in the fictional coastal city of Port Alder. Th
 ## Project status
 
 Godot foundation implementation. Phase 0 of the First Week Foundations vertical
-slice is complete. Phase 1 has begun with full content indexing and resolved
-new-game runtime-state creation.
+slice is complete. Phase 1 includes full content indexing, resolved new-game state,
+the seven-block calendar clock, and the first atomic simulation operations.
 
 ## Planned technology
 

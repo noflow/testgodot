@@ -18,6 +18,8 @@ boot_splash/show_image=false
 AppConstants="*res://src/autoload/app_constants.gd"
 ContentRegistry="*res://src/autoload/content_registry.gd"
 GameState="*res://src/autoload/game_state.gd"
+SimulationService="*res://src/autoload/simulation_service.gd"
+TimeService="*res://src/autoload/time_service.gd"
 SettingsService="*res://src/autoload/settings_service.gd"
 
 [display]
