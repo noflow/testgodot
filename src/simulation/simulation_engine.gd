@@ -59,18 +59,30 @@ func _apply_to_working_state(state: Dictionary, operation: String, payload: Dict
 			return _equip_inventory(state, payload)
 		"inventory.clean_container":
 			return _clean_inventory_container(state, payload)
+		"phone.append_message":
+			return _append_phone_message(state, payload)
+		"phone.mark_thread_read":
+			return _mark_phone_thread_read(state, payload)
 		"quest.start":
 			return _start_quest(state, payload)
 		"quest.objective_complete":
 			return _complete_objective(state, payload)
 		"quest.complete":
 			return _complete_quest(state, payload)
+		"quest.fail_or_defer":
+			return _fail_or_defer_quest(state, payload)
 		"conversation.begin":
 			return _begin_conversation(state, payload)
 		"conversation.choose":
 			return _record_conversation_choice(state, payload)
 		"conversation.end":
 			return _end_conversation(state, payload)
+		"calendar.schedule":
+			return _schedule_calendar_event(state, payload)
+		"calendar.cancel_or_reschedule":
+			return _cancel_or_reschedule_calendar_event(state, payload)
+		"calendar.arrival":
+			return _complete_calendar_arrival(state, payload)
 		"memory.create":
 			return _create_memory(state, payload)
 		"travel.complete":
@@ -87,6 +99,7 @@ func _apply_time_advance(state: Dictionary, payload: Dictionary) -> String:
 		return str(clock_result.get("error", "Unable to advance time."))
 
 	_apply_passive_needs(state, int(clock_result["minutes_advanced"]))
+	_update_weather_for_date(state)
 	var simulation: Dictionary = state["simulation"]
 	if int(clock_result["days_crossed"]) > 0:
 		simulation["last_daily_tick"] = _date_string(state["clock"])
@@ -95,6 +108,17 @@ func _apply_time_advance(state: Dictionary, payload: Dictionary) -> String:
 	if int(clock_result["months_crossed"]) > 0:
 		simulation["last_monthly_tick"] = "Y%d-%02d" % [state["clock"]["year"], state["clock"]["month"]]
 	return ""
+
+
+func _update_weather_for_date(state: Dictionary) -> void:
+	var opening_week: Variant = _registry.get_package("opening_week_calendar")
+	if not opening_week is Dictionary:
+		return
+	var current_date: String = _date_string(state["clock"])
+	for day: Variant in opening_week.get("days", []):
+		if day is Dictionary and str(day.get("date", "")) == current_date:
+			state["world_state"]["weather"] = day.get("weather", {}).duplicate(true)
+			return
 
 
 func _apply_passive_needs(state: Dictionary, elapsed_minutes: int) -> void:
@@ -271,6 +295,181 @@ func _clean_inventory_container(state: Dictionary, payload: Dictionary) -> Strin
 	return ""
 
 
+func _append_phone_message(state: Dictionary, payload: Dictionary) -> String:
+	var character_id: String = str(payload.get("character_id", ""))
+	if character_id not in state["player"]["phone"].get("known_contacts", []):
+		return "Unknown phone contact: %s" % character_id
+	var message: Variant = payload.get("message")
+	if not message is Dictionary:
+		return "Phone message payload is missing."
+	var message_id: String = str(message.get("id", ""))
+	var sender: String = str(message.get("sender", ""))
+	if message_id.is_empty() or str(message.get("text", "")).is_empty():
+		return "Phone messages require an id and text."
+	if sender != "player" and sender != character_id:
+		return "Phone message sender does not match its thread."
+	var phone: Dictionary = state["player"]["phone"]
+	if not phone.has("message_threads"):
+		phone["message_threads"] = {}
+	if not phone["message_threads"].has(character_id):
+		phone["message_threads"][character_id] = {
+			"character_id": character_id, "messages": [], "last_read_sequence": 0,
+		}
+	var thread: Dictionary = phone["message_threads"][character_id]
+	for existing: Variant in thread.get("messages", []):
+		if existing is Dictionary and str(existing.get("id", "")) == message_id:
+			return "Phone message already exists: %s" % message_id
+	var stored: Dictionary = message.duplicate(true)
+	stored["timestamp"] = _clock.timestamp(state["clock"])
+	stored["thread_sequence"] = thread.get("messages", []).size() + 1
+	thread["messages"].append(stored)
+	if sender != "player" and character_id not in phone["unread_threads"]:
+		phone["unread_threads"].append(character_id)
+	return ""
+
+
+func _mark_phone_thread_read(state: Dictionary, payload: Dictionary) -> String:
+	var character_id: String = str(payload.get("character_id", ""))
+	var phone: Dictionary = state["player"]["phone"]
+	if character_id not in phone.get("known_contacts", []):
+		return "Unknown phone contact: %s" % character_id
+	var thread: Variant = phone.get("message_threads", {}).get(character_id)
+	if not thread is Dictionary:
+		return "Missing phone thread: %s" % character_id
+	thread["last_read_sequence"] = thread.get("messages", []).size()
+	phone["unread_threads"].erase(character_id)
+	return ""
+
+
+func _schedule_calendar_event(state: Dictionary, payload: Dictionary) -> String:
+	var event_value: Variant = payload.get("calendar_event")
+	if not event_value is Dictionary:
+		return "Calendar scheduling requires an event."
+	var calendar_event: Dictionary = event_value.duplicate(true)
+	var date: String = str(calendar_event.get("date", ""))
+	var block: String = str(calendar_event.get("block", ""))
+	if not _valid_date_string(date):
+		return "Calendar event date is invalid: %s" % date
+	if _clock.block_index(block) < 0:
+		return "Calendar event has an invalid activity block: %s" % block
+	if _date_sort_value(date) < _date_sort_value(_date_string(state["clock"])):
+		return "Calendar events cannot be scheduled in the past."
+	if date == _date_string(state["clock"]) and _clock.block_index(block) < _clock.block_index(str(state["clock"]["block"])):
+		return "Calendar events cannot be scheduled in a completed activity block."
+	var participants: Array = calendar_event.get("participants", [])
+	for participant: Variant in participants:
+		var character_id: String = str(participant)
+		if character_id not in state["player"]["phone"].get("known_contacts", []):
+			return "Calendar participant is not a known contact: %s" % character_id
+		var availability_error: String = _npc_commitment_error(
+			character_id, str(calendar_event.get("weekday", "")), block
+		)
+		if not availability_error.is_empty():
+			return availability_error
+	var event_id: String = str(calendar_event.get("id", ""))
+	if event_id.is_empty():
+		event_id = "cal-%08d" % int(state["simulation"].get("next_event_sequence", 1))
+	for existing: Variant in state["calendar_state"].get("events", []):
+		if not existing is Dictionary:
+			continue
+		if str(existing.get("id", "")) == event_id:
+			return "Calendar event id already exists: %s" % event_id
+		if str(existing.get("status", "scheduled")) != "scheduled":
+			continue
+		if str(existing.get("date", "")) != date or str(existing.get("block", "")) != block:
+			continue
+		var existing_type: String = str(existing.get("type", ""))
+		var new_type: String = str(calendar_event.get("type", ""))
+		if existing_type in ["class", "work", "interview"] or new_type in ["class", "work", "interview"]:
+			return "This time conflicts with a required class, shift, or interview."
+		state["calendar_state"]["conflicts"].append({
+			"event_ids": [str(existing.get("id", "")), event_id],
+			"date": date,
+			"block": block,
+			"status": "warning",
+		})
+	calendar_event["id"] = event_id
+	calendar_event["status"] = "scheduled"
+	calendar_event["created_at"] = _clock.timestamp(state["clock"])
+	state["calendar_state"]["events"].append(calendar_event)
+	return ""
+
+
+func _cancel_or_reschedule_calendar_event(state: Dictionary, payload: Dictionary) -> String:
+	var event_id: String = str(payload.get("event_id", ""))
+	for calendar_event: Variant in state["calendar_state"].get("events", []):
+		if not calendar_event is Dictionary or str(calendar_event.get("id", "")) != event_id:
+			continue
+		if bool(payload.get("cancel", false)) or str(payload.get("new_time_or_cancel", "")) == "cancel":
+			calendar_event["status"] = "cancelled"
+			calendar_event["cancelled_at"] = _clock.timestamp(state["clock"])
+			for conflict: Variant in state["calendar_state"].get("conflicts", []):
+				if conflict is Dictionary and event_id in conflict.get("event_ids", []):
+					conflict["status"] = "resolved"
+			return ""
+		return "Calendar rescheduling requires a replacement date and block."
+	return "Unknown calendar event: %s" % event_id
+
+
+func _complete_calendar_arrival(state: Dictionary, payload: Dictionary) -> String:
+	var event_id: String = str(payload.get("event_id", ""))
+	for calendar_event: Variant in state["calendar_state"].get("events", []):
+		if not calendar_event is Dictionary or str(calendar_event.get("id", "")) != event_id:
+			continue
+		if str(calendar_event.get("status", "scheduled")) != "scheduled":
+			return "Calendar event is not currently scheduled: %s" % event_id
+		calendar_event["status"] = "completed"
+		var arrival_timestamp: Variant = payload.get("arrival_timestamp")
+		calendar_event["completed_at"] = _clock.timestamp(state["clock"]) if arrival_timestamp == null else arrival_timestamp
+		return ""
+	return "Unknown calendar event: %s" % event_id
+
+
+func _npc_commitment_error(character_id: String, weekday: String, block: String) -> String:
+	var character: Variant = _registry.get_character(character_id)
+	if not character is Dictionary:
+		return "Unknown calendar participant: %s" % character_id
+	for commitment: Variant in character.get("schedule", {}).get("fixed_commitments", []):
+		if not commitment is Dictionary or not bool(commitment.get("unavailable", false)):
+			continue
+		if weekday in commitment.get("days", []) and block in commitment.get("blocks", []):
+			return "%s is unavailable during %s because of %s." % [
+				character.get("display_name", character_id),
+				block.replace("_", " ").capitalize(),
+				str(commitment.get("activity", "a prior commitment")).replace("_", " "),
+			]
+	return ""
+
+
+func _valid_date_string(date: String) -> bool:
+	if not date.begins_with("Y"):
+		return false
+	var parts: PackedStringArray = date.trim_prefix("Y").split("-")
+	if parts.size() != 3:
+		return false
+	if not parts[0].is_valid_int() or not parts[1].is_valid_int() or not parts[2].is_valid_int():
+		return false
+	var year: int = int(parts[0])
+	var month: int = int(parts[1])
+	var day: int = int(parts[2])
+	return year >= 1 and month >= 1 and month <= 12 and day >= 1 and day <= _days_in_calendar_month(month, year)
+
+
+func _date_sort_value(date: String) -> int:
+	var parts: PackedStringArray = date.trim_prefix("Y").split("-")
+	if parts.size() != 3:
+		return -1
+	return int(parts[0]) * 372 + int(parts[1]) * 31 + int(parts[2])
+
+
+func _days_in_calendar_month(month: int, year: int) -> int:
+	if month in [4, 6, 9, 11]:
+		return 30
+	if month == 2:
+		return 29 if year % 4 == 0 else 28
+	return 31
+
+
 func _start_quest(state: Dictionary, payload: Dictionary) -> String:
 	var quest_id: String = str(payload.get("quest_id", ""))
 	if _registry.get_content("quests", quest_id) == null:
@@ -310,6 +509,20 @@ func _complete_quest(state: Dictionary, payload: Dictionary) -> String:
 		"branch_id": payload.get("branch_id"),
 		"completed_on": _date_string(state["clock"]),
 	})
+	return ""
+
+
+func _fail_or_defer_quest(state: Dictionary, payload: Dictionary) -> String:
+	var quest_id: String = str(payload.get("quest_id", ""))
+	var result: String = str(payload.get("result", "deferred"))
+	var quest_state: Dictionary = state["quest_state"]
+	if quest_id not in quest_state["active"]:
+		return "Quest is not active: %s" % quest_id
+	if result not in ["deferred", "failed"]:
+		return "Quest result must be deferred or failed."
+	quest_state["active"].erase(quest_id)
+	if quest_id not in quest_state[result]:
+		quest_state[result].append(quest_id)
 	return ""
 
 

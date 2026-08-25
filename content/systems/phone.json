@@ -1,0 +1,28 @@
+{
+  "format_version": 1,
+  "package_id": "port_alder_phone_system",
+  "phone_apps": [
+    {"id": "character_profile", "name": "Profile", "icon": "P", "description": "Identity, needs, traits, skills, finances, and outfit."},
+    {"id": "contacts", "name": "Contacts", "icon": "C", "description": "Known people and their discovered public information."},
+    {"id": "messages", "name": "Messages", "icon": "M", "description": "Authored message threads and replies."},
+    {"id": "calendar", "name": "Calendar", "icon": "D", "description": "Plans, dates, classes, interviews, and shifts."},
+    {"id": "quests", "name": "Quests", "icon": "Q", "description": "Active, completed, deferred, and failed goals."},
+    {"id": "relationships", "name": "Relationships", "icon": "R", "description": "Visible relationship meters and current agreements."},
+    {"id": "city_map", "name": "City Map", "icon": "A", "description": "Unlocked Port Alder destinations and current location."},
+    {"id": "weather", "name": "Weather", "icon": "W", "description": "Forecast and outfit protection check."},
+    {"id": "settings", "name": "Settings", "icon": "S", "description": "Accessibility and audio preferences."}
+  ],
+  "calendar_event_types": [
+    {"id": "hangout", "name": "Hangout", "default_location": "alder_bay_park.waterfront_path"},
+    {"id": "date", "name": "Date", "default_location": "alder_bay_park.waterfront_path"},
+    {"id": "movie", "name": "Movie", "default_location": "harborlight_cinema.auditorium_1"},
+    {"id": "personal", "name": "Personal Plan", "default_location": "hale_home.player_bedroom"}
+  ],
+  "relationship_levels": [
+    {"level": 1, "minimum": 0, "name": "New"},
+    {"level": 2, "minimum": 20, "name": "Growing"},
+    {"level": 3, "minimum": 40, "name": "Close"},
+    {"level": 4, "minimum": 65, "name": "Deep"},
+    {"level": 5, "minimum": 85, "name": "Defining"}
+  ]
+}

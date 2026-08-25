@@ -30,6 +30,7 @@ func create_new_game(player_choices: Dictionary = {}, options: Dictionary = {}) 
 	_apply_hidden_health(state, random_seed)
 	_apply_financial_background(state, player_choices)
 	_apply_inventory(state, player_choices)
+	_apply_phone(state)
 	_apply_opening_weather(state)
 	_apply_relationship_defaults(state)
 	_apply_content_manifest(state)
@@ -182,6 +183,17 @@ func _apply_opening_weather(state: Dictionary) -> void:
 	var days: Array = opening_week.get("days", [])
 	if not days.is_empty() and days[0] is Dictionary:
 		state["world_state"]["weather"] = days[0].get("weather", {}).duplicate(true)
+
+
+func _apply_phone(state: Dictionary) -> void:
+	var phone: Dictionary = state["player"]["phone"]
+	phone["message_threads"] = {}
+	for character_id: Variant in phone.get("known_contacts", []):
+		phone["message_threads"][str(character_id)] = {
+			"character_id": str(character_id),
+			"messages": [],
+			"last_read_sequence": 0,
+		}
 
 
 func _apply_relationship_defaults(state: Dictionary) -> void:

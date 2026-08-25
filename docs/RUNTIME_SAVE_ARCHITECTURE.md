@@ -43,6 +43,15 @@ named household containers. Failed multi-step actions do not consume supplies,
 advance time, or leave partial events. Clothing carries condition and cleanliness,
 and the wardrobe equips only owned items into their declared slots.
 
+The phone is also state-backed. New games create one persistent thread per known
+contact. Triggered character texts are synchronized from `.character` packages and
+deduplicated by authored message ID. Replies, unread state, relationship effects,
+quest effects, and their five-minute time cost use atomic simulation events.
+Calendar plans validate dates, blocks, known participants, and fixed NPC work or
+school commitments. Required work/class/interview overlaps are rejected; optional
+overlaps are preserved with explicit conflict records. Weather advances from the
+authored opening-week forecast whenever the game date changes.
+
 ## Runtime state
 
 The root state contains:

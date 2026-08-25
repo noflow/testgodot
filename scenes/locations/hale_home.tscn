@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://src/world/hale_home.gd" id="1_home"]
 [ext_resource type="Script" path="res://src/world/top_down_player.gd" id="2_player"]
+[ext_resource type="PackedScene" path="res://scenes/phone/smartphone.tscn" id="3_phone"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_player"]
 radius = 18.0
@@ -43,6 +44,9 @@ limit_bottom = 1000
 
 [node name="Interface" type="CanvasLayer" parent="."]
 layer = 10
+
+[node name="Smartphone" parent="Interface" instance=ExtResource("3_phone")]
+unique_name_in_owner = true
 
 [node name="TopShade" type="ColorRect" parent="Interface"]
 anchors_preset = 10

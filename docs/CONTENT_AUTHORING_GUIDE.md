@@ -59,6 +59,14 @@ values, applies branch-specific household rules, starts linked quests, and expos
 active quest definitions and progress to the phone UI. Elena's opening scene is the
 first complete production path through both engines.
 
+The phone engine reads each known contact's `text_messages` directly from that
+character package. A message has a unique `id`, a declarative `trigger`, its sender,
+authored text, and optional `quick_replies`. Supported opening triggers include
+`sandbox_activated`, `quest_started`, `objective_completed`, `hours_after_quest`,
+and `hours_before_calendar_event`. Quick replies may use tone tags and declarative
+relationship, quest, or calendar-scheduler effects. Runtime threads deduplicate
+messages by ID, so opening the phone repeatedly never redelivers the same text.
+
 ## Relationship safety
 
 Family members and ineligible characters explicitly block player romance. Adult

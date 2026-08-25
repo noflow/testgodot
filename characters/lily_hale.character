@@ -67,6 +67,7 @@
     }
   ],
   "text_messages": [
+    {"id": "lily_future_talk_reaction", "trigger": {"sandbox_activated": true}, "sender": "lily_hale", "text": "So, did the Great Future Talk solve your entire life, or do we both still get to be confused?", "quick_replies": [{"text": "Still confused.", "tone": ["honest"], "effects": [{"operation": "add_meter", "character": "lily_hale", "meter": "comfort", "value": 1}]}, {"text": "I have a direction, at least.", "tone": ["confident"], "effects": [{"operation": "add_meter", "character": "lily_hale", "meter": "respect", "value": 1}]}, {"text": "I assumed you had all the answers.", "tone": ["playful"]}]},
     {"id": "lily_program_followup", "trigger": {"objective_completed": ["one_year_ahead", "review_programs"]}, "sender": "lily_hale", "text": "I read both program pages. One of them actually made me want to go back to campus. That's probably a sign, right?", "quick_replies": [{"text": "A pretty strong one.", "tone": ["supportive"], "effects": [{"operation": "add_meter", "character": "lily_hale", "meter": "trust", "value": 1}]}, {"text": "Talk to the advisor before deciding.", "tone": ["responsible"]}, {"text": "You owe me for the research.", "tone": ["playful"], "effects": [{"operation": "add_meter", "character": "lily_hale", "meter": "comfort", "value": 1}]}]}
   ],
   "outcomes": ["changes_program_with_family_support", "stays_in_program_after_review", "changes_program_without_player_support"],

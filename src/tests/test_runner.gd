@@ -7,6 +7,7 @@ const QuestEngineScript: GDScript = preload("res://src/quests/quest_engine.gd")
 const DialogueEngineScript: GDScript = preload("res://src/dialogue/dialogue_engine.gd")
 const CharacterCreationValidatorScript: GDScript = preload("res://src/creation/character_creation_validator.gd")
 const HomeActionEngineScript: GDScript = preload("res://src/world/home_action_engine.gd")
+const PhoneEngineScript: GDScript = preload("res://src/phone/phone_engine.gd")
 
 var _failures: PackedStringArray = []
 var _tests_run: int = 0
@@ -32,6 +33,7 @@ func _run_all() -> void:
 	_test_character_creation_validation()
 	_test_clock_and_simulation_engine()
 	_test_home_actions_and_wardrobe()
+	_test_phone_messages_and_calendar()
 	_test_opening_dialogue_branches()
 
 	if _failures.is_empty():
@@ -54,6 +56,7 @@ func _test_project_configuration() -> void:
 	_expect(InputMap.has_action("phone"), "Phone input action exists.")
 	_expect(InputMap.has_action("quest_tracker"), "Quest tracker input action exists.")
 	_expect(InputMap.has_action("city_map"), "City map input action exists.")
+	_expect(ProjectSettings.has_setting("autoload/PhoneService"), "Phone service is configured as an autoload.")
 
 
 func _test_required_json_documents() -> void:
@@ -62,6 +65,7 @@ func _test_required_json_documents() -> void:
 		"res://content/runtime/new_game_state.json",
 		"res://content/systems/character_creation.json",
 		"res://content/systems/home_interactions.json",
+		"res://content/systems/phone.json",
 		"res://content/opening/opening_week.json",
 		"res://content/world/all_locations.json",
 		"res://content/systems/economy.json",
@@ -88,6 +92,13 @@ func _test_dialogue_ui_scenes() -> void:
 
 
 func _test_hale_home_scene() -> void:
+	var phone_scene: PackedScene = load("res://scenes/phone/smartphone.tscn")
+	_expect(phone_scene != null, "Reusable smartphone scene loads.")
+	if phone_scene != null:
+		var phone_instance: Node = phone_scene.instantiate()
+		_expect(phone_instance.get_node_or_null("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/Navigation/NavMargin/NavScroll/AppButtons") != null, "Phone scene contains its reusable app navigation.")
+		_expect(phone_instance.get_node_or_null("SchedulerPanel/Margin/Layout/ContactOption") != null, "Phone scene contains its calendar scheduler.")
+		phone_instance.free()
 	var home_scene: PackedScene = load("res://scenes/locations/hale_home.tscn")
 	_expect(home_scene != null, "Playable Hale home scene loads.")
 	_expect(AppConstants.SANDBOX_SCENE == AppConstants.HALE_HOME_SCENE, "The opening enters the Hale home sandbox.")
@@ -99,6 +110,7 @@ func _test_hale_home_scene() -> void:
 	_expect(instance.get_node_or_null("Interface/ActionPanel") != null, "Hale home contains the home-action panel.")
 	_expect(instance.get_node_or_null("Interface/WardrobePanel") != null, "Hale home contains the wardrobe panel.")
 	_expect(instance.get_node_or_null("Interface/QuestPanel") != null, "Hale home retains the quest tracker.")
+	_expect(instance.get_node_or_null("Interface/Smartphone") != null, "Hale home contains the reusable smartphone.")
 	instance.free()
 
 
@@ -160,15 +172,16 @@ func _test_vertical_slice_acceptance_suite() -> void:
 func _test_content_registry() -> void:
 	var errors: PackedStringArray = _registry.validate_foundation()
 	_expect(errors.is_empty(), "Complete content registry validates without errors.")
-	_expect(_registry.get_document_count() == 37, "Registry loads all 37 source documents.")
-	_expect(_registry.get_package_count() == 20, "Registry indexes all 20 global packages.")
+	_expect(_registry.get_document_count() == 38, "Registry loads all 38 source documents.")
+	_expect(_registry.get_package_count() == 21, "Registry indexes all 21 global packages.")
 	_expect(_registry.get_all("locations").size() == 61, "Registry indexes all 61 locations.")
 	_expect(_registry.get_all("districts").size() == 10, "Registry indexes all 10 districts.")
 	_expect(_registry.get_character("elena_reyes_hale") is Dictionary, "Characters can be retrieved by id.")
 	_expect(_registry.get_location("hale_home") is Dictionary, "Locations can be retrieved by id.")
 	_expect(_registry.get_content("quests", "opening_future_choice") is Dictionary, "Quests can be retrieved by id.")
-	_expect(_registry.get_all("operations").size() == 53, "Registry indexes all 53 simulation operations.")
+	_expect(_registry.get_all("operations").size() == 55, "Registry indexes all 55 simulation operations.")
 	_expect(_registry.get_all("actions").size() == 10, "Registry indexes all 10 initial home actions.")
+	_expect(_registry.get_all("phone_apps").size() == 9, "Registry indexes all nine required phone apps.")
 
 
 func _test_new_game_state_factory() -> void:
@@ -210,9 +223,11 @@ func _test_new_game_state_factory() -> void:
 	_expect(_stack_quantity(state, "kitchen_storage", "drink_water_bottle") == 6, "The family kitchen adds water to the player's starting supply.")
 	_expect(_stack_quantity(state, "kitchen_storage", "food_pasta_ingredients") == 2, "The family kitchen starts with two cookable meals.")
 	_expect(state["player"]["inventory"]["equipped_outfit"].get("shirt") == "shirt_basic_white", "A playable default outfit is equipped at new-game creation.")
+	_expect(state["player"]["phone"]["message_threads"].size() == 5, "New-game phone state creates one thread per known contact.")
+	_expect("weather" in state["player"]["phone"]["unlocked_apps"], "The weather app is available from the start.")
 	_expect(state["relationships"].size() == 15, "Relationship defaults initialize for every opening character.")
 	_expect(state["world_state"]["weather"]["condition"] == "partly_cloudy", "Opening weather initializes from the calendar.")
-	_expect(state["content_state"]["loaded_packages"].size() == 20, "Runtime state records its loaded content manifest.")
+	_expect(state["content_state"]["loaded_packages"].size() == 21, "Runtime state records its loaded content manifest.")
 	_expect(state["world_state"]["random_seed"] == 12345, "Runtime random seed can be reproduced.")
 	_expect(not _contains_placeholder(state), "Runtime state contains no unresolved template placeholders.")
 	for npc_state: Variant in state["npc_states"]:
@@ -427,6 +442,89 @@ func _test_home_actions_and_wardrobe() -> void:
 	_expect(state["player"]["inventory"]["equipped_outfit"]["shirt"] == "shirt_oxford_blue", "Rejected equipment leaves the outfit unchanged.")
 
 
+func _test_phone_messages_and_calendar() -> void:
+	var factory: RefCounted = NewGameStateFactoryScript.new(_registry)
+	var simulation: RefCounted = SimulationEngineScript.new(_registry)
+	var phone: RefCounted = PhoneEngineScript.new(_registry, simulation)
+	var state: Dictionary = factory.create_new_game({}, {"random_seed": 144, "save_id": "phone-test"})
+	state["player"]["flags"]["sandbox.active"] = true
+
+	var result: Dictionary = phone.sync_triggered_messages(state)
+	_expect(result.get("ok", false), "Phone synchronization loads triggered authored messages.")
+	state = result["state"]
+	_expect(result["events"].size() == 5, "Sandbox activation receives one authored message from each known opening contact.")
+	_expect(state["player"]["phone"]["unread_threads"].size() == 5, "New incoming character messages mark all five threads unread.")
+	_expect(_thread_message_count(state, "elena_reyes_hale") == 1, "Elena's authored opening phone message enters her thread.")
+	result = phone.sync_triggered_messages(state)
+	_expect(result.get("ok", false) and result["events"].is_empty(), "Phone trigger synchronization does not duplicate delivered messages.")
+	state = result["state"]
+
+	var comfort_before: float = state["relationships"]["elena_reyes_hale"]["comfort"]
+	result = phone.reply_to_message(state, "elena_reyes_hale", "elena_phone_ready", 0)
+	_expect(result.get("ok", false), "An authored quick reply can be sent from Elena's thread.")
+	state = result["state"]
+	_expect(state["clock"]["minute_within_block"] == 5, "Sending a phone reply consumes five in-game minutes.")
+	_expect(_thread_message_count(state, "elena_reyes_hale") == 2, "The player reply is stored in the correct message thread.")
+	_expect(state["relationships"]["elena_reyes_hale"]["comfort"] == comfort_before + 1.0, "A phone reply applies its authored relationship effect.")
+	var event_count_before_duplicate: int = state["simulation"]["recent_event_log"].size()
+	result = phone.reply_to_message(state, "elena_reyes_hale", "elena_phone_ready", 1)
+	_expect(not result.get("ok", true), "The same incoming message cannot be answered twice.")
+	_expect(state["simulation"]["recent_event_log"].size() == event_count_before_duplicate, "A rejected duplicate reply leaves event state unchanged.")
+	result = phone.mark_thread_read(state, "elena_reyes_hale")
+	_expect(result.get("ok", false), "A known phone thread can be marked read.")
+	state = result["state"]
+	_expect("elena_reyes_hale" not in state["player"]["phone"]["unread_threads"], "Reading a thread clears its unread marker.")
+
+	var unavailable_plan: Dictionary = {
+		"title": "Morning walk with Emma",
+		"type": "hangout",
+		"date": "Y1-08-20",
+		"weekday": "tuesday",
+		"block": "morning",
+		"participants": ["emma_rowan"],
+		"location": "alder_bay_park.waterfront_path",
+	}
+	result = simulation.apply_operation(state, "calendar.schedule", {"calendar_event": unavailable_plan}, "test.phone_calendar")
+	_expect(not result.get("ok", true), "Calendar scheduling rejects an NPC's fixed school commitment.")
+
+	var emma_plan: Dictionary = unavailable_plan.duplicate(true)
+	emma_plan.merge({"title": "Evening walk with Emma", "block": "evening"}, true)
+	result = simulation.apply_operation(state, "calendar.schedule", {"calendar_event": emma_plan}, "test.phone_calendar")
+	_expect(result.get("ok", false), "Calendar scheduling accepts an available NPC block.")
+	state = result["state"]
+	_expect(state["calendar_state"]["events"].size() == 2, "A confirmed phone plan is added to the runtime calendar.")
+	var emma_event_id: String = str(state["calendar_state"]["events"][-1]["id"])
+
+	var marcus_plan: Dictionary = emma_plan.duplicate(true)
+	marcus_plan["title"] = "Movie with Marcus"
+	marcus_plan["type"] = "movie"
+	marcus_plan["participants"] = ["marcus_lee"]
+	marcus_plan["location"] = "harborlight_cinema.auditorium_1"
+	result = simulation.apply_operation(state, "calendar.schedule", {"calendar_event": marcus_plan}, "test.phone_calendar")
+	_expect(result.get("ok", false), "Optional plans may be double-booked with a visible warning.")
+	state = result["state"]
+	_expect(state["calendar_state"]["conflicts"].size() == 1, "Double-booked optional plans create a calendar conflict warning.")
+
+	var work_plan: Dictionary = emma_plan.duplicate(true)
+	work_plan["title"] = "Required shift"
+	work_plan["type"] = "work"
+	work_plan["participants"] = []
+	result = simulation.apply_operation(state, "calendar.schedule", {"calendar_event": work_plan}, "test.phone_calendar")
+	_expect(not result.get("ok", true), "Work, class, and interview conflicts block calendar confirmation.")
+
+	result = simulation.apply_operation(state, "calendar.cancel_or_reschedule", {"event_id": emma_event_id, "cancel": true}, "test.phone_calendar")
+	_expect(result.get("ok", false), "A scheduled phone plan can be cancelled.")
+	state = result["state"]
+	_expect(_calendar_event_status(state, emma_event_id) == "cancelled", "Calendar cancellation records the event's cancelled status.")
+	_expect(state["calendar_state"]["conflicts"][0]["status"] == "resolved", "Cancelling an overlapping plan resolves its conflict warning.")
+
+	result = simulation.apply_operation(state, "time.advance", {"blocks": 7}, "test.weather_rollover")
+	_expect(result.get("ok", false), "Phone test clock advances into the next opening-week day.")
+	state = result["state"]
+	_expect(state["clock"]["day"] == 21, "Seven activity-block advances cross into Wednesday from the current morning block.")
+	_expect(state["world_state"]["weather"]["condition"] == "rain", "Day advancement loads Wednesday's authored rain forecast into live state.")
+
+
 func _test_opening_dialogue_branches() -> void:
 	var factory: RefCounted = NewGameStateFactoryScript.new(_registry)
 	var simulation: RefCounted = SimulationEngineScript.new(_registry)
@@ -511,6 +609,7 @@ func _test_opening_dialogue_branches() -> void:
 		state = result["state"]
 		_expect(result.get("ended", false), "Elena's opening conversation ends cleanly.")
 		_expect(state["conversation_state"]["active"] == null, "Finished dialogue clears active conversation state.")
+		_expect(_calendar_event_status(state, "opening_future_talk_y1_08_20") == "completed", "Finishing Elena's scene marks its calendar event complete.")
 		_expect("conversation:opening_future_talk" in state["conversation_state"]["once_only_flags"], "Opening dialogue records its once-only flag.")
 		result = dialogue.begin(state, "opening_future_talk")
 		_expect(not result.get("ok", true), "Elena's opening conversation cannot run twice.")
@@ -558,6 +657,17 @@ func _stack_cleanliness(state: Dictionary, container_id: String, item_id: String
 			if stack is Dictionary and str(stack.get("item_id", "")) == item_id:
 				return int(stack.get("item_state", {}).get("cleanliness", -1))
 	return -1
+
+
+func _thread_message_count(state: Dictionary, character_id: String) -> int:
+	return state["player"]["phone"].get("message_threads", {}).get(character_id, {}).get("messages", []).size()
+
+
+func _calendar_event_status(state: Dictionary, event_id: String) -> String:
+	for calendar_event: Variant in state["calendar_state"].get("events", []):
+		if calendar_event is Dictionary and str(calendar_event.get("id", "")) == event_id:
+			return str(calendar_event.get("status", ""))
+	return ""
 
 
 func _parse_json(path: String) -> Variant:

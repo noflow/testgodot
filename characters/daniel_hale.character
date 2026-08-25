@@ -16,6 +16,6 @@
   "quest_hooks": ["family_car_lesson", "garage_project", "transit_job_referral", "father_child_reconnection"],
   "conversation_topics": ["work", "cars", "responsibility", "family", "city_transit", "growing_older"],
   "text_style": {"tone": "brief_dry", "emoji_rate": "none", "response_delay": "slow_at_work"},
-  "quests": [], "conversations": [], "text_messages": [], "outcomes": [], "asset_refs": {"portraits": [], "sprites": [], "audio": []},
+  "quests": [], "conversations": [], "text_messages": [{"id": "daniel_opening_checkin", "trigger": {"sandbox_activated": true}, "sender": "daniel_hale", "text": "Heard you made a decision. First step is usually the worst one. Car keys are still ask-first, by the way.", "quick_replies": [{"text": "Thanks, Dad.", "tone": ["supportive"], "effects": [{"operation": "add_meter", "character": "daniel_hale", "meter": "comfort", "value": 1}]}, {"text": "Can I use the car later?", "tone": ["responsible"]}, {"text": "You really know how to inspire someone.", "tone": ["playful"], "effects": [{"operation": "add_meter", "character": "daniel_hale", "meter": "friendship", "value": 1}]}]}], "outcomes": [], "asset_refs": {"portraits": [], "sprites": [], "audio": []},
   "entry_event": "opening_day_evening"
 }

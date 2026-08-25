@@ -21,6 +21,7 @@ const MONTH_NAMES: PackedStringArray = [
 @onready var outfit_text: RichTextLabel = %OutfitText
 @onready var quest_panel: PanelContainer = %QuestPanel
 @onready var quest_text: RichTextLabel = %QuestText
+@onready var smartphone: Control = %Smartphone
 
 var _rooms: Dictionary = {
 	"player_bedroom": {"name": "Player Bedroom", "rect": Rect2(20, 20, 400, 330), "color": Color("253b49")},
@@ -64,6 +65,8 @@ func _ready() -> void:
 	_build_rooms()
 	_build_walls()
 	player.interact_requested.connect(_on_interact_requested)
+	smartphone.phone_opened.connect(_on_phone_opened)
+	smartphone.phone_closed.connect(_on_phone_closed)
 	_set_current_room("player_bedroom")
 	_refresh_hud()
 	queue_redraw()
@@ -79,6 +82,11 @@ func _process(_delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if smartphone.is_open():
+		if event.is_action_pressed("cancel") or event.is_action_pressed("phone"):
+			smartphone.close_phone()
+			get_viewport().set_input_as_handled()
+		return
 	if event.is_action_pressed("cancel") and _modal_open():
 		_close_panels()
 		get_viewport().set_input_as_handled()
@@ -86,7 +94,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		_toggle_quest_panel()
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("phone") and not _modal_open():
-		status_label.text = "The complete phone interface is the next major UI milestone. Press Q for the active quest tracker."
+		smartphone.open_phone()
 		get_viewport().set_input_as_handled()
 
 
@@ -263,7 +271,7 @@ func _handle_special(special: String) -> void:
 		"wardrobe":
 			_open_wardrobe()
 		"phone":
-			status_label.text = "Your phone is ready. The full phone interface is scheduled after home exploration."
+			smartphone.open_phone()
 		"lily_door":
 			status_label.text = "You knock. Lily asks for privacy right now, so the door remains closed."
 		"parents_door":
@@ -359,7 +367,7 @@ func _refresh_hud() -> void:
 
 
 func _modal_open() -> bool:
-	return action_panel.visible or wardrobe_panel.visible or quest_panel.visible
+	return action_panel.visible or wardrobe_panel.visible or quest_panel.visible or smartphone.is_open()
 
 
 func _close_panels() -> void:
@@ -377,3 +385,11 @@ func _clear_container(container: Container) -> void:
 
 func _on_close_panel_pressed() -> void:
 	_close_panels()
+
+
+func _on_phone_opened() -> void:
+	player.movement_enabled = false
+
+
+func _on_phone_closed() -> void:
+	player.movement_enabled = true

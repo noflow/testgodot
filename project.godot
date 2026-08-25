@@ -23,6 +23,7 @@ TimeService="*res://src/autoload/time_service.gd"
 QuestService="*res://src/autoload/quest_service.gd"
 DialogueService="*res://src/autoload/dialogue_service.gd"
 HomeActionService="*res://src/autoload/home_action_service.gd"
+PhoneService="*res://src/autoload/phone_service.gd"
 SettingsService="*res://src/autoload/settings_service.gd"
 
 [display]

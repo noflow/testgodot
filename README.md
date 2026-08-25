@@ -12,7 +12,10 @@ the seven-block calendar clock, atomic simulation operations, the VN dialogue an
 quest engines, complete data-driven character creation, Elena's playable
 three-branch opening scene, and the first connected Hale home sandbox. The home
 includes room collisions, private doors, needs-aware food and hygiene actions,
-sleep, laundry, household storage, and a working wardrobe.
+sleep, laundry, household storage, and a working wardrobe. The reusable smartphone
+now provides all nine vertical-slice apps, authored character messages and replies,
+NPC-aware calendar scheduling, live relationships, weather/outfit checks, the city
+map, quest progress, character statistics, and initial settings controls.
 
 ## Planned technology
 

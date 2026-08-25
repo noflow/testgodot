@@ -499,14 +499,18 @@ quest engines, data-driven character creation with validated age and selection
 limits, Elena's playable college, employment, or combined opening path, and the
 connected twelve-space Hale home. The home now supports collision-based movement,
 private bedroom boundaries, sleeping, food, water, cooking, hygiene, laundry,
-household supplies, needs changes, and wardrobe equipment.
+household supplies, needs changes, and wardrobe equipment. The reusable phone now
+implements the nine First Week Foundations apps with live profile data, discovered
+contacts, character-authored message threads, quick replies, a conflict-aware
+seven-block calendar, quest tracking, relationship meters and levels, unlocked map
+destinations, forecast-driven outfit checks, and initial settings controls.
 
 ## Next milestones
 
-1. Implement the phone, calendar, messages, relationships, map, and weather
-2. Place scheduled household NPCs and connect family conversations to home exploration
-3. Implement city travel and the required institutional and NPC activities
-4. Expand event and dialogue effects as those gameplay systems come online
-5. Implement saves, recovery, Sunday review, settings, and accessibility
+1. Place scheduled household NPCs and connect family conversations to home exploration
+2. Implement city travel and connect phone map destinations to route confirmation
+3. Implement the required institutional and NPC activities
+4. Expand the phone with jobs, banking, housing, education, health, shopping, and transportation apps
+5. Implement saves, recovery, Sunday review, complete settings, and accessibility
 6. Stabilize the vertical slice against all acceptance tests
 7. Resume broader content expansion, alternative households, and the September calendar

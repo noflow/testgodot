@@ -9,7 +9,12 @@ Implementation status: Phase 0 project foundation complete. Phase 1 content load
 new-game state creation, seven-block clock, core simulation, VN dialogue, quest
 branching, required character creation, and Elena's playable opening are
 implemented. The connected Hale home, room collisions, essential needs actions,
-household supplies, and wardrobe equipment are also playable. The phone is next.
+household supplies, wardrobe equipment, reusable phone shell, and all nine required
+app views are now implemented with live runtime data. Authored opening texts, quick
+replies, calendar scheduling,
+NPC commitment rejection, optional double-booking warnings, weather/outfit checks,
+quest progress, relationships, map discovery, and initial settings controls work.
+Map travel and save/load controls remain dependent on their later runtime phases.
 
 ## Purpose
 
@@ -130,6 +135,14 @@ Required apps:
 Scheduling an NPC activity adds it to the calendar. Work or school conflicts prevent
 confirmation. Other conflicts create a visible double-booking warning but remain
 allowed.
+
+Implementation note: the phone currently renders every required app from one
+reusable scene. Opening messages remain authored inside their owners' `.character`
+packages. Replies consume five minutes and apply declared relationship or quest
+effects atomically. The scheduler checks fixed NPC work and school commitments,
+stores confirmed plans, supports cancellation, and records optional overlap
+warnings. City-map travel, full route details, save/load, control remapping, and
+complete audio sliders activate with their corresponding later systems.
 
 ### City travel
 

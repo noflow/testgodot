@@ -149,7 +149,23 @@ func _finish(state: Dictionary, conversation: Dictionary) -> Dictionary:
 	)
 	if not result.get("ok", false):
 		return result
-	return {"ok": true, "state": result["state"], "ended": true, "view": {}, "errors": PackedStringArray()}
+	var working: Dictionary = result["state"]
+	for calendar_event: Variant in working["calendar_state"].get("events", []):
+		if not calendar_event is Dictionary or str(calendar_event.get("source", "")) != str(conversation["id"]):
+			continue
+		if str(calendar_event.get("status", "scheduled")) != "scheduled":
+			continue
+		result = _simulation.apply_operation(
+			working,
+			"calendar.arrival",
+			{"event_id": calendar_event.get("id")},
+			"dialogue.end"
+		)
+		if not result.get("ok", false):
+			return result
+		working = result["state"]
+		break
+	return {"ok": true, "state": working, "ended": true, "view": {}, "errors": PackedStringArray()}
 
 
 func _apply_effects(state: Dictionary, effects: Array, source: String) -> Dictionary:
