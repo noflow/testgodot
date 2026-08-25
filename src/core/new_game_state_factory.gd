@@ -26,6 +26,7 @@ func create_new_game(player_choices: Dictionary = {}, options: Dictionary = {}) 
 	state["world_state"]["random_seed"] = random_seed
 	_apply_metadata(state, options)
 	_apply_player_choices(state, player_choices)
+	_apply_trait_modifiers(state)
 	_apply_hidden_health(state, random_seed)
 	_apply_financial_background(state, player_choices)
 	_apply_inventory(state, player_choices)
@@ -52,7 +53,9 @@ func _apply_player_choices(state: Dictionary, choices: Dictionary) -> void:
 	var identity: Dictionary = player["identity"]
 	identity["first_name"] = str(choices.get("first_name", "Alex"))
 	identity["last_name"] = str(choices.get("last_name", "Hale"))
-	identity["birthday"] = str(choices.get("birthday", "08-20"))
+	var birth_date: String = str(choices.get("birth_date", ""))
+	identity["birthday"] = str(choices.get("birthday", birth_date.right(5) if birth_date.length() == 10 else "08-20"))
+	identity["birth_date_reference"] = birth_date if not birth_date.is_empty() else null
 
 	var appearance_defaults: Dictionary = {
 		"face": "face_01",
@@ -73,6 +76,26 @@ func _apply_player_choices(state: Dictionary, choices: Dictionary) -> void:
 	selected_traits["core_values"] = _copy_array(choices.get("core_values", []))
 	selected_traits["hobbies"] = _copy_array(choices.get("hobbies", []))
 	selected_traits["archetype"] = str(choices.get("archetype", "undecided"))
+
+
+func _apply_trait_modifiers(state: Dictionary) -> void:
+	var creation_package: Variant = _registry.get_package("port_alder_character_creation")
+	if not creation_package is Dictionary:
+		return
+	var player: Dictionary = state["player"]
+	for collection_name: String in ["positive_traits", "challenging_traits"]:
+		for trait_id: Variant in player["selected_traits"].get(collection_name.trim_suffix("_traits"), []):
+			var trait_definition: Dictionary = _find_by_id(creation_package.get(collection_name, []), str(trait_id))
+			for path: Variant in trait_definition.get("modifiers", {}):
+				var parts: PackedStringArray = str(path).split(".")
+				if parts.size() != 2 or not player.has(parts[0]) or not player[parts[0]].has(parts[1]):
+					continue
+				var maximum: float = 100.0 if parts[0] == "needs" else 250.0
+				player[parts[0]][parts[1]] = clampf(
+					float(player[parts[0]][parts[1]]) + float(trait_definition["modifiers"][path]),
+					0.0,
+					maximum
+				)
 
 
 func _apply_financial_background(state: Dictionary, choices: Dictionary) -> void:

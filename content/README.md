@@ -10,6 +10,7 @@ unnamed service NPCs lives here.
 - `world/all_locations.json` is the canonical city registry for districts, travel destinations, homes, rooms, access, services, and legacy location aliases.
 - `world/transportation.json` defines travel modes, routes, time, cost, and delays.
 - `systems/education.json` defines Westshore programs, courses, schedules, and grading.
+- `systems/character_creation.json` defines appearance choices, traits, values, hobbies, archetypes, and validation rules.
 - `systems/employment.json` defines jobs, requirements, interviews, and promotions.
 - `systems/repeatable_activities.json` defines routine actions and simulation effects.
 - `systems/economy.json` defines accounts, budgets, recurring bills, debt, and income.

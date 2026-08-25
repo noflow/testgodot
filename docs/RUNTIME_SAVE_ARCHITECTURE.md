@@ -24,6 +24,10 @@ inventory loadout, generates hidden health and fertility profiles from a recorde
 seed, imports opening weather, initializes all fifteen relationships, and records
 the loaded content manifest. The resulting state contains no unresolved template
 tokens and is held by the `GameState` autoload without modifying source content.
+Character creation now validates the protagonist's age against the fixed opening
+date, applies exactly three positive and three challenging trait modifiers, stores
+three core values, one archetype, two hobbies, and all six appearance choices, and
+resolves the selected financial background before this state becomes active.
 
 The first simulation processor now applies atomic time, need, attribute, skill,
 reputation, relationship, economy, inventory, quest, travel, and map-unlock events.

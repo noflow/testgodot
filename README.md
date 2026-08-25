@@ -9,7 +9,8 @@ The protagonist begins at age 18 in the fictional coastal city of Port Alder. Th
 Godot foundation implementation. Phase 0 of the First Week Foundations vertical
 slice is complete. Phase 1 includes full content indexing, resolved new-game state,
 the seven-block calendar clock, atomic simulation operations, the VN dialogue and
-quest engines, and Elena's playable three-branch opening scene.
+quest engines, complete data-driven character creation, and Elena's playable
+three-branch opening scene.
 
 ## Planned technology
 

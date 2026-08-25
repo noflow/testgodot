@@ -5,6 +5,7 @@ const NewGameStateFactoryScript: GDScript = preload("res://src/core/new_game_sta
 const SimulationEngineScript: GDScript = preload("res://src/simulation/simulation_engine.gd")
 const QuestEngineScript: GDScript = preload("res://src/quests/quest_engine.gd")
 const DialogueEngineScript: GDScript = preload("res://src/dialogue/dialogue_engine.gd")
+const CharacterCreationValidatorScript: GDScript = preload("res://src/creation/character_creation_validator.gd")
 
 var _failures: PackedStringArray = []
 var _tests_run: int = 0
@@ -20,11 +21,13 @@ func _initialize() -> void:
 func _run_all() -> void:
 	_test_project_configuration()
 	_test_dialogue_ui_scenes()
+	_test_character_creation_scene()
 	_test_required_json_documents()
 	_test_character_packages()
 	_test_vertical_slice_acceptance_suite()
 	_test_content_registry()
 	_test_new_game_state_factory()
+	_test_character_creation_validation()
 	_test_clock_and_simulation_engine()
 	_test_opening_dialogue_branches()
 
@@ -54,6 +57,7 @@ func _test_required_json_documents() -> void:
 	var paths: PackedStringArray = [
 		"res://content/vertical_slice/manifest.json",
 		"res://content/runtime/new_game_state.json",
+		"res://content/systems/character_creation.json",
 		"res://content/opening/opening_week.json",
 		"res://content/world/all_locations.json",
 		"res://content/systems/economy.json",
@@ -79,6 +83,19 @@ func _test_dialogue_ui_scenes() -> void:
 		dialogue_instance.free()
 	var sandbox_scene: PackedScene = load("res://scenes/world/sandbox_placeholder.tscn")
 	_expect(sandbox_scene != null, "Post-opening sandbox scene loads.")
+
+
+func _test_character_creation_scene() -> void:
+	var creation_scene: PackedScene = load("res://scenes/creation/character_creation.tscn")
+	_expect(creation_scene != null, "Character creation scene loads.")
+	if creation_scene == null:
+		return
+	var instance: Node = creation_scene.instantiate()
+	_expect(instance.get_node_or_null("PageMargin/Page/CreationTabs/Identity/Fields/FirstName") != null, "Creation scene contains identity fields.")
+	_expect(instance.get_node_or_null("PageMargin/Page/CreationTabs/Appearance/Fields/Grid/FaceOption") != null, "Creation scene contains appearance options.")
+	_expect(instance.get_node_or_null("PageMargin/Page/CreationTabs/Traits/Scroll/Fields/PositiveOptions") != null, "Creation scene contains trait selection.")
+	_expect(instance.get_node_or_null("PageMargin/Page/CreationTabs/BackgroundAndReview/Columns/ReviewText") != null, "Creation scene contains confirmation review.")
+	instance.free()
 
 
 func _test_character_packages() -> void:
@@ -126,8 +143,8 @@ func _test_vertical_slice_acceptance_suite() -> void:
 func _test_content_registry() -> void:
 	var errors: PackedStringArray = _registry.validate_foundation()
 	_expect(errors.is_empty(), "Complete content registry validates without errors.")
-	_expect(_registry.get_document_count() == 35, "Registry loads all 35 source documents.")
-	_expect(_registry.get_package_count() == 18, "Registry indexes all 18 global packages.")
+	_expect(_registry.get_document_count() == 36, "Registry loads all 36 source documents.")
+	_expect(_registry.get_package_count() == 19, "Registry indexes all 19 global packages.")
 	_expect(_registry.get_all("locations").size() == 61, "Registry indexes all 61 locations.")
 	_expect(_registry.get_all("districts").size() == 10, "Registry indexes all 10 districts.")
 	_expect(_registry.get_character("elena_reyes_hale") is Dictionary, "Characters can be retrieved by id.")
@@ -174,7 +191,7 @@ func _test_new_game_state_factory() -> void:
 	_expect(initialized_stacks == 13, "Starting items are distributed into accessible storage containers.")
 	_expect(state["relationships"].size() == 15, "Relationship defaults initialize for every opening character.")
 	_expect(state["world_state"]["weather"]["condition"] == "partly_cloudy", "Opening weather initializes from the calendar.")
-	_expect(state["content_state"]["loaded_packages"].size() == 18, "Runtime state records its loaded content manifest.")
+	_expect(state["content_state"]["loaded_packages"].size() == 19, "Runtime state records its loaded content manifest.")
 	_expect(state["world_state"]["random_seed"] == 12345, "Runtime random seed can be reproduced.")
 	_expect(not _contains_placeholder(state), "Runtime state contains no unresolved template placeholders.")
 	for npc_state: Variant in state["npc_states"]:
@@ -182,6 +199,58 @@ func _test_new_game_state_factory() -> void:
 			_registry.get_location(str(npc_state["current_location"])) is Dictionary,
 			"NPC starts at a registered location: %s" % npc_state["character_id"]
 		)
+
+
+func _test_character_creation_validation() -> void:
+	var validator: RefCounted = CharacterCreationValidatorScript.new(_registry)
+	var missing: Dictionary = validator.validate_choices({})
+	_expect(not missing["valid"], "Incomplete character creation is rejected.")
+	_expect(missing["fields"].has("first_name") and missing["fields"].has("financial_background"), "Incomplete creation identifies missing fields.")
+
+	var valid_choices: Dictionary = {
+		"first_name": "Morgan",
+		"last_name": "Hale",
+		"birth_date": "2008-03-17",
+		"appearance": {
+			"face": "face_02",
+			"eye_color": "green",
+			"skin_tone": "medium",
+			"hairstyle": "curly_01",
+			"height": "tall",
+			"body_type": "athletic",
+		},
+		"positive_traits": ["kind", "driven", "funny"],
+		"challenging_traits": ["anxious", "messy", "stubborn"],
+		"core_values": ["family", "independence", "compassion"],
+		"archetype": "the_planner",
+		"hobbies": ["cooking", "fitness"],
+		"financial_background": "standard_background",
+	}
+	var validation: Dictionary = validator.validate_choices(valid_choices)
+	_expect(validation["valid"], "A complete age-18 character passes validation.")
+	_expect(validator.age_on_opening_date(valid_choices["birth_date"]) == 18, "Birth date resolves to age 18 on opening day.")
+	_expect(validator.birthday_from_birth_date(valid_choices["birth_date"]) == "03-17", "Birth date resolves to the annual birthday.")
+
+	var wrong_age: Dictionary = valid_choices.duplicate(true)
+	wrong_age["birth_date"] = "2009-03-17"
+	validation = validator.validate_choices(wrong_age)
+	_expect(not validation["valid"] and validation["fields"].has("birth_date"), "A birth date producing age 17 is rejected.")
+	var too_many_traits: Dictionary = valid_choices.duplicate(true)
+	too_many_traits["positive_traits"].append("reliable")
+	validation = validator.validate_choices(too_many_traits)
+	_expect(not validation["valid"] and validation["fields"].has("positive_traits"), "A fourth positive trait is rejected.")
+
+	valid_choices["birthday"] = validator.birthday_from_birth_date(valid_choices["birth_date"])
+	var factory: RefCounted = NewGameStateFactoryScript.new(_registry)
+	var state: Dictionary = factory.create_new_game(valid_choices, {"random_seed": 101})
+	_expect(state["player"]["identity"]["age"] == 18, "Created protagonist starts at age 18.")
+	_expect(state["player"]["identity"]["birthday"] == "03-17", "Created protagonist stores the chosen birthday.")
+	_expect(state["player"]["identity"]["gender_identity"] == "male", "Created protagonist is male.")
+	_expect(state["player"]["selected_traits"]["core_values"].size() == 3, "Created protagonist stores three core values.")
+	_expect(state["player"]["selected_traits"]["hobbies"].size() == 2, "Created protagonist stores two hobbies.")
+	_expect(state["player"]["attributes"]["empathy"] == 48.0, "Positive trait applies its starting attribute bonus.")
+	_expect(state["player"]["needs"]["stress"] == 32.0, "Challenging trait applies its starting need modifier.")
+	_expect(state["player"]["economy"]["accounts"]["checking"] == 625, "Standard background initializes its checking balance.")
 
 
 func _test_clock_and_simulation_engine() -> void:

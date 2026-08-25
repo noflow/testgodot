@@ -7,8 +7,8 @@ Presentation: 2D top-down exploration with VN-style conversations
 
 Implementation status: Phase 0 project foundation complete. Phase 1 content loading,
 new-game state creation, seven-block clock, core simulation, VN dialogue, quest
-branching, and Elena's playable opening are implemented. Character creation and
-Hale home exploration are next.
+branching, required character creation, and Elena's playable opening are
+implemented. Hale home exploration is next.
 
 ## Purpose
 

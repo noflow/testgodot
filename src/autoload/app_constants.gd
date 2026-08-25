@@ -6,6 +6,7 @@ const TARGET_GODOT_VERSION: String = "4.7.2"
 
 const MAIN_MENU_SCENE: String = "res://scenes/menus/main_menu.tscn"
 const BOOT_SCENE: String = "res://scenes/boot/boot.tscn"
+const CHARACTER_CREATION_SCENE: String = "res://scenes/creation/character_creation.tscn"
 const VN_DIALOGUE_SCENE: String = "res://scenes/dialogue/vn_dialogue.tscn"
 const SANDBOX_SCENE: String = "res://scenes/world/sandbox_placeholder.tscn"
 
@@ -20,6 +21,7 @@ const COLOR_ERROR: Color = Color("#ef7777")
 const REQUIRED_FOUNDATION_FILES: PackedStringArray = [
 	"res://content/vertical_slice/manifest.json",
 	"res://content/runtime/new_game_state.json",
+	"res://content/systems/character_creation.json",
 	"res://content/opening/opening_week.json",
 	"res://content/world/all_locations.json",
 	"res://content/systems/economy.json",

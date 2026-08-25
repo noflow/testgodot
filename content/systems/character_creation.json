@@ -1,0 +1,90 @@
+{
+  "format_version": 1,
+  "package_id": "port_alder_character_creation",
+  "opening_reference_date": {"year": 2026, "month": 8, "day": 20},
+  "rules": {
+    "protagonist_gender_identity": "male",
+    "required_age": 18,
+    "positive_traits": 3,
+    "challenging_traits": 3,
+    "core_values": 3,
+    "hobbies": 2,
+    "archetypes": 1
+  },
+  "appearance_options": {
+    "face": [
+      {"id": "face_01", "name": "Angular"},
+      {"id": "face_02", "name": "Oval"},
+      {"id": "face_03", "name": "Square"},
+      {"id": "face_04", "name": "Round"},
+      {"id": "face_05", "name": "Long"},
+      {"id": "face_06", "name": "Soft"}
+    ],
+    "eye_color": [
+      {"id": "brown", "name": "Brown"}, {"id": "blue", "name": "Blue"},
+      {"id": "green", "name": "Green"}, {"id": "hazel", "name": "Hazel"},
+      {"id": "gray", "name": "Gray"}
+    ],
+    "skin_tone": [
+      {"id": "fair", "name": "Fair"}, {"id": "light", "name": "Light"},
+      {"id": "medium", "name": "Medium"}, {"id": "olive", "name": "Olive"},
+      {"id": "brown", "name": "Brown"}, {"id": "deep", "name": "Deep"}
+    ],
+    "hairstyle": [
+      {"id": "short_01", "name": "Short"}, {"id": "cropped_01", "name": "Cropped"},
+      {"id": "wavy_01", "name": "Wavy"}, {"id": "curly_01", "name": "Curly"},
+      {"id": "locs_01", "name": "Locs"}, {"id": "long_01", "name": "Long"}
+    ],
+    "height": [
+      {"id": "short", "name": "Short"}, {"id": "average", "name": "Average"},
+      {"id": "tall", "name": "Tall"}, {"id": "very_tall", "name": "Very Tall"}
+    ],
+    "body_type": [
+      {"id": "slim", "name": "Slim"}, {"id": "average", "name": "Average"},
+      {"id": "athletic", "name": "Athletic"}, {"id": "broad", "name": "Broad"},
+      {"id": "large", "name": "Large"}
+    ]
+  },
+  "positive_traits": [
+    {"id": "kind", "name": "Kind", "description": "Naturally considerate of other people.", "modifiers": {"attributes.empathy": 10}},
+    {"id": "driven", "name": "Driven", "description": "Pushes toward long-term goals.", "modifiers": {"attributes.motivation": 10}},
+    {"id": "disciplined", "name": "Disciplined", "description": "Maintains routines under pressure.", "modifiers": {"attributes.discipline": 10}},
+    {"id": "confident", "name": "Confident", "description": "Trusts his ability to handle new situations.", "modifiers": {"attributes.confidence": 10}},
+    {"id": "creative", "name": "Creative", "description": "Approaches problems imaginatively.", "modifiers": {"attributes.creativity": 10}},
+    {"id": "bright", "name": "Bright", "description": "Learns concepts quickly.", "modifiers": {"attributes.intelligence": 10}},
+    {"id": "charismatic", "name": "Charismatic", "description": "Makes strong first impressions.", "modifiers": {"attributes.charisma": 10}},
+    {"id": "reliable", "name": "Reliable", "description": "Follows through on commitments.", "modifiers": {"attributes.reliability": 10}},
+    {"id": "funny", "name": "Funny", "description": "Uses humor to connect with people.", "modifiers": {"attributes.humor": 10}},
+    {"id": "responsible", "name": "Responsible", "description": "Takes ownership of consequences.", "modifiers": {"attributes.responsibility": 10}}
+  ],
+  "challenging_traits": [
+    {"id": "stubborn", "name": "Stubborn", "description": "Has difficulty changing course once committed.", "modifiers": {"attributes.assertiveness": 6, "attributes.flexibility": -5}},
+    {"id": "anxious", "name": "Anxious", "description": "Carries extra stress into uncertain situations.", "modifiers": {"needs.stress": 10, "attributes.confidence": -4}},
+    {"id": "messy", "name": "Messy", "description": "Struggles to maintain orderly spaces and routines.", "modifiers": {"attributes.discipline": -7, "needs.hygiene": -5}},
+    {"id": "shy", "name": "Shy", "description": "Needs time to feel comfortable socially.", "modifiers": {"attributes.charisma": -7, "attributes.empathy": 3}},
+    {"id": "impulsive", "name": "Impulsive", "description": "Acts quickly and considers consequences later.", "modifiers": {"attributes.discipline": -8, "attributes.assertiveness": 4}},
+    {"id": "pessimistic", "name": "Pessimistic", "description": "Expects setbacks before opportunities.", "modifiers": {"needs.mood": -8, "attributes.motivation": -4}},
+    {"id": "avoidant", "name": "Avoidant", "description": "Delays uncomfortable responsibilities.", "modifiers": {"attributes.reliability": -6, "needs.stress": 5}},
+    {"id": "perfectionist", "name": "Perfectionist", "description": "Focuses intensely but creates extra pressure.", "modifiers": {"attributes.focus": 6, "needs.stress": 8}},
+    {"id": "reckless", "name": "Reckless", "description": "Underestimates danger and long-term cost.", "modifiers": {"attributes.responsibility": -8, "attributes.inhibition": -6}},
+    {"id": "insecure", "name": "Insecure", "description": "Doubts his worth when comparing himself to others.", "modifiers": {"attributes.self_esteem": -9, "needs.stress": 4}}
+  ],
+  "core_values": [
+    {"id": "family", "name": "Family"}, {"id": "independence", "name": "Independence"},
+    {"id": "achievement", "name": "Achievement"}, {"id": "creativity", "name": "Creativity"},
+    {"id": "community", "name": "Community"}, {"id": "stability", "name": "Stability"},
+    {"id": "adventure", "name": "Adventure"}, {"id": "compassion", "name": "Compassion"}
+  ],
+  "archetypes": [
+    {"id": "the_planner", "name": "The Planner"}, {"id": "the_dreamer", "name": "The Dreamer"},
+    {"id": "the_caretaker", "name": "The Caretaker"}, {"id": "the_rebel", "name": "The Rebel"},
+    {"id": "the_achiever", "name": "The Achiever"}, {"id": "the_explorer", "name": "The Explorer"}
+  ],
+  "hobbies": [
+    {"id": "gaming", "name": "Gaming"}, {"id": "reading", "name": "Reading"},
+    {"id": "cooking", "name": "Cooking"}, {"id": "fitness", "name": "Fitness"},
+    {"id": "running", "name": "Running"}, {"id": "music", "name": "Music"},
+    {"id": "art", "name": "Art"}, {"id": "movies", "name": "Movies"},
+    {"id": "photography", "name": "Photography"}, {"id": "outdoors", "name": "Outdoors"}
+  ]
+}
