@@ -18,9 +18,12 @@ const COLOR_ERROR: Color = Color("#ef7777")
 const REQUIRED_FOUNDATION_FILES: PackedStringArray = [
 	"res://content/vertical_slice/manifest.json",
 	"res://content/runtime/new_game_state.json",
+	"res://content/opening/opening_week.json",
+	"res://content/world/all_locations.json",
+	"res://content/systems/economy.json",
+	"res://content/systems/inventory.json",
 	"res://content/systems/simulation_events.json",
 	"res://content/systems/save_system.json",
 	"res://schemas/save_game.schema.json",
 	"res://tests/acceptance/vertical_slice.json",
 ]
-

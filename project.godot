@@ -17,6 +17,7 @@ boot_splash/show_image=false
 
 AppConstants="*res://src/autoload/app_constants.gd"
 ContentRegistry="*res://src/autoload/content_registry.gd"
+GameState="*res://src/autoload/game_state.gd"
 SettingsService="*res://src/autoload/settings_service.gd"
 
 [display]
@@ -89,4 +90,3 @@ environment/defaults/default_clear_color=Color(0.035, 0.063, 0.086, 1)
 [audio]
 
 default_bus_layout="res://default_bus_layout.tres"
-

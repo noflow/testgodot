@@ -11,6 +11,20 @@ Authored content and changing state remain separate.
 
 This separation lets us add characters and content without damaging existing saves.
 
+## Implementation status
+
+Godot now loads and indexes every global JSON package and `.character` file during
+boot. Content can be retrieved by package or typed ID, including characters,
+districts, locations, quests, conversations, items, jobs, courses, programs,
+activities, and stores.
+
+The new-game state factory deep-copies the authored template, applies identity,
+appearance, and trait choices, resolves the selected financial background and
+inventory loadout, generates hidden health and fertility profiles from a recorded
+seed, imports opening weather, initializes all fifteen relationships, and records
+the loaded content manifest. The resulting state contains no unresolved template
+tokens and is held by the `GameState` autoload without modifying source content.
+
 ## Runtime state
 
 The root state contains:
@@ -98,4 +112,3 @@ contain private health, fertility, relationship, and family simulation state.
 - `content/systems/simulation_events.json`
 - `content/systems/save_system.json`
 - `schemas/save_game.schema.json`
-

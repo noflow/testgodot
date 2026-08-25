@@ -1,10 +1,16 @@
 extends SceneTree
 
+const ContentRegistryScript: GDScript = preload("res://src/autoload/content_registry.gd")
+const NewGameStateFactoryScript: GDScript = preload("res://src/core/new_game_state_factory.gd")
+
 var _failures: PackedStringArray = []
 var _tests_run: int = 0
+var _registry: Node
 
 
 func _initialize() -> void:
+	_registry = ContentRegistryScript.new()
+	root.add_child(_registry)
 	call_deferred("_run_all")
 
 
@@ -13,6 +19,8 @@ func _run_all() -> void:
 	_test_required_json_documents()
 	_test_character_packages()
 	_test_vertical_slice_acceptance_suite()
+	_test_content_registry()
+	_test_new_game_state_factory()
 
 	if _failures.is_empty():
 		print("PASS: %d foundation tests completed." % _tests_run)
@@ -40,6 +48,10 @@ func _test_required_json_documents() -> void:
 	var paths: PackedStringArray = [
 		"res://content/vertical_slice/manifest.json",
 		"res://content/runtime/new_game_state.json",
+		"res://content/opening/opening_week.json",
+		"res://content/world/all_locations.json",
+		"res://content/systems/economy.json",
+		"res://content/systems/inventory.json",
 		"res://content/systems/simulation_events.json",
 		"res://content/systems/save_system.json",
 		"res://schemas/save_game.schema.json",
@@ -91,6 +103,76 @@ func _test_vertical_slice_acceptance_suite() -> void:
 			ids[test_id] = true
 
 
+func _test_content_registry() -> void:
+	var errors: PackedStringArray = _registry.validate_foundation()
+	_expect(errors.is_empty(), "Complete content registry validates without errors.")
+	_expect(_registry.get_document_count() == 35, "Registry loads all 35 source documents.")
+	_expect(_registry.get_package_count() == 18, "Registry indexes all 18 global packages.")
+	_expect(_registry.get_all("locations").size() == 61, "Registry indexes all 61 locations.")
+	_expect(_registry.get_all("districts").size() == 10, "Registry indexes all 10 districts.")
+	_expect(_registry.get_character("elena_reyes_hale") is Dictionary, "Characters can be retrieved by id.")
+	_expect(_registry.get_location("hale_home") is Dictionary, "Locations can be retrieved by id.")
+	_expect(_registry.get_content("quests", "opening_future_choice") is Dictionary, "Quests can be retrieved by id.")
+
+
+func _test_new_game_state_factory() -> void:
+	var factory: RefCounted = NewGameStateFactoryScript.new(_registry)
+	var choices: Dictionary = {
+		"first_name": "Morgan",
+		"last_name": "Hale",
+		"birthday": "03-17",
+		"appearance": {
+			"face": "face_02",
+			"eye_color": "green",
+			"skin_tone": "light",
+			"hairstyle": "curly_01",
+			"height": "tall",
+			"body_type": "athletic",
+		},
+		"positive_traits": ["kind", "driven", "funny", "ignored_fourth"],
+		"challenging_traits": ["stubborn", "anxious", "messy"],
+		"financial_background": "standard_background",
+	}
+	var options: Dictionary = {
+		"save_id": "test-save",
+		"slot_id": "manual_1",
+		"timestamp_utc": "2026-08-24T12:00:00Z",
+		"random_seed": 12345,
+	}
+	var state: Dictionary = factory.create_new_game(choices, options)
+	_expect(not state.is_empty(), "New-game factory creates a runtime state.")
+	_expect(state["metadata"]["save_id"] == "test-save", "New-game metadata resolves save id.")
+	_expect(state["player"]["identity"]["first_name"] == "Morgan", "Player identity resolves character choices.")
+	_expect(state["player"]["selected_traits"]["positive"].size() == 3, "Positive trait selection is limited to three.")
+	_expect(state["player"]["economy"]["accounts"]["checking"] == 625, "Financial background resolves account balances.")
+	_expect(state["player"]["inventory"]["containers"].size() == 5, "Inventory containers initialize from content.")
+	_expect(state["player"]["inventory"]["starting_loadout"].size() == 13, "Starting loadout resolves from financial background.")
+	_expect(state["relationships"].size() == 15, "Relationship defaults initialize for every opening character.")
+	_expect(state["world_state"]["weather"]["condition"] == "partly_cloudy", "Opening weather initializes from the calendar.")
+	_expect(state["content_state"]["loaded_packages"].size() == 18, "Runtime state records its loaded content manifest.")
+	_expect(state["world_state"]["random_seed"] == 12345, "Runtime random seed can be reproduced.")
+	_expect(not _contains_placeholder(state), "Runtime state contains no unresolved template placeholders.")
+	for npc_state: Variant in state["npc_states"]:
+		_expect(
+			_registry.get_location(str(npc_state["current_location"])) is Dictionary,
+			"NPC starts at a registered location: %s" % npc_state["character_id"]
+		)
+
+
+func _contains_placeholder(value: Variant) -> bool:
+	if value is String:
+		return value.begins_with("$")
+	if value is Array:
+		for child: Variant in value:
+			if _contains_placeholder(child):
+				return true
+	if value is Dictionary:
+		for child: Variant in value.values():
+			if _contains_placeholder(child):
+				return true
+	return false
+
+
 func _parse_json(path: String) -> Variant:
 	if not FileAccess.file_exists(path):
 		return null
@@ -107,4 +189,3 @@ func _expect(condition: bool, description: String) -> void:
 	_tests_run += 1
 	if not condition:
 		_failures.append(description)
-
