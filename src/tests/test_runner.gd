@@ -8,6 +8,7 @@ const DialogueEngineScript: GDScript = preload("res://src/dialogue/dialogue_engi
 const CharacterCreationValidatorScript: GDScript = preload("res://src/creation/character_creation_validator.gd")
 const HomeActionEngineScript: GDScript = preload("res://src/world/home_action_engine.gd")
 const PhoneEngineScript: GDScript = preload("res://src/phone/phone_engine.gd")
+const HouseholdScheduleEngineScript: GDScript = preload("res://src/world/household_schedule_engine.gd")
 
 var _failures: PackedStringArray = []
 var _tests_run: int = 0
@@ -33,6 +34,7 @@ func _run_all() -> void:
 	_test_character_creation_validation()
 	_test_clock_and_simulation_engine()
 	_test_home_actions_and_wardrobe()
+	_test_household_schedules_and_conversations()
 	_test_phone_messages_and_calendar()
 	_test_opening_dialogue_branches()
 
@@ -106,12 +108,67 @@ func _test_hale_home_scene() -> void:
 		return
 	var instance: Node = home_scene.instantiate()
 	_expect(instance.get_node_or_null("Player") != null, "Hale home contains a collision-enabled player.")
+	_expect(instance.get_node_or_null("HouseholdActors") != null, "Hale home contains a reusable household actor layer.")
 	_expect(instance.get_node_or_null("Interface/TopMargin/TopLayout/Header/RoomLabel") != null, "Hale home contains its room HUD.")
 	_expect(instance.get_node_or_null("Interface/ActionPanel") != null, "Hale home contains the home-action panel.")
 	_expect(instance.get_node_or_null("Interface/WardrobePanel") != null, "Hale home contains the wardrobe panel.")
 	_expect(instance.get_node_or_null("Interface/QuestPanel") != null, "Hale home retains the quest tracker.")
 	_expect(instance.get_node_or_null("Interface/Smartphone") != null, "Hale home contains the reusable smartphone.")
 	instance.free()
+	var actor_scene: PackedScene = load("res://scenes/world/household_npc_actor.tscn")
+	_expect(actor_scene != null, "Reusable household NPC actor scene loads.")
+
+
+func _test_household_schedules_and_conversations() -> void:
+	var factory: RefCounted = NewGameStateFactoryScript.new(_registry)
+	var simulation: RefCounted = SimulationEngineScript.new(_registry)
+	var quests: RefCounted = QuestEngineScript.new(_registry, simulation)
+	var dialogue: RefCounted = DialogueEngineScript.new(_registry, simulation, quests)
+	var schedules: RefCounted = HouseholdScheduleEngineScript.new(_registry)
+	var state: Dictionary = factory.create_new_game({}, {"random_seed": 412})
+
+	var elena: Dictionary = schedules.resolve_character(state, "elena_reyes_hale")
+	var daniel: Dictionary = schedules.resolve_character(state, "daniel_hale")
+	var lily: Dictionary = schedules.resolve_character(state, "lily_hale")
+	_expect(not elena["present"] and elena["location"] == "st_maren_community_clinic", "Elena is at her clinic during Tuesday Morning.")
+	_expect(not daniel["present"] and daniel["location"] == "port_alder_transit_depot", "Daniel is at the transit depot during Tuesday Morning.")
+	_expect(lily["present"] and lily["room"] == "living_room", "Lily is physically present in the living room Tuesday Morning.")
+
+	var result: Dictionary = quests.complete_quest(state, "opening_future_choice", "test.household_opening_complete")
+	_expect(result.get("ok", false), "Completing the opening quest synchronizes immediate character-story activations.")
+	state = result["state"]
+	_expect("under_this_roof" in state["quest_state"]["active"], "Elena's household quest activates after the opening.")
+	_expect("one_year_ahead" not in state["quest_state"]["active"], "Lily's quest waits until its authored earliest block.")
+	_expect("a_quiet_check_in" not in state["quest_state"]["active"], "Daniel's quest waits until Evening.")
+
+	state["clock"]["block"] = "lunch"
+	result = quests.sync_automatic_activations(state, "test.household_lunch")
+	state = result["state"]
+	_expect("one_year_ahead" in state["quest_state"]["active"], "Lily's story quest activates at Lunch.")
+	lily = schedules.resolve_character(state, "lily_hale")
+	_expect(lily["present"] and lily["room"] == "kitchen", "Lily moves to the kitchen for her Lunch story scene.")
+	state["world_state"]["current_location"] = "hale_home.kitchen"
+	_expect(dialogue.can_begin(state, "lily_program_doubts")["ok"], "Lily's program conversation is available beside her in the kitchen.")
+
+	state["clock"]["block"] = "evening"
+	result = quests.sync_automatic_activations(state, "test.household_evening")
+	state = result["state"]
+	_expect("a_quiet_check_in" in state["quest_state"]["active"], "Daniel's first story quest activates at Evening.")
+	elena = schedules.resolve_character(state, "elena_reyes_hale")
+	daniel = schedules.resolve_character(state, "daniel_hale")
+	lily = schedules.resolve_character(state, "lily_hale")
+	_expect(elena["present"] and elena["room"] == "kitchen", "Elena returns home to the kitchen Tuesday Evening.")
+	_expect(daniel["present"] and daniel["room"] == "living_room", "Daniel returns home to the living room Tuesday Evening.")
+	_expect(not lily["present"] and lily["location"] == "westshore_campus", "Lily is unavailable during her Tuesday Evening library shift.")
+	state["world_state"]["current_location"] = "hale_home.living_room"
+	_expect(dialogue.can_begin(state, "daniel_quiet_check_in")["ok"], "Daniel's quiet check-in is available in the living room.")
+	state["world_state"]["current_location"] = "hale_home.kitchen"
+	_expect(dialogue.can_begin(state, "household_rules_talk")["ok"], "A home-wide location requirement accepts Elena's specific kitchen room.")
+
+	result = schedules.synchronize_npc_states(state, ["elena_reyes_hale", "daniel_hale", "lily_hale"])
+	_expect(result["changed"], "Schedule synchronization updates persistent NPC locations.")
+	state = result["state"]
+	_expect(_npc_location(state, "daniel_hale") == "hale_home.living_room", "Daniel's live NPC state records his current home room.")
 
 
 func _test_character_creation_scene() -> void:
@@ -667,6 +724,13 @@ func _calendar_event_status(state: Dictionary, event_id: String) -> String:
 	for calendar_event: Variant in state["calendar_state"].get("events", []):
 		if calendar_event is Dictionary and str(calendar_event.get("id", "")) == event_id:
 			return str(calendar_event.get("status", ""))
+	return ""
+
+
+func _npc_location(state: Dictionary, character_id: String) -> String:
+	for npc_state: Variant in state.get("npc_states", []):
+		if npc_state is Dictionary and str(npc_state.get("character_id", "")) == character_id:
+			return str(npc_state.get("current_location", ""))
 	return ""
 
 

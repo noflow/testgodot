@@ -21,6 +21,12 @@ func begin(conversation_id: String) -> Dictionary:
 	return _commit_result(_engine.begin(GameState.current_state, conversation_id), conversation_id)
 
 
+func can_begin(conversation_id: String) -> Dictionary:
+	if not GameState.has_active_game():
+		return {"ok": false, "reason": "No active game."}
+	return _engine.can_begin(GameState.current_state, conversation_id)
+
+
 func resume() -> Dictionary:
 	return _engine.resume(GameState.current_state)
 

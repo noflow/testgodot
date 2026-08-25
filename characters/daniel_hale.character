@@ -2,20 +2,163 @@
   "format_version": 1,
   "id": "daniel_hale",
   "display_name": "Daniel Hale",
-  "profile": {"age": 47, "birthday": "11-02", "gender_identity": "male", "orientation": "straight", "romance_eligible": false, "role": "father", "occupation": "Transit Mechanic", "education": "Red Seal-equivalent trade certification"},
-  "home": {"location_id": "hale_home", "district": "Alder Heights", "residence": "Hale Family Home", "household": ["elena_reyes_hale", "lily_hale", "player"]},
-  "personality": {"archetype": "quiet_provider", "traits": ["patient", "reserved", "dependable", "dry_humor", "conflict_avoidant"], "values": ["workmanship", "family", "honesty"], "social_style": "actions_over_words", "jealousy": 18},
-  "schedule": {"days_off": ["sunday", "monday"], "fixed_commitments": [{"days": ["tuesday", "wednesday", "thursday", "friday", "saturday"], "blocks": ["early_morning", "morning", "lunch", "afternoon"], "activity": "work_transit_depot", "unavailable": true}, {"days": ["thursday"], "blocks": ["evening"], "activity": "garage_project", "unavailable": false}], "preferred_social_blocks": ["evening"]},
+  "profile": {
+    "age": 47,
+    "birthday": "11-02",
+    "gender_identity": "male",
+    "orientation": "straight",
+    "romance_eligible": false,
+    "role": "father",
+    "occupation": "Transit Mechanic",
+    "education": "Red Seal-equivalent trade certification"
+  },
+  "home": {
+    "location_id": "hale_home",
+    "district": "Alder Heights",
+    "residence": "Hale Family Home",
+    "household": ["elena_reyes_hale", "lily_hale", "player"]
+  },
+  "personality": {
+    "archetype": "quiet_provider",
+    "traits": ["patient", "reserved", "dependable", "dry_humor", "conflict_avoidant"],
+    "values": ["workmanship", "family", "honesty"],
+    "social_style": "actions_over_words",
+    "jealousy": 18
+  },
+  "schedule": {
+    "days_off": ["sunday", "monday"],
+    "fixed_commitments": [
+      {
+        "days": ["tuesday", "wednesday", "thursday", "friday", "saturday"],
+        "blocks": ["early_morning", "morning", "lunch", "afternoon"],
+        "activity": "work_transit_depot",
+        "label": "Working at the transit depot",
+        "location": "port_alder_transit_depot",
+        "unavailable": true
+      },
+      {
+        "days": ["thursday"],
+        "blocks": ["evening"],
+        "activity": "garage_project",
+        "label": "Working on the family car",
+        "location": "hale_home",
+        "home_placement": {"room": "garage", "position": [1020, 860]},
+        "unavailable": false
+      }
+    ],
+    "preferred_social_blocks": ["evening"]
+  },
+  "home_routine": {
+    "actor_color": "5f87a8",
+    "default_by_block": {
+      "early_morning": {"room": "garage", "position": [1010, 860], "activity": "early_garage_time", "label": "Checking his tools"},
+      "morning": {"room": "backyard", "position": [295, 850], "activity": "home_repairs", "label": "Doing a small repair"},
+      "lunch": {"room": "dining_room", "position": [590, 600], "activity": "lunch_at_home", "label": "Having lunch"},
+      "afternoon": {"room": "garage", "position": [1020, 860], "activity": "garage_project", "label": "Working on the car"},
+      "evening": {"room": "living_room", "position": [245, 585], "activity": "home_evening", "label": "Home from work"},
+      "late_evening": {"room": "living_room", "position": [245, 585], "activity": "watching_the_news", "label": "Watching the news"},
+      "night": {"room": "parents_bedroom", "spawn": false, "activity": "sleeping", "label": "Asleep"}
+    }
+  },
+  "ambient_dialogue": [
+    {"blocks": ["early_morning", "morning"], "line": "Morning. There should be coffee left, unless your sister found it first."},
+    {"blocks": ["lunch", "afternoon"], "line": "If you want to learn a useful repair, come find me in the garage when I'm off."},
+    {"blocks": ["evening", "late_evening"], "line": "How'd the day go? You don't need a speech. The short version is fine."}
+  ],
   "skills": {"mechanics": 154, "driving": 112, "home_repair": 104, "cooking": 31},
   "goals": ["become_shop_foreman", "restore_old_family_car", "connect_with_children_as_adults"],
-  "connections": [{"character": "elena_reyes_hale", "relation": "spouse"}, {"character": "lily_hale", "relation": "daughter"}, {"character": "marcus_lee", "relation": "knows_family"}],
-  "relationship_defaults": {"friendship": 52, "love": 78, "attraction": 0, "lust": 0, "trust": 68, "respect": 58, "resentment": 2, "jealousy": 0, "comfort": 60, "commitment": 94, "compatibility": 55, "satisfaction": 67},
-  "boundaries": {"family_only": true, "alcohol_consent": "never_when_impaired", "hard_limits": ["romance_with_player", "sexual_content_with_player"]},
-  "private_profile": {"fertility_tier": "average", "reproductive_capability": "can_impregnate", "knowledge": "hidden_until_relevant"},
-  "relationship_chapters": [{"level": 1, "id": "a_quiet_check_in", "title": "A Quiet Check-In"}, {"level": 2, "id": "tools_of_the_trade", "title": "Tools of the Trade"}, {"level": 3, "id": "the_stalled_promotion", "title": "The Stalled Promotion"}, {"level": 4, "id": "words_not_said", "title": "Words Not Said"}, {"level": 5, "id": "the_long_way_home", "title": "The Long Way Home"}],
+  "connections": [
+    {"character": "elena_reyes_hale", "relation": "spouse"},
+    {"character": "lily_hale", "relation": "daughter"},
+    {"character": "marcus_lee", "relation": "knows_family"}
+  ],
+  "relationship_defaults": {
+    "friendship": 52,
+    "love": 78,
+    "attraction": 0,
+    "lust": 0,
+    "trust": 68,
+    "respect": 58,
+    "resentment": 2,
+    "jealousy": 0,
+    "comfort": 60,
+    "commitment": 94,
+    "compatibility": 55,
+    "satisfaction": 67
+  },
+  "boundaries": {
+    "family_only": true,
+    "alcohol_consent": "never_when_impaired",
+    "hard_limits": ["romance_with_player", "sexual_content_with_player"]
+  },
+  "private_profile": {
+    "fertility_tier": "average",
+    "reproductive_capability": "can_impregnate",
+    "knowledge": "hidden_until_relevant"
+  },
+  "relationship_chapters": [
+    {"level": 1, "id": "a_quiet_check_in", "title": "A Quiet Check-In"},
+    {"level": 2, "id": "tools_of_the_trade", "title": "Tools of the Trade"},
+    {"level": 3, "id": "the_stalled_promotion", "title": "The Stalled Promotion"},
+    {"level": 4, "id": "words_not_said", "title": "Words Not Said"},
+    {"level": 5, "id": "the_long_way_home", "title": "The Long Way Home"}
+  ],
   "quest_hooks": ["family_car_lesson", "garage_project", "transit_job_referral", "father_child_reconnection"],
   "conversation_topics": ["work", "cars", "responsibility", "family", "city_transit", "growing_older"],
   "text_style": {"tone": "brief_dry", "emoji_rate": "none", "response_delay": "slow_at_work"},
-  "quests": [], "conversations": [], "text_messages": [{"id": "daniel_opening_checkin", "trigger": {"sandbox_activated": true}, "sender": "daniel_hale", "text": "Heard you made a decision. First step is usually the worst one. Car keys are still ask-first, by the way.", "quick_replies": [{"text": "Thanks, Dad.", "tone": ["supportive"], "effects": [{"operation": "add_meter", "character": "daniel_hale", "meter": "comfort", "value": 1}]}, {"text": "Can I use the car later?", "tone": ["responsible"]}, {"text": "You really know how to inspire someone.", "tone": ["playful"], "effects": [{"operation": "add_meter", "character": "daniel_hale", "meter": "friendship", "value": 1}]}]}], "outcomes": [], "asset_refs": {"portraits": [], "sprites": [], "audio": []},
+  "quests": [
+    {
+      "id": "a_quiet_check_in",
+      "category": "character_story",
+      "title": "A Quiet Check-In",
+      "summary": "Catch up with Dad after making your first decision about the future.",
+      "activation": {"event": "quest_completed", "quest": "opening_future_choice", "earliest_block": "evening"},
+      "availability": {"location": "hale_home.living_room", "blocks": ["evening", "late_evening"]},
+      "objectives": [
+        {"id": "talk_with_daniel", "text": "Talk with Dad in the living room after work.", "completion": {"event": "conversation_completed", "conversation": "daniel_quiet_check_in"}}
+      ],
+      "branches": [],
+      "completion_effects": [],
+      "failure": {"mode": "cannot_fail"}
+    }
+  ],
+  "conversations": [
+    {
+      "id": "daniel_quiet_check_in",
+      "title": "A Quiet Check-In",
+      "type": "standard_topic",
+      "start_node": "daniel_opening",
+      "activation": {"quest_active": "a_quiet_check_in", "location": "hale_home.living_room", "blocks": ["evening", "late_evening"]},
+      "repetition": {"once_only": true},
+      "nodes": {
+        "daniel_opening": {"speaker": "daniel_hale", "line": "Your mom said you picked a direction. I figured I'd ask how you're feeling before the whole house starts giving advice.", "next": "player_answer"},
+        "player_answer": {"speaker": "player", "choices": [
+          {"id": "hopeful", "text": "Nervous, but I think I made the right start.", "tone": ["honest"], "effects": [{"operation": "add_meter", "character": "daniel_hale", "meter": "trust", "value": 2}], "next": "daniel_hopeful"},
+          {"id": "uncertain", "text": "Honestly, I still don't know what I'm doing.", "tone": ["vulnerable"], "effects": [{"operation": "add_meter", "character": "daniel_hale", "meter": "comfort", "value": 2}], "next": "daniel_uncertain"},
+          {"id": "deflect", "text": "Mom gave you the full report already, didn't she?", "tone": ["playful"], "effects": [{"operation": "add_meter", "character": "daniel_hale", "meter": "friendship", "value": 1}], "next": "daniel_deflect"}
+        ]},
+        "daniel_hopeful": {"speaker": "daniel_hale", "line": "Nerves mean you understand it matters. They don't mean the choice was wrong.", "next": "daniel_advice"},
+        "daniel_uncertain": {"speaker": "daniel_hale", "line": "Good. Anyone who claims they had life figured out at eighteen is editing the story.", "next": "daniel_advice"},
+        "daniel_deflect": {"speaker": "daniel_hale", "line": "There may have been a briefing. Charts were narrowly avoided.", "next": "daniel_advice"},
+        "daniel_advice": {"speaker": "daniel_hale", "line": "Give the plan an honest try. If it needs changing later, change it because you learned something—not because the first day was hard.", "next": "daniel_close"},
+        "daniel_close": {"speaker": "daniel_hale", "line": "That's the entire speech. I kept it under the family limit.", "effects": [{"operation": "complete_objective", "quest": "a_quiet_check_in", "objective": "talk_with_daniel"}, {"operation": "complete_quest", "quest": "a_quiet_check_in"}, {"operation": "create_memory", "character": "daniel_hale", "value": "first_adult_check_in"}], "next": null}
+      }
+    }
+  ],
+  "text_messages": [
+    {
+      "id": "daniel_opening_checkin",
+      "trigger": {"sandbox_activated": true},
+      "sender": "daniel_hale",
+      "text": "Heard you made a decision. First step is usually the worst one. Car keys are still ask-first, by the way.",
+      "quick_replies": [
+        {"text": "Thanks, Dad.", "tone": ["supportive"], "effects": [{"operation": "add_meter", "character": "daniel_hale", "meter": "comfort", "value": 1}]},
+        {"text": "Can I use the car later?", "tone": ["responsible"]},
+        {"text": "You really know how to inspire someone.", "tone": ["playful"], "effects": [{"operation": "add_meter", "character": "daniel_hale", "meter": "friendship", "value": 1}]}
+      ]
+    }
+  ],
+  "outcomes": ["stronger_adult_family_bond", "shared_garage_project", "quiet_mutual_respect"],
+  "asset_refs": {"portraits": [], "sprites": [], "audio": []},
   "entry_event": "opening_day_evening"
 }

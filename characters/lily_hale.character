@@ -5,7 +5,24 @@
   "profile": {"age": 19, "birthday": "06-11", "gender_identity": "female", "orientation": "bisexual", "romance_eligible": false, "role": "older_sister", "occupation": "Student", "education": "Westshore Social Sciences student"},
   "home": {"location_id": "hale_home", "district": "Alder Heights", "residence": "Hale Family Home", "household": ["elena_reyes_hale", "daniel_hale", "player"]},
   "personality": {"archetype": "restless_achiever", "traits": ["clever", "teasing", "ambitious", "protective", "impatient"], "values": ["independence", "loyalty", "self_expression"], "social_style": "sibling_banter", "jealousy": 38},
-  "schedule": {"days_off": ["friday", "sunday"], "fixed_commitments": [{"days": ["monday", "wednesday"], "blocks": ["morning", "lunch", "afternoon"], "activity": "westshore_classes", "unavailable": true}, {"days": ["tuesday", "thursday"], "blocks": ["afternoon", "evening"], "activity": "campus_library_job", "unavailable": true}, {"days": ["saturday"], "blocks": ["evening", "late_evening"], "activity": "friends_or_events", "unavailable": false}], "preferred_social_blocks": ["evening", "late_evening"]},
+  "schedule": {"days_off": ["friday", "sunday"], "fixed_commitments": [{"days": ["monday", "wednesday"], "blocks": ["morning", "lunch", "afternoon"], "activity": "westshore_classes", "label": "In class at Westshore", "location": "westshore_campus", "unavailable": true}, {"days": ["tuesday", "thursday"], "blocks": ["afternoon", "evening"], "activity": "campus_library_job", "label": "Working at the campus library", "location": "westshore_campus", "unavailable": true}, {"days": ["saturday"], "blocks": ["evening", "late_evening"], "activity": "friends_or_events", "label": "Out with friends", "location": "alder_bay_park", "unavailable": false}], "preferred_social_blocks": ["evening", "late_evening"]},
+  "home_routine": {
+    "actor_color": "9a78c5",
+    "default_by_block": {
+      "early_morning": {"room": "lily_bedroom", "spawn": false, "activity": "sleeping", "label": "Asleep"},
+      "morning": {"room": "living_room", "position": [315, 600], "activity": "scrolling_and_coffee", "label": "Coffee and scrolling"},
+      "lunch": {"room": "kitchen", "position": [900, 605], "activity": "comparing_programs", "label": "Comparing programs"},
+      "afternoon": {"room": "upstairs_hall", "position": [700, 260], "activity": "studying", "label": "Studying"},
+      "evening": {"room": "living_room", "position": [355, 585], "activity": "watching_tv", "label": "Watching TV"},
+      "late_evening": {"room": "upstairs_hall", "position": [1060, 260], "activity": "winding_down", "label": "Heading to her room"},
+      "night": {"room": "lily_bedroom", "spawn": false, "activity": "sleeping", "label": "Asleep"}
+    }
+  },
+  "ambient_dialogue": [
+    {"blocks": ["morning"], "line": "So, did the Great Future Talk solve everything, or are you still mortal?"},
+    {"blocks": ["lunch", "afternoon"], "line": "I'm comparing programs. Apparently an identity crisis looks like twelve browser tabs."},
+    {"blocks": ["evening", "late_evening"], "line": "If Mom asks, I have been responsibly studying all evening."}
+  ],
   "skills": {"research": 63, "writing": 71, "social_media": 68, "cooking": 22},
   "goals": ["choose_a_new_program", "move_into_a_dorm", "be_seen_as_more_than_the_responsible_child"],
   "connections": [{"character": "elena_reyes_hale", "relation": "mother"}, {"character": "daniel_hale", "relation": "father"}, {"character": "emma_rowan", "relation": "friendly_acquaintance"}, {"character": "chloe_bennett", "relation": "campus_friend"}],
@@ -40,6 +57,7 @@
   "conversations": [
     {
       "id": "lily_program_doubts",
+      "title": "Program Doubts",
       "type": "major_vn_scene",
       "start_node": "kitchen_intro",
       "activation": {"quest_active": "one_year_ahead", "location": "hale_home.kitchen"},

@@ -54,7 +54,31 @@ func complete_quest(state: Dictionary, quest_id: String, source: String) -> Dict
 	for effect: Variant in quest.get("completion_effects", []):
 		if effect is Dictionary:
 			_apply_completion_effect(working, effect)
-	return _success(working)
+	var activation_result: Dictionary = sync_automatic_activations(working, "%s.followups" % source)
+	if not activation_result.get("ok", false):
+		return activation_result
+	return _success(activation_result["state"], activation_result["activated"])
+
+
+func sync_automatic_activations(state: Dictionary, source: String) -> Dictionary:
+	var working: Dictionary = state
+	var activated: PackedStringArray = []
+	for quest: Variant in _registry.get_all("quests"):
+		if not quest is Dictionary:
+			continue
+		var quest_id: String = str(quest.get("id", ""))
+		if quest_id.is_empty() or quest_id in working["quest_state"]["active"] or quest_id in working["quest_state"]["completed"]:
+			continue
+		if quest_id in working["quest_state"].get("failed", []) or quest_id in working["quest_state"].get("deferred", []):
+			continue
+		if not _automatic_activation_ready(working, quest):
+			continue
+		var result: Dictionary = start_quest(working, quest_id, source)
+		if not result.get("ok", false):
+			return {"ok": false, "state": state, "activated": PackedStringArray(), "errors": result.get("errors", PackedStringArray())}
+		working = result["state"]
+		activated.append(quest_id)
+	return {"ok": true, "state": working, "activated": activated, "errors": PackedStringArray()}
 
 
 func apply_matching_branch(state: Dictionary, quest_id: String, source: String) -> Dictionary:
@@ -115,6 +139,36 @@ func _matching_branch(state: Dictionary, quest: Dictionary) -> Dictionary:
 	return {}
 
 
+func _automatic_activation_ready(state: Dictionary, quest: Dictionary) -> bool:
+	var activation: Dictionary = quest.get("activation", {})
+	if str(activation.get("event", "")) != "quest_completed":
+		return false
+	var prerequisite: String = str(activation.get("quest", ""))
+	if prerequisite.is_empty() or prerequisite not in state["quest_state"]["completed"]:
+		return false
+	var earliest_block: String = str(activation.get("earliest_block", ""))
+	if earliest_block.is_empty():
+		return true
+	var completion_date: String = _quest_completion_date(state, prerequisite)
+	var current_date: String = "Y%d-%02d-%02d" % [state["clock"]["year"], state["clock"]["month"], state["clock"]["day"]]
+	if not completion_date.is_empty() and completion_date != current_date:
+		return true
+	const BLOCKS: PackedStringArray = ["early_morning", "morning", "lunch", "afternoon", "evening", "late_evening", "night"]
+	return BLOCKS.find(str(state["clock"]["block"])) >= BLOCKS.find(earliest_block)
+
+
+func _quest_completion_date(state: Dictionary, quest_id: String) -> String:
+	var events: Array = state.get("simulation", {}).get("recent_event_log", [])
+	for index: int in range(events.size() - 1, -1, -1):
+		var event: Variant = events[index]
+		if not event is Dictionary or str(event.get("operation", "")) != "quest.complete":
+			continue
+		if str(event.get("payload", {}).get("quest_id", "")) != quest_id:
+			continue
+		return str(event.get("game_timestamp", "")).get_slice(":", 0)
+	return ""
+
+
 func _apply_completion_effect(state: Dictionary, effect: Dictionary) -> void:
 	match str(effect.get("operation", "")):
 		"unlock_phone_app":
@@ -155,8 +209,8 @@ func _set_state_value(state: Dictionary, path: String, value: Variant) -> void:
 	current[parts[-1]] = value
 
 
-func _success(state: Dictionary) -> Dictionary:
-	return {"ok": true, "state": state, "errors": PackedStringArray()}
+func _success(state: Dictionary, activated: PackedStringArray = PackedStringArray()) -> Dictionary:
+	return {"ok": true, "state": state, "activated": activated, "errors": PackedStringArray()}
 
 
 func _failure(message: String) -> Dictionary:

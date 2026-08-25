@@ -34,10 +34,29 @@ func complete_quest(quest_id: String, source: String = "gameplay") -> Dictionary
 	return _commit(_engine.complete_quest(GameState.current_state, quest_id, source), quest_id)
 
 
+func sync_automatic_activations(source: String = "gameplay.quest_sync") -> Dictionary:
+	if not GameState.has_active_game():
+		return {"ok": false, "activated": PackedStringArray(), "errors": PackedStringArray(["No active game."])}
+	var result: Dictionary = _engine.sync_automatic_activations(GameState.current_state, source)
+	if not result.get("ok", false):
+		quest_error.emit(result.get("errors", PackedStringArray()))
+		return result
+	var activated: PackedStringArray = result.get("activated", PackedStringArray())
+	if activated.is_empty():
+		return result
+	GameState.replace_state(result["state"])
+	for quest_id: String in activated:
+		quest_state_changed.emit(quest_id)
+	return result
+
+
 func _commit(result: Dictionary, quest_id: String) -> Dictionary:
 	if not result.get("ok", false):
 		quest_error.emit(result.get("errors", PackedStringArray()))
 		return result
 	GameState.replace_state(result["state"])
 	quest_state_changed.emit(quest_id)
+	for activated_id: String in result.get("activated", PackedStringArray()):
+		if activated_id != quest_id:
+			quest_state_changed.emit(activated_id)
 	return result

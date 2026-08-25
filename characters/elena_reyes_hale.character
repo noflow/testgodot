@@ -5,7 +5,24 @@
   "profile": {"age": 45, "birthday": "04-18", "gender_identity": "female", "orientation": "straight", "romance_eligible": false, "role": "mother", "occupation": "Clinic Administrator", "education": "Healthcare Administration diploma"},
   "home": {"location_id": "hale_home", "district": "Alder Heights", "residence": "Hale Family Home", "household": ["daniel_hale", "lily_hale", "player"]},
   "personality": {"archetype": "protective_planner", "traits": ["maternal", "organized", "direct", "warm", "stubborn"], "values": ["family", "stability", "education"], "social_style": "practical_care", "jealousy": 12},
-  "schedule": {"days_off": ["saturday", "sunday"], "fixed_commitments": [{"days": ["monday", "tuesday", "wednesday", "thursday", "friday"], "blocks": ["morning", "lunch", "afternoon"], "activity": "work_st_maren_clinic", "unavailable": true}, {"days": ["wednesday"], "blocks": ["evening"], "activity": "grocery_and_errands", "unavailable": true}, {"days": ["sunday"], "blocks": ["evening"], "activity": "family_dinner", "unavailable": false}], "preferred_social_blocks": ["evening", "late_evening"]},
+  "schedule": {"days_off": ["saturday", "sunday"], "fixed_commitments": [{"days": ["monday", "tuesday", "wednesday", "thursday", "friday"], "blocks": ["morning", "lunch", "afternoon"], "activity": "work_st_maren_clinic", "label": "Working at St. Maren", "location": "st_maren_community_clinic", "unavailable": true}, {"days": ["wednesday"], "blocks": ["evening"], "activity": "grocery_and_errands", "label": "Running errands", "location": "mariner_market", "unavailable": true}, {"days": ["sunday"], "blocks": ["evening"], "activity": "family_dinner", "label": "Preparing family dinner", "location": "hale_home", "home_placement": {"room": "dining_room", "position": [690, 590]}, "unavailable": false}], "preferred_social_blocks": ["evening", "late_evening"]},
+  "home_routine": {
+    "actor_color": "c97968",
+    "default_by_block": {
+      "early_morning": {"room": "kitchen", "position": [1080, 430], "activity": "making_coffee", "label": "Making coffee"},
+      "morning": {"room": "living_room", "position": [345, 585], "activity": "planning_the_day", "label": "Planning the day"},
+      "lunch": {"room": "dining_room", "position": [705, 600], "activity": "lunch_at_home", "label": "Having lunch"},
+      "afternoon": {"room": "backyard", "position": [300, 865], "activity": "gardening", "label": "Checking the garden"},
+      "evening": {"room": "kitchen", "position": [1090, 610], "activity": "home_evening", "label": "Home for the evening"},
+      "late_evening": {"room": "living_room", "position": [340, 590], "activity": "relaxing", "label": "Winding down"},
+      "night": {"room": "parents_bedroom", "spawn": false, "activity": "sleeping", "label": "Asleep"}
+    }
+  },
+  "ambient_dialogue": [
+    {"blocks": ["early_morning", "morning"], "line": "Morning. Eat something before you head out, and check the weather on your phone."},
+    {"blocks": ["lunch", "afternoon"], "line": "How is your plan coming along? One useful step is enough for today."},
+    {"blocks": ["evening", "late_evening"], "line": "I'm glad you're home. Let me know if you need help sorting out the next step."}
+  ],
   "skills": {"administration": 118, "budgeting": 82, "cooking": 76, "empathy": 91},
   "goals": ["help_both_children_build_independent_lives", "earn_clinic_operations_promotion", "protect_family_closeness"],
   "connections": [{"character": "daniel_hale", "relation": "spouse"}, {"character": "lily_hale", "relation": "daughter"}, {"character": "hannah_brooks", "relation": "coworker"}],
@@ -53,6 +70,7 @@
   "conversations": [
     {
       "id": "opening_future_talk",
+      "title": "Choose Your Direction",
       "type": "major_vn_scene",
       "start_node": "door_opens",
       "activation": {"event": "new_game_started", "date": "opening_tuesday", "block": "morning", "location": "hale_home.player_bedroom"},
@@ -82,6 +100,7 @@
     },
     {
       "id": "household_rules_talk",
+      "title": "Household Rules",
       "type": "standard_topic",
       "start_node": "rules_intro",
       "activation": {"quest_active": "under_this_roof", "location": "hale_home", "blocks": ["evening", "late_evening"]},

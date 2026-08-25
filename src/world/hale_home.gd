@@ -2,6 +2,9 @@ extends Node2D
 
 const WALL_THICKNESS: float = 12.0
 const INTERACTION_DISTANCE: float = 88.0
+const HouseholdScheduleEngineScript: GDScript = preload("res://src/world/household_schedule_engine.gd")
+const HouseholdNpcActorScene: PackedScene = preload("res://scenes/world/household_npc_actor.tscn")
+const HOUSEHOLD_CHARACTER_IDS: PackedStringArray = ["elena_reyes_hale", "daniel_hale", "lily_hale"]
 const MONTH_NAMES: PackedStringArray = [
 	"January", "February", "March", "April", "May", "June",
 	"July", "August", "September", "October", "November", "December",
@@ -22,6 +25,7 @@ const MONTH_NAMES: PackedStringArray = [
 @onready var quest_panel: PanelContainer = %QuestPanel
 @onready var quest_text: RichTextLabel = %QuestText
 @onready var smartphone: Control = %Smartphone
+@onready var household_actors: Node2D = %HouseholdActors
 
 var _rooms: Dictionary = {
 	"player_bedroom": {"name": "Player Bedroom", "rect": Rect2(20, 20, 400, 330), "color": Color("253b49")},
@@ -56,6 +60,9 @@ var _interactions: Array = [
 var _wall_segments: Array = []
 var _current_room: String = "player_bedroom"
 var _nearest_interaction: Dictionary = {}
+var _schedule_engine: RefCounted
+var _npc_resolutions: Dictionary = {}
+var _schedule_signature: String = ""
 
 
 func _ready() -> void:
@@ -64,15 +71,18 @@ func _ready() -> void:
 		return
 	_build_rooms()
 	_build_walls()
+	_schedule_engine = HouseholdScheduleEngineScript.new(ContentRegistry)
 	player.interact_requested.connect(_on_interact_requested)
 	smartphone.phone_opened.connect(_on_phone_opened)
 	smartphone.phone_closed.connect(_on_phone_closed)
-	_set_current_room("player_bedroom")
+	_restore_player_location()
+	_sync_household_schedule(true)
 	_refresh_hud()
 	queue_redraw()
 
 
 func _process(_delta: float) -> void:
+	_sync_household_schedule()
 	_nearest_interaction = _find_nearest_interaction(player.global_position)
 	if _nearest_interaction.is_empty() or _modal_open():
 		interaction_prompt.text = ""
@@ -210,8 +220,11 @@ func _set_current_room(room_id: String) -> void:
 		return
 	_current_room = room_id
 	room_label.text = str(_rooms[room_id]["name"])
+	var location_path: String = "hale_home.%s" % room_id
+	if str(GameState.current_state["world_state"].get("current_location", "")) == location_path:
+		return
 	var next_state: Dictionary = GameState.current_state.duplicate(true)
-	next_state["world_state"]["current_location"] = "hale_home.%s" % room_id
+	next_state["world_state"]["current_location"] = location_path
 	GameState.replace_state(next_state)
 
 
@@ -225,13 +238,33 @@ func _find_nearest_interaction(world_position: Vector2) -> Dictionary:
 		if distance < closest_distance:
 			closest = interaction
 			closest_distance = distance
+	for character_id: Variant in _npc_resolutions:
+		var resolution: Dictionary = _npc_resolutions[character_id]
+		if not bool(resolution.get("present", false)) or str(resolution.get("room", "")) != _current_room:
+			continue
+		var coordinates: Array = resolution.get("position", [])
+		if coordinates.size() != 2:
+			continue
+		var npc_position: Vector2 = Vector2(float(coordinates[0]), float(coordinates[1]))
+		var distance: float = world_position.distance_to(npc_position)
+		if distance < closest_distance:
+			closest = {
+				"id": "npc:%s" % character_id,
+				"room": resolution.get("room", ""),
+				"position": npc_position,
+				"label": "Talk to %s" % _first_name(str(character_id)),
+				"character_id": str(character_id),
+			}
+			closest_distance = distance
 	return closest
 
 
 func _on_interact_requested(_world_position: Vector2) -> void:
 	if _nearest_interaction.is_empty() or _modal_open():
 		return
-	if _nearest_interaction.has("actions"):
+	if _nearest_interaction.has("character_id"):
+		_open_npc_panel(str(_nearest_interaction["character_id"]))
+	elif _nearest_interaction.has("actions"):
 		_open_action_panel(_nearest_interaction)
 	else:
 		_handle_special(str(_nearest_interaction.get("special", "")))
@@ -285,6 +318,128 @@ func _handle_special(special: String) -> void:
 			status_label.text = "The backyard can host exercise, relaxation, and small gatherings."
 		"leave_home":
 			status_label.text = "The front gate leads into Port Alder. City travel is the upcoming milestone."
+
+
+func _open_npc_panel(character_id: String) -> void:
+	var character: Variant = ContentRegistry.get_character(character_id)
+	if not character is Dictionary:
+		return
+	_clear_container(action_buttons)
+	action_title.text = "%s • %s" % [character.get("display_name", character_id), _npc_resolutions.get(character_id, {}).get("activity_label", "At home")]
+	var conversations: Array = _available_conversations(character)
+	for conversation: Dictionary in conversations:
+		var button: Button = Button.new()
+		button.text = "Talk — %s" % conversation.get("title", str(conversation.get("id", "Conversation")).replace("_", " ").capitalize())
+		button.custom_minimum_size = Vector2(0, 48)
+		button.pressed.connect(_on_conversation_selected.bind(str(conversation.get("id", ""))))
+		action_buttons.add_child(button)
+	var ambient_line: String = _ambient_line(character)
+	if not ambient_line.is_empty():
+		var chat_button: Button = Button.new()
+		chat_button.text = "Chat"
+		chat_button.custom_minimum_size = Vector2(0, 48)
+		chat_button.pressed.connect(_on_ambient_chat_selected.bind(character_id, ambient_line))
+		action_buttons.add_child(chat_button)
+	if action_buttons.get_child_count() == 0:
+		var unavailable: Button = Button.new()
+		unavailable.text = "%s has nothing new to discuss right now." % _first_name(character_id)
+		unavailable.disabled = true
+		action_buttons.add_child(unavailable)
+	action_panel.visible = true
+	player.movement_enabled = false
+	if action_buttons.get_child_count() > 0:
+		action_buttons.get_child(0).grab_focus()
+
+
+func _available_conversations(character: Dictionary) -> Array:
+	var available: Array = []
+	for conversation: Variant in character.get("conversations", []):
+		if not conversation is Dictionary:
+			continue
+		var availability: Dictionary = DialogueService.can_begin(str(conversation.get("id", "")))
+		if availability.get("ok", false):
+			available.append(conversation)
+	return available
+
+
+func _on_conversation_selected(conversation_id: String) -> void:
+	_remember_player_position()
+	var result: Dictionary = DialogueService.begin(conversation_id)
+	if not result.get("ok", false):
+		status_label.text = str(result.get("errors", ["That conversation is not available right now."])[0])
+		return
+	get_tree().change_scene_to_file(AppConstants.VN_DIALOGUE_SCENE)
+
+
+func _on_ambient_chat_selected(character_id: String, line: String) -> void:
+	TimeService.advance_minutes(5, "home.ambient_chat:%s" % character_id)
+	status_label.text = "%s: “%s”" % [_first_name(character_id), line]
+	_close_panels()
+
+
+func _ambient_line(character: Dictionary) -> String:
+	var block: String = str(GameState.current_state["clock"]["block"])
+	for entry: Variant in character.get("ambient_dialogue", []):
+		if entry is Dictionary and block in entry.get("blocks", []):
+			return str(entry.get("line", "")).replace("{player_first_name}", str(GameState.current_state["player"]["identity"]["first_name"]))
+	return ""
+
+
+func _sync_household_schedule(force: bool = false) -> void:
+	if _schedule_engine == null or not GameState.has_active_game():
+		return
+	var clock: Dictionary = GameState.current_state["clock"]
+	var signature: String = "%s:%s:%s:%s" % [clock.get("year", 1), clock.get("month", 1), clock.get("day", 1), clock.get("block", "")]
+	if not force and signature == _schedule_signature:
+		return
+	_schedule_signature = signature
+	QuestService.sync_automatic_activations("home.schedule_tick")
+	var sync_result: Dictionary = _schedule_engine.synchronize_npc_states(GameState.current_state, HOUSEHOLD_CHARACTER_IDS)
+	_npc_resolutions = sync_result.get("resolutions", {})
+	if sync_result.get("changed", false):
+		GameState.replace_state(sync_result["state"])
+	_rebuild_household_actors()
+
+
+func _rebuild_household_actors() -> void:
+	for child: Node in household_actors.get_children():
+		household_actors.remove_child(child)
+		child.queue_free()
+	for character_id: Variant in _npc_resolutions:
+		var resolution: Dictionary = _npc_resolutions[character_id]
+		if not bool(resolution.get("present", false)):
+			continue
+		var character: Dictionary = ContentRegistry.get_character(str(character_id))
+		var color_hex: String = str(character.get("home_routine", {}).get("actor_color", "67c6c3"))
+		var actor: CharacterBody2D = HouseholdNpcActorScene.instantiate()
+		household_actors.add_child(actor)
+		actor.configure(resolution, color_hex)
+
+
+func _restore_player_location() -> void:
+	var world: Dictionary = GameState.current_state["world_state"]
+	var location: String = str(world.get("current_location", "hale_home.player_bedroom"))
+	var room_id: String = location.trim_prefix("hale_home.") if location.begins_with("hale_home.") else "player_bedroom"
+	if not _rooms.has(room_id):
+		room_id = "player_bedroom"
+	var saved_position: Array = world.get("home_player_position", [])
+	if saved_position.size() == 2:
+		player.position = Vector2(float(saved_position[0]), float(saved_position[1]))
+	_set_current_room(room_id)
+
+
+func _remember_player_position() -> void:
+	var next_state: Dictionary = GameState.current_state.duplicate(true)
+	next_state["world_state"]["current_location"] = "hale_home.%s" % _current_room
+	next_state["world_state"]["home_player_position"] = [player.position.x, player.position.y]
+	GameState.replace_state(next_state)
+
+
+func _first_name(character_id: String) -> String:
+	var character: Variant = ContentRegistry.get_character(character_id)
+	if character is Dictionary:
+		return str(character.get("display_name", character_id)).get_slice(" ", 0)
+	return character_id.replace("_", " ").capitalize()
 
 
 func _open_wardrobe() -> void:

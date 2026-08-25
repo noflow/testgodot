@@ -49,7 +49,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _render_view(view: Dictionary) -> void:
 	error_label.text = ""
-	scene_title.text = "AUGUST 20 • TUESDAY MORNING • PLAYER BEDROOM"
+	scene_title.text = _scene_heading()
 	var stage_direction: String = str(view.get("stage_direction", ""))
 	var line: String = str(view.get("line", ""))
 	if not stage_direction.is_empty():
@@ -79,6 +79,22 @@ func _render_view(view: Dictionary) -> void:
 		choices_box.get_child(0).grab_focus()
 	elif continue_button.visible:
 		continue_button.grab_focus()
+
+
+func _scene_heading() -> String:
+	var clock: Dictionary = GameState.current_state.get("clock", {})
+	var location_path: String = str(GameState.current_state.get("world_state", {}).get("current_location", ""))
+	var room_name: String = location_path.get_slice(".", 1).replace("_", " ").capitalize()
+	if room_name.is_empty():
+		var location: Variant = ContentRegistry.get_location(location_path.get_slice(".", 0))
+		room_name = str(location.get("name", location_path)) if location is Dictionary else location_path.replace("_", " ").capitalize()
+	return "MONTH %02d, DAY %02d • %s %s • %s" % [
+		int(clock.get("month", 1)),
+		int(clock.get("day", 1)),
+		str(clock.get("weekday", "")).to_upper(),
+		str(clock.get("block", "")).replace("_", " ").to_upper(),
+		room_name.to_upper(),
+	]
 
 
 func _on_continue_pressed() -> void:

@@ -8,6 +8,8 @@ file. Save games store changing runtime state and never rewrite the source packa
 ## Package sections
 
 - `profile`, `home`, `personality`, `schedule`, and `skills` define simulation data.
+- `home_routine` maps free activity blocks to rooms, actor positions, and activities.
+- `ambient_dialogue` supplies short contextual lines for non-story interactions.
 - `relationship_defaults` supplies new-game meter values.
 - `relationship_chapters` identifies the five major relationship arcs.
 - `quests` contains complete quest definitions owned by the character.
@@ -58,6 +60,13 @@ The quest engine starts quests, completes objectives, selects branches from runt
 values, applies branch-specific household rules, starts linked quests, and exposes
 active quest definitions and progress to the phone UI. Elena's opening scene is the
 first complete production path through both engines.
+
+Character quests using `activation.event: quest_completed` are synchronized after
+their prerequisite quest finishes. An optional `earliest_block` delays activation
+until the authored point in the day. The household schedule resolver checks fixed
+commitments before `home_routine`, updates live NPC locations, and only spawns an
+actor when a room and position are available. Fixed commitments should include a
+registered `location`; at-home commitments may also define `home_placement`.
 
 The phone engine reads each known contact's `text_messages` directly from that
 character package. A message has a unique `id`, a declarative `trigger`, its sender,

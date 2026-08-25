@@ -109,8 +109,11 @@ Essential interactions:
 Implementation note: the current playable home contains all twelve required spaces,
 free movement, collision boundaries, blocked private bedrooms, bedroom, bathroom,
 kitchen, dining, laundry, garage, yard interactions, and a state-backed wardrobe.
-Household NPC placement, family conversations, car travel, and the city exit build
-on this scene in the following milestones.
+Elena, Daniel, and Lily now appear in authored rooms according to work, school, and
+home routines stored in their character packages. Direct interaction offers active
+story conversations or short ambient dialogue; unavailable family members remain at
+their external schedule locations. Car travel and the city exit build on this scene
+in the following milestones.
 
 Private doors require knocking or permission. The player cannot enter an occupied
 bathroom or restricted bedroom by walking through a collision boundary.

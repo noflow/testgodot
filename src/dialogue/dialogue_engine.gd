@@ -36,6 +36,18 @@ func begin(state: Dictionary, conversation_id: String) -> Dictionary:
 	return _enter_node(result["state"], conversation, str(conversation["start_node"]))
 
 
+func can_begin(state: Dictionary, conversation_id: String) -> Dictionary:
+	var conversation: Variant = _registry.get_content("conversations", conversation_id)
+	if not conversation is Dictionary:
+		return {"ok": false, "reason": "Unknown conversation: %s" % conversation_id}
+	if state.get("conversation_state", {}).get("active") is Dictionary:
+		return {"ok": false, "reason": "Another conversation is already active."}
+	if "conversation:%s" % conversation_id in state["conversation_state"]["once_only_flags"]:
+		return {"ok": false, "reason": "This conversation can only occur once."}
+	var activation_error: String = _activation_error(state, conversation)
+	return {"ok": activation_error.is_empty(), "reason": activation_error}
+
+
 func resume(state: Dictionary) -> Dictionary:
 	var active: Variant = state.get("conversation_state", {}).get("active")
 	if not active is Dictionary:
@@ -264,9 +276,14 @@ func _activation_error(state: Dictionary, conversation: Dictionary) -> String:
 	var activation: Dictionary = conversation.get("activation", {})
 	if activation.has("quest_active") and str(activation["quest_active"]) not in state["quest_state"]["active"]:
 		return "Required quest is not active."
-	if activation.has("location") and str(activation["location"]) != str(state["world_state"]["current_location"]):
-		return "Conversation is unavailable at the current location."
+	if activation.has("location"):
+		var expected_location: String = str(activation["location"])
+		var current_location: String = str(state["world_state"]["current_location"])
+		if current_location != expected_location and not current_location.begins_with("%s." % expected_location):
+			return "Conversation is unavailable at the current location."
 	if activation.has("block") and str(activation["block"]) != str(state["clock"]["block"]):
+		return "Conversation is unavailable during this activity block."
+	if activation.has("blocks") and str(state["clock"]["block"]) not in activation["blocks"]:
 		return "Conversation is unavailable during this activity block."
 	return ""
 

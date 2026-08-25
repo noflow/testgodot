@@ -15,7 +15,10 @@ includes room collisions, private doors, needs-aware food and hygiene actions,
 sleep, laundry, household storage, and a working wardrobe. The reusable smartphone
 now provides all nine vertical-slice apps, authored character messages and replies,
 NPC-aware calendar scheduling, live relationships, weather/outfit checks, the city
-map, quest progress, character statistics, and initial settings controls.
+map, quest progress, character statistics, and initial settings controls. Elena,
+Daniel, and Lily now follow their character-authored work, school, and home-room
+schedules, appear as reusable top-down actors, and expose available story or ambient
+conversations through direct exploration.
 
 ## Planned technology
 

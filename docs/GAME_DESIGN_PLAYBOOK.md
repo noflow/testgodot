@@ -505,12 +505,20 @@ contacts, character-authored message threads, quick replies, a conflict-aware
 seven-block calendar, quest tracking, relationship meters and levels, unlocked map
 destinations, forecast-driven outfit checks, and initial settings controls.
 
+The Hale household is now schedule-driven. Elena, Daniel, and Lily resolve their
+current work, school, errands, and home routines from their own `.character` files.
+When home, reusable top-down actors appear in the authored room; when committed
+elsewhere, their persistent NPC location and availability update instead. Direct
+interaction exposes time- and quest-appropriate VN conversations plus authored
+ambient chat. Follow-up character quests activate automatically when prerequisites
+and earliest activity blocks are satisfied. Daniel's opening-night `a_quiet_check_in`
+quest and conversation complete the first playable family set.
+
 ## Next milestones
 
-1. Place scheduled household NPCs and connect family conversations to home exploration
-2. Implement city travel and connect phone map destinations to route confirmation
-3. Implement the required institutional and NPC activities
-4. Expand the phone with jobs, banking, housing, education, health, shopping, and transportation apps
-5. Implement saves, recovery, Sunday review, complete settings, and accessibility
-6. Stabilize the vertical slice against all acceptance tests
-7. Resume broader content expansion, alternative households, and the September calendar
+1. Implement city travel and connect phone map destinations to route confirmation
+2. Implement the required institutional and NPC activities
+3. Expand the phone with jobs, banking, housing, education, health, shopping, and transportation apps
+4. Implement saves, recovery, Sunday review, complete settings, and accessibility
+5. Stabilize the vertical slice against all acceptance tests
+6. Resume broader content expansion, alternative households, and the September calendar

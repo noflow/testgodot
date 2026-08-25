@@ -24,10 +24,29 @@ func _run_probe() -> void:
 	await get_tree().process_frame
 	await get_tree().process_frame
 	var phone: Node = instance.get_node_or_null("Interface/Smartphone")
-	if instance.get_node_or_null("RoomAreas/PlayerBedroom") == null or instance.get_node_or_null("Walls") == null or phone == null:
-		printerr("PROBE: runtime rooms, walls, or phone were not created")
+	var household_actors: Node = instance.get_node_or_null("HouseholdActors")
+	if instance.get_node_or_null("RoomAreas/PlayerBedroom") == null or instance.get_node_or_null("Walls") == null or phone == null or household_actors == null:
+		printerr("PROBE: runtime rooms, walls, household actors, or phone were not created")
 		get_tree().quit(1)
 		return
+	if household_actors.get_child_count() != 1 or household_actors.get_node_or_null("LilyHale") == null:
+		printerr("PROBE: Tuesday Morning schedule did not place only Lily at home")
+		get_tree().quit(1)
+		return
+	instance.call("_set_current_room", "living_room")
+	var lily_interaction: Dictionary = instance.call("_find_nearest_interaction", Vector2(315, 600))
+	if str(lily_interaction.get("character_id", "")) != "lily_hale":
+		printerr("PROBE: Lily did not expose a direct proximity interaction")
+		get_tree().quit(1)
+		return
+	instance.call("_open_npc_panel", "lily_hale")
+	var npc_action_panel: Control = instance.get_node("Interface/ActionPanel")
+	var npc_action_buttons: Container = instance.get_node("Interface/ActionPanel/Margin/Layout/Scroll/ActionButtons")
+	if not npc_action_panel.visible or npc_action_buttons.get_child_count() == 0:
+		printerr("PROBE: household interaction did not expose authored dialogue")
+		get_tree().quit(1)
+		return
+	instance.call("_on_close_panel_pressed")
 	phone.open_phone()
 	await get_tree().process_frame
 	if not phone.visible or phone.get_node("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/Navigation/NavMargin/NavScroll/AppButtons").get_child_count() != 9:
@@ -48,5 +67,12 @@ func _run_probe() -> void:
 		get_tree().quit(1)
 		return
 	phone.close_phone()
-	print("PASS: Hale home runtime created rooms, walls, HUD, active player state, and all nine phone apps.")
+	TimeService.advance_blocks(3, "probe.household_evening")
+	await get_tree().process_frame
+	await get_tree().process_frame
+	if household_actors.get_child_count() != 2 or household_actors.get_node_or_null("ElenaReyesHale") == null or household_actors.get_node_or_null("DanielHale") == null:
+		printerr("PROBE: Tuesday Evening schedule did not bring Elena and Daniel home")
+		get_tree().quit(1)
+		return
+	print("PASS: Hale home runtime created rooms, scheduled family actors, HUD, active player state, and all nine phone apps.")
 	get_tree().quit(0)

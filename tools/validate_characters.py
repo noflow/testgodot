@@ -18,6 +18,10 @@ SUPPORT_METERS = {
     "trust", "respect", "resentment", "jealousy", "comfort", "commitment",
     "compatibility", "satisfaction"
 }
+VALID_BLOCKS = {
+    "early_morning", "morning", "lunch", "afternoon",
+    "evening", "late_evening", "night"
+}
 REQUIRED_TOP_LEVEL = {
     "format_version", "id", "display_name", "profile", "home", "personality",
     "schedule", "skills", "goals", "connections", "relationship_defaults",
@@ -91,6 +95,25 @@ def validate_file(path: Path, known_ids: set[str]) -> list[str]:
     for commitment in schedule.get("fixed_commitments", []):
         if not commitment.get("blocks") or "unavailable" not in commitment:
             fail(errors, path, "each commitment needs blocks and unavailable")
+        if any(block not in VALID_BLOCKS for block in commitment.get("blocks", [])):
+            fail(errors, path, "fixed commitment uses an invalid activity block")
+
+    home_routine = data.get("home_routine", {})
+    for block, placement in home_routine.get("default_by_block", {}).items():
+        if block not in VALID_BLOCKS or not isinstance(placement, dict):
+            fail(errors, path, f"home_routine contains invalid placement for {block}")
+            continue
+        position = placement.get("position")
+        if placement.get("spawn", True) and (
+            not placement.get("room")
+            or not isinstance(position, list)
+            or len(position) != 2
+            or not all(isinstance(value, (int, float)) for value in position)
+        ):
+            fail(errors, path, f"spawned home_routine placement for {block} needs a room and numeric position")
+    for entry in data.get("ambient_dialogue", []):
+        if not entry.get("line") or any(block not in VALID_BLOCKS for block in entry.get("blocks", [])):
+            fail(errors, path, "ambient_dialogue entry needs text and valid activity blocks")
 
     if profile.get("romance_eligible") is False:
         hard_limits = set(data["boundaries"].get("hard_limits", []))
@@ -151,7 +174,7 @@ def validate_global_content(
     quest_ids: set[str] = set()
     conversation_ids: set[str] = set()
     packages: list[tuple[Path, dict]] = []
-    valid_blocks = {"early_morning", "morning", "lunch", "afternoon", "evening", "late_evening", "night"}
+    valid_blocks = VALID_BLOCKS
 
     for path in sorted(GLOBAL_CONTENT_DIR.rglob("*.json")):
         try:
