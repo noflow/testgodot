@@ -56,6 +56,9 @@ def validate_file(path: Path, known_ids: set[str]) -> list[str]:
     if profile.get("orientation") not in VALID_ORIENTATIONS:
         fail(errors, path, "unsupported orientation")
 
+    if not data["home"].get("location_id"):
+        fail(errors, path, "home requires a location_id from the canonical location registry")
+
     meters = data["relationship_defaults"]
     missing_meters = sorted((PRIMARY_METERS | SUPPORT_METERS) - meters.keys())
     if missing_meters:
@@ -137,7 +140,12 @@ def validate_file(path: Path, known_ids: set[str]) -> list[str]:
     return errors
 
 
-def validate_global_content(known_character_ids: set[str], character_quest_ids: set[str], character_conversation_ids: set[str]) -> list[str]:
+def validate_global_content(
+    known_character_ids: set[str],
+    character_quest_ids: set[str],
+    character_conversation_ids: set[str],
+    character_home_locations: dict[str, str],
+) -> list[str]:
     errors: list[str] = []
     package_ids: set[str] = set()
     quest_ids: set[str] = set()
@@ -194,6 +202,16 @@ def validate_global_content(known_character_ids: set[str], character_quest_ids: 
                     if target not in nodes:
                         errors.append(f"{path.relative_to(ROOT)}: conversation {conversation_id} links to missing node {target}")
 
+    district_ids: set[str] = set()
+    location_aliases: dict[str, str] = {}
+    for path, data in packages:
+        for district in data.get("districts", []):
+            district_id = district.get("id")
+            if not district_id or district_id in district_ids:
+                errors.append(f"{path.relative_to(ROOT)}: missing or duplicate district id {district_id}")
+                continue
+            district_ids.add(district_id)
+
     location_ids: set[str] = set()
     room_ids: set[str] = set()
     for path, data in packages:
@@ -203,6 +221,11 @@ def validate_global_content(known_character_ids: set[str], character_quest_ids: 
                 errors.append(f"{path.relative_to(ROOT)}: missing or duplicate location id {location_id}")
                 continue
             location_ids.add(location_id)
+            if location.get("district") not in district_ids:
+                errors.append(
+                    f"{path.relative_to(ROOT)}: location {location_id} references unknown district "
+                    f"{location.get('district')}"
+                )
             for room in location.get("rooms", []):
                 room_id = room.get("id")
                 full_room_id = f"{location_id}.{room_id}"
@@ -213,6 +236,20 @@ def validate_global_content(known_character_ids: set[str], character_quest_ids: 
             for block in access.get("open_blocks", []) + access.get("closed_blocks", []):
                 if block not in valid_blocks:
                     errors.append(f"{path.relative_to(ROOT)}: location {location_id} uses invalid block {block}")
+
+        for alias, target in data.get("legacy_aliases", {}).items():
+            if not alias or alias in location_aliases:
+                errors.append(f"{path.relative_to(ROOT)}: missing or duplicate location alias {alias}")
+                continue
+            location_aliases[alias] = target
+
+    for alias, target in location_aliases.items():
+        if target not in location_ids:
+            errors.append(f"location alias {alias} references unknown location {target}")
+
+    for character_id, home_location in character_home_locations.items():
+        if home_location not in location_ids:
+            errors.append(f"{character_id}.character: home references unknown location {home_location}")
 
     account_ids: set[str] = set()
     budget_ids: set[str] = set()
@@ -275,6 +312,7 @@ def validate_global_content(known_character_ids: set[str], character_quest_ids: 
         return (
             value in location_ids
             or value in room_ids
+            or value in location_aliases
             or value in {"phone", "variable"}
             or value.startswith(("variable_", "any_", "legal_"))
             or value.endswith("_placeholder")
@@ -496,15 +534,26 @@ def main() -> int:
     known_ids = set(ids)
     character_quest_ids: set[str] = set()
     character_conversation_ids: set[str] = set()
+    character_home_locations: dict[str, str] = {}
     for path in paths:
         errors.extend(validate_file(path, known_ids))
         try:
             character_data = json.loads(path.read_text(encoding="utf-8"))
             character_quest_ids.update(quest.get("id") for quest in character_data.get("quests", []) if quest.get("id"))
             character_conversation_ids.update(conversation.get("id") for conversation in character_data.get("conversations", []) if conversation.get("id"))
+            home_location = character_data.get("home", {}).get("location_id")
+            if home_location:
+                character_home_locations[character_data["id"]] = home_location
         except (OSError, json.JSONDecodeError):
             pass
-    errors.extend(validate_global_content(known_ids, character_quest_ids, character_conversation_ids))
+    errors.extend(
+        validate_global_content(
+            known_ids,
+            character_quest_ids,
+            character_conversation_ids,
+            character_home_locations,
+        )
+    )
 
     schema_path = ROOT / "schemas" / "save_game.schema.json"
     try:

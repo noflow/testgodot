@@ -3,7 +3,7 @@
   "id": "theo_grant",
   "display_name": "Theo Grant",
   "profile": {"age": 20, "birthday": "02-17", "gender_identity": "trans_male", "orientation": "bisexual", "romance_eligible": true, "role": "college_peer", "occupation": "Student and Campus IT Assistant", "education": "Westshore Computer Systems student"},
-  "home": {"district": "Westshore College District", "residence": "Maple Hall Dorm", "household": ["dorm_roommate_unassigned"]},
+  "home": {"location_id": "maple_hall_dorm", "district": "Westshore College District", "residence": "Maple Hall Dorm", "household": ["dorm_roommate_unassigned"]},
   "personality": {"archetype": "guarded_problem_solver", "traits": ["analytical", "deadpan", "loyal", "private", "stubborn"], "values": ["privacy", "competence", "fairness"], "social_style": "reserved_with_dry_humor", "jealousy": 22},
   "schedule": {"days_off": ["sunday"], "fixed_commitments": [{"days": ["monday", "wednesday", "friday"], "blocks": ["morning", "lunch", "afternoon"], "activity": "westshore_classes", "unavailable": true}, {"days": ["tuesday", "thursday"], "blocks": ["afternoon", "evening"], "activity": "campus_it_helpdesk", "unavailable": true}, {"days": ["saturday"], "blocks": ["late_evening", "night"], "activity": "online_game_group", "unavailable": false}], "preferred_social_blocks": ["evening", "late_evening"]},
   "skills": {"programming": 104, "computer_repair": 118, "gaming": 89, "cooking": 18},

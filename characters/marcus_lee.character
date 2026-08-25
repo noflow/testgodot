@@ -3,7 +3,7 @@
   "id": "marcus_lee",
   "display_name": "Marcus Lee",
   "profile": {"age": 19, "birthday": "09-08", "gender_identity": "male", "orientation": "bisexual", "romance_eligible": true, "role": "childhood_friend", "occupation": "Cinema Employee", "education": "Westshore Film student"},
-  "home": {"district": "Greyport", "residence": "Lee Family Apartment", "household": ["lee_parent", "lee_roommate_cousin"]},
+  "home": {"location_id": "lee_family_apartment", "district": "Greyport", "residence": "Lee Family Apartment", "household": ["lee_parent", "lee_roommate_cousin"]},
   "personality": {"archetype": "social_dreamer", "traits": ["charismatic", "creative", "impulsive", "generous", "unreliable"], "values": ["friendship", "art", "freedom"], "social_style": "fast_jokes_and_big_plans", "jealousy": 28},
   "schedule": {"days_off": ["monday"], "fixed_commitments": [{"days": ["tuesday", "thursday"], "blocks": ["morning", "lunch", "afternoon"], "activity": "westshore_classes", "unavailable": true}, {"days": ["friday", "saturday", "sunday"], "blocks": ["evening", "late_evening"], "activity": "work_harborlight_cinema", "unavailable": true}, {"days": ["wednesday"], "blocks": ["evening"], "activity": "student_film_club", "unavailable": true}], "preferred_social_blocks": ["afternoon", "late_evening"]},
   "skills": {"filmmaking": 74, "humor": 81, "editing": 55, "customer_service": 47},

@@ -3,7 +3,7 @@
   "id": "hannah_brooks",
   "display_name": "Hannah Brooks",
   "profile": {"age": 27, "birthday": "03-19", "gender_identity": "female", "orientation": "bisexual", "romance_eligible": true, "role": "healthcare_contact", "occupation": "Registered Nurse", "education": "Bachelor of Nursing"},
-  "home": {"district": "St. Maren Medical District", "residence": "One-Bedroom Apartment", "household": []},
+  "home": {"location_id": "hannah_medical_district_apartment", "district": "St. Maren Medical District", "residence": "One-Bedroom Apartment", "household": []},
   "personality": {"archetype": "tired_optimist", "traits": ["maternal", "calm", "wry", "responsible", "workaholic"], "values": ["care", "honesty", "balance"], "social_style": "reassuring_with_dark_humor", "jealousy": 37},
   "schedule": {"days_off": ["variable"], "rotation": "four_on_three_off", "fixed_commitments": [{"days": ["rotation_day_1", "rotation_day_2", "rotation_day_3", "rotation_day_4"], "blocks": ["early_morning", "morning", "lunch", "afternoon"], "activity": "st_maren_nursing_shift", "unavailable": true}, {"days": ["first_day_off"], "blocks": ["morning", "lunch"], "activity": "sleep_recovery", "unavailable": true}, {"days": ["third_day_off"], "blocks": ["evening"], "activity": "friends_or_date", "unavailable": false}], "preferred_social_blocks": ["second_day_off_evening", "third_day_off_evening"]},
   "skills": {"nursing": 146, "first_aid": 164, "empathy": 119, "cooking": 53},

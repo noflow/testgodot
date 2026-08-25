@@ -3,7 +3,7 @@
   "id": "chloe_bennett",
   "display_name": "Chloe Bennett",
   "profile": {"age": 19, "birthday": "12-14", "gender_identity": "trans_female", "orientation": "bisexual", "romance_eligible": true, "role": "college_peer", "occupation": "Student and Freelance Illustrator", "education": "Westshore Visual Arts student"},
-  "home": {"district": "Westshore College District", "residence": "Shared Student Apartment", "household": ["two_student_roommates"]},
+  "home": {"location_id": "westshore_shared_student_apartment", "district": "Westshore College District", "residence": "Shared Student Apartment", "household": ["two_student_roommates"]},
   "personality": {"archetype": "bold_creator", "traits": ["expressive", "witty", "confident", "sensitive", "independent"], "values": ["creativity", "dignity", "chosen_family"], "social_style": "playful_and_candid", "jealousy": 26},
   "schedule": {"days_off": ["monday", "sunday"], "fixed_commitments": [{"days": ["tuesday", "wednesday", "thursday"], "blocks": ["morning", "lunch", "afternoon"], "activity": "westshore_studio_classes", "unavailable": true}, {"days": ["friday"], "blocks": ["afternoon", "evening"], "activity": "freelance_commissions", "unavailable": true}, {"days": ["saturday"], "blocks": ["evening", "late_evening"], "activity": "lantern_gallery_events", "unavailable": false}], "preferred_social_blocks": ["evening", "late_evening"]},
   "skills": {"illustration": 96, "painting": 73, "fashion": 64, "social_media": 57},

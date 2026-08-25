@@ -3,7 +3,7 @@
   "id": "sofia_alvarez",
   "display_name": "Sofia Alvarez",
   "profile": {"age": 23, "birthday": "05-30", "gender_identity": "female", "orientation": "bisexual", "romance_eligible": true, "role": "workplace_contact", "occupation": "Restaurant Shift Supervisor", "education": "Hospitality certificate"},
-  "home": {"district": "Greyport", "residence": "Shared Two-Bedroom Apartment", "household": ["restaurant_coworker_roommate"]},
+  "home": {"location_id": "greyport_shared_apartment", "district": "Greyport", "residence": "Shared Two-Bedroom Apartment", "household": ["restaurant_coworker_roommate"]},
   "personality": {"archetype": "fiery_manager", "traits": ["confident", "protective", "flirtatious", "demanding", "generous"], "values": ["loyalty", "hard_work", "pleasure"], "social_style": "direct_and_energetic", "jealousy": 61},
   "schedule": {"days_off": ["monday", "tuesday"], "fixed_commitments": [{"days": ["wednesday", "thursday", "friday"], "blocks": ["afternoon", "evening", "late_evening"], "activity": "restaurant_shift", "unavailable": true}, {"days": ["saturday", "sunday"], "blocks": ["lunch", "afternoon", "evening", "late_evening"], "activity": "restaurant_shift", "unavailable": true}, {"days": ["tuesday"], "blocks": ["evening"], "activity": "friends_and_dancing", "unavailable": false}], "preferred_social_blocks": ["monday_evening", "tuesday_late_evening"]},
   "skills": {"hospitality": 121, "leadership": 88, "cooking": 82, "dancing": 69},

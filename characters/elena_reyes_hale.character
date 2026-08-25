@@ -3,7 +3,7 @@
   "id": "elena_reyes_hale",
   "display_name": "Elena Reyes-Hale",
   "profile": {"age": 45, "birthday": "04-18", "gender_identity": "female", "orientation": "straight", "romance_eligible": false, "role": "mother", "occupation": "Clinic Administrator", "education": "Healthcare Administration diploma"},
-  "home": {"district": "Alder Heights", "residence": "Hale Family Home", "household": ["daniel_hale", "lily_hale", "player"]},
+  "home": {"location_id": "hale_home", "district": "Alder Heights", "residence": "Hale Family Home", "household": ["daniel_hale", "lily_hale", "player"]},
   "personality": {"archetype": "protective_planner", "traits": ["maternal", "organized", "direct", "warm", "stubborn"], "values": ["family", "stability", "education"], "social_style": "practical_care", "jealousy": 12},
   "schedule": {"days_off": ["saturday", "sunday"], "fixed_commitments": [{"days": ["monday", "tuesday", "wednesday", "thursday", "friday"], "blocks": ["morning", "lunch", "afternoon"], "activity": "work_st_maren_clinic", "unavailable": true}, {"days": ["wednesday"], "blocks": ["evening"], "activity": "grocery_and_errands", "unavailable": true}, {"days": ["sunday"], "blocks": ["evening"], "activity": "family_dinner", "unavailable": false}], "preferred_social_blocks": ["evening", "late_evening"]},
   "skills": {"administration": 118, "budgeting": 82, "cooking": 76, "empathy": 91},

@@ -3,7 +3,7 @@
   "id": "jade_mercer",
   "display_name": "Jade Mercer",
   "profile": {"age": 25, "birthday": "08-27", "gender_identity": "female", "orientation": "bisexual", "romance_eligible": true, "role": "nightlife_contact", "occupation": "Licensed Professional Companion", "education": "Business certificate"},
-  "home": {"district": "Harbor Centre", "residence": "Secure Downtown Condo", "household": []},
+  "home": {"location_id": "jade_downtown_condo", "district": "Harbor Centre", "residence": "Secure Downtown Condo", "household": []},
   "personality": {"archetype": "composed_boundary_setter", "traits": ["perceptive", "elegant", "pragmatic", "private", "compassionate"], "values": ["consent", "autonomy", "professionalism"], "social_style": "calm_and_deliberate", "jealousy": 16},
   "schedule": {"days_off": ["monday", "sunday"], "fixed_commitments": [{"days": ["tuesday", "wednesday", "thursday"], "blocks": ["evening", "late_evening"], "activity": "licensed_client_appointments", "unavailable": true}, {"days": ["friday", "saturday"], "blocks": ["late_evening", "night"], "activity": "licensed_client_appointments", "unavailable": true}, {"days": ["wednesday"], "blocks": ["afternoon"], "activity": "health_and_admin_appointments", "unavailable": true}], "preferred_social_blocks": ["monday_afternoon", "sunday_evening"]},
   "skills": {"emotional_intelligence": 132, "negotiation": 116, "business": 81, "fashion": 91},

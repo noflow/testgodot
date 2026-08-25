@@ -7,7 +7,7 @@ unnamed service NPCs lives here.
 - `opening/global_quests.json` contains the opening institutional and tutorial quests.
 - `opening/global_conversations.json` contains their service conversations.
 - `opening/opening_week.json` maps Tuesday through Sunday across all seven blocks.
-- `world/locations.json` defines walkable locations, rooms, hours, and actions.
+- `world/all_locations.json` is the canonical city registry for districts, travel destinations, homes, rooms, access, services, and legacy location aliases.
 - `world/transportation.json` defines travel modes, routes, time, cost, and delays.
 - `systems/education.json` defines Westshore programs, courses, schedules, and grading.
 - `systems/employment.json` defines jobs, requirements, interviews, and promotions.

@@ -3,7 +3,7 @@
   "id": "maya_chen",
   "display_name": "Maya Chen",
   "profile": {"age": 18, "birthday": "03-06", "gender_identity": "female", "orientation": "straight", "romance_eligible": true, "role": "college_peer", "occupation": "Student", "education": "Westshore Pre-Medical student"},
-  "home": {"district": "Westshore College District", "residence": "Cypress Hall Dorm", "household": ["dorm_roommate_unassigned"]},
+  "home": {"location_id": "cypress_hall_dorm", "district": "Westshore College District", "residence": "Cypress Hall Dorm", "household": ["dorm_roommate_unassigned"]},
   "personality": {"archetype": "driven_perfectionist", "traits": ["intelligent", "disciplined", "competitive", "considerate", "self_critical"], "values": ["achievement", "service", "integrity"], "social_style": "polite_and_focused", "jealousy": 44},
   "schedule": {"days_off": ["sunday"], "fixed_commitments": [{"days": ["monday", "tuesday", "wednesday", "thursday", "friday"], "blocks": ["morning", "lunch", "afternoon"], "activity": "westshore_classes_and_labs", "unavailable": true}, {"days": ["tuesday", "thursday"], "blocks": ["evening"], "activity": "study_group", "unavailable": true}, {"days": ["saturday"], "blocks": ["morning"], "activity": "hospital_volunteering", "unavailable": true}], "preferred_social_blocks": ["friday_evening", "sunday_afternoon"]},
   "skills": {"biology": 88, "chemistry": 72, "study": 94, "cooking": 29},

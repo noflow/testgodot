@@ -3,7 +3,7 @@
   "id": "daniel_hale",
   "display_name": "Daniel Hale",
   "profile": {"age": 47, "birthday": "11-02", "gender_identity": "male", "orientation": "straight", "romance_eligible": false, "role": "father", "occupation": "Transit Mechanic", "education": "Red Seal-equivalent trade certification"},
-  "home": {"district": "Alder Heights", "residence": "Hale Family Home", "household": ["elena_reyes_hale", "lily_hale", "player"]},
+  "home": {"location_id": "hale_home", "district": "Alder Heights", "residence": "Hale Family Home", "household": ["elena_reyes_hale", "lily_hale", "player"]},
   "personality": {"archetype": "quiet_provider", "traits": ["patient", "reserved", "dependable", "dry_humor", "conflict_avoidant"], "values": ["workmanship", "family", "honesty"], "social_style": "actions_over_words", "jealousy": 18},
   "schedule": {"days_off": ["sunday", "monday"], "fixed_commitments": [{"days": ["tuesday", "wednesday", "thursday", "friday", "saturday"], "blocks": ["early_morning", "morning", "lunch", "afternoon"], "activity": "work_transit_depot", "unavailable": true}, {"days": ["thursday"], "blocks": ["evening"], "activity": "garage_project", "unavailable": false}], "preferred_social_blocks": ["evening"]},
   "skills": {"mechanics": 154, "driving": 112, "home_repair": 104, "cooking": 31},

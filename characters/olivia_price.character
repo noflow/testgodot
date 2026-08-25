@@ -3,7 +3,7 @@
   "id": "olivia_price",
   "display_name": "Olivia Price",
   "profile": {"age": 32, "birthday": "09-26", "gender_identity": "female", "orientation": "bisexual", "romance_eligible": true, "role": "professional_contact", "occupation": "Senior Corporate Attorney", "education": "Law degree"},
-  "home": {"district": "Crown Point", "residence": "Luxury Penthouse", "household": []},
+  "home": {"location_id": "olivia_crown_point_penthouse", "district": "Crown Point", "residence": "Luxury Penthouse", "household": []},
   "personality": {"archetype": "controlled_strategist", "traits": ["intelligent", "ambitious", "polished", "intimidating", "privately_lonely"], "values": ["competence", "discretion", "success"], "social_style": "formal_and_testing", "jealousy": 57},
   "schedule": {"days_off": ["sunday"], "fixed_commitments": [{"days": ["monday", "tuesday", "wednesday", "thursday", "friday"], "blocks": ["morning", "lunch", "afternoon", "evening"], "activity": "crown_point_law_office", "unavailable": true}, {"days": ["saturday"], "blocks": ["morning", "lunch"], "activity": "work_or_professional_events", "unavailable": true}, {"days": ["tuesday", "thursday"], "blocks": ["early_morning"], "activity": "personal_training", "unavailable": true}], "preferred_social_blocks": ["saturday_evening", "sunday_afternoon"]},
   "skills": {"law": 186, "negotiation": 171, "business": 148, "public_speaking": 137},

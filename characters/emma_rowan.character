@@ -3,7 +3,7 @@
   "id": "emma_rowan",
   "display_name": "Emma Rowan",
   "profile": {"age": 18, "birthday": "01-29", "gender_identity": "female", "orientation": "bisexual", "romance_eligible": true, "role": "childhood_friend", "occupation": "Student", "education": "Westshore Literature student"},
-  "home": {"district": "Alder Heights", "residence": "Rowan Family Home", "household": ["rowan_parents"]},
+  "home": {"location_id": "rowan_family_home", "district": "Alder Heights", "residence": "Rowan Family Home", "household": ["rowan_parents"]},
   "personality": {"archetype": "gentle_observer", "traits": ["kind", "bookish", "funny", "anxious", "loyal"], "values": ["authenticity", "creativity", "security"], "social_style": "soft_spoken_then_playful", "jealousy": 54},
   "schedule": {"days_off": ["friday", "sunday"], "fixed_commitments": [{"days": ["monday", "tuesday", "thursday"], "blocks": ["morning", "lunch", "afternoon"], "activity": "westshore_classes", "unavailable": true}, {"days": ["wednesday"], "blocks": ["afternoon", "evening"], "activity": "literary_magazine", "unavailable": true}, {"days": ["saturday"], "blocks": ["morning"], "activity": "family_errands", "unavailable": true}], "preferred_social_blocks": ["evening", "late_evening"]},
   "skills": {"writing": 78, "literature": 83, "photography": 38, "cooking": 44},

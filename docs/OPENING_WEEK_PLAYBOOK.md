@@ -53,7 +53,6 @@ important commitments to the following week's calendar.
 
 ## Source data
 
-- `content/world/locations.json`
+- `content/world/all_locations.json`
 - `content/world/transportation.json`
 - `content/opening/opening_week.json`
-

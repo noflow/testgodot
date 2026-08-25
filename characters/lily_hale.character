@@ -3,7 +3,7 @@
   "id": "lily_hale",
   "display_name": "Lily Hale",
   "profile": {"age": 19, "birthday": "06-11", "gender_identity": "female", "orientation": "bisexual", "romance_eligible": false, "role": "older_sister", "occupation": "Student", "education": "Westshore Social Sciences student"},
-  "home": {"district": "Alder Heights", "residence": "Hale Family Home", "household": ["elena_reyes_hale", "daniel_hale", "player"]},
+  "home": {"location_id": "hale_home", "district": "Alder Heights", "residence": "Hale Family Home", "household": ["elena_reyes_hale", "daniel_hale", "player"]},
   "personality": {"archetype": "restless_achiever", "traits": ["clever", "teasing", "ambitious", "protective", "impatient"], "values": ["independence", "loyalty", "self_expression"], "social_style": "sibling_banter", "jealousy": 38},
   "schedule": {"days_off": ["friday", "sunday"], "fixed_commitments": [{"days": ["monday", "wednesday"], "blocks": ["morning", "lunch", "afternoon"], "activity": "westshore_classes", "unavailable": true}, {"days": ["tuesday", "thursday"], "blocks": ["afternoon", "evening"], "activity": "campus_library_job", "unavailable": true}, {"days": ["saturday"], "blocks": ["evening", "late_evening"], "activity": "friends_or_events", "unavailable": false}], "preferred_social_blocks": ["evening", "late_evening"]},
   "skills": {"research": 63, "writing": 71, "social_media": 68, "cooking": 22},

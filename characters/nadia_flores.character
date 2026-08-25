@@ -3,7 +3,7 @@
   "id": "nadia_flores",
   "display_name": "Nadia Flores",
   "profile": {"age": 20, "birthday": "07-23", "gender_identity": "female", "orientation": "lesbian", "romance_eligible": false, "role": "college_peer", "occupation": "Student and Care Aide", "education": "Westshore Nursing student"},
-  "home": {"district": "Greyport", "residence": "Flores Family Townhouse", "household": ["flores_mother", "flores_grandmother"]},
+  "home": {"location_id": "flores_family_townhouse", "district": "Greyport", "residence": "Flores Family Townhouse", "household": ["flores_mother", "flores_grandmother"]},
   "personality": {"archetype": "grounded_caregiver", "traits": ["maternal", "patient", "blunt", "resilient", "overextended"], "values": ["care", "community", "competence"], "social_style": "warm_with_clear_limits", "jealousy": 34},
   "schedule": {"days_off": ["friday"], "fixed_commitments": [{"days": ["monday", "tuesday", "wednesday", "thursday"], "blocks": ["morning", "lunch", "afternoon"], "activity": "westshore_nursing_program", "unavailable": true}, {"days": ["saturday", "sunday"], "blocks": ["morning", "lunch", "afternoon"], "activity": "care_aide_shift", "unavailable": true}, {"days": ["wednesday"], "blocks": ["evening"], "activity": "family_care", "unavailable": true}], "preferred_social_blocks": ["friday_afternoon", "friday_evening"]},
   "skills": {"nursing": 91, "first_aid": 108, "cooking": 68, "empathy": 87},

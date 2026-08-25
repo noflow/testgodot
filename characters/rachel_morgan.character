@@ -3,7 +3,7 @@
   "id": "rachel_morgan",
   "display_name": "Rachel Morgan",
   "profile": {"age": 24, "birthday": "01-12", "gender_identity": "female", "orientation": "straight", "romance_eligible": true, "role": "fitness_contact", "occupation": "Personal Trainer", "education": "Kinesiology diploma and fitness certifications"},
-  "home": {"district": "Cedar Vale", "residence": "Rented Townhouse", "household": ["trainer_roommate"]},
+  "home": {"location_id": "rachel_cedar_vale_townhouse", "district": "Cedar Vale", "residence": "Rented Townhouse", "household": ["trainer_roommate"]},
   "personality": {"archetype": "demanding_encourager", "traits": ["energetic", "disciplined", "competitive", "supportive", "blunt"], "values": ["health", "effort", "reliability"], "social_style": "high_energy_accountability", "jealousy": 48},
   "schedule": {"days_off": ["sunday"], "fixed_commitments": [{"days": ["monday", "wednesday", "friday"], "blocks": ["early_morning", "morning", "evening"], "activity": "forge_fitness_clients", "unavailable": true}, {"days": ["tuesday", "thursday"], "blocks": ["afternoon", "evening"], "activity": "forge_fitness_clients", "unavailable": true}, {"days": ["saturday"], "blocks": ["morning", "lunch"], "activity": "group_training", "unavailable": true}], "preferred_social_blocks": ["sunday_afternoon", "sunday_evening", "tuesday_lunch"]},
   "skills": {"fitness_training": 158, "strength": 143, "nutrition": 103, "running": 126},

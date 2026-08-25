@@ -465,9 +465,11 @@ transportation onboarding, the Westshore enrollment advisor, and the Harbor
 Employment Centre orientation.
 
 The opening Tuesday-through-Sunday calendar is now mapped across all seven daily
-blocks. Initial location data defines the Hale home room by room, Alder Heights,
-Westshore, Harbor Employment Centre, Forge Fitness, Harborlight Cinema, and Alder
-Bay Park. Transportation data supplies walking, bus, taxi, and car time and cost.
+blocks. The canonical city registry defines ten Port Alder districts, sixty-one
+destinations, and more than three hundred rooms, including every opening NPC home,
+rentable and purchasable housing, education, work, shopping, entertainment, health,
+family, and outdoor spaces. Transportation data supplies walking, bus, taxi, and car
+time and cost.
 
 The initial playable systems catalog defines seven Westshore programs, fifteen
 first-semester courses, thirteen jobs with requirements and promotions, a scored
