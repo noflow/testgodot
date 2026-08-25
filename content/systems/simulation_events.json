@@ -35,6 +35,7 @@
     {"id": "inventory.remove", "payload": ["container_id", "item_id", "quantity"], "checks": ["quantity_owned"]},
     {"id": "inventory.transfer", "payload": ["from_container", "to_container", "item_id", "quantity"], "checks": ["access", "capacity"]},
     {"id": "inventory.equip", "payload": ["item_id", "wardrobe_slot"], "checks": ["item_owned", "slot_matches"], "effects": ["outfit_recalculation"]},
+    {"id": "inventory.clean_container", "payload": ["container_id", "cleanliness"], "checks": ["container_exists", "clothing_present"], "effects": ["clothing_cleanliness"]},
     {"id": "health.add_condition", "payload": ["condition_id", "severity", "known_to_player"], "effects": ["symptoms", "treatment_options", "records"]},
     {"id": "health.treat", "payload": ["condition_id", "treatment_id", "provider"], "checks": ["treatment_available", "funds_or_coverage"]},
     {"id": "health.screening_result", "payload": ["screening_type", "result", "disclosure_state"], "privacy": "private_health_record"},

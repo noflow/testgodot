@@ -160,6 +160,19 @@ func _apply_inventory(state: Dictionary, choices: Dictionary) -> void:
 				"hygiene", "medicine":
 					container_id = "bathroom_storage"
 		_add_starting_item(player_inventory["containers"], container_id, item_id, int(entry.get("quantity", 1)))
+	for pantry_entry: Dictionary in [
+		{"container": "kitchen_storage", "item": "food_fruit_cup", "quantity": 4},
+		{"container": "kitchen_storage", "item": "food_pasta_ingredients", "quantity": 2},
+		{"container": "kitchen_storage", "item": "drink_water_bottle", "quantity": 4},
+		{"container": "garage_storage", "item": "household_detergent", "quantity": 2},
+	]:
+		_add_starting_item(
+			player_inventory["containers"],
+			pantry_entry["container"],
+			pantry_entry["item"],
+			pantry_entry["quantity"]
+		)
+	player_inventory["equipped_outfit"] = _starting_outfit(player_inventory["containers"])
 
 
 func _apply_opening_weather(state: Dictionary) -> void:
@@ -201,8 +214,42 @@ func _find_by_key(entries: Array, key: String, expected: String) -> Dictionary:
 func _add_starting_item(containers: Array, container_id: String, item_id: String, quantity: int) -> void:
 	for container: Variant in containers:
 		if container is Dictionary and str(container.get("id", "")) == container_id:
-			container["items"].append({"item_id": item_id, "quantity": quantity, "item_state": {}})
+			for stack: Variant in container["items"]:
+				if stack is Dictionary and str(stack.get("item_id", "")) == item_id:
+					stack["quantity"] = int(stack["quantity"]) + quantity
+					return
+			var item: Variant = _registry.get_content("items", item_id)
+			var item_state: Dictionary = {}
+			if item is Dictionary and str(item.get("category", "")) == "clothing":
+				item_state = {"cleanliness": 100, "condition": 100}
+			container["items"].append({"item_id": item_id, "quantity": quantity, "item_state": item_state})
 			return
+
+
+func _starting_outfit(containers: Array) -> Dictionary:
+	var preferred_ids: PackedStringArray = [
+		"underwear_boxers_basic", "underwear_boxers_premium", "shirt_basic_white",
+		"pants_jeans_basic", "socks_crew_basic", "shoes_sneakers_basic", "shoes_sneakers_premium",
+	]
+	var outfit: Dictionary = {}
+	for item_id: String in preferred_ids:
+		if not _containers_have_item(containers, item_id):
+			continue
+		var item: Dictionary = _registry.get_content("items", item_id)
+		var slot: String = str(item.get("slot", ""))
+		if not slot.is_empty() and not outfit.has(slot):
+			outfit[slot] = item_id
+	return outfit
+
+
+func _containers_have_item(containers: Array, item_id: String) -> bool:
+	for container: Variant in containers:
+		if not container is Dictionary:
+			continue
+		for stack: Variant in container.get("items", []):
+			if stack is Dictionary and str(stack.get("item_id", "")) == item_id and int(stack.get("quantity", 0)) > 0:
+				return true
+	return false
 
 
 func _copy_array(value: Variant, maximum_size: int = -1) -> Array:

@@ -8,7 +8,8 @@ const MAIN_MENU_SCENE: String = "res://scenes/menus/main_menu.tscn"
 const BOOT_SCENE: String = "res://scenes/boot/boot.tscn"
 const CHARACTER_CREATION_SCENE: String = "res://scenes/creation/character_creation.tscn"
 const VN_DIALOGUE_SCENE: String = "res://scenes/dialogue/vn_dialogue.tscn"
-const SANDBOX_SCENE: String = "res://scenes/world/sandbox_placeholder.tscn"
+const HALE_HOME_SCENE: String = "res://scenes/locations/hale_home.tscn"
+const SANDBOX_SCENE: String = HALE_HOME_SCENE
 
 const COLOR_BACKGROUND: Color = Color("#091016")
 const COLOR_PANEL: Color = Color("#13232c")
@@ -22,6 +23,7 @@ const REQUIRED_FOUNDATION_FILES: PackedStringArray = [
 	"res://content/vertical_slice/manifest.json",
 	"res://content/runtime/new_game_state.json",
 	"res://content/systems/character_creation.json",
+	"res://content/systems/home_interactions.json",
 	"res://content/opening/opening_week.json",
 	"res://content/world/all_locations.json",
 	"res://content/systems/economy.json",

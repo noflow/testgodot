@@ -6,6 +6,7 @@ const SimulationEngineScript: GDScript = preload("res://src/simulation/simulatio
 const QuestEngineScript: GDScript = preload("res://src/quests/quest_engine.gd")
 const DialogueEngineScript: GDScript = preload("res://src/dialogue/dialogue_engine.gd")
 const CharacterCreationValidatorScript: GDScript = preload("res://src/creation/character_creation_validator.gd")
+const HomeActionEngineScript: GDScript = preload("res://src/world/home_action_engine.gd")
 
 var _failures: PackedStringArray = []
 var _tests_run: int = 0
@@ -22,6 +23,7 @@ func _run_all() -> void:
 	_test_project_configuration()
 	_test_dialogue_ui_scenes()
 	_test_character_creation_scene()
+	_test_hale_home_scene()
 	_test_required_json_documents()
 	_test_character_packages()
 	_test_vertical_slice_acceptance_suite()
@@ -29,6 +31,7 @@ func _run_all() -> void:
 	_test_new_game_state_factory()
 	_test_character_creation_validation()
 	_test_clock_and_simulation_engine()
+	_test_home_actions_and_wardrobe()
 	_test_opening_dialogue_branches()
 
 	if _failures.is_empty():
@@ -58,6 +61,7 @@ func _test_required_json_documents() -> void:
 		"res://content/vertical_slice/manifest.json",
 		"res://content/runtime/new_game_state.json",
 		"res://content/systems/character_creation.json",
+		"res://content/systems/home_interactions.json",
 		"res://content/opening/opening_week.json",
 		"res://content/world/all_locations.json",
 		"res://content/systems/economy.json",
@@ -81,8 +85,21 @@ func _test_dialogue_ui_scenes() -> void:
 		_expect(dialogue_instance.get_node_or_null("DialogueMargin/DialoguePanel/PanelMargin/DialogueContent/SpeakerLabel") != null, "VN scene contains a speaker label.")
 		_expect(dialogue_instance.get_node_or_null("DialogueMargin/DialoguePanel/PanelMargin/DialogueContent/ChoicesBox") != null, "VN scene contains dynamic dialogue choices.")
 		dialogue_instance.free()
-	var sandbox_scene: PackedScene = load("res://scenes/world/sandbox_placeholder.tscn")
-	_expect(sandbox_scene != null, "Post-opening sandbox scene loads.")
+
+
+func _test_hale_home_scene() -> void:
+	var home_scene: PackedScene = load("res://scenes/locations/hale_home.tscn")
+	_expect(home_scene != null, "Playable Hale home scene loads.")
+	_expect(AppConstants.SANDBOX_SCENE == AppConstants.HALE_HOME_SCENE, "The opening enters the Hale home sandbox.")
+	if home_scene == null:
+		return
+	var instance: Node = home_scene.instantiate()
+	_expect(instance.get_node_or_null("Player") != null, "Hale home contains a collision-enabled player.")
+	_expect(instance.get_node_or_null("Interface/TopMargin/TopLayout/Header/RoomLabel") != null, "Hale home contains its room HUD.")
+	_expect(instance.get_node_or_null("Interface/ActionPanel") != null, "Hale home contains the home-action panel.")
+	_expect(instance.get_node_or_null("Interface/WardrobePanel") != null, "Hale home contains the wardrobe panel.")
+	_expect(instance.get_node_or_null("Interface/QuestPanel") != null, "Hale home retains the quest tracker.")
+	instance.free()
 
 
 func _test_character_creation_scene() -> void:
@@ -143,14 +160,15 @@ func _test_vertical_slice_acceptance_suite() -> void:
 func _test_content_registry() -> void:
 	var errors: PackedStringArray = _registry.validate_foundation()
 	_expect(errors.is_empty(), "Complete content registry validates without errors.")
-	_expect(_registry.get_document_count() == 36, "Registry loads all 36 source documents.")
-	_expect(_registry.get_package_count() == 19, "Registry indexes all 19 global packages.")
+	_expect(_registry.get_document_count() == 37, "Registry loads all 37 source documents.")
+	_expect(_registry.get_package_count() == 20, "Registry indexes all 20 global packages.")
 	_expect(_registry.get_all("locations").size() == 61, "Registry indexes all 61 locations.")
 	_expect(_registry.get_all("districts").size() == 10, "Registry indexes all 10 districts.")
 	_expect(_registry.get_character("elena_reyes_hale") is Dictionary, "Characters can be retrieved by id.")
 	_expect(_registry.get_location("hale_home") is Dictionary, "Locations can be retrieved by id.")
 	_expect(_registry.get_content("quests", "opening_future_choice") is Dictionary, "Quests can be retrieved by id.")
-	_expect(_registry.get_all("operations").size() == 52, "Registry indexes all 52 simulation operations.")
+	_expect(_registry.get_all("operations").size() == 53, "Registry indexes all 53 simulation operations.")
+	_expect(_registry.get_all("actions").size() == 10, "Registry indexes all 10 initial home actions.")
 
 
 func _test_new_game_state_factory() -> void:
@@ -188,10 +206,13 @@ func _test_new_game_state_factory() -> void:
 	var initialized_stacks: int = 0
 	for container: Variant in state["player"]["inventory"]["containers"]:
 		initialized_stacks += container.get("items", []).size()
-	_expect(initialized_stacks == 13, "Starting items are distributed into accessible storage containers.")
+	_expect(initialized_stacks == 16, "Starting items and shared Hale household supplies initialize in storage.")
+	_expect(_stack_quantity(state, "kitchen_storage", "drink_water_bottle") == 6, "The family kitchen adds water to the player's starting supply.")
+	_expect(_stack_quantity(state, "kitchen_storage", "food_pasta_ingredients") == 2, "The family kitchen starts with two cookable meals.")
+	_expect(state["player"]["inventory"]["equipped_outfit"].get("shirt") == "shirt_basic_white", "A playable default outfit is equipped at new-game creation.")
 	_expect(state["relationships"].size() == 15, "Relationship defaults initialize for every opening character.")
 	_expect(state["world_state"]["weather"]["condition"] == "partly_cloudy", "Opening weather initializes from the calendar.")
-	_expect(state["content_state"]["loaded_packages"].size() == 19, "Runtime state records its loaded content manifest.")
+	_expect(state["content_state"]["loaded_packages"].size() == 20, "Runtime state records its loaded content manifest.")
 	_expect(state["world_state"]["random_seed"] == 12345, "Runtime random seed can be reproduced.")
 	_expect(not _contains_placeholder(state), "Runtime state contains no unresolved template placeholders.")
 	for npc_state: Variant in state["npc_states"]:
@@ -348,6 +369,64 @@ func _test_clock_and_simulation_engine() -> void:
 	_expect(state["simulation"]["recent_event_log"].size() == state["simulation"]["next_event_sequence"] - 1, "Successful operations produce one monotonic event each.")
 
 
+func _test_home_actions_and_wardrobe() -> void:
+	var factory: RefCounted = NewGameStateFactoryScript.new(_registry)
+	var simulation: RefCounted = SimulationEngineScript.new(_registry)
+	var home_actions: RefCounted = HomeActionEngineScript.new(_registry, simulation)
+	var state: Dictionary = factory.create_new_game({}, {"random_seed": 66, "save_id": "home-action-test"})
+
+	var hygiene_before: float = state["player"]["needs"]["hygiene"]
+	var result: Dictionary = home_actions.perform_action(state, "shower")
+	_expect(result.get("ok", false), "The bathroom shower action completes.")
+	state = result["state"]
+	_expect(state["clock"]["minute_within_block"] == 30, "A shower consumes thirty in-game minutes.")
+	_expect(state["player"]["needs"]["hygiene"] > hygiene_before, "A shower improves player hygiene.")
+	_expect(result["events"].size() == 3, "A shower records each simulation operation as an event.")
+
+	var hunger_before: float = state["player"]["needs"]["hunger"]
+	result = home_actions.perform_action(state, "cook_basic_meal")
+	_expect(result.get("ok", false), "A basic meal can be cooked from pantry ingredients.")
+	state = result["state"]
+	_expect(_stack_quantity(state, "kitchen_storage", "food_pasta_ingredients") == 1, "Cooking consumes exactly one ingredient stack unit.")
+	_expect(state["player"]["needs"]["hunger"] < hunger_before, "A cooked meal relieves hunger.")
+	_expect(state["player"]["skills"]["cooking"] == 1, "Cooking awards enough experience for the first cooking level.")
+
+	result = home_actions.perform_action(state, "cook_basic_meal")
+	_expect(result.get("ok", false), "The second stocked meal can be cooked.")
+	state = result["state"]
+	var rejected_clock: Dictionary = state["clock"].duplicate(true)
+	var rejected_event_count: int = state["simulation"]["recent_event_log"].size()
+	result = home_actions.perform_action(state, "cook_basic_meal")
+	_expect(not result.get("ok", true), "Cooking is rejected when the pantry has no ingredients.")
+	_expect(state["clock"] == rejected_clock, "A rejected multi-step home action does not consume time.")
+	_expect(state["simulation"]["recent_event_log"].size() == rejected_event_count, "A rejected multi-step home action does not commit partial events.")
+
+	_set_stack_cleanliness(state, "wardrobe_storage", "shirt_basic_white", 18)
+	result = home_actions.perform_action(state, "do_laundry")
+	_expect(result.get("ok", false), "Laundry completes when detergent is available.")
+	state = result["state"]
+	_expect(_stack_quantity(state, "garage_storage", "household_detergent") == 1, "Laundry consumes exactly one detergent unit.")
+	_expect(_stack_cleanliness(state, "wardrobe_storage", "shirt_basic_white") == 100, "Laundry restores stored clothing cleanliness.")
+
+	result = simulation.apply_operation(
+		state,
+		"inventory.equip",
+		{"item_id": "shirt_oxford_blue", "wardrobe_slot": "shirt"},
+		"test.wardrobe"
+	)
+	_expect(result.get("ok", false), "An owned shirt can be equipped from the wardrobe.")
+	state = result["state"]
+	_expect(state["player"]["inventory"]["equipped_outfit"]["shirt"] == "shirt_oxford_blue", "Equipping updates the correct outfit slot.")
+	result = simulation.apply_operation(
+		state,
+		"inventory.equip",
+		{"item_id": "shoes_dress_black", "wardrobe_slot": "shirt"},
+		"test.invalid_wardrobe"
+	)
+	_expect(not result.get("ok", true), "Wardrobe equipment rejects a mismatched clothing slot.")
+	_expect(state["player"]["inventory"]["equipped_outfit"]["shirt"] == "shirt_oxford_blue", "Rejected equipment leaves the outfit unchanged.")
+
+
 func _test_opening_dialogue_branches() -> void:
 	var factory: RefCounted = NewGameStateFactoryScript.new(_registry)
 	var simulation: RefCounted = SimulationEngineScript.new(_registry)
@@ -449,6 +528,36 @@ func _contains_placeholder(value: Variant) -> bool:
 			if _contains_placeholder(child):
 				return true
 	return false
+
+
+func _stack_quantity(state: Dictionary, container_id: String, item_id: String) -> int:
+	for container: Variant in state["player"]["inventory"].get("containers", []):
+		if not container is Dictionary or str(container.get("id", "")) != container_id:
+			continue
+		for stack: Variant in container.get("items", []):
+			if stack is Dictionary and str(stack.get("item_id", "")) == item_id:
+				return int(stack.get("quantity", 0))
+	return 0
+
+
+func _set_stack_cleanliness(state: Dictionary, container_id: String, item_id: String, cleanliness: int) -> void:
+	for container: Variant in state["player"]["inventory"].get("containers", []):
+		if not container is Dictionary or str(container.get("id", "")) != container_id:
+			continue
+		for stack: Variant in container.get("items", []):
+			if stack is Dictionary and str(stack.get("item_id", "")) == item_id:
+				stack["item_state"]["cleanliness"] = cleanliness
+				return
+
+
+func _stack_cleanliness(state: Dictionary, container_id: String, item_id: String) -> int:
+	for container: Variant in state["player"]["inventory"].get("containers", []):
+		if not container is Dictionary or str(container.get("id", "")) != container_id:
+			continue
+		for stack: Variant in container.get("items", []):
+			if stack is Dictionary and str(stack.get("item_id", "")) == item_id:
+				return int(stack.get("item_state", {}).get("cleanliness", -1))
+	return -1
 
 
 func _parse_json(path: String) -> Variant:

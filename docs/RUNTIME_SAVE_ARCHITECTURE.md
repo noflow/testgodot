@@ -36,6 +36,13 @@ monotonic sequence and game timestamp and enter the bounded event log. The clock
 supports both minute-based short actions and full activity blocks, with real month
 lengths, weekdays, four seasons, and daily, weekly, and monthly tick markers.
 
+The Hale home composes those operations into atomic player actions. Showering,
+sleeping, eating, drinking, cooking, and laundry advance time and update needs or
+skills only when every required step succeeds. Food, water, and detergent come from
+named household containers. Failed multi-step actions do not consume supplies,
+advance time, or leave partial events. Clothing carries condition and cleanliness,
+and the wardrobe equips only owned items into their declared slots.
+
 ## Runtime state
 
 The root state contains:

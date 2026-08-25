@@ -8,7 +8,8 @@ Presentation: 2D top-down exploration with VN-style conversations
 Implementation status: Phase 0 project foundation complete. Phase 1 content loading,
 new-game state creation, seven-block clock, core simulation, VN dialogue, quest
 branching, required character creation, and Elena's playable opening are
-implemented. Hale home exploration is next.
+implemented. The connected Hale home, room collisions, essential needs actions,
+household supplies, and wardrobe equipment are also playable. The phone is next.
 
 ## Purpose
 
@@ -99,6 +100,12 @@ Essential interactions:
 - Complete a chore and laundry
 - Access the family car only when permission and requirements allow
 - Exit through the front yard
+
+Implementation note: the current playable home contains all twelve required spaces,
+free movement, collision boundaries, blocked private bedrooms, bedroom, bathroom,
+kitchen, dining, laundry, garage, yard interactions, and a state-backed wardrobe.
+Household NPC placement, family conversations, car travel, and the city exit build
+on this scene in the following milestones.
 
 Private doors require knocking or permission. The player cannot enter an occupied
 bathroom or restricted bedroom by walking through a collision boundary.

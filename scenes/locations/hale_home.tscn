@@ -1,0 +1,282 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://src/world/hale_home.gd" id="1_home"]
+[ext_resource type="Script" path="res://src/world/top_down_player.gd" id="2_player"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_player"]
+radius = 18.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_modal"]
+bg_color = Color(0.055, 0.102, 0.129, 0.98)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.404, 0.776, 0.765, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="HaleHome" type="Node2D"]
+script = ExtResource("1_home")
+
+[node name="Player" type="CharacterBody2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(210, 180)
+collision_layer = 1
+collision_mask = 1
+script = ExtResource("2_player")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
+shape = SubResource("CircleShape2D_player")
+
+[node name="Camera2D" type="Camera2D" parent="Player"]
+position = Vector2(0, 0)
+enabled = true
+position_smoothing_enabled = true
+position_smoothing_speed = 8.0
+limit_left = 0
+limit_top = 0
+limit_right = 1600
+limit_bottom = 1000
+
+[node name="Interface" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="TopShade" type="ColorRect" parent="Interface"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 82.0
+grow_horizontal = 2
+color = Color(0.035, 0.063, 0.086, 0.94)
+mouse_filter = 2
+
+[node name="TopMargin" type="MarginContainer" parent="Interface"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 82.0
+grow_horizontal = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 10
+mouse_filter = 2
+
+[node name="TopLayout" type="VBoxContainer" parent="Interface/TopMargin"]
+layout_mode = 2
+theme_override_constants/separation = 5
+mouse_filter = 2
+
+[node name="Header" type="HBoxContainer" parent="Interface/TopMargin/TopLayout"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="RoomLabel" type="Label" parent="Interface/TopMargin/TopLayout/Header"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.404, 0.776, 0.765, 1)
+theme_override_font_sizes/font_size = 23
+text = "Player Bedroom"
+
+[node name="ClockLabel" type="Label" parent="Interface/TopMargin/TopLayout/Header"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.914, 0.659, 0.424, 1)
+theme_override_font_sizes/font_size = 17
+text = "Tuesday • Morning • August 20"
+horizontal_alignment = 2
+
+[node name="NeedsLabel" type="Label" parent="Interface/TopMargin/TopLayout"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.86, 0.86, 1)
+theme_override_font_sizes/font_size = 15
+text = "Energy 75   Hunger 20   Hydration 15   Hygiene 80   Stress 25"
+
+[node name="BottomShade" type="ColorRect" parent="Interface"]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -80.0
+grow_horizontal = 2
+grow_vertical = 0
+color = Color(0.035, 0.063, 0.086, 0.94)
+mouse_filter = 2
+
+[node name="BottomMargin" type="MarginContainer" parent="Interface"]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -80.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 10
+mouse_filter = 2
+
+[node name="BottomLayout" type="VBoxContainer" parent="Interface/BottomMargin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+mouse_filter = 2
+
+[node name="InteractionPrompt" type="Label" parent="Interface/BottomMargin/BottomLayout"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.914, 0.659, 0.424, 1)
+theme_override_font_sizes/font_size = 18
+text = "E / A — Interact"
+horizontal_alignment = 1
+
+[node name="StatusLabel" type="Label" parent="Interface/BottomMargin/BottomLayout"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.86, 0.86, 1)
+text = "WASD / arrows to move • E / Space to interact • Q for quests • Tab for phone"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="ActionPanel" type="PanelContainer" parent="Interface"]
+unique_name_in_owner = true
+visible = false
+anchors_preset = 15
+anchor_left = 0.2
+anchor_top = 0.15
+anchor_right = 0.8
+anchor_bottom = 0.85
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_modal")
+
+[node name="Margin" type="MarginContainer" parent="Interface/ActionPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 24
+
+[node name="Layout" type="VBoxContainer" parent="Interface/ActionPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="ActionTitle" type="Label" parent="Interface/ActionPanel/Margin/Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.404, 0.776, 0.765, 1)
+theme_override_font_sizes/font_size = 28
+text = "Choose an Action"
+
+[node name="Scroll" type="ScrollContainer" parent="Interface/ActionPanel/Margin/Layout"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ActionButtons" type="VBoxContainer" parent="Interface/ActionPanel/Margin/Layout/Scroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="CloseButton" type="Button" parent="Interface/ActionPanel/Margin/Layout"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+text = "Close (Esc)"
+
+[node name="WardrobePanel" type="PanelContainer" parent="Interface"]
+unique_name_in_owner = true
+visible = false
+anchors_preset = 15
+anchor_left = 0.12
+anchor_top = 0.09
+anchor_right = 0.88
+anchor_bottom = 0.91
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_modal")
+
+[node name="Margin" type="MarginContainer" parent="Interface/WardrobePanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 24
+
+[node name="Layout" type="VBoxContainer" parent="Interface/WardrobePanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="Interface/WardrobePanel/Margin/Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.404, 0.776, 0.765, 1)
+theme_override_font_sizes/font_size = 28
+text = "WARDROBE"
+
+[node name="Columns" type="HBoxContainer" parent="Interface/WardrobePanel/Margin/Layout"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 20
+
+[node name="Scroll" type="ScrollContainer" parent="Interface/WardrobePanel/Margin/Layout/Columns"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="WardrobeList" type="VBoxContainer" parent="Interface/WardrobePanel/Margin/Layout/Columns/Scroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="OutfitText" type="RichTextLabel" parent="Interface/WardrobePanel/Margin/Layout/Columns"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+bbcode_enabled = true
+fit_content = false
+
+[node name="CloseButton" type="Button" parent="Interface/WardrobePanel/Margin/Layout"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+text = "Close Wardrobe (Esc)"
+
+[node name="QuestPanel" type="PanelContainer" parent="Interface"]
+unique_name_in_owner = true
+visible = false
+anchors_preset = 15
+anchor_left = 0.56
+anchor_top = 0.1
+anchor_right = 0.94
+anchor_bottom = 0.88
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_modal")
+
+[node name="Margin" type="MarginContainer" parent="Interface/QuestPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 22
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 22
+
+[node name="Layout" type="VBoxContainer" parent="Interface/QuestPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="QuestText" type="RichTextLabel" parent="Interface/QuestPanel/Margin/Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+bbcode_enabled = true
+scroll_active = true
+
+[node name="CloseButton" type="Button" parent="Interface/QuestPanel/Margin/Layout"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+text = "Close Tracker (Q / Esc)"
+
+[connection signal="pressed" from="Interface/ActionPanel/Margin/Layout/CloseButton" to="." method="_on_close_panel_pressed"]
+[connection signal="pressed" from="Interface/WardrobePanel/Margin/Layout/CloseButton" to="." method="_on_close_panel_pressed"]
+[connection signal="pressed" from="Interface/QuestPanel/Margin/Layout/CloseButton" to="." method="_on_close_panel_pressed"]

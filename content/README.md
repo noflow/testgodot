@@ -11,6 +11,7 @@ unnamed service NPCs lives here.
 - `world/transportation.json` defines travel modes, routes, time, cost, and delays.
 - `systems/education.json` defines Westshore programs, courses, schedules, and grading.
 - `systems/character_creation.json` defines appearance choices, traits, values, hobbies, archetypes, and validation rules.
+- `systems/home_interactions.json` defines atomic bedroom, bathroom, kitchen, and laundry actions.
 - `systems/employment.json` defines jobs, requirements, interviews, and promotions.
 - `systems/repeatable_activities.json` defines routine actions and simulation effects.
 - `systems/economy.json` defines accounts, budgets, recurring bills, debt, and income.

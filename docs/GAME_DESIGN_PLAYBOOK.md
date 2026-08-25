@@ -496,12 +496,15 @@ Phase 1 now includes recursive content loading and typed indexes, complete new-g
 state resolution, distributed starting inventory, the seven-block calendar clock,
 an atomic event processor for the first playable state changes, the VN dialogue and
 quest engines, data-driven character creation with validated age and selection
-limits, and Elena's playable college, employment, or combined opening path.
+limits, Elena's playable college, employment, or combined opening path, and the
+connected twelve-space Hale home. The home now supports collision-based movement,
+private bedroom boundaries, sleeping, food, water, cooking, hygiene, laundry,
+household supplies, needs changes, and wardrobe equipment.
 
 ## Next milestones
 
-1. Implement Hale home exploration, needs, wardrobe, food, and hygiene
-2. Implement the phone, calendar, messages, relationships, map, and weather
+1. Implement the phone, calendar, messages, relationships, map, and weather
+2. Place scheduled household NPCs and connect family conversations to home exploration
 3. Implement city travel and the required institutional and NPC activities
 4. Expand event and dialogue effects as those gameplay systems come online
 5. Implement saves, recovery, Sunday review, settings, and accessibility

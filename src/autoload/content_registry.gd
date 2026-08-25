@@ -7,7 +7,7 @@ const CONTENT_ROOT: String = "res://content"
 const CHARACTER_ROOT: String = "res://characters"
 const INDEXED_COLLECTIONS: PackedStringArray = [
 	"locations", "districts", "quests", "conversations", "items",
-	"jobs", "courses", "programs", "activities", "stores", "operations",
+	"jobs", "courses", "programs", "activities", "actions", "stores", "operations",
 ]
 
 var _documents: Dictionary = {}

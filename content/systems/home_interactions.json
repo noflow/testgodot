@@ -1,0 +1,93 @@
+{
+  "format_version": 1,
+  "package_id": "port_alder_home_interactions",
+  "actions": [
+    {
+      "id": "nap", "name": "Take a Nap", "description": "Rest for two hours.",
+      "operations": [
+        {"operation": "time.advance", "payload": {"minutes": 120}},
+        {"operation": "need.adjust", "payload": {"need": "energy", "amount": 20}},
+        {"operation": "need.adjust", "payload": {"need": "fatigue", "amount": -18}},
+        {"operation": "need.adjust", "payload": {"need": "stress", "amount": -5}}
+      ]
+    },
+    {
+      "id": "sleep", "name": "Sleep", "description": "Sleep through two activity blocks.",
+      "operations": [
+        {"operation": "time.advance", "payload": {"blocks": 2}},
+        {"operation": "need.adjust", "payload": {"need": "energy", "amount": 55}},
+        {"operation": "need.adjust", "payload": {"need": "fatigue", "amount": -55}},
+        {"operation": "need.adjust", "payload": {"need": "stress", "amount": -12}}
+      ]
+    },
+    {
+      "id": "shower", "name": "Take a Shower", "description": "A quick thirty-minute shower.",
+      "operations": [
+        {"operation": "time.advance", "payload": {"minutes": 30}},
+        {"operation": "need.adjust", "payload": {"need": "hygiene", "amount": 35}},
+        {"operation": "need.adjust", "payload": {"need": "mood", "amount": 3}}
+      ]
+    },
+    {
+      "id": "bath", "name": "Take a Bath", "description": "A slower, relaxing bath.",
+      "operations": [
+        {"operation": "time.advance", "payload": {"minutes": 45}},
+        {"operation": "need.adjust", "payload": {"need": "hygiene", "amount": 42}},
+        {"operation": "need.adjust", "payload": {"need": "mood", "amount": 6}},
+        {"operation": "need.adjust", "payload": {"need": "stress", "amount": -8}}
+      ]
+    },
+    {
+      "id": "brush_teeth", "name": "Brush Teeth", "description": "Basic morning hygiene.",
+      "operations": [
+        {"operation": "time.advance", "payload": {"minutes": 10}},
+        {"operation": "need.adjust", "payload": {"need": "hygiene", "amount": 6}}
+      ]
+    },
+    {
+      "id": "groom", "name": "Groom", "description": "Hair, skin, and general presentation.",
+      "operations": [
+        {"operation": "time.advance", "payload": {"minutes": 20}},
+        {"operation": "need.adjust", "payload": {"need": "hygiene", "amount": 8}},
+        {"operation": "attribute.adjust", "payload": {"attribute": "confidence", "amount": 2}}
+      ]
+    },
+    {
+      "id": "drink_water", "name": "Drink Water", "description": "Use one bottled water from kitchen storage.",
+      "operations": [
+        {"operation": "inventory.remove", "payload": {"container_id": "kitchen_storage", "item_id": "drink_water_bottle", "quantity": 1}},
+        {"operation": "time.advance", "payload": {"minutes": 5}},
+        {"operation": "need.adjust", "payload": {"need": "hydration", "amount": -28}}
+      ]
+    },
+    {
+      "id": "eat_snack", "name": "Eat a Snack", "description": "Eat one fruit cup from the family pantry.",
+      "operations": [
+        {"operation": "inventory.remove", "payload": {"container_id": "kitchen_storage", "item_id": "food_fruit_cup", "quantity": 1}},
+        {"operation": "time.advance", "payload": {"minutes": 10}},
+        {"operation": "need.adjust", "payload": {"need": "hunger", "amount": -18}},
+        {"operation": "need.adjust", "payload": {"need": "energy", "amount": 3}}
+      ]
+    },
+    {
+      "id": "cook_basic_meal", "name": "Cook a Basic Meal", "description": "Use pasta ingredients and prepare a simple meal.",
+      "operations": [
+        {"operation": "inventory.remove", "payload": {"container_id": "kitchen_storage", "item_id": "food_pasta_ingredients", "quantity": 1}},
+        {"operation": "time.advance", "payload": {"minutes": 45}},
+        {"operation": "need.adjust", "payload": {"need": "hunger", "amount": -45}},
+        {"operation": "need.adjust", "payload": {"need": "energy", "amount": 7}},
+        {"operation": "skill.add_experience", "payload": {"skill": "cooking", "experience": 120, "activity_difficulty": 10}}
+      ]
+    },
+    {
+      "id": "do_laundry", "name": "Wash Clothes", "description": "Use detergent and clean the wardrobe laundry.",
+      "operations": [
+        {"operation": "inventory.remove", "payload": {"container_id": "garage_storage", "item_id": "household_detergent", "quantity": 1}},
+        {"operation": "time.advance", "payload": {"minutes": 60}},
+        {"operation": "need.adjust", "payload": {"need": "energy", "amount": -4}},
+        {"operation": "attribute.adjust", "payload": {"attribute": "responsibility", "amount": 1}},
+        {"operation": "inventory.clean_container", "payload": {"container_id": "wardrobe_storage", "cleanliness": 100}}
+      ]
+    }
+  ]
+}

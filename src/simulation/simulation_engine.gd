@@ -55,6 +55,10 @@ func _apply_to_working_state(state: Dictionary, operation: String, payload: Dict
 			return _adjust_inventory(state, payload, 1)
 		"inventory.remove":
 			return _adjust_inventory(state, payload, -1)
+		"inventory.equip":
+			return _equip_inventory(state, payload)
+		"inventory.clean_container":
+			return _clean_inventory_container(state, payload)
 		"quest.start":
 			return _start_quest(state, payload)
 		"quest.objective_complete":
@@ -222,6 +226,48 @@ func _adjust_inventory(state: Dictionary, payload: Dictionary, direction: int) -
 		if int(stack["quantity"]) == 0:
 			items.erase(stack)
 	container["items"] = items
+	return ""
+
+
+func _equip_inventory(state: Dictionary, payload: Dictionary) -> String:
+	var item_id: String = str(payload.get("item_id", ""))
+	var wardrobe_slot: String = str(payload.get("wardrobe_slot", ""))
+	var item: Variant = _registry.get_content("items", item_id)
+	if not item is Dictionary or str(item.get("category", "")) != "clothing":
+		return "Only a known clothing item can be equipped."
+	if str(item.get("slot", "")) != wardrobe_slot:
+		return "%s does not fit the %s wardrobe slot." % [item_id, wardrobe_slot]
+	var owned: bool = false
+	for container: Variant in state["player"]["inventory"].get("containers", []):
+		if container is Dictionary and not _find_item_stack(container.get("items", []), item_id).is_empty():
+			owned = true
+			break
+	if not owned:
+		return "Clothing item is not owned: %s" % item_id
+	state["player"]["inventory"]["equipped_outfit"][wardrobe_slot] = item_id
+	return ""
+
+
+func _clean_inventory_container(state: Dictionary, payload: Dictionary) -> String:
+	var container_id: String = str(payload.get("container_id", ""))
+	if not payload.get("cleanliness") is int and not payload.get("cleanliness") is float:
+		return "Cleaning requires a numeric cleanliness value."
+	var container: Dictionary = _find_container(state, container_id)
+	if container.is_empty():
+		return "Unknown inventory container: %s" % container_id
+	var cleaned_items: int = 0
+	for stack: Variant in container.get("items", []):
+		if not stack is Dictionary:
+			continue
+		var item: Variant = _registry.get_content("items", str(stack.get("item_id", "")))
+		if not item is Dictionary or str(item.get("category", "")) != "clothing":
+			continue
+		var item_state: Dictionary = stack.get("item_state", {}).duplicate(true)
+		item_state["cleanliness"] = clampi(int(payload["cleanliness"]), 0, 100)
+		stack["item_state"] = item_state
+		cleaned_items += 1
+	if cleaned_items == 0:
+		return "No clothing is stored in %s." % container_id
 	return ""
 
 
