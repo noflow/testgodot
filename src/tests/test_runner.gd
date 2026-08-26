@@ -15,6 +15,7 @@ const EducationEngineScript: GDScript = preload("res://src/education/education_e
 const EmploymentEngineScript: GDScript = preload("res://src/employment/employment_engine.gd")
 const EconomyEngineScript: GDScript = preload("res://src/economy/economy_engine.gd")
 const SaveEngineScript: GDScript = preload("res://src/save/save_engine.gd")
+const RelationshipEngineScript: GDScript = preload("res://src/relationships/relationship_engine.gd")
 
 var _failures: PackedStringArray = []
 var _tests_run: int = 0
@@ -48,6 +49,7 @@ func _run_all() -> void:
 	_test_recurring_economy_and_shopping()
 	_test_save_round_trip_rotation_recovery_and_migration()
 	_test_phone_messages_and_calendar()
+	_test_relationship_dating_agreements_and_conflicts()
 	_test_opening_dialogue_branches()
 
 	if _failures.is_empty():
@@ -73,6 +75,7 @@ func _test_project_configuration() -> void:
 	_expect(InputMap.has_action("quicksave"), "Quicksave input action exists.")
 	_expect(InputMap.has_action("quickload"), "Quickload input action exists.")
 	_expect(ProjectSettings.has_setting("autoload/PhoneService"), "Phone service is configured as an autoload.")
+	_expect(ProjectSettings.has_setting("autoload/RelationshipService"), "Relationship service is configured as an autoload.")
 	_expect(ProjectSettings.has_setting("autoload/TravelService"), "Travel service is configured as an autoload.")
 	_expect(ProjectSettings.has_setting("autoload/CityActionService"), "City action service is configured as an autoload.")
 	_expect(ProjectSettings.has_setting("autoload/EducationService"), "Education service is configured as an autoload.")
@@ -95,6 +98,7 @@ func _test_required_json_documents() -> void:
 		"res://content/systems/inventory.json",
 		"res://content/systems/simulation_events.json",
 		"res://content/systems/save_system.json",
+		"res://content/systems/relationships.json",
 		"res://schemas/save_game.schema.json",
 	]
 	for path: String in paths:
@@ -383,6 +387,7 @@ func _test_city_institutions_and_fitness() -> void:
 	_expect(state["player"]["attributes"]["strength"] > strength_before, "The beginner workout increases physical attributes.")
 	_expect("first_rep" in state["quest_state"]["completed"], "Completing the workout finishes Rachel's First Rep quest.")
 	_expect(int(state["relationships"]["rachel_morgan"].get("unlocked_chapter_level", 0)) == 2, "First Rep unlocks Rachel's second relationship chapter.")
+	_expect(int(state["relationships"]["rachel_morgan"].get("relationship_level", 0)) == 2, "Authored quest chapter unlocks keep the relationship level synchronized.")
 
 
 func _test_playable_education_semester() -> void:
@@ -760,14 +765,15 @@ func _test_vertical_slice_acceptance_suite() -> void:
 func _test_content_registry() -> void:
 	var errors: PackedStringArray = _registry.validate_foundation()
 	_expect(errors.is_empty(), "Complete content registry validates without errors.")
-	_expect(_registry.get_document_count() == 39, "Registry loads all 39 source documents.")
-	_expect(_registry.get_package_count() == 22, "Registry indexes all 22 global packages.")
+	_expect(_registry.get_document_count() == 40, "Registry loads all 40 source documents.")
+	_expect(_registry.get_package_count() == 23, "Registry indexes all 23 global packages.")
 	_expect(_registry.get_all("locations").size() == 61, "Registry indexes all 61 locations.")
 	_expect(_registry.get_all("districts").size() == 10, "Registry indexes all 10 districts.")
 	_expect(_registry.get_character("elena_reyes_hale") is Dictionary, "Characters can be retrieved by id.")
 	_expect(_registry.get_location("hale_home") is Dictionary, "Locations can be retrieved by id.")
 	_expect(_registry.get_content("quests", "opening_future_choice") is Dictionary, "Quests can be retrieved by id.")
-	_expect(_registry.get_all("operations").size() == 55, "Registry indexes all 55 simulation operations.")
+	_expect(_registry.get_all("operations").size() == 57, "Registry indexes all 57 simulation operations.")
+	_expect(_registry.get_all("date_activities").size() == 3, "Registry indexes all three opening date activities.")
 	_expect(_registry.get_all("actions").size() == 10, "Registry indexes all 10 initial home actions.")
 	_expect(_registry.get_all("city_interactions").size() == 9, "Registry indexes all nine opening city interactions.")
 	_expect(_registry.get_all("phone_apps").size() == 13, "Registry indexes the foundation apps plus Education, Jobs, Money, and Shopping.")
@@ -818,9 +824,11 @@ func _test_new_game_state_factory() -> void:
 	_expect("money" in state["player"]["phone"]["unlocked_apps"], "The Money app is available from the start.")
 	_expect("shopping" not in state["player"]["phone"]["unlocked_apps"], "Shopping remains tied to the authored wardrobe tutorial unlock.")
 	_expect(state["relationships"].size() == 15, "Relationship defaults initialize for every opening character.")
+	_expect(state["relationships"]["emma_rowan"].get("dating_history", []) is Array, "Relationship runtime state initializes date history.")
+	_expect(state["relationships"]["emma_rowan"].get("dating_agreement", {}).get("status", "") == "none", "Relationships begin without an assumed dating agreement.")
 	_expect(state["world_state"]["weather"]["condition"] == "partly_cloudy", "Opening weather initializes from the calendar.")
-	_expect(state["content_state"]["loaded_packages"].size() == 22, "Runtime state records its loaded content manifest.")
-	_expect(state["content_state"]["package_manifest"].size() == 22, "Runtime state records versioned manifest details for every loaded package.")
+	_expect(state["content_state"]["loaded_packages"].size() == 23, "Runtime state records its loaded content manifest.")
+	_expect(state["content_state"]["package_manifest"].size() == 23, "Runtime state records versioned manifest details for every loaded package.")
 	_expect(str(state["content_state"]["package_manifest"][0].get("checksum", "")).length() == 64, "Content manifest entries include SHA-256 package checksums.")
 	_expect(state["world_state"]["random_seed"] == 12345, "Runtime random seed can be reproduced.")
 	_expect(not _contains_placeholder(state), "Runtime state contains no unresolved template placeholders.")
@@ -1117,6 +1125,105 @@ func _test_phone_messages_and_calendar() -> void:
 	state = result["state"]
 	_expect(state["clock"]["day"] == 21, "Seven activity-block advances cross into Wednesday from the current morning block.")
 	_expect(state["world_state"]["weather"]["condition"] == "rain", "Day advancement loads Wednesday's authored rain forecast into live state.")
+
+
+func _test_relationship_dating_agreements_and_conflicts() -> void:
+	var factory: RefCounted = NewGameStateFactoryScript.new(_registry)
+	var simulation: RefCounted = SimulationEngineScript.new(_registry)
+	var relationships: RefCounted = RelationshipEngineScript.new(_registry, simulation)
+	var state: Dictionary = factory.create_new_game({}, {"random_seed": 221, "save_id": "relationship-test"})
+
+	var options: Array = relationships.invitation_options(state, "emma_rowan", "waterfront_walk", 3)
+	_expect(not options.is_empty(), "Emma offers date times around her authored school schedule.")
+	var contains_school_conflict: bool = false
+	for option_value: Variant in options:
+		if option_value is Dictionary and str(option_value.get("weekday", "")) == "tuesday" and str(option_value.get("block", "")) == "afternoon":
+			contains_school_conflict = true
+	_expect(not contains_school_conflict, "Date invitations exclude an NPC's unavailable school blocks.")
+	if options.is_empty():
+		return
+	var option: Dictionary = options[0]
+	var result: Dictionary = relationships.ask_out(
+		state, "emma_rowan", "waterfront_walk", str(option["date"]), str(option["weekday"]), str(option["block"]), true
+	)
+	_expect(result.get("ok", false) and result.get("data", {}).get("accepted", false), "A compatible character can accept a scored date invitation.")
+	if not result.get("ok", false) or not result.get("data", {}).get("accepted", false):
+		return
+	state = result["state"]
+	var emma_event: Dictionary = result["data"]["calendar_event"]
+	_expect(bool(emma_event.get("relationship_date", false)), "An accepted invitation creates a tagged calendar date.")
+	_set_test_date(state, str(emma_event["date"]), str(emma_event["weekday"]), str(emma_event["block"]))
+	state["world_state"]["current_location"] = str(emma_event["location"])
+	var friendship_before: float = float(state["relationships"]["emma_rowan"]["friendship"])
+	result = relationships.complete_date(state, str(emma_event["id"]), "attentive")
+	_expect(result.get("ok", false), "A scheduled date can begin at the correct time and room.")
+	if not result.get("ok", false):
+		return
+	state = result["state"]
+	_expect(_calendar_event_status(state, str(emma_event["id"])) == "completed", "Completing a date closes its calendar event.")
+	_expect(state["relationships"]["emma_rowan"]["dating_history"].size() == 1, "A completed date is recorded in relationship history.")
+	_expect(float(state["relationships"]["emma_rowan"]["friendship"]) > friendship_before, "The chosen date approach changes relationship meters.")
+	_expect(state["relationships"]["emma_rowan"]["relationship_stage"] == "dating", "A completed date organically advances the relationship stage.")
+	_expect(int(state["relationships"]["emma_rowan"]["unlocked_chapter_level"]) == 2, "Due diligence unlocks Emma's second authored relationship chapter.")
+
+	state["relationships"]["emma_rowan"]["dating_history"].append({"id": "second-emma-date", "outcome": "completed"})
+	result = relationships.propose_agreement(state, "emma_rowan", "exclusive")
+	_expect(result.get("ok", false) and result.get("data", {}).get("accepted", false), "Trust and shared dates unlock a mutual exclusivity conversation.")
+	state = result.get("state", state)
+	_expect(state["relationships"]["emma_rowan"]["dating_agreement"].get("type", "") == "exclusive", "Accepted dating agreements persist their negotiated type.")
+
+	options = relationships.invitation_options(state, "marcus_lee", "movie_date", 2)
+	_expect(not options.is_empty(), "Marcus offers movie dates outside his work and class schedule.")
+	if not options.is_empty():
+		option = options[0]
+		result = relationships.ask_out(
+			state, "marcus_lee", "movie_date", str(option["date"]), str(option["weekday"]), str(option["block"]), false
+		)
+		_expect(result.get("ok", false) and result.get("data", {}).get("accepted", false), "A second romantic interest can accept a date while another agreement exists.")
+		if result.get("ok", false) and result.get("data", {}).get("accepted", false):
+			state = result["state"]
+			var marcus_event: Dictionary = result["data"]["calendar_event"]
+			state["relationships"]["claire_donovan"]["relationship_stage"] = "committed"
+			state["relationships"]["claire_donovan"]["dating_agreement"] = {"status": "active", "type": "exclusive"}
+			_set_test_date(state, str(marcus_event["date"]), str(marcus_event["weekday"]), str(marcus_event["block"]))
+			state["world_state"]["current_location"] = str(marcus_event["location"])
+			result = relationships.complete_date(state, str(marcus_event["id"]), "attentive", {"force_witnesses": ["claire_donovan"]})
+			_expect(result.get("ok", false), "A public date resolves an authored witness reaction.")
+			state = result.get("state", state)
+			_expect(state["relationships"]["claire_donovan"]["relationship_stage"] == "ended", "A highly jealous partner can end an exclusive relationship after witnessing another date.")
+			_expect(state["relationships"]["claire_donovan"]["conflict_history"].size() == 1, "Witnessed dating conflicts retain their reaction and outcome history.")
+
+	var open_state: Dictionary = factory.create_new_game({}, {"random_seed": 222})
+	open_state["relationships"]["marcus_lee"]["relationship_stage"] = "committed"
+	open_state["relationships"]["marcus_lee"]["dating_agreement"] = {"status": "active", "type": "open"}
+	options = relationships.invitation_options(open_state, "emma_rowan", "waterfront_walk", 1)
+	if not options.is_empty():
+		option = options[0]
+		result = relationships.ask_out(open_state, "emma_rowan", "waterfront_walk", str(option["date"]), str(option["weekday"]), str(option["block"]), true)
+		if result.get("ok", false) and result.get("data", {}).get("accepted", false):
+			open_state = result["state"]
+			var disclosed_event: Dictionary = result["data"]["calendar_event"]
+			_set_test_date(open_state, str(disclosed_event["date"]), str(disclosed_event["weekday"]), str(disclosed_event["block"]))
+			open_state["world_state"]["current_location"] = str(disclosed_event["location"])
+			result = relationships.complete_date(open_state, str(disclosed_event["id"]), "attentive", {"force_witnesses": ["marcus_lee"]})
+			open_state = result.get("state", open_state)
+			var marcus_conflicts: Array = open_state["relationships"]["marcus_lee"]["conflict_history"]
+			_expect(result.get("ok", false) and not marcus_conflicts.is_empty() and marcus_conflicts.back().get("outcome", "") == "liked_it", "A disclosed open agreement can produce a character-specific positive reaction.")
+
+	var missed_state: Dictionary = factory.create_new_game({}, {"random_seed": 223})
+	options = relationships.invitation_options(missed_state, "emma_rowan", "waterfront_walk", 1)
+	if not options.is_empty():
+		option = options[0]
+		result = relationships.ask_out(missed_state, "emma_rowan", "waterfront_walk", str(option["date"]), str(option["weekday"]), str(option["block"]), true)
+		if result.get("ok", false) and result.get("data", {}).get("accepted", false):
+			missed_state = result["state"]
+			var missed_event: Dictionary = result["data"]["calendar_event"]
+			var trust_before_no_show: float = float(missed_state["relationships"]["emma_rowan"]["trust"])
+			_set_test_date(missed_state, str(missed_event["date"]), str(missed_event["weekday"]), "night")
+			result = relationships.synchronize(missed_state)
+			missed_state = result.get("state", missed_state)
+			_expect(result.get("ok", false) and _calendar_event_status(missed_state, str(missed_event["id"])) == "missed", "An overdue scheduled date resolves as a no-show.")
+			_expect(float(missed_state["relationships"]["emma_rowan"]["trust"]) == trust_before_no_show - 7.0, "Missing a date applies the authored trust consequence.")
 
 
 func _test_opening_dialogue_branches() -> void:

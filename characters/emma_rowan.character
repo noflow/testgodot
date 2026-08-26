@@ -11,6 +11,19 @@
   "connections": [{"character": "player", "relation": "childhood_friend"}, {"character": "marcus_lee", "relation": "old_friend"}, {"character": "lily_hale", "relation": "friendly_acquaintance"}],
   "relationship_defaults": {"friendship": 48, "love": 8, "attraction": 18, "lust": 5, "trust": 46, "respect": 42, "resentment": 0, "jealousy": 12, "comfort": 52, "commitment": 8, "compatibility": 48, "satisfaction": 50},
   "boundaries": {"dating_agreement_preference": "exclusive_after_discussion", "protection_policy": "requires_protection_until_testing_and_commitment", "alcohol_consent": "never_when_impaired", "hard_limits": ["dishonesty", "public_pressure"]},
+  "dating_preferences": {
+    "invitation_threshold": 30,
+    "preferred_activities": ["waterfront_walk", "campus_coffee"],
+    "agreement_options": ["casual", "exclusive"],
+    "npc_initiated_agreement": "exclusive",
+    "conflict_style": "quiet_hurt_then_honest_conversation",
+    "openness_reaction": "uneasy",
+    "reaction_lines": {
+      "exclusive_violation": "Emma goes quiet. The hurt is clearer than anger: the agreement mattered, and seeing this made the dishonesty real.",
+      "undefined_jealousy": "Emma admits that seeing the two of you together hurt more than expected and asks what your relationship actually means.",
+      "open_disclosed": "Emma knew about the date, but seeing it is harder than discussing it. She asks for reassurance and an honest check-in."
+    }
+  },
   "private_profile": {"fertility_tier": "average", "reproductive_capability": "can_become_pregnant", "knowledge": "hidden_until_discovered", "adult_preferences": {"established": ["romantic_atmosphere"], "discoverable": ["playful_roleplay"], "hard_limits": ["humiliation", "public_exposure"]}},
   "relationship_chapters": [{"level": 1, "id": "before_everything_changes", "title": "Before Everything Changes"}, {"level": 2, "id": "margin_notes", "title": "Margin Notes"}, {"level": 3, "id": "the_story_she_hid", "title": "The Story She Hid"}, {"level": 4, "id": "old_friend_new_rules", "title": "Old Friend, New Rules"}, {"level": 5, "id": "our_next_chapter", "title": "Our Next Chapter"}],
   "quest_hooks": ["alder_bay_walk", "literary_magazine", "lost_manuscript", "relationship_definition"],

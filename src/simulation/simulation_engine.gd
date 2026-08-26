@@ -49,6 +49,12 @@ func _apply_to_working_state(state: Dictionary, operation: String, payload: Dict
 			return _add_skill_experience(state, payload)
 		"relationship.adjust_meter":
 			return _adjust_relationship(state, payload)
+		"relationship.set_agreement":
+			return _set_relationship_agreement(state, payload)
+		"relationship.record_date":
+			return _record_relationship_date(state, payload)
+		"relationship.record_conflict":
+			return _record_relationship_conflict(state, payload)
 		"economy.transaction":
 			return _apply_transaction(state, payload)
 		"economy.process_recurring":
@@ -215,6 +221,85 @@ func _adjust_relationship(state: Dictionary, payload: Dictionary) -> String:
 		return "Relationship adjustment requires a numeric amount."
 	var relationship: Dictionary = state["relationships"][character_id]
 	relationship[meter] = clampf(float(relationship.get(meter, 0.0)) + float(payload["amount"]), 0.0, 100.0)
+	return ""
+
+
+func _set_relationship_agreement(state: Dictionary, payload: Dictionary) -> String:
+	var character_id: String = str(payload.get("character_id", ""))
+	if not state["relationships"].has(character_id):
+		return "Unknown relationship character: %s" % character_id
+	var character: Variant = _registry.get_character(character_id)
+	if not character is Dictionary or int(character.get("profile", {}).get("age", 0)) < 18 or not bool(character.get("profile", {}).get("romance_eligible", false)):
+		return "A dating agreement is unavailable with this character."
+	if not bool(payload.get("mutual_acknowledgment", false)):
+		return "A dating agreement requires mutual acknowledgment."
+	var agreement_value: Variant = payload.get("agreement")
+	if not agreement_value is Dictionary:
+		return "Dating agreement details are missing."
+	var agreement: Dictionary = agreement_value.duplicate(true)
+	var agreement_type: String = str(agreement.get("type", ""))
+	if agreement_type not in ["casual", "exclusive", "open"]:
+		return "Unknown dating agreement: %s" % agreement_type
+	agreement["status"] = str(agreement.get("status", "active"))
+	agreement["established_on"] = str(agreement.get("established_on", _date_string(state["clock"])))
+	agreement["mutual_acknowledgment"] = true
+	state["relationships"][character_id]["dating_agreement"] = agreement
+	state["relationships"][character_id]["relationship_stage"] = "committed" if agreement_type == "exclusive" else "dating"
+	return ""
+
+
+func _record_relationship_date(state: Dictionary, payload: Dictionary) -> String:
+	var character_id: String = str(payload.get("character_id", ""))
+	if not state["relationships"].has(character_id):
+		return "Unknown relationship character: %s" % character_id
+	var character: Variant = _registry.get_character(character_id)
+	if not character is Dictionary or int(character.get("profile", {}).get("age", 0)) < 18 or not bool(character.get("profile", {}).get("romance_eligible", false)):
+		return "Date history is unavailable with this character."
+	var record_value: Variant = payload.get("date_record")
+	if not record_value is Dictionary:
+		return "Date history requires a record."
+	var record: Dictionary = record_value.duplicate(true)
+	var record_id: String = str(record.get("id", ""))
+	if record_id.is_empty():
+		return "Date history requires a unique id."
+	var relationship: Dictionary = state["relationships"][character_id]
+	if not relationship.has("dating_history"):
+		relationship["dating_history"] = []
+	for existing: Variant in relationship["dating_history"]:
+		if existing is Dictionary and str(existing.get("id", "")) == record_id:
+			return "Date history already contains %s." % record_id
+	relationship["dating_history"].append(record)
+	if str(record.get("outcome", "")) == "completed" and str(relationship.get("relationship_stage", "")) not in ["committed", "ended"]:
+		relationship["relationship_stage"] = "dating"
+		relationship["romantic_interest_known"] = true
+	return ""
+
+
+func _record_relationship_conflict(state: Dictionary, payload: Dictionary) -> String:
+	var character_id: String = str(payload.get("character_id", ""))
+	if not state["relationships"].has(character_id):
+		return "Unknown relationship character: %s" % character_id
+	var record_value: Variant = payload.get("conflict_record")
+	if not record_value is Dictionary:
+		return "Relationship conflict requires a record."
+	var record: Dictionary = record_value.duplicate(true)
+	var record_id: String = str(record.get("id", ""))
+	if record_id.is_empty():
+		return "Relationship conflict requires a unique id."
+	var relationship: Dictionary = state["relationships"][character_id]
+	if not relationship.has("conflict_history"):
+		relationship["conflict_history"] = []
+	for existing: Variant in relationship["conflict_history"]:
+		if existing is Dictionary and str(existing.get("id", "")) == record_id:
+			return "Relationship conflict already contains %s." % record_id
+	relationship["conflict_history"].append(record)
+	if bool(record.get("relationship_ended", false)):
+		relationship["relationship_stage"] = "ended"
+		var agreement: Dictionary = relationship.get("dating_agreement", {}).duplicate(true)
+		agreement["status"] = "ended"
+		agreement["ended_on"] = _date_string(state["clock"])
+		agreement["ended_reason"] = record.get("outcome", "conflict")
+		relationship["dating_agreement"] = agreement
 	return ""
 
 

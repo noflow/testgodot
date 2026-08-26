@@ -1,0 +1,79 @@
+{
+  "format_version": 1,
+  "package_id": "port_alder_relationship_system",
+  "relationship_levels": [
+    {"level": 1, "name": "New", "minimum": 0},
+    {"level": 2, "name": "Growing", "minimum": 20},
+    {"level": 3, "name": "Close", "minimum": 40},
+    {"level": 4, "name": "Deep", "minimum": 65},
+    {"level": 5, "name": "Defining", "minimum": 85}
+  ],
+  "chapter_due_diligence": [
+    {"level": 1, "completed_dates": 0, "bond": 0, "trust": 0, "agreement_required": false},
+    {"level": 2, "completed_dates": 1, "bond": 20, "trust": 15, "agreement_required": false},
+    {"level": 3, "completed_dates": 3, "bond": 40, "trust": 40, "agreement_required": false},
+    {"level": 4, "completed_dates": 6, "bond": 65, "trust": 60, "agreement_required": true},
+    {"level": 5, "completed_dates": 10, "bond": 85, "trust": 80, "agreement_required": true}
+  ],
+  "agreement_types": [
+    {"id": "casual", "name": "Casual Dating", "other_dates_allowed": true, "disclosure_required": false},
+    {"id": "exclusive", "name": "Exclusive Relationship", "other_dates_allowed": false, "disclosure_required": true},
+    {"id": "open", "name": "Open Relationship", "other_dates_allowed": true, "disclosure_required": true}
+  ],
+  "date_approaches": [
+    {"id": "attentive", "name": "Be Attentive", "minimum_comfort": 0, "meter_effects": {"friendship": 2, "love": 2, "trust": 4, "respect": 3, "comfort": 2, "compatibility": 2, "satisfaction": 3}},
+    {"id": "playful", "name": "Keep It Playful", "minimum_comfort": 10, "meter_effects": {"friendship": 4, "attraction": 2, "trust": 1, "comfort": 4, "compatibility": 2, "satisfaction": 3}},
+    {"id": "flirty", "name": "Lean Into the Chemistry", "minimum_comfort": 25, "meter_effects": {"love": 1, "attraction": 5, "lust": 3, "comfort": 1, "commitment": 1, "satisfaction": 2}}
+  ],
+  "date_activities": [
+    {
+      "id": "waterfront_walk",
+      "name": "Waterfront Walk",
+      "description": "Walk Alder Bay and talk without a strict agenda.",
+      "location": "alder_bay_park.waterfront_path",
+      "allowed_blocks": ["afternoon", "evening"],
+      "duration_minutes": 90,
+      "cost": 0,
+      "witness_chance": 28,
+      "tags": ["outdoors", "quiet", "conversation"],
+      "need_effects": {"loneliness": -14, "mood": 7, "energy": -3}
+    },
+    {
+      "id": "movie_date",
+      "name": "Movie Date",
+      "description": "Share a Harborlight screening and talk after the credits.",
+      "location": "harborlight_cinema.auditorium",
+      "allowed_blocks": ["afternoon", "evening", "late_evening"],
+      "duration_minutes": 150,
+      "cost": 32,
+      "witness_chance": 65,
+      "tags": ["movies", "public", "entertainment"],
+      "need_effects": {"loneliness": -12, "mood": 9, "energy": -5}
+    },
+    {
+      "id": "campus_coffee",
+      "name": "Campus Coffee",
+      "description": "Meet in Westshore's cafeteria for coffee and an easy conversation.",
+      "location": "westshore_campus.cafeteria",
+      "allowed_blocks": ["lunch", "afternoon"],
+      "duration_minutes": 60,
+      "cost": 14,
+      "witness_chance": 45,
+      "tags": ["coffee", "campus", "conversation", "public"],
+      "need_effects": {"loneliness": -10, "mood": 5, "energy": 1}
+    }
+  ],
+  "invitation_defaults": {
+    "minimum_score": 31,
+    "preferred_activity_bonus": 8,
+    "preferred_block_bonus": 4,
+    "repeat_rejection_penalty": 5,
+    "maximum_options_per_activity": 3
+  },
+  "conflict_rules": {
+    "severe_jealousy": 65,
+    "moderate_jealousy": 40,
+    "private_open_date_trust_penalty": 9,
+    "exclusive_violation_trust_penalty": 18
+  }
+}

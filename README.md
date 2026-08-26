@@ -56,6 +56,12 @@ slot summaries, playtime tracking, SHA-256 integrity checks, atomic temporary-fi
 writes, backup recovery, corrupt-file preservation, content compatibility checks,
 and a forward migration pipeline. Important day, story, quest, relationship,
 education, employment, family, and travel changes trigger coalesced autosaves.
+The Relationships app now supports schedule-aware date invitations, calendar plans,
+route planning to the exact meeting room, three date approaches, date expenses,
+missed and cancelled plans, five relationship chapters, and casual, exclusive, or
+open dating agreements. Other partners can witness public dates and respond from
+their own jealousy, boundaries, agreement, and authored reaction style; outcomes
+range from approval or an honest check-in to damaged trust or a breakup.
 
 ## Planned technology
 
@@ -84,6 +90,7 @@ The canonical city, room, housing, service, and travel-destination registry is [
 Education, jobs, interviews, and repeatable actions are summarized in [docs/EDUCATION_EMPLOYMENT_PLAYBOOK.md](docs/EDUCATION_EMPLOYMENT_PLAYBOOK.md).
 Economy, inventory, clothing, food, and stores are summarized in [docs/ECONOMY_INVENTORY_PLAYBOOK.md](docs/ECONOMY_INVENTORY_PLAYBOOK.md).
 Runtime state, simulation events, saves, and migrations are described in [docs/RUNTIME_SAVE_ARCHITECTURE.md](docs/RUNTIME_SAVE_ARCHITECTURE.md).
+Date authoring, agreements, conflicts, and relationship progression are described in [docs/RELATIONSHIP_DATING_PLAYBOOK.md](docs/RELATIONSHIP_DATING_PLAYBOOK.md).
 The first playable build is defined in [docs/VERTICAL_SLICE_SPECIFICATION.md](docs/VERTICAL_SLICE_SPECIFICATION.md).
 
 Validate all character and global content data with `python3 tools/validate_characters.py`.

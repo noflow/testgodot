@@ -41,6 +41,7 @@ const MONTH_NAMES: PackedStringArray = [
 
 var _current_app: String = "character_profile"
 var _selected_contact: String = ""
+var _selected_relationship_contact: String = ""
 var _selected_route_destination: String = ""
 var _job_filter: String = "all"
 var _selected_job_id: String = ""
@@ -60,6 +61,7 @@ func open_phone(default_app: String = "character_profile") -> void:
 	if not GameState.has_active_game():
 		return
 	PhoneService.sync_messages()
+	RelationshipService.sync_dates()
 	visible = true
 	scheduler_panel.visible = false
 	route_panel.visible = false
@@ -804,20 +806,176 @@ func _purchase_store_item(store_id: String, item_id: String) -> void:
 
 
 func _render_relationships() -> void:
+	_clear_container(app_actions)
 	app_title.text = "RELATIONSHIPS"
+	if not _selected_relationship_contact.is_empty():
+		_render_relationship_detail(_selected_relationship_contact)
+		return
 	var lines: PackedStringArray = []
-	for character_id_value: Variant in GameState.current_state["player"]["phone"].get("known_contacts", []):
-		var character_id: String = str(character_id_value)
-		var meters: Dictionary = GameState.current_state["relationships"].get(character_id, {})
+	for profile_value: Variant in RelationshipService.candidates():
+		if not profile_value is Dictionary:
+			continue
+		var profile: Dictionary = profile_value
+		var character_id: String = str(profile.get("character_id", ""))
+		var meters: Dictionary = profile.get("meters", {})
+		var agreement: Dictionary = profile.get("agreement", {})
 		lines.append("[font_size=22]%s[/font_size]" % _character_name(character_id))
-		lines.append("Friendship %d (%s) • Love %d (%s)\nAttraction %d • Lust %d\nTrust %d • Respect %d • Comfort %d\nJealousy %d • Resentment %d • Commitment %d" % [
+		lines.append("%s • Chapter %d of 5 • %s\nFriendship %d (%s) • Love %d (%s)\nAttraction %d • Lust %d\nTrust %d • Comfort %d • Commitment %d" % [
+			str(profile.get("relationship_stage", "acquaintance")).replace("_", " ").capitalize(),
+			int(profile.get("chapter_level", 1)),
+			str(agreement.get("name", "No dating agreement")) if str(agreement.get("status", "none")) == "active" else "No dating agreement",
 			int(meters.get("friendship", 0)), _meter_level(int(meters.get("friendship", 0))),
 			int(meters.get("love", 0)), _meter_level(int(meters.get("love", 0))),
 			int(meters.get("attraction", 0)), int(meters.get("lust", 0)),
-			int(meters.get("trust", 0)), int(meters.get("respect", 0)), int(meters.get("comfort", 0)),
-			int(meters.get("jealousy", 0)), int(meters.get("resentment", 0)), int(meters.get("commitment", 0)),
+			int(meters.get("trust", 0)), int(meters.get("comfort", 0)), int(meters.get("commitment", 0)),
 		])
-	app_content.text = "\n\n".join(lines)
+		_add_action_button("View %s" % _character_name(character_id), _open_relationship_detail.bind(character_id))
+	app_content.text = "\n\n".join(lines) if not lines.is_empty() else "Meet people and exchange contact information to track relationships here."
+
+
+func _render_relationship_detail(character_id: String) -> void:
+	var profile: Dictionary = RelationshipService.relationship_profile(character_id)
+	if profile.is_empty():
+		_selected_relationship_contact = ""
+		_render_relationships()
+		return
+	var meters: Dictionary = profile.get("meters", {})
+	var agreement: Dictionary = profile.get("agreement", {})
+	var chapter: Dictionary = profile.get("chapter", {})
+	var agreement_label: String = "Not discussed"
+	if str(agreement.get("status", "none")) == "active":
+		agreement_label = str(agreement.get("name", agreement.get("type", "Dating agreement")))
+	var lines: PackedStringArray = [
+		"[font_size=26]%s[/font_size]" % profile.get("display_name", character_id),
+		"%s • %d completed date(s)" % [str(profile.get("relationship_stage", "acquaintance")).replace("_", " ").capitalize(), int(profile.get("completed_dates", 0))],
+		"Agreement: [color=#e9a86c]%s[/color]" % agreement_label,
+		"",
+		"PRIMARY METERS",
+		"Friendship %d — %s\nLove %d — %s\nAttraction %d — %s\nLust %d — %s" % [
+			int(meters.get("friendship", 0)), _meter_level(int(meters.get("friendship", 0))),
+			int(meters.get("love", 0)), _meter_level(int(meters.get("love", 0))),
+			int(meters.get("attraction", 0)), _meter_level(int(meters.get("attraction", 0))),
+			int(meters.get("lust", 0)), _meter_level(int(meters.get("lust", 0))),
+		],
+		"",
+		"RELATIONSHIP SUPPORT",
+		"Trust %d • Respect %d • Comfort %d\nCommitment %d • Compatibility %d • Satisfaction %d\nJealousy %d • Resentment %d" % [
+			int(meters.get("trust", 0)), int(meters.get("respect", 0)), int(meters.get("comfort", 0)),
+			int(meters.get("commitment", 0)), int(meters.get("compatibility", 0)), int(meters.get("satisfaction", 0)),
+			int(meters.get("jealousy", 0)), int(meters.get("resentment", 0)),
+		],
+		"",
+		"STORY ARC — CHAPTER %d OF 5" % int(profile.get("chapter_level", 1)),
+		str(chapter.get("title", "This chapter has not been authored yet.")),
+	]
+	var date_status: Dictionary = RelationshipService.date_status(character_id)
+	lines.append("\nDATE PLAN\n%s" % date_status.get("reason", "No date is scheduled."))
+	var conflicts: Array = meters.get("conflict_history", [])
+	if not conflicts.is_empty() and conflicts.back() is Dictionary:
+		var latest_conflict: Dictionary = conflicts.back()
+		lines.append("\nLATEST CONFLICT\n%s" % latest_conflict.get("reaction_line", "The relationship needs an honest conversation."))
+	app_content.text = "\n".join(lines)
+	_add_action_button("← All Relationships", _close_relationship_detail)
+
+	var pending_proposal: Variant = profile.get("pending_agreement_proposal")
+	if pending_proposal is Dictionary:
+		_add_action_button("Accept %s proposal" % str(pending_proposal.get("type", "relationship")).capitalize(), _respond_relationship_proposal.bind(character_id, true))
+		_add_action_button("Decline proposal honestly", _respond_relationship_proposal.bind(character_id, false))
+
+	if bool(date_status.get("scheduled", false)):
+		var date_event: Dictionary = date_status.get("event", {})
+		if bool(date_status.get("ready", false)):
+			for approach_value: Variant in ContentRegistry.get_package("port_alder_relationship_system").get("date_approaches", []):
+				if approach_value is Dictionary:
+					var approach: Dictionary = approach_value
+					_add_action_button(str(approach.get("name", "Begin Date")), _complete_relationship_date.bind(str(date_event.get("id", "")), str(approach.get("id", ""))))
+		elif not date_event.is_empty():
+			var destination: String = str(date_event.get("location", "")).get_slice(".", 0)
+			if not destination.is_empty():
+				_add_action_button("Plan route to date", _open_route_planner.bind(destination))
+	else:
+		_render_date_invitation_actions(character_id, bool(profile.get("romance_compatible", false)))
+
+	var readiness: Dictionary = RelationshipService.can_propose_agreement(character_id)
+	if bool(readiness.get("ok", false)):
+		for agreement_type_value: Variant in readiness.get("options", []):
+			var agreement_type: String = str(agreement_type_value)
+			_add_action_button("Discuss %s dating" % agreement_type, _propose_relationship_agreement.bind(character_id, agreement_type))
+
+
+func _render_date_invitation_actions(character_id: String, romance_compatible: bool) -> void:
+	if not romance_compatible:
+		return
+	var partners: Array = RelationshipService.active_partner_ids(character_id)
+	for activity_value: Variant in ContentRegistry.get_package("port_alder_relationship_system").get("date_activities", []):
+		if not activity_value is Dictionary:
+			continue
+		var activity: Dictionary = activity_value
+		for option_value: Variant in RelationshipService.invitation_options(character_id, str(activity.get("id", "")), 2):
+			if not option_value is Dictionary:
+				continue
+			var option: Dictionary = option_value
+			var label: String = "Invite — %s • %s %s" % [
+				activity.get("name", "Date"), str(option.get("weekday", "")).left(3).capitalize(), str(option.get("block", "")).replace("_", " ").capitalize(),
+			]
+			_add_action_button(label, _invite_on_date.bind(character_id, str(activity.get("id", "")), option, true))
+			if not partners.is_empty():
+				_add_action_button("Private invite — %s" % label.trim_prefix("Invite — "), _invite_on_date.bind(character_id, str(activity.get("id", "")), option, false))
+
+
+func _open_relationship_detail(character_id: String) -> void:
+	_selected_relationship_contact = character_id
+	_render_relationships()
+
+
+func _close_relationship_detail() -> void:
+	_selected_relationship_contact = ""
+	_render_relationships()
+
+
+func _invite_on_date(character_id: String, activity_id: String, option: Dictionary, disclosed: bool) -> void:
+	var result: Dictionary = RelationshipService.ask_out(
+		character_id, activity_id, str(option.get("date", "")), str(option.get("weekday", "")), str(option.get("block", "")), disclosed
+	)
+	_render_relationships()
+	if result.get("ok", false):
+		phone_status.text = str(result.get("data", {}).get("response", "Invitation sent."))
+		var warnings: PackedStringArray = PackedStringArray(result.get("data", {}).get("warnings", []))
+		if not warnings.is_empty():
+			phone_status.text += " WARNING: %s" % " ".join(warnings)
+	else:
+		phone_status.text = str(result.get("errors", ["The invitation could not be sent."])[0])
+
+
+func _complete_relationship_date(event_id: String, approach_id: String) -> void:
+	var result: Dictionary = RelationshipService.complete_date(event_id, approach_id)
+	_render_relationships()
+	if not result.get("ok", false):
+		phone_status.text = str(result.get("errors", ["The date could not begin."])[0])
+		return
+	var data: Dictionary = result.get("data", {})
+	phone_status.text = str(data.get("summary", "Date completed."))
+	for chapter_value: Variant in data.get("chapter_updates", []):
+		if chapter_value is Dictionary:
+			phone_status.text += " New chapter: %s." % chapter_value.get("title", "Relationship story")
+	var npc_proposal: Variant = data.get("npc_proposal")
+	if npc_proposal is Dictionary:
+		phone_status.text += " %s" % npc_proposal.get("message", "A relationship conversation is waiting.")
+	for reaction_value: Variant in data.get("witness_reactions", []):
+		if reaction_value is Dictionary:
+			phone_status.text += " %s" % reaction_value.get("line", "")
+
+
+func _propose_relationship_agreement(character_id: String, agreement_type: String) -> void:
+	var result: Dictionary = RelationshipService.propose_agreement(character_id, agreement_type)
+	_render_relationships()
+	phone_status.text = str(result.get("data", {}).get("message", "Agreement discussed.")) if result.get("ok", false) else str(result.get("errors", ["The conversation could not begin."])[0])
+
+
+func _respond_relationship_proposal(character_id: String, accept: bool) -> void:
+	var result: Dictionary = RelationshipService.respond_to_npc_proposal(character_id, accept)
+	_render_relationships()
+	phone_status.text = str(result.get("data", {}).get("message", "Response recorded.")) if result.get("ok", false) else str(result.get("errors", ["The response could not be recorded."])[0])
 
 
 func _render_map() -> void:
@@ -1152,6 +1310,11 @@ func _on_confirm_schedule_pressed() -> void:
 
 
 func _cancel_calendar_event(event_id: String) -> void:
+	if RelationshipService.is_date_event(event_id):
+		var date_result: Dictionary = RelationshipService.cancel_date(event_id)
+		phone_status.text = str(date_result.get("data", {}).get("message", "Date cancelled.")) if date_result.get("ok", false) else str(date_result.get("errors", ["Cancellation failed."])[0])
+		_render_calendar()
+		return
 	var result: Dictionary = SimulationService.apply_operation(
 		"calendar.cancel_or_reschedule",
 		{"event_id": event_id, "cancel": true},

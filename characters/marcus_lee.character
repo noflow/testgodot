@@ -11,6 +11,19 @@
   "connections": [{"character": "player", "relation": "childhood_friend"}, {"character": "emma_rowan", "relation": "old_friend"}, {"character": "claire_donovan", "relation": "cinema_regular"}],
   "relationship_defaults": {"friendship": 46, "love": 3, "attraction": 8, "lust": 4, "trust": 38, "respect": 39, "resentment": 0, "jealousy": 5, "comfort": 48, "commitment": 4, "compatibility": 45, "satisfaction": 48},
   "boundaries": {"dating_agreement_preference": "open_to_discussion", "protection_policy": "requires_protection", "alcohol_consent": "never_when_impaired", "hard_limits": ["controlling_behavior", "outing_private_information"]},
+  "dating_preferences": {
+    "invitation_threshold": 27,
+    "preferred_activities": ["movie_date", "waterfront_walk"],
+    "agreement_options": ["casual", "open", "exclusive"],
+    "npc_initiated_agreement": "open",
+    "conflict_style": "jokes_first_then_direct",
+    "openness_reaction": "likes_it",
+    "reaction_lines": {
+      "exclusive_violation": "Marcus starts with a joke, cannot finish it, and asks why you agreed to exclusivity if you wanted something else.",
+      "undefined_jealousy": "Marcus is surprised, a little jealous, and mostly curious. He wants the two of you to define the rules instead of guessing.",
+      "open_disclosed": "Marcus grins, says the honesty is working exactly as intended, and asks whether everyone had a good time."
+    }
+  },
   "private_profile": {"fertility_tier": "high", "reproductive_capability": "can_impregnate", "knowledge": "hidden_until_discovered", "adult_preferences": {"established": ["spontaneity"], "discoverable": ["costume_roleplay"], "hard_limits": ["degradation", "coercion"]}},
   "relationship_chapters": [{"level": 1, "id": "one_last_summer_movie", "title": "One Last Summer Movie"}, {"level": 2, "id": "after_the_credits", "title": "After the Credits"}, {"level": 3, "id": "missing_scene", "title": "The Missing Scene"}, {"level": 4, "id": "festival_cut", "title": "Festival Cut"}, {"level": 5, "id": "picture_lock", "title": "Picture Lock"}],
   "quest_hooks": ["free_movie_pass", "student_film", "missed_shift", "festival_premiere"],

@@ -204,7 +204,26 @@ func _apply_relationship_defaults(state: Dictionary) -> void:
 		var character_id: String = str(npc_state.get("character_id", ""))
 		var character: Variant = _registry.get_character(character_id)
 		if character is Dictionary:
-			relationships[character_id] = character.get("relationship_defaults", {}).duplicate(true)
+			var relationship: Dictionary = character.get("relationship_defaults", {}).duplicate(true)
+			var profile: Dictionary = character.get("profile", {})
+			var role: String = str(profile.get("role", ""))
+			var initial_stage: String = "acquaintance"
+			if role in ["mother", "father", "older_sister"]:
+				initial_stage = "family"
+			elif int(relationship.get("friendship", 0)) >= 35:
+				initial_stage = "friend"
+			relationship["relationship_stage"] = initial_stage
+			relationship["relationship_level"] = 1
+			relationship["unlocked_chapter_level"] = 1
+			relationship["dating_agreement"] = {"status": "none", "type": "none"}
+			relationship["invitation_history"] = []
+			relationship["dating_history"] = []
+			relationship["agreement_history"] = []
+			relationship["conflict_history"] = []
+			relationship["chapter_notifications"] = []
+			relationship["pending_agreement_proposal"] = null
+			relationship["romantic_interest_known"] = false
+			relationships[character_id] = relationship
 	state["relationships"] = relationships
 
 

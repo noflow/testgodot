@@ -242,7 +242,13 @@ func _apply_completion_effect(state: Dictionary, effect: Dictionary) -> void:
 		"unlock_relationship_chapter":
 			var character_id: String = str(effect.get("character", ""))
 			if state["relationships"].has(character_id):
-				state["relationships"][character_id]["unlocked_chapter_level"] = int(effect.get("level", 1))
+				var chapter_level: int = int(effect.get("level", 1))
+				state["relationships"][character_id]["unlocked_chapter_level"] = maxi(
+					int(state["relationships"][character_id].get("unlocked_chapter_level", 1)), chapter_level
+				)
+				state["relationships"][character_id]["relationship_level"] = maxi(
+					int(state["relationships"][character_id].get("relationship_level", 1)), chapter_level
+				)
 		"set_value":
 			_set_state_value(state, str(effect.get("key", "")), effect.get("value"))
 		"schedule_event":

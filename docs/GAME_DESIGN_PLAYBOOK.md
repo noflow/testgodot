@@ -528,8 +528,7 @@ code. The Hale garage can grant daily family-car permission when required.
 
 ## Next milestones
 
-1. Implement the relationship and dating loop, including invitations, agreements, witnessed conflicts, and character-specific reactions
-2. Add the Sunday review, complete settings, and accessibility baseline
-3. Add housing search, rent/purchase qualification, moving, and household transitions
-4. Stabilize the vertical slice against all acceptance tests
-5. Resume broader content expansion, alternative households, and the September calendar
+1. Add the Sunday review, complete settings, and accessibility baseline
+2. Add housing search, rent/purchase qualification, moving, and household transitions
+3. Stabilize the vertical slice against all acceptance tests
+4. Resume broader content expansion, alternative households, and the September calendar

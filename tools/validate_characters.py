@@ -22,6 +22,7 @@ VALID_BLOCKS = {
     "early_morning", "morning", "lunch", "afternoon",
     "evening", "late_evening", "night"
 }
+VALID_AGREEMENTS = {"casual", "exclusive", "open"}
 REQUIRED_TOP_LEVEL = {
     "format_version", "id", "display_name", "profile", "home", "personality",
     "schedule", "skills", "goals", "connections", "relationship_defaults",
@@ -119,6 +120,28 @@ def validate_file(path: Path, known_ids: set[str]) -> list[str]:
         hard_limits = set(data["boundaries"].get("hard_limits", []))
         if profile.get("role") in {"mother", "father", "older_sister"} and "romance_with_player" not in hard_limits:
             fail(errors, path, "family character must explicitly block player romance")
+
+    dating_preferences = data.get("dating_preferences")
+    if dating_preferences is not None:
+        if not isinstance(dating_preferences, dict):
+            fail(errors, path, "dating_preferences must be an object")
+        else:
+            threshold = dating_preferences.get("invitation_threshold", 31)
+            if not isinstance(threshold, (int, float)) or not 0 <= threshold <= 100:
+                fail(errors, path, "dating invitation threshold must be from 0 to 100")
+            agreement_options = dating_preferences.get("agreement_options", [])
+            if (
+                not isinstance(agreement_options, list)
+                or any(option not in VALID_AGREEMENTS for option in agreement_options)
+                or len(agreement_options) != len(set(agreement_options))
+            ):
+                fail(errors, path, "dating agreement options are invalid")
+            npc_agreement = dating_preferences.get("npc_initiated_agreement")
+            if npc_agreement is not None and npc_agreement not in agreement_options:
+                fail(errors, path, "NPC-initiated agreement must be one of the character's options")
+            reaction_lines = dating_preferences.get("reaction_lines", {})
+            if not isinstance(reaction_lines, dict) or any(not isinstance(line, str) or not line for line in reaction_lines.values()):
+                fail(errors, path, "dating reaction lines must contain non-empty text")
 
     quests = data["quests"]
     quest_ids = [quest.get("id") for quest in quests]
@@ -478,6 +501,27 @@ def validate_global_content(
                 errors.append(f"{path.relative_to(ROOT)}: activity {activity.get('id')} has invalid duration")
             if activity.get("cost", 0) < 0:
                 errors.append(f"{path.relative_to(ROOT)}: activity {activity.get('id')} has invalid cost")
+
+        agreement_types = data.get("agreement_types", [])
+        agreement_ids = [agreement.get("id") for agreement in agreement_types]
+        if agreement_types and (
+            any(agreement_id not in VALID_AGREEMENTS for agreement_id in agreement_ids)
+            or len(agreement_ids) != len(set(agreement_ids))
+        ):
+            errors.append(f"{path.relative_to(ROOT)}: dating agreement types are invalid")
+        date_activities = data.get("date_activities", [])
+        date_activity_ids = [activity.get("id") for activity in date_activities]
+        if any(not item for item in date_activity_ids) or len(date_activity_ids) != len(set(date_activity_ids)):
+            errors.append(f"{path.relative_to(ROOT)}: date activities contain missing or duplicate ids")
+        for activity in date_activities:
+            if not activity.get("name") or not activity.get("location"):
+                errors.append(f"{path.relative_to(ROOT)}: date activity {activity.get('id')} is incomplete")
+            if not isinstance(activity.get("duration_minutes"), int) or activity.get("duration_minutes", 0) <= 0:
+                errors.append(f"{path.relative_to(ROOT)}: date activity {activity.get('id')} has invalid duration")
+            if activity.get("cost", -1) < 0 or not 0 <= activity.get("witness_chance", -1) <= 100:
+                errors.append(f"{path.relative_to(ROOT)}: date activity {activity.get('id')} has invalid cost or witness chance")
+            if not activity.get("allowed_blocks") or any(block not in valid_blocks for block in activity.get("allowed_blocks", [])):
+                errors.append(f"{path.relative_to(ROOT)}: date activity {activity.get('id')} uses invalid blocks")
 
         operations = data.get("operations", [])
         operation_ids = [operation.get("id") for operation in operations]

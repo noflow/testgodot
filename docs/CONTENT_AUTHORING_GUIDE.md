@@ -11,6 +11,9 @@ file. Save games store changing runtime state and never rewrite the source packa
 - `home_routine` maps free activity blocks to rooms, actor positions, and activities.
 - `ambient_dialogue` supplies short contextual lines for non-story interactions.
 - `relationship_defaults` supplies new-game meter values.
+- `dating_preferences` supplies invitation difficulty, preferred activities,
+  acceptable agreements, NPC-initiated agreement behavior, openness response, and
+  character-specific conflict lines.
 - `relationship_chapters` identifies the five major relationship arcs.
 - `quests` contains complete quest definitions owned by the character.
 - `conversations` contains complete dialogue graphs owned by the character.
@@ -129,9 +132,15 @@ Family members and ineligible characters explicitly block player romance. Adult
 content remains non-graphic. A conversation cannot bypass a hard limit, an explicit
 refusal, or the rule that severely intoxicated characters cannot consent.
 
+Romance eligibility and orientation determine whether the male protagonist can
+offer a date. NPC fixed commitments and destination opening hours determine valid
+times. Keep reusable activity costs, duration, locations, approaches, agreement
+rules, and chapter diligence in `content/systems/relationships.json`; keep a
+character's emotional voice and preferences in that character's package.
+
 ## Validation
 
 Run `python3 tools/validate_characters.py`. The validator checks package identity,
 ages, meter and skill ranges, five relationship levels, schedules, unique quest and
-conversation IDs, valid dialogue links, valid start nodes, and valid character
-connections.
+conversation IDs, valid dialogue links, valid start nodes, dating preference and
+agreement values, date activity timing, and valid character connections.

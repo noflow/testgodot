@@ -79,6 +79,27 @@ func _run_probe() -> void:
 			printerr("PROBE: phone app did not render: %s" % app_id)
 			get_tree().quit(1)
 			return
+	phone.call("_show_app", "relationships")
+	phone.call("_open_relationship_detail", "emma_rowan")
+	await get_tree().process_frame
+	var relationship_content: RichTextLabel = phone.get_node("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/ContentPanel/ContentMargin/ContentLayout/AppContent")
+	var relationship_actions: Container = phone.get_node("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/ContentPanel/ContentMargin/ContentLayout/ActionScroll/AppActions")
+	if "Before Everything Changes" not in relationship_content.text or relationship_actions.get_child_count() < 2:
+		printerr("PROBE: Emma's relationship detail did not expose her chapter and invitation actions")
+		get_tree().quit(1)
+		return
+	var invitation_button: Button = relationship_actions.get_child(1)
+	invitation_button.pressed.emit()
+	await get_tree().process_frame
+	var relationship_date_found: bool = false
+	for calendar_event: Variant in GameState.current_state["calendar_state"].get("events", []):
+		if calendar_event is Dictionary and bool(calendar_event.get("relationship_date", false)) and str(calendar_event.get("relationship_character_id", "")) == "emma_rowan":
+			relationship_date_found = true
+			break
+	if not relationship_date_found:
+		printerr("PROBE: relationship invitation did not create Emma's calendar date")
+		get_tree().quit(1)
+		return
 	phone.call("_open_route_planner", "alder_bay_park")
 	await get_tree().process_frame
 	var route_panel: Control = phone.get_node("RoutePanel")
