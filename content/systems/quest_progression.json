@@ -7,6 +7,18 @@
     {"id": "offer", "result": "Discover the quest and present it as an optional offer when its gates are met."},
     {"id": "auto_start", "result": "Start immediately only for opening, tutorial, committed, or direct-consequence paths."}
   ],
+  "repeatable_quest_rules": {
+    "counter_format": "current/target",
+    "minimum_target_completions": 2,
+    "restart_policies": ["offer", "auto_start"],
+    "objectives_reset_after_each_nonfinal_completion": true,
+    "authored_requirements_rechecked_before_every_run": true,
+    "cooldown_is_measured_in_activity_blocks": true,
+    "completion_effects_apply_at_final_target": true,
+    "each_completion_effects_must_be_authored_separately": true,
+    "next_chain_stage_unlocks_only_at_final_target": true,
+    "independent_chains_save_independent_counters": true
+  },
   "quest_types": [
     {"id": "discovery", "purpose": "Found through exploration, conversation, messages, activities, or institutions at the player's pace."},
     {"id": "opportunity", "purpose": "Becomes possible when player stats, skills, resources, or relationships meet authored gates."},
@@ -48,7 +60,8 @@
     "player_controls_tracking": true,
     "untracked_quests_continue_normally": true,
     "open_ended_quests_never_fail_from_age": true,
-    "calendar_contains_commitments_not_weekly_goals": true
+    "calendar_contains_commitments_not_weekly_goals": true,
+    "repeatable_quests_show_saved_current_and_target_counts": true
   },
   "decision_rules": {
     "accept_starts_quest": true,

@@ -75,6 +75,10 @@ institutional windows, scheduled commitments, emergencies, or fleeting opportuni
 Discovered side stories become optional phone offers rather than starting silently;
 the player can accept, postpone, reconsider, or decline them without exposing hidden
 future quests.
+Counted repeatable quests can now retain independent `0/N` progress, reset their
+run objectives, recheck normal gates and cooldowns, and unlock the next chain stage
+only at the final target. Rachel's gym path includes playable `0/5` and `0/10`
+stages, and the counters and run histories survive save/load.
 The phone and main menu now share complete persistent settings for four text sizes,
 high contrast, reduced motion, screen-edge effects, camera shake, hold/toggle VN
 skipping, independent audio channels, display mode, resolution, VSync, and keyboard

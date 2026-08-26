@@ -485,6 +485,7 @@ func _test_city_institutions_and_fitness() -> void:
 	state = result["state"]
 	_expect(state["player"]["attributes"]["strength"] > strength_before, "The beginner workout increases physical attributes.")
 	_expect("first_rep" in state["quest_state"]["completed"], "Completing the workout finishes Rachel's First Rep quest.")
+	_expect("build_a_training_rhythm" in state["quest_state"]["active"] and quests.get_progress(state, "build_a_training_rhythm").get("progress_text", "") == "0/5", "Finishing First Rep organically starts Rachel's counted 0/5 training stage.")
 	_expect(int(state["relationships"]["rachel_morgan"].get("unlocked_chapter_level", 0)) == 2, "First Rep unlocks Rachel's second relationship chapter.")
 	_expect(int(state["relationships"]["rachel_morgan"].get("relationship_level", 0)) == 2, "Authored quest chapter unlocks keep the relationship level synchronized.")
 
@@ -865,7 +866,7 @@ func _test_vertical_slice_acceptance_suite() -> void:
 		return
 
 	var tests: Array = suite.get("tests", [])
-	_expect(tests.size() == 56, "Acceptance suite contains 56 cases.")
+	_expect(tests.size() == 59, "Acceptance suite contains 59 cases.")
 	var ids: Dictionary = {}
 	for test_case: Variant in tests:
 		if test_case is Dictionary:
@@ -893,6 +894,8 @@ func _test_content_registry() -> void:
 	var quest_rules: Dictionary = _registry.get_package("port_alder_sandbox_quest_system")
 	_expect(quest_rules.get("default_timing", "") == "open_ended", "Quest progression defaults to open-ended sandbox timing.")
 	_expect(bool(quest_rules.get("tracker_rules", {}).get("player_controls_tracking", false)), "Sandbox rules give the player control of quest tracking.")
+	_expect(bool(quest_rules.get("repeatable_quest_rules", {}).get("authored_requirements_rechecked_before_every_run", false)), "Repeatable quest runs recheck all authored requirements.")
+	_expect(_registry.get_content("quests", "build_a_training_rhythm") is Dictionary and _registry.get_content("quests", "consistency_under_pressure") is Dictionary, "Registry indexes both counted stages of Rachel's repeatable training chain.")
 	_expect(_registry.get_all("actions").size() == 10, "Registry indexes all 10 initial home actions.")
 	_expect(_registry.get_all("city_interactions").size() == 9, "Registry indexes all nine opening city interactions.")
 	_expect(_registry.get_all("phone_apps").size() == 13, "Registry indexes the foundation apps plus Education, Jobs, Money, and Shopping.")
@@ -1433,6 +1436,34 @@ func _test_sandbox_quest_progression_and_tracking() -> void:
 	_expect("before_everything_changes" in declined_state["quest_state"]["deferred"] and "before_everything_changes" not in declined_state["quest_state"]["active"], "Declining defers a quest instead of silently starting or failing it.")
 	_expect(declined_state["quest_state"]["decision_history"].back().get("decision", "") == "declined", "Declining records a durable player decision.")
 
+	var repeat_state: Dictionary = factory.create_new_game({}, {"random_seed": 234})
+	repeat_state["player"]["flags"]["fitness.gym_access"] = true
+	repeat_state["player"]["skills"]["fitness_training"] = 10
+	result = quests.start_quest(repeat_state, "build_a_training_rhythm", "test.repeatable_start")
+	repeat_state = result.get("state", repeat_state)
+	_expect(result.get("ok", false) and "build_a_training_rhythm" in repeat_state["quest_state"]["active"], "A qualified counted quest can begin its first run.")
+	for completion_number: int in range(1, 6):
+		result = quests.record_event(repeat_state, "activity_completed", {"tag": "forge_workout", "activity": "strength_workout"}, "test.repeatable_workout")
+		repeat_state = result.get("state", repeat_state)
+		var repeat_progress: Dictionary = quests.get_progress(repeat_state, "build_a_training_rhythm")
+		_expect(result.get("ok", false) and int(repeat_progress.get("completion_count", -1)) == completion_number, "Counted quest saves valid completion %d/5." % completion_number)
+		if completion_number < 5:
+			_expect("build_a_training_rhythm" not in repeat_state["quest_state"]["completed"] and repeat_state["quest_state"]["objectives"].get("build_a_training_rhythm", {}).is_empty(), "A nonfinal counted run resets its objectives without marking the chain stage complete.")
+			_expect(int(repeat_progress.get("cooldown_remaining_blocks", 0)) == 1, "A counted quest exposes its authored one-block cooldown.")
+			repeat_state["player"]["flags"]["fitness.gym_access"] = false
+			result = simulation.apply_operation(repeat_state, "time.advance", {"blocks": 1}, "test.repeatable_cooldown")
+			repeat_state = result.get("state", repeat_state)
+			result = quests.sync_automatic_activations(repeat_state, "test.repeatable_requirement_check")
+			repeat_state = result.get("state", repeat_state)
+			_expect("build_a_training_rhythm" not in repeat_state["quest_state"]["active"], "A repeatable quest cannot restart when another authored requirement is no longer met.")
+			repeat_state["player"]["flags"]["fitness.gym_access"] = true
+			result = quests.sync_automatic_activations(repeat_state, "test.repeatable_requirement_restored")
+			repeat_state = result.get("state", repeat_state)
+			_expect("build_a_training_rhythm" in repeat_state["quest_state"]["active"], "A repeatable quest restarts after its cooldown when every requirement is met again.")
+	_expect("build_a_training_rhythm" in repeat_state["quest_state"]["completed"], "The counted stage becomes terminal exactly at 5/5.")
+	_expect("consistency_under_pressure" in repeat_state["quest_state"]["active"], "The next quest-chain stage unlocks only after the prior counted target is reached.")
+	_expect(repeat_state["quest_state"]["repeatable_progress"]["build_a_training_rhythm"]["completion_history"].size() == 5, "Every counted run retains a durable completion-history entry.")
+
 
 func _test_opening_dialogue_branches() -> void:
 	var factory: RefCounted = NewGameStateFactoryScript.new(_registry)
@@ -1552,6 +1583,19 @@ func _test_save_round_trip_rotation_recovery_and_migration() -> void:
 	state["quest_state"]["postponed"].append("first_rep")
 	state["quest_state"]["discovery_history"].append({"quest_id": "first_rep", "source": "save_test", "discovered_on": "Y1-08-20"})
 	state["quest_state"]["decision_history"].append({"quest_id": "first_rep", "decision": "postponed", "source": "save_test", "date": "Y1-08-20"})
+	state["quest_state"]["repeatable_progress"]["build_a_training_rhythm"] = {
+		"completions": 2,
+		"target_completions": 5,
+		"chain_id": "rachel_training_path",
+		"stage": 1,
+		"last_completed_at": "Y1-08-20:afternoon+000",
+		"last_completed_block": 1627,
+		"cooldown_until_block": 1628,
+		"completion_history": [
+			{"completion": 1, "completed_at": "Y1-08-20:lunch+000", "branch_id": null},
+			{"completion": 2, "completed_at": "Y1-08-20:afternoon+000", "branch_id": null},
+		],
+	}
 
 	var result: Dictionary = engine.save_slot(state, "manual_1", {
 		"timestamp_utc": "2026-08-25T10:00:00",
@@ -1571,6 +1615,8 @@ func _test_save_round_trip_rotation_recovery_and_migration() -> void:
 	_expect(loaded.get("state", {}).get("quest_state", {}).get("tracked", []) == ["opening_future_choice"], "Save/load round-trip preserves the player's tracked quests.")
 	_expect(loaded.get("state", {}).get("quest_state", {}).get("postponed", []) == ["first_rep"], "Save/load round-trip preserves postponed discoveries.")
 	_expect(loaded.get("state", {}).get("quest_state", {}).get("decision_history", []).back().get("decision", "") == "postponed", "Save/load round-trip preserves quest decision history.")
+	_expect(int(loaded.get("state", {}).get("quest_state", {}).get("repeatable_progress", {}).get("build_a_training_rhythm", {}).get("completions", 0)) == 2, "Save/load round-trip preserves independent repeatable quest counters.")
+	_expect(loaded.get("state", {}).get("quest_state", {}).get("repeatable_progress", {}).get("build_a_training_rhythm", {}).get("completion_history", []).size() == 2, "Save/load round-trip preserves repeatable quest completion history.")
 
 	var original_checking: float = float(state["player"]["economy"]["accounts"]["checking"])
 	state["player"]["economy"]["accounts"]["checking"] = original_checking + 77.0

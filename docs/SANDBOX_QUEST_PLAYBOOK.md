@@ -48,6 +48,37 @@ building a relevant skill, or gaining a professional contact. Relationship arcs
 should emerge from time spent with that person, not from choosing their route on a
 menu.
 
+## Counted repeatable quests
+
+A quest may represent a habit or recurring obligation that advances only after
+several valid runs. Add a `repeatable` object with a target of at least two:
+
+```json
+"repeatable": {
+  "target_completions": 5,
+  "progress_label": "Forge workouts",
+  "cooldown_blocks": 1,
+  "restart_policy": "auto_start",
+  "chain_id": "rachel_training_path",
+  "stage": 1
+}
+```
+
+The runtime stores each quest's counter and completion history independently, so
+many chains can be in progress at once. A nonfinal completion increments the
+counter, resets that run's objectives, and leaves the quest nonterminal. The next
+run starts or becomes an offer only after its cooldown and every ordinary authored
+requirement are satisfied again. `restart_policy` may be `offer` or `auto_start`;
+automatic restart is appropriate only when the player already committed to the
+recurring path.
+
+Ordinary `completion_effects`, branches, and `quest_completed` follow-ups run only
+when the target is reached. Effects meant to occur after every valid run belong in
+`repeatable.each_completion_effects`. The phone and tracked HUD show the saved
+counter as `current/target`, including `0/5`, and a final `5/5` remains visible in
+completed history. Rachel's `build_a_training_rhythm` and
+`consistency_under_pressure` quests are the first two-stage example.
+
 ## Gates and paths
 
 Gates should produce possibilities rather than busywork. Authors may require:
@@ -111,3 +142,5 @@ Before adding a quest:
 5. Make failure branch, delay, or alter later content where possible.
 6. Test that months of unrelated sandbox play cannot expire an open-ended quest.
 7. Test that follow-ups respect prior choices and do not reveal themselves early.
+8. For a counted quest, test every counter increment, objective reset, cooldown,
+   requirement recheck, final effects, next-stage unlock, and save/load round trip.

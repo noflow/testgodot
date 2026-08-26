@@ -38,6 +38,52 @@
       ],
       "completion_effects": [{"operation": "add_attribute", "attribute": "strength", "value": 1}, {"operation": "add_attribute", "attribute": "stamina", "value": 1}, {"operation": "unlock_phone_section", "value": "fitness_progress"}, {"operation": "unlock_relationship_chapter", "character": "rachel_morgan", "level": 2}],
       "failure": {"mode": "retryable", "result": "assessment_can_be_rescheduled"}
+    },
+    {
+      "id": "build_a_training_rhythm",
+      "category": "path",
+      "title": "Build a Training Rhythm",
+      "summary": "Complete five Forge Fitness workouts at your own pace and turn the first session into a sustainable routine.",
+      "discovery": {"policy": "auto_start", "source": "prior_quest_branch"},
+      "requirements": [
+        {"type": "world_state", "path": "player.flags.fitness.gym_access", "equals": true, "visibility": "visible", "description": "Complete Rachel's assessment and keep gym access."},
+        {"type": "skill", "id": "fitness_training", "minimum": 1, "visibility": "visible", "description": "Fitness Training 1 or higher is required."}
+      ],
+      "activation": {"event": "quest_completed", "quest": "first_rep"},
+      "availability": {"location": "forge_fitness", "activities": ["strength_workout", "stamina_workout"]},
+      "repeatable": {"target_completions": 5, "progress_label": "Forge workouts", "cooldown_blocks": 1, "restart_policy": "auto_start", "chain_id": "rachel_training_path", "stage": 1},
+      "objectives": [
+        {"id": "complete_workout", "text": "Complete a strength or cardio workout at Forge Fitness.", "completion": {"event": "activity_completed", "tag": "forge_workout"}}
+      ],
+      "branches": [],
+      "completion_effects": [
+        {"operation": "unlock_relationship_chapter", "character": "rachel_morgan", "level": 3},
+        {"operation": "set_flag", "key": "fitness.training_rhythm_complete", "value": true}
+      ],
+      "failure": {"mode": "cannot_fail"}
+    },
+    {
+      "id": "consistency_under_pressure",
+      "category": "path",
+      "title": "Consistency Under Pressure",
+      "summary": "Complete ten more Forge Fitness workouts while balancing training with the rest of adult life.",
+      "discovery": {"policy": "auto_start", "source": "prior_quest_branch"},
+      "requirements": [
+        {"type": "world_state", "path": "player.flags.fitness.gym_access", "equals": true, "visibility": "visible", "description": "Active gym access is required."},
+        {"type": "skill", "id": "fitness_training", "minimum": 3, "visibility": "visible", "description": "Fitness Training 3 or higher is required."}
+      ],
+      "activation": {"event": "quest_completed", "quest": "build_a_training_rhythm"},
+      "availability": {"location": "forge_fitness", "activities": ["strength_workout", "stamina_workout"]},
+      "repeatable": {"target_completions": 10, "progress_label": "Advanced workouts", "cooldown_blocks": 1, "restart_policy": "auto_start", "chain_id": "rachel_training_path", "stage": 2},
+      "objectives": [
+        {"id": "complete_workout", "text": "Complete a strength or cardio workout at Forge Fitness.", "completion": {"event": "activity_completed", "tag": "forge_workout"}}
+      ],
+      "branches": [],
+      "completion_effects": [
+        {"operation": "unlock_relationship_chapter", "character": "rachel_morgan", "level": 4},
+        {"operation": "set_flag", "key": "fitness.consistency_complete", "value": true}
+      ],
+      "failure": {"mode": "cannot_fail"}
     }
   ],
   "conversations": [

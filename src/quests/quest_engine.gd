@@ -1,6 +1,10 @@
 extends RefCounted
 class_name PortAlderQuestEngine
 
+const BLOCKS: PackedStringArray = [
+	"early_morning", "morning", "lunch", "afternoon", "evening", "late_evening", "night",
+]
+
 var _registry: Node
 var _simulation: RefCounted
 
@@ -13,6 +17,12 @@ func _init(content_registry: Node, simulation_engine: RefCounted) -> void:
 func start_quest(state: Dictionary, quest_id: String, source: String) -> Dictionary:
 	if quest_id in state["quest_state"]["active"]:
 		return _success(state)
+	var quest: Variant = _registry.get_content("quests", quest_id)
+	if quest is Dictionary and _repeat_completion_count(state, quest_id) > 0:
+		var report: Dictionary = gate_report(state, quest_id)
+		if not bool(report.get("met", false)):
+			var failures: PackedStringArray = PackedStringArray(report.get("visible_failures", []))
+			return _failure(failures[0] if not failures.is_empty() else "This repeatable quest is not ready yet.")
 	return _simulation.apply_operation(state, "quest.start", {"quest_id": quest_id, "discovery_source": source}, source)
 
 
@@ -217,10 +227,29 @@ func complete_quest(state: Dictionary, quest_id: String, source: String) -> Dict
 	)
 	if not result.get("ok", false):
 		return result
-	var branch_result: Dictionary = apply_matching_branch(result["state"], quest_id, source)
+	var working: Dictionary = result["state"]
+	var repeatable: Dictionary = _repeatable_definition(quest)
+	if not repeatable.is_empty():
+		_record_repeat_completion(working, quest, branch)
+		for effect: Variant in repeatable.get("each_completion_effects", []):
+			if effect is Dictionary:
+				_apply_completion_effect(working, effect)
+		if _repeat_completion_count(working, quest_id) < int(repeatable.get("target_completions", 1)):
+			working["quest_state"]["completed"].erase(quest_id)
+			working["quest_state"]["objectives"][quest_id] = {}
+			var repeat_sync: Dictionary = sync_automatic_activations(working, "%s.repeat_restart" % source)
+			if not repeat_sync.get("ok", false):
+				return repeat_sync
+			return _success(
+				repeat_sync["state"],
+				repeat_sync.get("activated", PackedStringArray()),
+				repeat_sync.get("discovered", PackedStringArray()),
+				repeat_sync.get("available", PackedStringArray())
+			)
+	var branch_result: Dictionary = apply_matching_branch(working, quest_id, source)
 	if not branch_result.get("ok", false):
 		return branch_result
-	var working: Dictionary = branch_result["state"]
+	working = branch_result["state"]
 
 	for effect: Variant in quest.get("completion_effects", []):
 		if effect is Dictionary:
@@ -241,6 +270,20 @@ func sync_automatic_activations(state: Dictionary, source: String) -> Dictionary
 	var activated: PackedStringArray = []
 	var discovered: PackedStringArray = []
 	var available: PackedStringArray = []
+	for quest_id_value: Variant in working["quest_state"].get("discovered", []).duplicate():
+		var repeat_quest_id: String = str(quest_id_value)
+		var repeat_quest: Variant = _registry.get_content("quests", repeat_quest_id)
+		if not repeat_quest is Dictionary or not _repeat_is_pending(working, repeat_quest):
+			continue
+		if str(repeat_quest.get("repeatable", {}).get("restart_policy", "offer")) != "auto_start":
+			continue
+		if not bool(gate_report(working, repeat_quest_id).get("met", false)):
+			continue
+		var restart_result: Dictionary = start_quest(working, repeat_quest_id, "%s.repeatable" % source)
+		if not restart_result.get("ok", false):
+			return restart_result
+		working = restart_result["state"]
+		activated.append(repeat_quest_id)
 	for quest: Variant in _registry.get_all("quests"):
 		if not quest is Dictionary:
 			continue
@@ -315,6 +358,9 @@ func get_progress(state: Dictionary, quest_id: String) -> Dictionary:
 			var entry: Dictionary = objective.duplicate(true)
 			entry["completed"] = bool(completed.get(str(objective.get("id", "")), false))
 			objectives.append(entry)
+	var repeatable: Dictionary = _repeatable_definition(quest)
+	var completion_count: int = _repeat_completion_count(state, quest_id)
+	var target_completions: int = int(repeatable.get("target_completions", 1))
 	return {
 		"quest_id": quest_id,
 		"title": quest.get("title", quest_id),
@@ -323,6 +369,14 @@ func get_progress(state: Dictionary, quest_id: String) -> Dictionary:
 		"available": quest_id in state["quest_state"].get("available", []),
 		"postponed": quest_id in state["quest_state"].get("postponed", []),
 		"completed": quest_id in state["quest_state"]["completed"],
+		"repeatable": not repeatable.is_empty(),
+		"completion_count": completion_count,
+		"target_completions": target_completions,
+		"progress_label": str(repeatable.get("progress_label", "Completions")),
+		"progress_text": "%d/%d" % [completion_count, target_completions],
+		"cooldown_remaining_blocks": _repeat_cooldown_remaining(state, quest_id),
+		"chain_id": str(repeatable.get("chain_id", "")),
+		"chain_stage": int(repeatable.get("stage", 0)),
 		"gates": gate_report(state, quest_id),
 		"objectives": objectives,
 	}
@@ -346,6 +400,17 @@ func gate_report(state: Dictionary, quest_id: String) -> Dictionary:
 			visible_failures.append(str(result.get("reason", "Requirement not met.")))
 		else:
 			has_hidden_failures = true
+	var cooldown_remaining: int = _repeat_cooldown_remaining(state, quest_id)
+	if cooldown_remaining > 0:
+		var cooldown_result: Dictionary = {
+			"type": "repeatable_cooldown",
+			"met": false,
+			"visible": true,
+			"reason": "Available again in %d activity block%s." % [cooldown_remaining, "" if cooldown_remaining == 1 else "s"],
+			"current": cooldown_remaining,
+		}
+		results.append(cooldown_result)
+		visible_failures.append(str(cooldown_result["reason"]))
 	return {
 		"known": true,
 		"met": visible_failures.is_empty() and not has_hidden_failures,
@@ -514,6 +579,102 @@ func _quest_completion_date(state: Dictionary, quest_id: String) -> String:
 	return ""
 
 
+func _repeatable_definition(quest: Dictionary) -> Dictionary:
+	var definition: Variant = quest.get("repeatable")
+	if not definition is Dictionary or int(definition.get("target_completions", 0)) < 2:
+		return {}
+	return definition
+
+
+func _ensure_repeatable_progress(state: Dictionary) -> Dictionary:
+	var quest_state: Dictionary = state["quest_state"]
+	if not quest_state.get("repeatable_progress") is Dictionary:
+		quest_state["repeatable_progress"] = {}
+	return quest_state["repeatable_progress"]
+
+
+func _repeat_completion_count(state: Dictionary, quest_id: String) -> int:
+	return maxi(int(state.get("quest_state", {}).get("repeatable_progress", {}).get(quest_id, {}).get("completions", 0)), 0)
+
+
+func _repeat_is_pending(state: Dictionary, quest: Dictionary) -> bool:
+	var quest_id: String = str(quest.get("id", ""))
+	var target: int = int(_repeatable_definition(quest).get("target_completions", 0))
+	var count: int = _repeat_completion_count(state, quest_id)
+	return (
+		target > 1
+		and count > 0
+		and count < target
+		and quest_id not in state["quest_state"].get("active", [])
+		and quest_id not in state["quest_state"].get("completed", [])
+		and quest_id not in state["quest_state"].get("failed", [])
+		and quest_id not in state["quest_state"].get("deferred", [])
+	)
+
+
+func _record_repeat_completion(state: Dictionary, quest: Dictionary, branch: Dictionary) -> void:
+	var quest_id: String = str(quest.get("id", ""))
+	var definition: Dictionary = _repeatable_definition(quest)
+	var all_progress: Dictionary = _ensure_repeatable_progress(state)
+	var entry: Dictionary = all_progress.get(quest_id, {}).duplicate(true)
+	var count: int = int(entry.get("completions", 0)) + 1
+	var completed_block: int = _clock_block_serial(state["clock"])
+	var cooldown_blocks: int = maxi(int(definition.get("cooldown_blocks", 0)), 0)
+	entry["completions"] = count
+	entry["target_completions"] = int(definition.get("target_completions", 1))
+	entry["chain_id"] = str(definition.get("chain_id", ""))
+	entry["stage"] = int(definition.get("stage", 0))
+	entry["last_completed_at"] = _clock_timestamp(state["clock"])
+	entry["last_completed_block"] = completed_block
+	entry["cooldown_until_block"] = completed_block + cooldown_blocks
+	if not entry.get("completion_history") is Array:
+		entry["completion_history"] = []
+	entry["completion_history"].append({
+		"completion": count,
+		"completed_at": entry["last_completed_at"],
+		"branch_id": branch.get("id"),
+	})
+	all_progress[quest_id] = entry
+
+
+func _repeat_cooldown_remaining(state: Dictionary, quest_id: String) -> int:
+	var entry: Variant = state.get("quest_state", {}).get("repeatable_progress", {}).get(quest_id)
+	if not entry is Dictionary or int(entry.get("completions", 0)) <= 0:
+		return 0
+	var quest: Variant = _registry.get_content("quests", quest_id)
+	if not quest is Dictionary or not _repeat_is_pending(state, quest):
+		return 0
+	return maxi(int(entry.get("cooldown_until_block", 0)) - _clock_block_serial(state["clock"]), 0)
+
+
+func _clock_block_serial(clock: Dictionary) -> int:
+	var year: int = maxi(int(clock.get("year", 1)), 1)
+	var month: int = clampi(int(clock.get("month", 1)), 1, 12)
+	var day: int = maxi(int(clock.get("day", 1)), 1)
+	var days: int = 0
+	for elapsed_year: int in range(1, year):
+		days += 366 if elapsed_year % 4 == 0 else 365
+	for elapsed_month: int in range(1, month):
+		days += _days_in_month(elapsed_month, year)
+	days += day - 1
+	return days * BLOCKS.size() + maxi(BLOCKS.find(str(clock.get("block", "early_morning"))), 0)
+
+
+func _days_in_month(month: int, year: int) -> int:
+	if month in [4, 6, 9, 11]:
+		return 30
+	if month == 2:
+		return 29 if year % 4 == 0 else 28
+	return 31
+
+
+func _clock_timestamp(clock: Dictionary) -> String:
+	return "Y%d-%02d-%02d:%s+%03d" % [
+		int(clock.get("year", 1)), int(clock.get("month", 1)), int(clock.get("day", 1)),
+		str(clock.get("block", "early_morning")), int(clock.get("minute_within_block", 0)),
+	]
+
+
 func _apply_completion_effect(state: Dictionary, effect: Dictionary) -> void:
 	match str(effect.get("operation", "")):
 		"unlock_phone_app":
@@ -570,6 +731,8 @@ func _apply_completion_effect(state: Dictionary, effect: Dictionary) -> void:
 
 
 func _get_state_value(state: Dictionary, path: String) -> Variant:
+	if path.begins_with("player.flags."):
+		return state.get("player", {}).get("flags", {}).get(path.trim_prefix("player.flags."))
 	if path.begins_with("education.") or path.begins_with("employment.") or path.begins_with("fitness.") or path.begins_with("economy."):
 		path = "player.%s" % path
 	var parts: PackedStringArray = path.split(".")

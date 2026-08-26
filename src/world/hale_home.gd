@@ -468,7 +468,9 @@ func _toggle_quest_panel() -> void:
 		for quest_id_value: Variant in tracked:
 			var quest: Variant = ContentRegistry.get_content("quests", str(quest_id_value))
 			if quest is Dictionary:
-				lines.append("[b]%s[/b]\n%s" % [quest.get("title", quest.get("id", "Quest")), quest.get("summary", "")])
+				var progress: Dictionary = QuestService.get_progress(str(quest_id_value))
+				var counter: String = "\n[color=#86d6c5]%s • %s[/color]" % [progress.get("progress_label", "Completions"), progress.get("progress_text", "0/0")] if bool(progress.get("repeatable", false)) else ""
+				lines.append("[b]%s[/b]\n%s%s" % [quest.get("title", quest.get("id", "Quest")), quest.get("summary", ""), counter])
 		if tracked.is_empty():
 			lines.append("Nothing is pinned. Open the phone's Quests app to track a discovered quest.")
 		quest_text.text = "\n\n".join(lines)

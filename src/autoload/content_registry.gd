@@ -279,6 +279,19 @@ func _validate_sandbox_quest_package() -> void:
 				_last_errors.append("Quest has an unsupported gate type: %s" % quest_id)
 			if str(requirement_value.get("visibility", "visible")) not in ["visible", "hidden"]:
 				_last_errors.append("Quest gate visibility must be visible or hidden: %s" % quest_id)
+		var repeatable: Variant = quest_value.get("repeatable")
+		if repeatable != null:
+			if not repeatable is Dictionary:
+				_last_errors.append("Repeatable quest settings must be an object: %s" % quest_id)
+			else:
+				if int(repeatable.get("target_completions", 0)) < 2:
+					_last_errors.append("Repeatable quest target must be at least two: %s" % quest_id)
+				if str(repeatable.get("restart_policy", "")) not in package.get("repeatable_quest_rules", {}).get("restart_policies", []):
+					_last_errors.append("Repeatable quest restart policy is invalid: %s" % quest_id)
+				if int(repeatable.get("cooldown_blocks", -1)) < 0:
+					_last_errors.append("Repeatable quest cooldown cannot be negative: %s" % quest_id)
+				if str(repeatable.get("progress_label", "")).is_empty():
+					_last_errors.append("Repeatable quest requires a progress label: %s" % quest_id)
 		var failure: Variant = quest_value.get("failure")
 		if failure is Dictionary and failure.has("deadline"):
 			timed_quest_count += 1

@@ -280,6 +280,24 @@ func validate_state(state: Dictionary) -> PackedStringArray:
 	for history_name: String in ["discovery_history", "decision_history", "branch_history"]:
 		if not quest_state.get(history_name, []) is Array:
 			errors.append("quest history must be an array: %s" % history_name)
+	var repeatable_progress: Variant = quest_state.get("repeatable_progress", {})
+	if not repeatable_progress is Dictionary:
+		errors.append("repeatable quest progress must be an object")
+	else:
+		for quest_id_value: Variant in repeatable_progress:
+			var quest_id: String = str(quest_id_value)
+			var repeat_entry: Variant = repeatable_progress[quest_id_value]
+			if not repeat_entry is Dictionary:
+				errors.append("repeatable quest progress entry must be an object: %s" % quest_id)
+				continue
+			var completions: int = int(repeat_entry.get("completions", -1))
+			var target: int = int(repeat_entry.get("target_completions", 0))
+			if completions < 0 or target < 2 or completions > target:
+				errors.append("repeatable quest count is invalid: %s" % quest_id)
+			if not repeat_entry.get("completion_history", []) is Array:
+				errors.append("repeatable quest history must be an array: %s" % quest_id)
+			elif repeat_entry.get("completion_history", []).size() != completions:
+				errors.append("repeatable quest history does not match its count: %s" % quest_id)
 	var simulation: Dictionary = state.get("simulation", {})
 	if not simulation.get("pending_events", []).is_empty():
 		errors.append("a simulation transaction is still pending")

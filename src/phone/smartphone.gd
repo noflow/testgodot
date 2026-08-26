@@ -307,6 +307,7 @@ func _render_quests() -> void:
 		var quest_id: String = str(quest_id_value)
 		var quest: Dictionary = ContentRegistry.get_content("quests", quest_id)
 		lines.append("[font_size=21]%s[/font_size]\n%s" % [quest.get("title", quest_id), quest.get("summary", "")])
+		_append_repeatable_quest_progress(lines, quest_id)
 		_append_quest_timing(lines, quest)
 		_append_gate_summary(lines, QuestService.gate_report(quest_id), true)
 		_add_action_button("Accept %s" % quest.get("title", quest_id), _decide_quest.bind("accept", quest_id))
@@ -321,6 +322,7 @@ func _render_quests() -> void:
 		var quest: Dictionary = ContentRegistry.get_content("quests", quest_id)
 		var tracking_label: String = " [color=#e9a86c]• TRACKED[/color]" if quest_id in tracked else ""
 		lines.append("[font_size=21]%s[/font_size]%s\n%s" % [quest.get("title", quest_id), tracking_label, quest.get("summary", "")])
+		_append_repeatable_quest_progress(lines, quest_id)
 		_append_quest_timing(lines, quest)
 		for objective: Variant in QuestService.get_progress(quest_id).get("objectives", []):
 			if objective is Dictionary:
@@ -344,6 +346,7 @@ func _render_quests() -> void:
 		var quest: Dictionary = ContentRegistry.get_content("quests", quest_id)
 		var postponed: bool = quest_id in state["quest_state"].get("postponed", [])
 		lines.append("[font_size=21]%s[/font_size] • %s\n%s" % [quest.get("title", quest_id), "POSTPONED" if postponed else "GATED", quest.get("summary", "")])
+		_append_repeatable_quest_progress(lines, quest_id)
 		_append_gate_summary(lines, QuestService.gate_report(quest_id), false)
 		if postponed:
 			_add_action_button("Reconsider %s" % quest.get("title", quest_id), _decide_quest.bind("reconsider", quest_id))
@@ -358,6 +361,16 @@ func _append_quest_timing(lines: PackedStringArray, quest: Dictionary) -> void:
 	var timing: Variant = quest.get("timing")
 	if timing is Dictionary:
 		lines.append("[color=#efc46e]TIME-SENSITIVE • %s[/color]" % timing.get("reason", "This opportunity has an authored deadline."))
+
+
+func _append_repeatable_quest_progress(lines: PackedStringArray, quest_id: String) -> void:
+	var progress: Dictionary = QuestService.get_progress(quest_id)
+	if not bool(progress.get("repeatable", false)):
+		return
+	lines.append("[color=#86d6c5]%s • %s[/color]" % [progress.get("progress_label", "Completions"), progress.get("progress_text", "0/0")])
+	var cooldown: int = int(progress.get("cooldown_remaining_blocks", 0))
+	if cooldown > 0:
+		lines.append("[color=#a9bdd0]Next run available in %d activity block%s.[/color]" % [cooldown, "" if cooldown == 1 else "s"])
 
 
 func _append_gate_summary(lines: PackedStringArray, report: Dictionary, show_ready: bool) -> void:
@@ -1633,7 +1646,11 @@ func _quest_names(ids: Array) -> String:
 	var names: PackedStringArray = []
 	for quest_id: Variant in ids:
 		var quest: Variant = ContentRegistry.get_content("quests", str(quest_id))
-		names.append(str(quest.get("title", quest_id)) if quest is Dictionary else str(quest_id))
+		var name: String = str(quest.get("title", quest_id)) if quest is Dictionary else str(quest_id)
+		var progress: Dictionary = QuestService.get_progress(str(quest_id))
+		if bool(progress.get("repeatable", false)):
+			name = "%s (%s)" % [name, progress.get("progress_text", "0/0")]
+		names.append(name)
 	return ", ".join(names)
 
 

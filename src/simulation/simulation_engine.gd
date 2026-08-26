@@ -711,6 +711,8 @@ func _ensure_quest_discovery_state(quest_state: Dictionary) -> void:
 	for key: String in ["discovered", "available", "postponed", "discovery_history", "decision_history"]:
 		if not quest_state.get(key) is Array:
 			quest_state[key] = []
+	if not quest_state.get("repeatable_progress") is Dictionary:
+		quest_state["repeatable_progress"] = {}
 	for status: String in ["active", "completed", "failed", "deferred"]:
 		for quest_id: Variant in quest_state.get(status, []):
 			if quest_id not in quest_state["discovered"]:

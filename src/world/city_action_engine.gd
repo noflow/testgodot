@@ -87,11 +87,14 @@ func perform_activity(state: Dictionary, interaction_id: String) -> Dictionary:
 	var interaction: Dictionary = value
 	if str(interaction.get("type", "activity")) != "activity":
 		return _failure("This interaction begins a conversation instead of an activity.")
-	var reason: String = availability_error(state, interaction)
+	var quest_sync: Dictionary = _quests.sync_automatic_activations(state, "city.activity:%s.preflight" % interaction_id)
+	if not quest_sync.get("ok", false):
+		return _failure(str(quest_sync.get("errors", ["Quest state could not be synchronized."])[0]))
+	var working: Dictionary = quest_sync["state"]
+	var reason: String = availability_error(working, interaction)
 	if not reason.is_empty():
 		return _failure(reason)
 
-	var working: Dictionary = state.duplicate(true)
 	var applied_events: Array = []
 	for operation_entry: Variant in interaction.get("operations", []):
 		if not operation_entry is Dictionary:

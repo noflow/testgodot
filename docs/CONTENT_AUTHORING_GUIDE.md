@@ -105,6 +105,16 @@ Visible descriptions must tell the player how to qualify. Hidden requirements mu
 not include spoiler text. The runtime reevaluates known gates when relevant state
 changes and whenever the Quests app opens.
 
+For a counted recurring quest, add a `repeatable` object with
+`target_completions` (minimum 2), `progress_label`, `cooldown_blocks`, and a
+`restart_policy` of `offer` or `auto_start`. Optional `chain_id` and `stage` fields
+identify related stages for tools and UI. Each valid run increments a durable
+`current/target` counter and resets its objectives; normal requirements are checked
+again before the next run. Branches, ordinary `completion_effects`, and
+`quest_completed` activation occur only at the final target. Put rewards that
+should apply on every run in `repeatable.each_completion_effects`. See Rachel's
+`build_a_training_rhythm` quest for a complete `0/5` example.
+
 ## Conversation structure
 
 A conversation is a directed graph. It contains:
@@ -144,6 +154,9 @@ city-facing events include `location_discovered`, `location_entered`,
 `employment_contract_accepted`, `compatible_employment_contract_accepted`, and
 `activity_completed`. When the last objective completes,
 the quest engine applies its branch and completion effects automatically.
+Counted repeatable quests remain nonterminal between runs and persist independent
+counters, timestamps, cooldown markers, and completion histories in
+`quest_state.repeatable_progress`.
 
 Employment runtime actions use the registered `employment.shift`,
 `economy.payday`, and `employment.promote_or_raise` operations. Add job-specific

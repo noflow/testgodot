@@ -113,7 +113,8 @@
         {"operation": "need.adjust", "payload": {"need": "energy", "amount": -18}},
         {"operation": "need.adjust", "payload": {"need": "hydration", "amount": 15}},
         {"operation": "need.adjust", "payload": {"need": "hygiene", "amount": -18}}
-      ]
+      ],
+      "quest_events": [{"event": "activity_completed", "tag": "forge_workout", "activity": "strength_workout"}]
     },
     {
       "id": "forge_cardio_workout",
@@ -129,10 +130,12 @@
         {"operation": "attribute.adjust", "payload": {"attribute": "stamina", "amount": 2}},
         {"operation": "attribute.adjust", "payload": {"attribute": "fitness", "amount": 2}},
         {"operation": "skill.add_experience", "payload": {"skill": "running", "experience": 90, "activity_difficulty": 24}},
+        {"operation": "skill.add_experience", "payload": {"skill": "fitness_training", "experience": 60, "activity_difficulty": 24}},
         {"operation": "need.adjust", "payload": {"need": "energy", "amount": -20}},
         {"operation": "need.adjust", "payload": {"need": "hydration", "amount": 18}},
         {"operation": "need.adjust", "payload": {"need": "hygiene", "amount": -20}}
-      ]
+      ],
+      "quest_events": [{"event": "activity_completed", "tag": "forge_workout", "activity": "stamina_workout"}]
     },
     {
       "id": "forge_shower",
