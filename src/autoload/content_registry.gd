@@ -10,6 +10,7 @@ const INDEXED_COLLECTIONS: PackedStringArray = [
 	"jobs", "courses", "programs", "activities", "actions", "city_interactions",
 	"phone_apps", "stores", "operations",
 	"date_activities",
+	"review_priorities",
 ]
 
 var _documents: Dictionary = {}
@@ -38,6 +39,7 @@ func validate_foundation() -> PackedStringArray:
 	_validate_required_files()
 	_validate_character_packages()
 	_validate_vertical_slice_manifest()
+	_validate_weekly_review_package()
 	validation_completed.emit(_last_errors.duplicate())
 	content_loaded.emit(_documents.size(), _packages.size())
 	return _last_errors.duplicate()
@@ -230,3 +232,27 @@ func _validate_vertical_slice_manifest() -> void:
 	for location_id: Variant in manifest.get("required_locations", []):
 		if get_location(str(location_id)) == null:
 			_last_errors.append("Vertical slice requires unknown location: %s" % location_id)
+
+
+func _validate_weekly_review_package() -> void:
+	var package: Variant = get_package("port_alder_weekly_review_system")
+	if not package is Dictionary:
+		_last_errors.append("Weekly-review package did not load.")
+		return
+	var availability: Variant = package.get("availability")
+	if not availability is Dictionary or str(availability.get("weekday", "")) != "sunday":
+		_last_errors.append("Weekly review must open on Sunday.")
+	if not availability is Dictionary or str(availability.get("opening_block", "")) not in ["evening", "late_evening", "night"]:
+		_last_errors.append("Weekly review has an invalid opening block.")
+	var section_ids: PackedStringArray = []
+	for section_value: Variant in package.get("sections", []):
+		if section_value is Dictionary:
+			section_ids.append(str(section_value.get("id", "")))
+	for required_id: String in ["direction", "money", "time", "health", "relationships", "quests"]:
+		if required_id not in section_ids:
+			_last_errors.append("Weekly review is missing its %s section." % required_id)
+	var priorities: Variant = package.get("review_priorities")
+	if not priorities is Array or priorities.is_empty():
+		_last_errors.append("Weekly review requires authored priorities.")
+	elif int(package.get("maximum_priorities", 0)) < 1 or int(package.get("maximum_priorities", 0)) > priorities.size():
+		_last_errors.append("Weekly review maximum-priority count is invalid.")

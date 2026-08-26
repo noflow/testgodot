@@ -138,9 +138,15 @@ layout_mode = 2
 text = "Auto: Off"
 
 [node name="SkipButton" type="Button" parent="DialogueMargin/DialoguePanel/PanelMargin/DialogueContent/Controls"]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(110, 42)
 layout_mode = 2
-text = "Skip Line"
+text = "Skip: Hold"
+
+[node name="ReplayButton" type="Button" parent="DialogueMargin/DialoguePanel/PanelMargin/DialogueContent/Controls"]
+custom_minimum_size = Vector2(110, 42)
+layout_mode = 2
+text = "Replay Line"
 
 [node name="HistoryButton" type="Button" parent="DialogueMargin/DialoguePanel/PanelMargin/DialogueContent/Controls"]
 custom_minimum_size = Vector2(110, 42)
@@ -198,6 +204,8 @@ text = "Close History (H)"
 
 [connection signal="pressed" from="DialogueMargin/DialoguePanel/PanelMargin/DialogueContent/Controls/ContinueButton" to="." method="_on_continue_pressed"]
 [connection signal="pressed" from="DialogueMargin/DialoguePanel/PanelMargin/DialogueContent/Controls/AutoButton" to="." method="_on_auto_pressed"]
-[connection signal="pressed" from="DialogueMargin/DialoguePanel/PanelMargin/DialogueContent/Controls/SkipButton" to="." method="_on_skip_pressed"]
+[connection signal="button_down" from="DialogueMargin/DialoguePanel/PanelMargin/DialogueContent/Controls/SkipButton" to="." method="_on_skip_button_down"]
+[connection signal="button_up" from="DialogueMargin/DialoguePanel/PanelMargin/DialogueContent/Controls/SkipButton" to="." method="_on_skip_button_up"]
+[connection signal="pressed" from="DialogueMargin/DialoguePanel/PanelMargin/DialogueContent/Controls/ReplayButton" to="." method="_on_replay_pressed"]
 [connection signal="pressed" from="DialogueMargin/DialoguePanel/PanelMargin/DialogueContent/Controls/HistoryButton" to="." method="_on_history_pressed"]
 [connection signal="pressed" from="HistoryPanel/HistoryMargin/HistoryLayout/CloseHistoryButton" to="." method="_on_history_pressed"]

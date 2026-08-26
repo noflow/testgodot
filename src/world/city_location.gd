@@ -25,6 +25,8 @@ func _ready() -> void:
 	if not GameState.has_active_game():
 		get_tree().change_scene_to_file(AppConstants.MAIN_MENU_SCENE)
 		return
+	SettingsService.settings_changed.connect(_apply_accessibility_settings)
+	_apply_accessibility_settings()
 	_location_id = str(GameState.current_state["world_state"].get("current_location", "")).get_slice(".", 0)
 	if _location_id == "hale_home":
 		get_tree().change_scene_to_file(AppConstants.HALE_HOME_SCENE)
@@ -198,6 +200,7 @@ func _open_action_panel(interactions: Array) -> void:
 		action_buttons.add_child(button)
 	action_panel.visible = true
 	player.movement_enabled = false
+	SettingsService.apply_accessibility(action_panel)
 	for child: Node in action_buttons.get_children():
 		if child is Button and not child.disabled:
 			child.grab_focus()
@@ -291,3 +294,7 @@ func _on_phone_closed() -> void:
 func _on_travel_completed(destination: String) -> void:
 	var destination_id: String = destination.get_slice(".", 0)
 	get_tree().change_scene_to_file(AppConstants.HALE_HOME_SCENE if destination_id == "hale_home" else AppConstants.CITY_LOCATION_SCENE)
+
+
+func _apply_accessibility_settings() -> void:
+	SettingsService.apply_accessibility(self)

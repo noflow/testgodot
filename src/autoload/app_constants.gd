@@ -34,6 +34,7 @@ const REQUIRED_FOUNDATION_FILES: PackedStringArray = [
 	"res://content/systems/simulation_events.json",
 	"res://content/systems/save_system.json",
 	"res://content/systems/relationships.json",
+	"res://content/systems/weekly_review.json",
 	"res://schemas/save_game.schema.json",
 	"res://tests/acceptance/vertical_slice.json",
 ]

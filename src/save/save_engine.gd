@@ -209,6 +209,8 @@ func validate_state(state: Dictionary) -> PackedStringArray:
 	for section: String in ["quest_state", "conversation_state", "calendar_state", "world_state", "household_state", "family_state", "simulation", "content_state"]:
 		if not state[section] is Dictionary:
 			errors.append("required section must be an object: %s" % section)
+	if state.has("weekly_review_state") and not state["weekly_review_state"] is Dictionary:
+		errors.append("weekly_review_state must be an object when present")
 	if not errors.is_empty():
 		return errors
 	if not state["content_version"] is String or str(state["content_version"]).is_empty():
@@ -257,6 +259,16 @@ func validate_state(state: Dictionary) -> PackedStringArray:
 		errors.append("a simulation transaction is still pending")
 	if simulation.get("recent_event_log", []).size() > 500:
 		errors.append("recent simulation event log exceeds 500 entries")
+	if state.get("weekly_review_state") is Dictionary:
+		var review_state: Dictionary = state["weekly_review_state"]
+		if not review_state.get("history", []) is Array or not review_state.get("selected_priorities", []) is Array:
+			errors.append("weekly review history and priorities must be arrays")
+		elif review_state.get("selected_priorities", []).size() > 3:
+			errors.append("weekly review contains more than three selected priorities")
+		if review_state.get("pending") != null and not review_state.get("pending") is Dictionary:
+			errors.append("pending weekly review must be an object or null")
+		if int(review_state.get("last_completed_week", 0)) < 0:
+			errors.append("last completed weekly review cannot be negative")
 	var content_state: Dictionary = state["content_state"]
 	if not content_state.get("loaded_packages", []) is Array:
 		errors.append("loaded content package ids must be an array")

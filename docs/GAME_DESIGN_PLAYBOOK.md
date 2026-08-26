@@ -503,7 +503,7 @@ household supplies, needs changes, and wardrobe equipment. The reusable phone no
 implements the nine First Week Foundations apps with live profile data, discovered
 contacts, character-authored message threads, quick replies, a conflict-aware
 seven-block calendar, quest tracking, relationship meters and levels, unlocked map
-destinations, forecast-driven outfit checks, and initial settings controls.
+destinations, forecast-driven outfit checks, and complete persistent settings.
 
 The Hale household is now schedule-driven. Elena, Daniel, and Lily resolve their
 current work, school, errands, and home routines from their own `.character` files.
@@ -528,7 +528,7 @@ code. The Hale garage can grant daily family-car permission when required.
 
 ## Next milestones
 
-1. Add the Sunday review, complete settings, and accessibility baseline
-2. Add housing search, rent/purchase qualification, moving, and household transitions
-3. Stabilize the vertical slice against all acceptance tests
+1. Add housing search, rent/purchase qualification, moving, and household transitions
+2. Complete the full new-game-to-Sunday save/load acceptance run
+3. Stabilize and package the vertical slice against all acceptance tests
 4. Resume broader content expansion, alternative households, and the September calendar

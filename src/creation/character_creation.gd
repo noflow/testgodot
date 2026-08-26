@@ -42,6 +42,8 @@ var _count_labels: Dictionary = {}
 
 
 func _ready() -> void:
+	SettingsService.settings_changed.connect(_apply_accessibility_settings)
+	_apply_accessibility_settings()
 	_config = ContentRegistry.get_package(CREATION_PACKAGE)
 	_validator = ValidatorScript.new(ContentRegistry)
 	_count_labels = {
@@ -62,6 +64,7 @@ func _ready() -> void:
 	_populate_multi(challenging_options, _config["challenging_traits"], "challenging_traits", 3)
 	_populate_multi(core_options, _config["core_values"], "core_values", 3)
 	_populate_multi(hobby_options, _config["hobbies"], "hobbies", 2)
+	_apply_accessibility_settings()
 	tabs.current_tab = 0
 	_update_navigation()
 	first_name.grab_focus()
@@ -259,3 +262,7 @@ func _find_by_id(entries: Array, content_id: String) -> Dictionary:
 		if entry is Dictionary and str(entry.get("id", "")) == content_id:
 			return entry
 	return {}
+
+
+func _apply_accessibility_settings() -> void:
+	SettingsService.apply_accessibility(self)

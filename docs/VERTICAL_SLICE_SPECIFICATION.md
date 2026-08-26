@@ -15,14 +15,14 @@ apps are implemented. The app
 views use live runtime data. Authored opening texts, quick
 replies, calendar scheduling,
 NPC commitment rejection, optional double-booking warnings, weather/outfit checks,
-quest progress, relationships, map discovery, and initial settings controls work.
+quest progress, relationships, map discovery, and complete persistent settings work.
 The employment slice continues beyond hiring with playable shifts, attendance and
 performance, weekly payroll, overtime, tips, withholding, raises, and promotions.
 The education slice also continues beyond enrollment with playable classes,
 studying, assignments, projects, midterms, finals, grades, academic consequences,
 credits, and first-semester completion.
-Map route confirmation and destination travel now work; save/load controls remain
-dependent on their later runtime phase.
+Map route confirmation and destination travel, resilient save/load, the Sunday
+reflection, complete persistent settings, and the accessibility baseline now work.
 
 ## Purpose
 
@@ -49,6 +49,8 @@ The slice is complete when a fresh installation can:
 8. Complete one institutional objective and one NPC activity.
 9. Observe time, money, needs, quests, calendar, and relationship state change.
 10. Save, close the game, reload, and resume without losing or duplicating state.
+11. Reach Sunday Evening, review the recorded week without a life score, and choose
+    zero to three optional priorities for the next week.
 
 All priority-zero and priority-one acceptance tests must pass. Data validation must
 report no errors.
@@ -160,8 +162,9 @@ packages. Replies consume five minutes and apply declared relationship or quest
 effects atomically. The scheduler checks fixed NPC work and school commitments,
 stores confirmed plans, supports cancellation, and records optional overlap
 warnings. The City Map compares live route time, cost, waits, closures, weather, and
-safety requirements before confirmation. Save/load, control remapping, and complete
-audio sliders activate with their corresponding later systems.
+safety requirements before confirmation. Save/load, control remapping, text and
+contrast options, reduced motion, complete audio controls, display preferences, and
+VN skip behavior are available from both the phone and main menu.
 The Money app synchronizes recurring obligations exactly once per due date and the
 Shopping app commits payment and inventory delivery as one rollback-safe action.
 
@@ -443,8 +446,10 @@ relationship effects to survive scene changes.
 
 Save slots, rotating autosaves, quicksave, checksum validation, atomic writes,
 backup recovery, migration, Continue, and load controls are implemented. Sunday
-review, complete settings, and the accessibility baseline remain. Completion
-requires a full new-game-to-Sunday save/load round trip.
+review, complete persistent settings, and the accessibility baseline are now
+implemented and covered by headless logic and live-scene probes. The remaining
+completion work is a full new-game-to-Sunday save/load round trip and stabilization
+against the complete acceptance gate.
 
 ### Phase 7 — Stabilization
 

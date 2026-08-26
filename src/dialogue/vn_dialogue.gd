@@ -8,6 +8,7 @@ const CHARACTERS_PER_SECOND: float = 55.0
 @onready var choices_box: VBoxContainer = %ChoicesBox
 @onready var continue_button: Button = %ContinueButton
 @onready var auto_button: Button = %AutoButton
+@onready var skip_button: Button = %SkipButton
 @onready var history_panel: PanelContainer = %HistoryPanel
 @onready var history_text: RichTextLabel = %HistoryText
 @onready var error_label: Label = %ErrorLabel
@@ -16,9 +17,13 @@ var _full_text: String = ""
 var _revealed_characters: float = 0.0
 var _auto_enabled: bool = false
 var _auto_wait: float = 0.0
+var _skip_active: bool = false
+var _skip_wait: float = 0.0
 
 
 func _ready() -> void:
+	SettingsService.settings_changed.connect(_apply_accessibility_settings)
+	_apply_accessibility_settings()
 	var resumed: Dictionary = DialogueService.resume()
 	if not resumed.get("ok", false):
 		_show_error(str(resumed.get("errors", ["No active conversation."])[0]))
@@ -27,7 +32,10 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	if line_label.visible_characters < _full_text.length():
+	if line_label.visible_characters >= 0 and line_label.visible_characters < _full_text.length():
+		if SettingsService.reduce_motion or _skip_active:
+			_reveal_line()
+			return
 		_revealed_characters += CHARACTERS_PER_SECOND * delta
 		line_label.visible_characters = mini(int(_revealed_characters), _full_text.length())
 		return
@@ -35,6 +43,11 @@ func _process(delta: float) -> void:
 		_auto_wait += delta
 		if _auto_wait >= 1.25:
 			_auto_wait = 0.0
+			_advance_dialogue()
+	if _skip_active and continue_button.visible and not history_panel.visible:
+		_skip_wait += delta
+		if _skip_wait >= 0.16:
+			_skip_wait = 0.0
 			_advance_dialogue()
 
 
@@ -44,6 +57,17 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("interact") and continue_button.visible and not history_panel.visible:
 		_on_continue_pressed()
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("dialogue_skip"):
+		if SettingsService.dialogue_skip_mode == "toggle":
+			_skip_active = not _skip_active
+		else:
+			_skip_active = true
+		_update_skip_label()
+		get_viewport().set_input_as_handled()
+	elif event.is_action_released("dialogue_skip") and SettingsService.dialogue_skip_mode == "hold":
+		_skip_active = false
+		_update_skip_label()
 		get_viewport().set_input_as_handled()
 
 
@@ -59,7 +83,7 @@ func _render_view(view: Dictionary) -> void:
 		speaker_label.text = str(view.get("speaker_name", "")).to_upper()
 		_full_text = line
 	line_label.text = _full_text
-	line_label.visible_characters = 0
+	line_label.visible_characters = -1 if SettingsService.reduce_motion else 0
 	_revealed_characters = 0.0
 	_auto_wait = 0.0
 	_clear_choices()
@@ -98,7 +122,7 @@ func _scene_heading() -> String:
 
 
 func _on_continue_pressed() -> void:
-	if line_label.visible_characters < _full_text.length():
+	if line_label.visible_characters >= 0 and line_label.visible_characters < _full_text.length():
 		_reveal_line()
 		return
 	_advance_dialogue()
@@ -132,11 +156,26 @@ func _on_auto_pressed() -> void:
 	_auto_wait = 0.0
 
 
-func _on_skip_pressed() -> void:
-	if line_label.visible_characters < _full_text.length():
-		_reveal_line()
-	elif continue_button.visible:
-		_advance_dialogue()
+func _on_skip_button_down() -> void:
+	if SettingsService.dialogue_skip_mode == "toggle":
+		_skip_active = not _skip_active
+	else:
+		_skip_active = true
+	_update_skip_label()
+
+
+func _on_skip_button_up() -> void:
+	if SettingsService.dialogue_skip_mode == "hold":
+		_skip_active = false
+		_update_skip_label()
+
+
+func _on_replay_pressed() -> void:
+	_skip_active = false
+	_revealed_characters = 0.0
+	line_label.visible_characters = 0
+	_auto_wait = 0.0
+	_update_skip_label()
 
 
 func _on_history_pressed() -> void:
@@ -167,3 +206,22 @@ func _clear_choices() -> void:
 
 func _show_error(message: String) -> void:
 	error_label.text = message
+
+
+func _apply_accessibility_settings() -> void:
+	SettingsService.apply_accessibility(self)
+	var scale: float = SettingsService.text_scale
+	var dialogue_margin: MarginContainer = $DialogueMargin
+	var portrait_area: CenterContainer = $PortraitArea
+	dialogue_margin.offset_top = -minf(640.0, 295.0 * scale)
+	portrait_area.offset_bottom = -minf(600.0, 260.0 * scale)
+	if SettingsService.reduce_motion:
+		_reveal_line()
+	_update_skip_label()
+
+
+func _update_skip_label() -> void:
+	if not is_instance_valid(skip_button):
+		return
+	var mode: String = SettingsService.dialogue_skip_mode.capitalize()
+	skip_button.text = "Skip: %s%s" % [mode, " (On)" if _skip_active else ""]

@@ -82,6 +82,21 @@ employment, playtime, build, and recovery state. Loading resumes an active VN no
 or routes to the saved home/city scene. F5 and F9 provide scene-independent
 quicksave and quickload controls, including during VN conversations.
 
+`ReviewService` opens one reflection from Sunday Evening onward, builds its six
+sections only from the current runtime snapshot and recorded events, and commits
+completion through `review.complete`. Weekly tracking records elapsed time,
+need-weighted health values, sleep and naps, workouts, weather exposure, and
+inebriation incidents. Completed review records retain their exact summary and up
+to three selected priorities; those priorities also become next-week calendar
+reminders. The review has no score, rank, failure state, or optimal-life judgment.
+
+`SettingsService` stores device-local accessibility, audio, display, and input
+preferences separately from game saves in `user://settings.cfg`. Text scale, high
+contrast, reduced camera smoothing, visual-effect preferences, VN skip behavior,
+five audio levels, display mode, window size, VSync, and serialized keyboard or
+controller bindings are applied on startup. These device preferences are never
+embedded in a character's life-state snapshot.
+
 ## Runtime state
 
 The root state contains:
@@ -95,6 +110,7 @@ The root state contains:
 - Relationship meters, agreements, memories, and relationship chapters
 - Quest, conversation, world, household, pregnancy, child, and custody state
 - Pending simulation events and a bounded recent event log
+- Pending and completed weekly reflections, selected priorities, and weekly totals
 - The exact base-game and mod content manifest used by the save
 
 The new-game template initializes all fifteen opening NPCs so their schedules and
@@ -133,6 +149,7 @@ context without allowing files to grow forever.
 The game provides eight manual slots, three rotating autosaves, and one quicksave.
 Autosaves occur at day boundaries and around major scenes, quest completions,
 relationship agreements, enrollment, employment, pregnancy, and birth changes.
+Completing a weekly review is also an autosave checkpoint.
 
 Conversations and travel can be saved safely because their current node or remaining
 trip state is recorded explicitly.
@@ -177,4 +194,5 @@ contain private health, fertility, relationship, and family simulation state.
 - `content/runtime/new_game_state.json`
 - `content/systems/simulation_events.json`
 - `content/systems/save_system.json`
+- `content/systems/weekly_review.json`
 - `schemas/save_game.schema.json`

@@ -15,7 +15,7 @@ includes room collisions, private doors, needs-aware food and hygiene actions,
 sleep, laundry, household storage, and a working wardrobe. The reusable smartphone
 now provides the nine vertical-slice apps plus Education, Jobs, Money, and Shopping, authored character messages and replies,
 NPC-aware calendar scheduling, live relationships, weather/outfit checks, the city
-map, quest progress, character statistics, and initial settings controls. Elena,
+map, quest progress, character statistics, and complete persistent settings. Elena,
 Daniel, and Lily now follow their character-authored work, school, and home-room
 schedules, appear as reusable top-down actors, and expose available story or ambient
 conversations through direct exploration.
@@ -62,6 +62,16 @@ missed and cancelled plans, five relationship chapters, and casual, exclusive, o
 open dating agreements. Other partners can witness public dates and respond from
 their own jealousy, boundaries, agreement, and authored reaction style; outcomes
 range from approval or an honest check-in to damaged trust or a breakup.
+Sunday Evening now opens a state-backed weekly reflection covering direction,
+money, commitments, health, relationships, and quests. It deliberately gives no
+life score; the player may instead choose up to three next-week priorities, add a
+calendar commitment, or continue without priorities. Completed reflections,
+priority reminders, and the underlying weekly activity totals persist in saves.
+The phone and main menu now share complete persistent settings for four text sizes,
+high contrast, reduced motion, screen-edge effects, camera shake, hold/toggle VN
+skipping, independent audio channels, display mode, resolution, VSync, and keyboard
+or controller remapping. VN lines can also be replayed, and accessibility choices
+apply across character creation, dialogue, home, city, and phone interfaces.
 
 ## Planned technology
 
@@ -91,6 +101,7 @@ Education, jobs, interviews, and repeatable actions are summarized in [docs/EDUC
 Economy, inventory, clothing, food, and stores are summarized in [docs/ECONOMY_INVENTORY_PLAYBOOK.md](docs/ECONOMY_INVENTORY_PLAYBOOK.md).
 Runtime state, simulation events, saves, and migrations are described in [docs/RUNTIME_SAVE_ARCHITECTURE.md](docs/RUNTIME_SAVE_ARCHITECTURE.md).
 Date authoring, agreements, conflicts, and relationship progression are described in [docs/RELATIONSHIP_DATING_PLAYBOOK.md](docs/RELATIONSHIP_DATING_PLAYBOOK.md).
+Sunday review behavior and the implemented settings/accessibility baseline are described in [docs/WEEKLY_REVIEW_ACCESSIBILITY_PLAYBOOK.md](docs/WEEKLY_REVIEW_ACCESSIBILITY_PLAYBOOK.md).
 The first playable build is defined in [docs/VERTICAL_SLICE_SPECIFICATION.md](docs/VERTICAL_SLICE_SPECIFICATION.md).
 
 Validate all character and global content data with `python3 tools/validate_characters.py`.

@@ -50,11 +50,51 @@ var _interview_question_index: int = 0
 var _interview_answer_quality: int = 0
 var _selected_store_id: String = ""
 var _pending_manual_overwrite: String = ""
+var _review_autoprompted_key: String = ""
+var _return_to_weekly_review: bool = false
+var _pending_remap_action: String = ""
 
 
 func _ready() -> void:
 	_build_app_buttons()
+	SettingsService.settings_changed.connect(_apply_accessibility_settings)
+	_apply_accessibility_settings()
 	visible = false
+
+
+func _input(event: InputEvent) -> void:
+	if not visible or _pending_remap_action.is_empty():
+		return
+	if event is InputEventKey and not event.pressed:
+		return
+	if event is InputEventJoypadButton and not event.pressed:
+		return
+	if event is InputEventJoypadMotion and absf(event.axis_value) < 0.5:
+		return
+	if not (event is InputEventKey or event is InputEventJoypadButton or event is InputEventJoypadMotion):
+		return
+	var action: String = _pending_remap_action
+	_pending_remap_action = ""
+	if SettingsService.remap_action(action, event):
+		var error: Error = SettingsService.save_settings()
+		phone_status.text = "%s is now %s." % [SettingsService.action_name(action), SettingsService.binding_label(action)] if error == OK else "The new binding could not be saved."
+	else:
+		phone_status.text = "That input cannot be used for this action."
+	_render_settings()
+	get_viewport().set_input_as_handled()
+
+
+func _process(_delta: float) -> void:
+	if not GameState.has_active_game():
+		return
+	var review_status: Dictionary = ReviewService.review_status()
+	if not bool(review_status.get("due", false)):
+		return
+	var review_key: String = str(review_status.get("review_id", ""))
+	if review_key.is_empty() or review_key == _review_autoprompted_key:
+		return
+	_review_autoprompted_key = review_key
+	_open_weekly_review()
 
 
 func open_phone(default_app: String = "character_profile") -> void:
@@ -62,6 +102,10 @@ func open_phone(default_app: String = "character_profile") -> void:
 		return
 	PhoneService.sync_messages()
 	RelationshipService.sync_dates()
+	var review_status: Dictionary = ReviewService.review_status()
+	if bool(review_status.get("due", false)):
+		_open_weekly_review()
+		return
 	visible = true
 	scheduler_panel.visible = false
 	route_panel.visible = false
@@ -76,6 +120,8 @@ func close_phone() -> void:
 		return
 	scheduler_panel.visible = false
 	route_panel.visible = false
+	_return_to_weekly_review = false
+	_pending_remap_action = ""
 	visible = false
 	phone_closed.emit()
 
@@ -135,6 +181,134 @@ func _show_app(app_id: String) -> void:
 			_render_weather()
 		"settings":
 			_render_settings()
+
+
+func _open_weekly_review() -> void:
+	if not GameState.has_active_game():
+		return
+	var result: Dictionary = ReviewService.synchronize()
+	if not result.get("ok", false):
+		return
+	visible = true
+	scheduler_panel.visible = false
+	route_panel.visible = false
+	_current_app = "weekly_review"
+	_render_weekly_review()
+	phone_opened.emit()
+	if app_actions.get_child_count() > 0:
+		app_actions.get_child(0).grab_focus()
+
+
+func _render_weekly_review() -> void:
+	_current_app = "weekly_review"
+	_clear_container(app_actions)
+	_refresh_clock()
+	app_title.text = "WEEKLY REVIEW"
+	var review: Dictionary = ReviewService.current_review()
+	if review.is_empty():
+		app_content.text = "The weekly reflection is not available yet."
+		return
+	var summary: Dictionary = review.get("summary", {})
+	var direction: Dictionary = summary.get("direction", {})
+	var money: Dictionary = summary.get("money", {})
+	var time: Dictionary = summary.get("time", {})
+	var health: Dictionary = summary.get("health", {})
+	var relationships: Dictionary = summary.get("relationships", {})
+	var quests: Dictionary = summary.get("quests", {})
+	var job_names: PackedStringArray = PackedStringArray(direction.get("jobs", []))
+	var closest_names: PackedStringArray = []
+	for closest_value: Variant in relationships.get("closest", []):
+		if closest_value is Dictionary:
+			closest_names.append("%s (%s %d)" % [closest_value.get("name", "Contact"), str(closest_value.get("stage", "acquaintance")).replace("_", " ").capitalize(), int(closest_value.get("bond", 0))])
+	var change_lines: PackedStringArray = []
+	for key_value: Variant in relationships.get("meter_changes", {}):
+		var key: String = str(key_value)
+		var parts: PackedStringArray = key.split(":")
+		if parts.size() == 2:
+			var amount: float = float(relationships["meter_changes"][key])
+			change_lines.append("%s %s %+.0f" % [_character_name(parts[0]), parts[1].capitalize(), amount])
+	var averages: Dictionary = health.get("averages", {})
+	var selected: Array = review.get("priorities", [])
+	var selected_names: PackedStringArray = []
+	for priority_value: Variant in ReviewService.priority_definitions():
+		if priority_value is Dictionary and str(priority_value.get("id", "")) in selected:
+			selected_names.append(str(priority_value.get("name", "Priority")))
+	var lines: PackedStringArray = [
+		"[font_size=23]Week %d • %s to %s[/font_size]" % [review.get("week_number", 1), review.get("start_date", ""), review.get("end_date", "")],
+		"This is a reflection, not a score. There is no winning life path.",
+		"",
+		"DIRECTION",
+		"Life path: %s\nEducation: %s%s\nEmployment: %s" % [
+			direction.get("life_path", "Undecided"),
+			"Enrolled" if direction.get("enrolled", false) else "Not enrolled",
+			" — %s, %d course(s)" % [direction.get("program", "Program"), direction.get("course_count", 0)] if direction.get("enrolled", false) else "",
+			", ".join(job_names) if not job_names.is_empty() else "Not employed",
+		],
+		"",
+		"MONEY",
+		"Available balance $%.2f • Income $%.2f • Spending $%.2f\nTuition balance $%.2f • Student debt $%.2f • Rent due $%.2f" % [
+			money.get("available_balance", 0.0), money.get("income", 0.0), money.get("spending", 0.0),
+			money.get("tuition_balance", 0.0), money.get("student_debt", 0.0), money.get("rent_due", 0.0),
+		],
+		"",
+		"TIME AND COMMITMENTS",
+		"Time advanced %.1f hours • Completed %d • Missed %d • Cancelled %d • Late %d\nSleep sessions %d • Estimated sleep %.1f hours/day • Naps %.1f hours" % [
+			time.get("elapsed_hours", 0.0), time.get("completed_commitments", 0), time.get("missed_commitments", 0), time.get("cancelled_commitments", 0), time.get("late_arrivals", 0),
+			time.get("sleep_sessions", 0), time.get("sleep_hours_per_day", 0.0), time.get("nap_hours", 0.0),
+		],
+		"",
+		"HEALTH AND ENERGY",
+		"Average energy %.1f • Hygiene %.1f • Mood %.1f • Stress %.1f\nWeather exposure %.1f hours • Workouts %d • Impairment incidents %d • Active conditions %d" % [
+			averages.get("energy", health.get("current_energy", 0.0)), averages.get("hygiene", health.get("current_hygiene", 0.0)), averages.get("mood", 0.0), averages.get("stress", 0.0),
+			health.get("weather_exposure_hours", 0.0), health.get("workouts", 0), health.get("inebriation_incidents", 0), health.get("active_conditions", 0),
+		],
+		"",
+		"RELATIONSHIPS",
+		"Known contacts %d • Dates kept %d • Plans broken %d • Chapters unlocked %d\nClosest: %s\nChanges: %s" % [
+			relationships.get("known_contacts", 0), relationships.get("dates_kept", 0), relationships.get("dates_broken", 0), relationships.get("chapters_unlocked", 0),
+			", ".join(closest_names) if not closest_names.is_empty() else "No contacts yet",
+			"; ".join(change_lines) if not change_lines.is_empty() else "No recorded meter changes",
+		],
+		"",
+		"STORY AND QUESTS",
+		"Completed: %s\nActive: %s\nDeferred: %s\nFailed: %s • Branch changes %d" % [
+			_quest_names(quests.get("completed", [])), _quest_names(quests.get("active", [])),
+			_quest_names(quests.get("deferred", [])), _quest_names(quests.get("failed", [])), quests.get("branch_changes", 0),
+		],
+		"",
+		"NEXT-WEEK PRIORITIES (%d/3)\n%s" % [selected.size(), ", ".join(selected_names) if not selected_names.is_empty() else "None selected — continuing without priorities is valid."],
+	]
+	app_content.text = "\n".join(lines)
+	for priority_value: Variant in ReviewService.priority_definitions():
+		if priority_value is Dictionary:
+			var priority: Dictionary = priority_value
+			var priority_id: String = str(priority.get("id", ""))
+			_add_action_button("%s %s — %s" % ["✓" if priority_id in selected else "○", priority.get("name", "Priority"), priority.get("description", "")], _toggle_review_priority.bind(priority_id))
+	_add_action_button("+ Schedule a Key Commitment", _open_weekly_review_scheduler)
+	_add_action_button("Finish Review with Priorities", _complete_weekly_review.bind(true))
+	_add_action_button("Continue Without Priorities", _complete_weekly_review.bind(false))
+
+
+func _toggle_review_priority(priority_id: String) -> void:
+	var result: Dictionary = ReviewService.toggle_priority(priority_id)
+	_render_weekly_review()
+	phone_status.text = "Priorities updated." if result.get("ok", false) else str(result.get("errors", ["Priority could not be changed."])[0])
+
+
+func _open_weekly_review_scheduler() -> void:
+	_return_to_weekly_review = true
+	_open_scheduler()
+
+
+func _complete_weekly_review(keep_priorities: bool) -> void:
+	var result: Dictionary = ReviewService.complete_review(keep_priorities)
+	if not result.get("ok", false):
+		phone_status.text = str(result.get("errors", ["The weekly review could not be completed."])[0])
+		return
+	_return_to_weekly_review = false
+	_review_autoprompted_key = str(result.get("data", {}).get("review", {}).get("id", _review_autoprompted_key))
+	_show_app("calendar")
+	phone_status.text = str(result.get("data", {}).get("message", "Weekly review saved."))
 
 
 func _refresh_clock() -> void:
@@ -261,6 +435,8 @@ func _render_calendar() -> void:
 		lines.append("[color=#ef7777]CONFLICT WARNINGS: %d[/color]\nOverlapping optional plans are allowed, but you must resolve them before attending." % warning_count)
 	app_content.text = "\n\n".join(lines) if not lines.is_empty() else "No plans are scheduled."
 	_add_action_button("+ Add Plan", _open_scheduler)
+	if ReviewService.review_status().get("pending", false):
+		_add_action_button("Return to Weekly Review", _render_weekly_review)
 
 
 func _render_quests() -> void:
@@ -1144,16 +1320,31 @@ func _render_settings() -> void:
 			autosaves.append(summary_value)
 	if not autosaves.is_empty():
 		save_lines.append("Latest autosave: %s" % SaveService.format_summary(autosaves[0], true).replace("\n", " • "))
-	app_content.text = "ACCESSIBILITY\nText size: %d%%\nReduce motion: %s\nHigh contrast: %s\n\nAUDIO\nMaster volume: %d%%\nMusic: %d%%\nAmbience: %d%%\nUI: %d%%\nVoice: %d%%\n\nSettings and saves remain on this device unless you copy them yourself.%s" % [
+	var binding_lines: PackedStringArray = []
+	for action: String in SettingsService.REMAPPABLE_ACTIONS:
+		binding_lines.append("%s: %s" % [SettingsService.action_name(action), SettingsService.binding_label(action)])
+	app_content.text = "ACCESSIBILITY\nText size: %d%%\nReduce motion: %s\nHigh contrast: %s\nScreen-edge effects: %s\nCamera shake: %s\nDialogue skip: %s (K / controller shortcut)\n\nAUDIO\nMaster: %d%% • Music: %d%% • Ambience: %d%%\nUI: %d%% • Voice: %d%%\n\nDISPLAY\nMode: %s • Window: %s • VSync: %s\n\nCONTROLS\n%s\n\nSettings and saves remain on this device unless you copy them yourself.%s" % [
 		int(SettingsService.text_scale * 100.0), _on_off(SettingsService.reduce_motion), _on_off(SettingsService.high_contrast),
+		_on_off(SettingsService.screen_effects_enabled), _on_off(SettingsService.camera_shake_enabled), SettingsService.dialogue_skip_mode.capitalize(),
 		int(SettingsService.master_volume * 100.0), int(SettingsService.music_volume * 100.0), int(SettingsService.ambience_volume * 100.0), int(SettingsService.ui_volume * 100.0), int(SettingsService.voice_volume * 100.0),
-		"\n".join(save_lines),
+		SettingsService.display_mode.capitalize(), SettingsService.window_size, _on_off(SettingsService.vsync_enabled),
+		"\n".join(binding_lines), "\n".join(save_lines),
 	]
-	_add_action_button("Cycle Text Size", _cycle_text_size)
-	_add_action_button("Toggle Reduce Motion", _toggle_reduce_motion)
-	_add_action_button("Toggle High Contrast", _toggle_high_contrast)
-	_add_action_button("Master Volume −", _adjust_master_volume.bind(-0.1))
-	_add_action_button("Master Volume +", _adjust_master_volume.bind(0.1))
+	_add_action_button("Text Size — %d%% (Cycle)" % int(SettingsService.text_scale * 100.0), _cycle_text_size)
+	_add_action_button("Reduce Motion — %s" % _on_off(SettingsService.reduce_motion), _toggle_reduce_motion)
+	_add_action_button("High Contrast — %s" % _on_off(SettingsService.high_contrast), _toggle_high_contrast)
+	_add_action_button("Screen-Edge Effects — %s" % _on_off(SettingsService.screen_effects_enabled), _toggle_screen_effects)
+	_add_action_button("Camera Shake — %s" % _on_off(SettingsService.camera_shake_enabled), _toggle_camera_shake)
+	_add_action_button("Dialogue Skip Mode — %s" % SettingsService.dialogue_skip_mode.capitalize(), _toggle_dialogue_skip_mode)
+	for channel: String in ["master", "music", "ambience", "ui", "voice"]:
+		_add_action_button("%s Volume −" % channel.capitalize(), _adjust_audio_volume.bind(channel, -0.1))
+		_add_action_button("%s Volume +" % channel.capitalize(), _adjust_audio_volume.bind(channel, 0.1))
+	_add_action_button("Display Mode — %s" % SettingsService.display_mode.capitalize(), _cycle_display_mode)
+	_add_action_button("Window Size — %s" % SettingsService.window_size, _cycle_window_size)
+	_add_action_button("VSync — %s" % _on_off(SettingsService.vsync_enabled), _toggle_vsync)
+	for action: String in SettingsService.REMAPPABLE_ACTIONS:
+		_add_action_button("Remap %s" % SettingsService.action_name(action), _begin_control_remap.bind(action))
+	_add_action_button("Reset Controls to Defaults", _reset_control_bindings)
 	_add_action_button("Quicksave", _quicksave_game)
 	if SaveService.has_slot(SaveService.QUICKSAVE_SLOT):
 		_add_action_button("Quickload", _load_save_from_phone.bind(SaveService.QUICKSAVE_SLOT))
@@ -1169,6 +1360,8 @@ func _render_settings() -> void:
 		var autosave_id: String = str(autosave_id_value)
 		if SaveService.has_slot(autosave_id):
 			_add_action_button("Load %s" % SaveService.slot_label(autosave_id), _load_save_from_phone.bind(autosave_id))
+	_add_action_button("Quicksave and Return to Main Menu", _quicksave_and_return_to_menu)
+	call_deferred("_apply_accessibility_settings")
 
 
 func _quicksave_game() -> void:
@@ -1306,7 +1499,12 @@ func _on_confirm_schedule_pressed() -> void:
 		return
 	scheduler_panel.visible = false
 	phone_status.text = "%s was added to the calendar." % title
-	_show_app("calendar")
+	if _return_to_weekly_review:
+		_return_to_weekly_review = false
+		_current_app = "weekly_review"
+		_render_weekly_review()
+	else:
+		_show_app("calendar")
 
 
 func _cancel_calendar_event(event_id: String) -> void:
@@ -1326,6 +1524,10 @@ func _cancel_calendar_event(event_id: String) -> void:
 
 func _on_close_scheduler_pressed() -> void:
 	scheduler_panel.visible = false
+	if _return_to_weekly_review:
+		_return_to_weekly_review = false
+		_current_app = "weekly_review"
+		_render_weekly_review()
 
 
 func _on_close_phone_pressed() -> void:
@@ -1333,9 +1535,8 @@ func _on_close_phone_pressed() -> void:
 
 
 func _cycle_text_size() -> void:
-	var sizes: Array = [1.0, 1.25, 1.5, 1.75]
-	var current: int = sizes.find(SettingsService.text_scale)
-	SettingsService.text_scale = sizes[posmod(current + 1, sizes.size())]
+	var current: int = SettingsService.TEXT_SCALES.find(SettingsService.text_scale)
+	SettingsService.text_scale = SettingsService.TEXT_SCALES[posmod(current + 1, SettingsService.TEXT_SCALES.size())]
 	_save_and_refresh_settings()
 
 
@@ -1349,9 +1550,50 @@ func _toggle_high_contrast() -> void:
 	_save_and_refresh_settings()
 
 
-func _adjust_master_volume(amount: float) -> void:
-	SettingsService.master_volume = clampf(SettingsService.master_volume + amount, 0.0, 1.0)
-	SettingsService.apply_audio_settings()
+func _toggle_screen_effects() -> void:
+	SettingsService.screen_effects_enabled = not SettingsService.screen_effects_enabled
+	_save_and_refresh_settings()
+
+
+func _toggle_camera_shake() -> void:
+	SettingsService.camera_shake_enabled = not SettingsService.camera_shake_enabled
+	_save_and_refresh_settings()
+
+
+func _toggle_dialogue_skip_mode() -> void:
+	SettingsService.dialogue_skip_mode = "toggle" if SettingsService.dialogue_skip_mode == "hold" else "hold"
+	_save_and_refresh_settings()
+
+
+func _adjust_audio_volume(channel: String, amount: float) -> void:
+	SettingsService.set_audio_volume(channel, SettingsService.audio_volume(channel) + amount)
+	_save_and_refresh_settings()
+
+
+func _cycle_display_mode() -> void:
+	SettingsService.display_mode = "fullscreen" if SettingsService.display_mode == "windowed" else "windowed"
+	_save_and_refresh_settings()
+
+
+func _cycle_window_size() -> void:
+	var current: int = SettingsService.WINDOW_SIZES.find(SettingsService.window_size)
+	SettingsService.window_size = SettingsService.WINDOW_SIZES[posmod(current + 1, SettingsService.WINDOW_SIZES.size())]
+	_save_and_refresh_settings()
+
+
+func _toggle_vsync() -> void:
+	SettingsService.vsync_enabled = not SettingsService.vsync_enabled
+	_save_and_refresh_settings()
+
+
+func _begin_control_remap(action: String) -> void:
+	_pending_remap_action = action
+	phone_status.text = "Press a keyboard key or controller input for %s." % SettingsService.action_name(action)
+
+
+func _reset_control_bindings() -> void:
+	_pending_remap_action = ""
+	SettingsService.reset_control_bindings()
 	_save_and_refresh_settings()
 
 
@@ -1359,6 +1601,20 @@ func _save_and_refresh_settings() -> void:
 	var error: Error = SettingsService.save_settings()
 	phone_status.text = "Settings saved." if error == OK else "Settings could not be saved."
 	_render_settings()
+	_apply_accessibility_settings()
+
+
+func _apply_accessibility_settings() -> void:
+	SettingsService.apply_accessibility(self)
+
+
+func _quicksave_and_return_to_menu() -> void:
+	var result: Dictionary = SaveService.quicksave()
+	if not result.get("ok", false):
+		phone_status.text = _save_error(result)
+		return
+	close_phone()
+	get_tree().change_scene_to_file(AppConstants.MAIN_MENU_SCENE)
 
 
 func _add_action_button(label: String, callback: Callable) -> void:
@@ -1368,6 +1624,7 @@ func _add_action_button(label: String, callback: Callable) -> void:
 	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	button.pressed.connect(callback)
 	app_actions.add_child(button)
+	SettingsService.apply_accessibility(button)
 
 
 func _availability_now(character: Dictionary) -> String:

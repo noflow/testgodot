@@ -16,6 +16,7 @@
     {"id": "relationship.set_agreement", "payload": ["character_id", "agreement", "mutual_acknowledgment"], "checks": ["adult_eligibility", "conversation_or_event_source"]},
     {"id": "relationship.record_date", "payload": ["character_id", "date_record"], "checks": ["adult_eligibility", "unique_date_id"], "effects": ["dating_history", "relationship_stage"]},
     {"id": "relationship.record_conflict", "payload": ["character_id", "conflict_record"], "checks": ["unique_conflict_id"], "effects": ["conflict_history", "agreement_state"]},
+    {"id": "review.complete", "payload": ["review_record"], "checks": ["review_due", "unique_review_id"], "effects": ["review_history", "priorities", "next_week_reminders"]},
     {"id": "memory.create", "payload": ["character_id", "memory_id", "importance", "tags"], "deduplicate_by": ["character_id", "memory_id"]},
     {"id": "memory.expire", "payload": ["character_id", "memory_id"], "checks": ["memory_is_expirable"]},
     {"id": "quest.start", "payload": ["quest_id"], "checks": ["activation", "prerequisites", "not_already_active_or_complete"]},

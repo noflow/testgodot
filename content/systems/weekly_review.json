@@ -1,0 +1,28 @@
+{
+  "format_version": 1,
+  "package_id": "port_alder_weekly_review_system",
+  "availability": {
+    "weekday": "sunday",
+    "opening_block": "evening",
+    "mandatory_opening_week": true
+  },
+  "sections": [
+    {"id": "direction", "name": "Direction"},
+    {"id": "money", "name": "Money"},
+    {"id": "time", "name": "Time and Commitments"},
+    {"id": "health", "name": "Health and Energy"},
+    {"id": "relationships", "name": "Relationships"},
+    {"id": "quests", "name": "Story and Quests"}
+  ],
+  "review_priorities": [
+    {"id": "education", "name": "Education", "description": "Protect class, study, and assignment time."},
+    {"id": "career", "name": "Career", "description": "Focus on applications, shifts, performance, or advancement."},
+    {"id": "finances", "name": "Finances", "description": "Watch spending, bills, tuition, debt, and savings."},
+    {"id": "health", "name": "Health", "description": "Make room for sleep, hygiene, exercise, and healthcare."},
+    {"id": "relationships", "name": "Relationships", "description": "Keep plans and invest in people who matter."},
+    {"id": "rest", "name": "Rest and Recreation", "description": "Leave space for recovery, hobbies, and unstructured time."},
+    {"id": "personal_growth", "name": "Personal Growth", "description": "Practice skills, values, confidence, and independence."}
+  ],
+  "maximum_priorities": 3,
+  "tone": "reflective_not_judgmental"
+}

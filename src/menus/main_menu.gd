@@ -5,9 +5,13 @@ extends Control
 @onready var load_panel: PanelContainer = %LoadPanel
 @onready var save_list: VBoxContainer = %SaveList
 @onready var load_status: Label = %LoadStatus
+@onready var settings_panel: Control = %SettingsPanel
 
 
 func _ready() -> void:
+	SettingsService.settings_changed.connect(_apply_accessibility_settings)
+	SettingsService.apply_accessibility(self)
+	settings_panel.closed.connect(_on_settings_closed)
 	continue_button.disabled = not SaveService.has_valid_save()
 	%NewGameButton.grab_focus()
 
@@ -31,7 +35,7 @@ func _on_load_game_pressed() -> void:
 
 
 func _on_settings_pressed() -> void:
-	_show_foundation_message("Settings data is active; the full screen arrives with the phone UI.")
+	settings_panel.open_panel()
 
 
 func _on_content_pressed() -> void:
@@ -90,6 +94,14 @@ func _resume_loaded_game() -> void:
 func _on_close_load_pressed() -> void:
 	load_panel.visible = false
 	%LoadGameButton.grab_focus()
+
+
+func _on_settings_closed() -> void:
+	%SettingsButton.grab_focus()
+
+
+func _apply_accessibility_settings() -> void:
+	SettingsService.apply_accessibility(self)
 
 
 func _first_error(result: Dictionary) -> String:

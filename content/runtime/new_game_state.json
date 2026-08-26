@@ -70,7 +70,8 @@
     "world_state": {"current_location": "hale_home.player_bedroom", "unlocked_locations": ["hale_home", "alder_heights_residential_street", "alder_heights_bus_stop", "alder_bay_park", "forge_fitness", "westshore_campus", "westshore_administration_office", "harbor_employment_centre", "harborlight_cinema"], "discovered_locations": ["hale_home"], "weather": "$from_opening_week", "store_state": {}, "world_flags": {}, "pending_travel": null, "last_trip": null, "random_seed": "$generated_seed"},
     "household_state": {"household_id": "hale_household", "members": ["player", "elena_reyes_hale", "daniel_hale", "lily_hale"], "shared_inventory": {}, "rules": {"mutual_privacy": false, "guest_notice_required": true, "overnight_notice_required": true}, "contribution_score": 0},
     "family_state": {"pregnancies": [], "children": [], "custody_arrangements": [], "child_support_orders": []},
-    "simulation": {"pending_events": [], "recent_event_log": [], "next_event_sequence": 1, "last_daily_tick": null, "last_weekly_tick": null, "last_monthly_tick": null},
+    "weekly_review_state": {"pending": null, "history": [], "selected_priorities": [], "last_completed_week": 0},
+    "simulation": {"pending_events": [], "recent_event_log": [], "next_event_sequence": 1, "last_daily_tick": null, "last_weekly_tick": null, "last_monthly_tick": null, "weekly_tracking": {"week_number": 1, "start_date": "Y1-08-20", "elapsed_minutes": 0, "need_weighted_totals": {}, "sleep_minutes": 0, "sleep_sessions": 0, "nap_minutes": 0, "workouts": 0, "weather_exposure_minutes": 0, "inebriation_incidents": 0, "inebriation_active": false}},
     "content_state": {"loaded_packages": "$resolved_content_manifest", "package_manifest": [], "missing_optional_packages": [], "disabled_content_ids": []}
   }
 }

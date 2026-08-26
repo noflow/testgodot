@@ -69,6 +69,8 @@ func _ready() -> void:
 	if not GameState.has_active_game():
 		get_tree().change_scene_to_file(AppConstants.MAIN_MENU_SCENE)
 		return
+	SettingsService.settings_changed.connect(_apply_accessibility_settings)
+	_apply_accessibility_settings()
 	_build_rooms()
 	_build_walls()
 	_schedule_engine = HouseholdScheduleEngineScript.new(ContentRegistry)
@@ -289,6 +291,7 @@ func _open_action_panel(interaction: Dictionary) -> void:
 		action_buttons.add_child(button)
 	action_panel.visible = true
 	player.movement_enabled = false
+	SettingsService.apply_accessibility(action_panel)
 	if action_buttons.get_child_count() > 0:
 		action_buttons.get_child(0).grab_focus()
 
@@ -362,6 +365,7 @@ func _open_npc_panel(character_id: String) -> void:
 		action_buttons.add_child(unavailable)
 	action_panel.visible = true
 	player.movement_enabled = false
+	SettingsService.apply_accessibility(action_panel)
 	if action_buttons.get_child_count() > 0:
 		action_buttons.get_child(0).grab_focus()
 
@@ -483,6 +487,7 @@ func _open_wardrobe() -> void:
 	_refresh_outfit_text()
 	wardrobe_panel.visible = true
 	player.movement_enabled = false
+	SettingsService.apply_accessibility(wardrobe_panel)
 	if wardrobe_list.get_child_count() > 0:
 		wardrobe_list.get_child(0).grab_focus()
 
@@ -574,3 +579,7 @@ func _on_travel_completed(destination: String) -> void:
 		next_state["world_state"]["home_player_position"] = [player.position.x, player.position.y]
 		GameState.replace_state(next_state)
 	get_tree().change_scene_to_file(AppConstants.HALE_HOME_SCENE if location_id == "hale_home" else AppConstants.CITY_LOCATION_SCENE)
+
+
+func _apply_accessibility_settings() -> void:
+	SettingsService.apply_accessibility(self)

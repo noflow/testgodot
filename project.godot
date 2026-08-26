@@ -26,6 +26,7 @@ DialogueService="*res://src/autoload/dialogue_service.gd"
 HomeActionService="*res://src/autoload/home_action_service.gd"
 PhoneService="*res://src/autoload/phone_service.gd"
 RelationshipService="*res://src/autoload/relationship_service.gd"
+ReviewService="*res://src/autoload/review_service.gd"
 TravelService="*res://src/autoload/travel_service.gd"
 CityActionService="*res://src/autoload/city_action_service.gd"
 EducationService="*res://src/autoload/education_service.gd"
@@ -87,6 +88,10 @@ city_map={
 dialogue_history={
 "deadzone": 0.5,
 "events": [Object(InputEventKey,"physical_keycode":72), Object(InputEventJoypadButton,"button_index":11)]
+}
+dialogue_skip={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"physical_keycode":75), Object(InputEventJoypadButton,"button_index":5)]
 }
 pause={
 "deadzone": 0.5,

@@ -79,6 +79,41 @@ func _run_probe() -> void:
 			printerr("PROBE: phone app did not render: %s" % app_id)
 			get_tree().quit(1)
 			return
+	phone.call("_show_app", "settings")
+	await get_tree().process_frame
+	var settings_content: RichTextLabel = phone.get_node("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/ContentPanel/ContentMargin/ContentLayout/AppContent")
+	var settings_actions: Container = phone.get_node("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/ContentPanel/ContentMargin/ContentLayout/ActionScroll/AppActions")
+	if settings_actions.get_child_count() < 38 or "Screen-edge effects" not in settings_content.text or "CONTROLS" not in settings_content.text:
+		printerr("PROBE: Settings app did not expose its accessibility, audio, display, save, and remapping controls")
+		get_tree().quit(1)
+		return
+	var original_scale: float = SettingsService.text_scale
+	var original_contrast: bool = SettingsService.high_contrast
+	SettingsService.text_scale = 1.75
+	SettingsService.high_contrast = true
+	SettingsService.apply_accessibility(phone)
+	var settings_title: Label = phone.get_node("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/ContentPanel/ContentMargin/ContentLayout/AppTitle")
+	if not is_equal_approx(ThemeDB.fallback_base_scale, 1.75) or settings_title.get_theme_color("font_color") != Color.WHITE:
+		printerr("PROBE: large-text or high-contrast accessibility did not apply to the live phone")
+		get_tree().quit(1)
+		return
+	SettingsService.text_scale = original_scale
+	SettingsService.high_contrast = original_contrast
+	SettingsService.apply_accessibility(phone)
+	var menu_settings_scene: PackedScene = load("res://scenes/menus/settings_panel.tscn")
+	var menu_settings: Control = menu_settings_scene.instantiate()
+	get_tree().root.add_child(menu_settings)
+	await get_tree().process_frame
+	menu_settings.call("open_panel")
+	await get_tree().process_frame
+	var menu_settings_summary: RichTextLabel = menu_settings.get_node("Panel/Margin/Layout/Columns/SettingsSummary")
+	var menu_settings_actions: Container = menu_settings.get_node("Panel/Margin/Layout/Columns/ActionScroll/SettingsActions")
+	if not menu_settings.visible or menu_settings_actions.get_child_count() != 34 or "ACCESSIBILITY" not in menu_settings_summary.text or "CONTROLS" not in menu_settings_summary.text:
+		printerr("PROBE: reusable main-menu settings panel did not render every settings category")
+		get_tree().quit(1)
+		return
+	menu_settings.call("close_panel")
+	menu_settings.queue_free()
 	phone.call("_show_app", "relationships")
 	phone.call("_open_relationship_detail", "emma_rowan")
 	await get_tree().process_frame
@@ -123,5 +158,24 @@ func _run_probe() -> void:
 		printerr("PROBE: Tuesday Evening schedule did not bring Elena and Daniel home")
 		get_tree().quit(1)
 		return
-	print("PASS: Hale home runtime created rooms, scheduled family actors, HUD, active player state, and all thirteen phone apps.")
+	var sunday_state: Dictionary = GameState.current_state.duplicate(true)
+	sunday_state["clock"].merge({"year": 1, "month": 8, "day": 25, "weekday": "sunday", "block": "evening", "minute_within_block": 0}, true)
+	GameState.replace_state(sunday_state)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var app_title: Label = phone.get_node("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/ContentPanel/ContentMargin/ContentLayout/AppTitle")
+	var review_content: RichTextLabel = phone.get_node("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/ContentPanel/ContentMargin/ContentLayout/AppContent")
+	var review_actions: Container = phone.get_node("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/ContentPanel/ContentMargin/ContentLayout/ActionScroll/AppActions")
+	if not phone.visible or app_title.text != "WEEKLY REVIEW" or "reflection, not a score" not in review_content.text or review_actions.get_child_count() != 10:
+		printerr("PROBE: Sunday Evening did not automatically open the complete weekly review")
+		get_tree().quit(1)
+		return
+	phone.call("_toggle_review_priority", "education")
+	phone.call("_complete_weekly_review", true)
+	await get_tree().process_frame
+	if GameState.current_state["weekly_review_state"]["history"].size() != 1 or app_title.text != "CALENDAR":
+		printerr("PROBE: phone review could not save a selected priority and return to the calendar")
+		get_tree().quit(1)
+		return
+	print("PASS: Hale home runtime created rooms, schedules, all phone apps, accessibility controls, and the Sunday review flow.")
 	get_tree().quit(0)

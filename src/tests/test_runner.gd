@@ -16,6 +16,7 @@ const EmploymentEngineScript: GDScript = preload("res://src/employment/employmen
 const EconomyEngineScript: GDScript = preload("res://src/economy/economy_engine.gd")
 const SaveEngineScript: GDScript = preload("res://src/save/save_engine.gd")
 const RelationshipEngineScript: GDScript = preload("res://src/relationships/relationship_engine.gd")
+const WeeklyReviewEngineScript: GDScript = preload("res://src/review/weekly_review_engine.gd")
 
 var _failures: PackedStringArray = []
 var _tests_run: int = 0
@@ -30,6 +31,7 @@ func _initialize() -> void:
 
 func _run_all() -> void:
 	_test_project_configuration()
+	_test_persistent_settings_and_remapping()
 	_test_dialogue_ui_scenes()
 	_test_character_creation_scene()
 	_test_hale_home_scene()
@@ -50,6 +52,7 @@ func _run_all() -> void:
 	_test_save_round_trip_rotation_recovery_and_migration()
 	_test_phone_messages_and_calendar()
 	_test_relationship_dating_agreements_and_conflicts()
+	_test_sunday_weekly_review_and_priorities()
 	_test_opening_dialogue_branches()
 
 	if _failures.is_empty():
@@ -74,14 +77,80 @@ func _test_project_configuration() -> void:
 	_expect(InputMap.has_action("city_map"), "City map input action exists.")
 	_expect(InputMap.has_action("quicksave"), "Quicksave input action exists.")
 	_expect(InputMap.has_action("quickload"), "Quickload input action exists.")
+	_expect(InputMap.has_action("dialogue_skip"), "Dialogue skip input action exists.")
 	_expect(ProjectSettings.has_setting("autoload/PhoneService"), "Phone service is configured as an autoload.")
 	_expect(ProjectSettings.has_setting("autoload/RelationshipService"), "Relationship service is configured as an autoload.")
+	_expect(ProjectSettings.has_setting("autoload/ReviewService"), "Weekly review service is configured as an autoload.")
+	_expect(ProjectSettings.has_setting("autoload/SettingsService"), "Persistent settings service is configured as an autoload.")
 	_expect(ProjectSettings.has_setting("autoload/TravelService"), "Travel service is configured as an autoload.")
 	_expect(ProjectSettings.has_setting("autoload/CityActionService"), "City action service is configured as an autoload.")
 	_expect(ProjectSettings.has_setting("autoload/EducationService"), "Education service is configured as an autoload.")
 	_expect(ProjectSettings.has_setting("autoload/EmploymentService"), "Employment service is configured as an autoload.")
 	_expect(ProjectSettings.has_setting("autoload/EconomyService"), "Economy service is configured as an autoload.")
 	_expect(ProjectSettings.has_setting("autoload/SaveService"), "Save service is configured as an autoload.")
+
+
+func _test_persistent_settings_and_remapping() -> void:
+	var settings_service: Node = root.get_node_or_null("SettingsService")
+	_expect(settings_service != null, "Persistent settings service is available at runtime.")
+	if settings_service == null:
+		return
+	var test_path: String = "user://port_alder_settings_test.cfg"
+	var absolute_path: String = ProjectSettings.globalize_path(test_path)
+	if FileAccess.file_exists(absolute_path):
+		DirAccess.remove_absolute(absolute_path)
+	var originals: Dictionary = {
+		"text_scale": settings_service.get("text_scale"),
+		"reduce_motion": settings_service.get("reduce_motion"),
+		"high_contrast": settings_service.get("high_contrast"),
+		"screen_effects_enabled": settings_service.get("screen_effects_enabled"),
+		"camera_shake_enabled": settings_service.get("camera_shake_enabled"),
+		"dialogue_skip_mode": settings_service.get("dialogue_skip_mode"),
+		"ui_volume": settings_service.get("ui_volume"),
+		"window_size": settings_service.get("window_size"),
+		"vsync_enabled": settings_service.get("vsync_enabled"),
+	}
+	var original_skip_events: Array = []
+	for event: InputEvent in InputMap.action_get_events("dialogue_skip"):
+		original_skip_events.append(event.duplicate())
+	settings_service.set("text_scale", 1.5)
+	settings_service.set("reduce_motion", true)
+	settings_service.set("high_contrast", true)
+	settings_service.set("screen_effects_enabled", false)
+	settings_service.set("camera_shake_enabled", false)
+	settings_service.set("dialogue_skip_mode", "toggle")
+	settings_service.set("ui_volume", 0.4)
+	settings_service.set("window_size", "1600x900")
+	settings_service.set("vsync_enabled", false)
+	var remapped_key: InputEventKey = InputEventKey.new()
+	remapped_key.physical_keycode = KEY_P
+	_expect(bool(settings_service.call("remap_action", "dialogue_skip", remapped_key)), "A supported dialogue action accepts a keyboard remap.")
+	_expect(int(settings_service.call("save_settings", test_path)) == OK and FileAccess.file_exists(absolute_path), "Settings persist to a device-local configuration file.")
+
+	settings_service.set("text_scale", 1.0)
+	settings_service.set("reduce_motion", false)
+	settings_service.set("high_contrast", false)
+	settings_service.set("screen_effects_enabled", true)
+	settings_service.set("camera_shake_enabled", true)
+	settings_service.set("dialogue_skip_mode", "hold")
+	settings_service.set("ui_volume", 1.0)
+	settings_service.set("window_size", "1280x720")
+	settings_service.set("vsync_enabled", true)
+	settings_service.call("reset_control_bindings")
+	settings_service.call("load_settings", test_path)
+	_expect(float(settings_service.get("text_scale")) == 1.5 and bool(settings_service.get("reduce_motion")) and bool(settings_service.get("high_contrast")), "Saved large-text, reduced-motion, and high-contrast settings reload.")
+	_expect(not bool(settings_service.get("screen_effects_enabled")) and not bool(settings_service.get("camera_shake_enabled")) and str(settings_service.get("dialogue_skip_mode")) == "toggle", "Saved visual-effect and dialogue-skip preferences reload.")
+	_expect(is_equal_approx(float(settings_service.get("ui_volume")), 0.4) and str(settings_service.get("window_size")) == "1600x900" and not bool(settings_service.get("vsync_enabled")), "Saved audio and display preferences reload.")
+	_expect("P" in str(settings_service.call("binding_label", "dialogue_skip")), "A saved keyboard remap reloads from serialized input data.")
+
+	for key: Variant in originals:
+		settings_service.set(str(key), originals[key])
+	InputMap.action_erase_events("dialogue_skip")
+	for event: InputEvent in original_skip_events:
+		InputMap.action_add_event("dialogue_skip", event)
+	settings_service.call("apply_all")
+	if FileAccess.file_exists(absolute_path):
+		DirAccess.remove_absolute(absolute_path)
 
 
 func _test_required_json_documents() -> void:
@@ -99,6 +168,7 @@ func _test_required_json_documents() -> void:
 		"res://content/systems/simulation_events.json",
 		"res://content/systems/save_system.json",
 		"res://content/systems/relationships.json",
+		"res://content/systems/weekly_review.json",
 		"res://schemas/save_game.schema.json",
 	]
 	for path: String in paths:
@@ -115,13 +185,23 @@ func _test_dialogue_ui_scenes() -> void:
 		var dialogue_instance: Node = dialogue_scene.instantiate()
 		_expect(dialogue_instance.get_node_or_null("DialogueMargin/DialoguePanel/PanelMargin/DialogueContent/SpeakerLabel") != null, "VN scene contains a speaker label.")
 		_expect(dialogue_instance.get_node_or_null("DialogueMargin/DialoguePanel/PanelMargin/DialogueContent/ChoicesBox") != null, "VN scene contains dynamic dialogue choices.")
+		_expect(dialogue_instance.get_node_or_null("DialogueMargin/DialoguePanel/PanelMargin/DialogueContent/Controls/SkipButton") != null, "VN scene exposes hold-or-toggle dialogue skipping.")
+		_expect(dialogue_instance.get_node_or_null("DialogueMargin/DialoguePanel/PanelMargin/DialogueContent/Controls/ReplayButton") != null, "VN scene exposes a replay-current-line control.")
 		dialogue_instance.free()
 	var menu_scene: PackedScene = load("res://scenes/menus/main_menu.tscn")
 	_expect(menu_scene != null, "Main menu scene loads with save controls.")
 	if menu_scene != null:
 		var menu_instance: Node = menu_scene.instantiate()
 		_expect(menu_instance.get_node_or_null("LoadPanel/Margin/Layout/Scroll/SaveList") != null, "Main menu contains its dynamic load-slot list.")
+		_expect(menu_instance.get_node_or_null("SettingsPanel/Panel/Margin/Layout/Columns/ActionScroll/SettingsActions") != null, "Main menu contains the complete reusable settings panel.")
 		menu_instance.free()
+	var settings_scene: PackedScene = load("res://scenes/menus/settings_panel.tscn")
+	_expect(settings_scene != null, "Reusable settings panel scene loads.")
+	if settings_scene != null:
+		var settings_instance: Node = settings_scene.instantiate()
+		_expect(settings_instance.get_node_or_null("Panel/Margin/Layout/Columns/SettingsSummary") != null, "Settings panel contains an accessible settings summary.")
+		_expect(settings_instance.get_node_or_null("Panel/Margin/Layout/Columns/ActionScroll/SettingsActions") != null, "Settings panel contains dynamic accessibility, audio, display, and control actions.")
+		settings_instance.free()
 
 
 func _test_hale_home_scene() -> void:
@@ -765,15 +845,16 @@ func _test_vertical_slice_acceptance_suite() -> void:
 func _test_content_registry() -> void:
 	var errors: PackedStringArray = _registry.validate_foundation()
 	_expect(errors.is_empty(), "Complete content registry validates without errors.")
-	_expect(_registry.get_document_count() == 40, "Registry loads all 40 source documents.")
-	_expect(_registry.get_package_count() == 23, "Registry indexes all 23 global packages.")
+	_expect(_registry.get_document_count() == 41, "Registry loads all 41 source documents.")
+	_expect(_registry.get_package_count() == 24, "Registry indexes all 24 global packages.")
 	_expect(_registry.get_all("locations").size() == 61, "Registry indexes all 61 locations.")
 	_expect(_registry.get_all("districts").size() == 10, "Registry indexes all 10 districts.")
 	_expect(_registry.get_character("elena_reyes_hale") is Dictionary, "Characters can be retrieved by id.")
 	_expect(_registry.get_location("hale_home") is Dictionary, "Locations can be retrieved by id.")
 	_expect(_registry.get_content("quests", "opening_future_choice") is Dictionary, "Quests can be retrieved by id.")
-	_expect(_registry.get_all("operations").size() == 57, "Registry indexes all 57 simulation operations.")
+	_expect(_registry.get_all("operations").size() == 58, "Registry indexes all 58 simulation operations.")
 	_expect(_registry.get_all("date_activities").size() == 3, "Registry indexes all three opening date activities.")
+	_expect(_registry.get_all("review_priorities").size() == 7, "Registry indexes all seven weekly-review priorities.")
 	_expect(_registry.get_all("actions").size() == 10, "Registry indexes all 10 initial home actions.")
 	_expect(_registry.get_all("city_interactions").size() == 9, "Registry indexes all nine opening city interactions.")
 	_expect(_registry.get_all("phone_apps").size() == 13, "Registry indexes the foundation apps plus Education, Jobs, Money, and Shopping.")
@@ -827,10 +908,12 @@ func _test_new_game_state_factory() -> void:
 	_expect(state["relationships"]["emma_rowan"].get("dating_history", []) is Array, "Relationship runtime state initializes date history.")
 	_expect(state["relationships"]["emma_rowan"].get("dating_agreement", {}).get("status", "") == "none", "Relationships begin without an assumed dating agreement.")
 	_expect(state["world_state"]["weather"]["condition"] == "partly_cloudy", "Opening weather initializes from the calendar.")
-	_expect(state["content_state"]["loaded_packages"].size() == 23, "Runtime state records its loaded content manifest.")
-	_expect(state["content_state"]["package_manifest"].size() == 23, "Runtime state records versioned manifest details for every loaded package.")
+	_expect(state["content_state"]["loaded_packages"].size() == 24, "Runtime state records its loaded content manifest.")
+	_expect(state["content_state"]["package_manifest"].size() == 24, "Runtime state records versioned manifest details for every loaded package.")
 	_expect(str(state["content_state"]["package_manifest"][0].get("checksum", "")).length() == 64, "Content manifest entries include SHA-256 package checksums.")
 	_expect(state["world_state"]["random_seed"] == 12345, "Runtime random seed can be reproduced.")
+	_expect(state["weekly_review_state"]["history"].is_empty(), "A new game begins with an empty weekly-review history.")
+	_expect(state["simulation"]["weekly_tracking"]["start_date"] == "Y1-08-20", "A new game begins tracking the opening week for Sunday review.")
 	_expect(not _contains_placeholder(state), "Runtime state contains no unresolved template placeholders.")
 	for npc_state: Variant in state["npc_states"]:
 		_expect(
@@ -1226,6 +1309,73 @@ func _test_relationship_dating_agreements_and_conflicts() -> void:
 			_expect(float(missed_state["relationships"]["emma_rowan"]["trust"]) == trust_before_no_show - 7.0, "Missing a date applies the authored trust consequence.")
 
 
+func _test_sunday_weekly_review_and_priorities() -> void:
+	var factory: RefCounted = NewGameStateFactoryScript.new(_registry)
+	var simulation: RefCounted = SimulationEngineScript.new(_registry)
+	var review: RefCounted = WeeklyReviewEngineScript.new(_registry, simulation)
+	var state: Dictionary = factory.create_new_game({}, {"random_seed": 230, "save_id": "weekly-review-test"})
+	_expect(not bool(review.review_status(state).get("due", true)), "The weekly review stays closed before Sunday Evening.")
+
+	var result: Dictionary = simulation.apply_operation(state, "time.advance", {"minutes": 60}, "home.action:sleep")
+	state = result.get("state", state)
+	result = simulation.apply_operation(state, "economy.transaction", {
+		"account": "checking", "amount": 125.0, "category": "employment", "description": "Test pay",
+	}, "test.weekly_income")
+	state = result.get("state", state)
+	result = simulation.apply_operation(state, "economy.transaction", {
+		"account": "checking", "amount": -30.0, "category": "food", "description": "Test groceries",
+	}, "test.weekly_spending")
+	state = result.get("state", state)
+	result = simulation.apply_operation(state, "relationship.adjust_meter", {
+		"character_id": "emma_rowan", "meter": "friendship", "amount": 4.0, "reason": "weekly test",
+	}, "test.weekly_relationship")
+	state = result.get("state", state)
+	state["calendar_state"]["events"].append({"id": "kept-plan", "date": "Y1-08-22", "status": "completed"})
+	state["calendar_state"]["events"].append({"id": "missed-plan", "date": "Y1-08-23", "status": "missed"})
+	_set_test_date(state, "Y1-08-25", "sunday", "evening")
+	_expect(bool(review.review_status(state).get("due", false)), "Sunday Evening makes the weekly review due.")
+
+	result = review.synchronize(state)
+	_expect(result.get("ok", false) and bool(result.get("data", {}).get("created", false)), "Sunday synchronization creates one pending review.")
+	state = result.get("state", state)
+	var pending: Dictionary = review.current_review(state)
+	var summary: Dictionary = pending.get("summary", {})
+	_expect(pending.get("tone", "") == "reflective_not_judgmental", "The review records its reflective, nonjudgmental tone.")
+	_expect(float(summary.get("money", {}).get("income", 0.0)) == 125.0 and float(summary.get("money", {}).get("spending", 0.0)) == 30.0, "Weekly money totals derive from the recorded ledger.")
+	_expect(int(summary.get("time", {}).get("sleep_sessions", 0)) == 1 and int(summary.get("time", {}).get("missed_commitments", 0)) == 1, "Weekly time summary records sleep and missed commitments.")
+	_expect(float(summary.get("relationships", {}).get("meter_changes", {}).get("emma_rowan:friendship", 0.0)) == 4.0, "Weekly relationship summary derives meter changes from events.")
+	_expect(summary.has("health") and summary.has("quests") and summary.has("direction"), "Weekly review includes health, quest, and life-direction sections.")
+
+	for priority_id: String in ["education", "finances", "health"]:
+		result = review.toggle_priority(state, priority_id)
+		_expect(result.get("ok", false), "A weekly priority can be selected: %s." % priority_id)
+		state = result.get("state", state)
+	result = review.toggle_priority(state, "relationships")
+	_expect(not result.get("ok", true), "A fourth weekly priority is rejected by the three-priority cap.")
+	_expect(review.current_review(state).get("priorities", []).size() == 3, "A rejected fourth priority leaves the pending review unchanged.")
+
+	state["calendar_state"]["events"].append({"id": "next-week-plan", "date": "Y1-08-27", "status": "scheduled"})
+	result = review.complete_review(state, true)
+	_expect(result.get("ok", false), "A pending Sunday review can be completed.")
+	state = result.get("state", state)
+	var history: Array = state["weekly_review_state"]["history"]
+	_expect(history.size() == 1 and state["weekly_review_state"]["pending"] == null, "Completion moves the review from pending state into saved history.")
+	_expect(state["weekly_review_state"]["selected_priorities"].size() == 3 and state["calendar_state"]["reminders"].size() == 3, "Selected priorities persist and create three next-week calendar reminders.")
+	_expect(int(history[0].get("next_week_scheduled_commitments", 0)) == 1, "The completed reflection records already-scheduled next-week commitments.")
+	_expect(not history[0].has("score") and "does not grade" in str(history[0].get("reflection", "")), "The completed weekly review stores no victory score or life grade.")
+	_expect(str(state["simulation"]["recent_event_log"].back().get("operation", "")) == "review.complete", "Review completion is recorded through the atomic simulation interface.")
+	_expect(not bool(review.review_status(state).get("due", true)), "A completed review cannot reopen during the same week.")
+	result = review.complete_review(state, true)
+	_expect(not result.get("ok", true), "A completed weekly review cannot be submitted twice.")
+
+	var legacy_state: Dictionary = factory.create_new_game({}, {"random_seed": 231})
+	legacy_state.erase("weekly_review_state")
+	legacy_state["simulation"].erase("weekly_tracking")
+	_set_test_date(legacy_state, "Y1-08-25", "sunday", "evening")
+	result = review.synchronize(legacy_state)
+	_expect(result.get("ok", false) and result.get("state", {}).get("weekly_review_state", {}).get("pending") is Dictionary, "Weekly review safely initializes missing state from an older save.")
+
+
 func _test_opening_dialogue_branches() -> void:
 	var factory: RefCounted = NewGameStateFactoryScript.new(_registry)
 	var simulation: RefCounted = SimulationEngineScript.new(_registry)
@@ -1339,6 +1489,9 @@ func _test_save_round_trip_rotation_recovery_and_migration() -> void:
 		"cost": 0,
 		"route_ids": ["hale_home_to_alder_bay_park"],
 	}
+	state["weekly_review_state"]["pending"] = {
+		"id": "weekly-review-Y1-W001", "week_number": 1, "status": "pending", "priorities": ["education"],
+	}
 
 	var result: Dictionary = engine.save_slot(state, "manual_1", {
 		"timestamp_utc": "2026-08-25T10:00:00",
@@ -1355,6 +1508,7 @@ func _test_save_round_trip_rotation_recovery_and_migration() -> void:
 	_expect(loaded.get("summary", {}).get("current_location", "") == "hale_home.player_bedroom", "Slot preview metadata reports the saved location.")
 	_expect(loaded.get("state", {}).get("conversation_state", {}).get("active", {}).get("node_id", "") == "future_choice", "Save/load round-trip preserves the exact waiting VN node.")
 	_expect(int(loaded.get("state", {}).get("world_state", {}).get("pending_travel", {}).get("remaining_minutes", 0)) == 9, "Save/load round-trip preserves an in-progress trip context.")
+	_expect(loaded.get("state", {}).get("weekly_review_state", {}).get("pending", {}).get("id", "") == "weekly-review-Y1-W001", "Save/load round-trip preserves a pending Sunday review and its priorities.")
 
 	var original_checking: float = float(state["player"]["economy"]["accounts"]["checking"])
 	state["player"]["economy"]["accounts"]["checking"] = original_checking + 77.0
@@ -1398,6 +1552,9 @@ func _test_save_round_trip_rotation_recovery_and_migration() -> void:
 	var invalid_state: Dictionary = state.duplicate(true)
 	invalid_state.erase("player")
 	_expect(not engine.save_slot(invalid_state, "invalid_slot").get("ok", true), "Invalid in-memory state is rejected before any save write.")
+	var invalid_review_state: Dictionary = state.duplicate(true)
+	invalid_review_state["weekly_review_state"]["selected_priorities"] = ["education", "career", "health", "rest"]
+	_expect(not engine.save_slot(invalid_review_state, "invalid_review_slot").get("ok", true), "Save validation rejects more than three weekly priorities.")
 
 	var legacy_state: Dictionary = factory.create_new_game({}, {"random_seed": 501})
 	legacy_state["save_format_version"] = 0
