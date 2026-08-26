@@ -1,0 +1,47 @@
+{
+  "format_version": 1,
+  "package_id": "port_alder_sandbox_quest_system",
+  "default_timing": "open_ended",
+  "quest_types": [
+    {"id": "discovery", "purpose": "Found through exploration, conversation, messages, activities, or institutions at the player's pace."},
+    {"id": "opportunity", "purpose": "Becomes possible when player stats, skills, resources, or relationships meet authored gates."},
+    {"id": "path", "purpose": "Continues or changes a life direction created by earlier player choices."},
+    {"id": "urgent", "purpose": "Uses a visible time limit only when the situation has a clear narrative reason."}
+  ],
+  "supported_gates": [
+    {"id": "attribute", "examples": ["strength", "confidence", "empathy", "responsibility"]},
+    {"id": "skill", "examples": ["cooking", "fitness", "academics", "career_skills"]},
+    {"id": "relationship", "examples": ["friendship_level", "love_level", "trust", "relationship_chapter"]},
+    {"id": "prior_choice", "examples": ["conversation_choice", "quest_branch", "agreement", "promise"]},
+    {"id": "location", "examples": ["discovered", "visited", "invited", "resident"]},
+    {"id": "life_direction", "examples": ["education", "career", "housing", "relationship", "family"]},
+    {"id": "resource", "examples": ["money", "inventory", "vehicle", "housing"]},
+    {"id": "world_state", "examples": ["season", "semester_phase", "employment_status", "NPC_availability"]}
+  ],
+  "discovery_sources": ["world_exploration", "NPC_conversation", "phone_message", "job_board", "college_board", "relationship_event", "activity_result", "health_event", "owned_item", "prior_quest_branch"],
+  "deadline_modes": ["institutional_window", "scheduled_commitment", "emergency", "short_lived_opportunity"],
+  "deadline_rules": {
+    "timed_quests_are_rare": true,
+    "deadline_must_be_visible_before_acceptance": true,
+    "warnings_required": true,
+    "silent_expiration_forbidden": true,
+    "failure_should_branch_or_delay_instead_of_end_game": true,
+    "ordinary_money_pressure_is_not_a_quest_deadline": true,
+    "recommended_timed_maximum_percent": 15
+  },
+  "path_rules": {
+    "quests_may_start_followup_paths": true,
+    "prior_choices_may_unlock_or_change_later_content": true,
+    "major_path_lockouts_must_be_explained": true,
+    "alternate_routes_should_exist_when_reasonable": true,
+    "no_weekly_quest_assignment": true,
+    "no_global_chapter_selection": true
+  },
+  "tracker_rules": {
+    "show_only_discovered_quests": true,
+    "player_controls_tracking": true,
+    "untracked_quests_continue_normally": true,
+    "open_ended_quests_never_fail_from_age": true,
+    "calendar_contains_commitments_not_weekly_goals": true
+  }
+}

@@ -10,7 +10,6 @@ const INDEXED_COLLECTIONS: PackedStringArray = [
 	"jobs", "courses", "programs", "activities", "actions", "city_interactions",
 	"phone_apps", "stores", "operations",
 	"date_activities",
-	"review_priorities",
 ]
 
 var _documents: Dictionary = {}
@@ -39,7 +38,7 @@ func validate_foundation() -> PackedStringArray:
 	_validate_required_files()
 	_validate_character_packages()
 	_validate_vertical_slice_manifest()
-	_validate_weekly_review_package()
+	_validate_sandbox_quest_package()
 	validation_completed.emit(_last_errors.duplicate())
 	content_loaded.emit(_documents.size(), _packages.size())
 	return _last_errors.duplicate()
@@ -234,25 +233,35 @@ func _validate_vertical_slice_manifest() -> void:
 			_last_errors.append("Vertical slice requires unknown location: %s" % location_id)
 
 
-func _validate_weekly_review_package() -> void:
-	var package: Variant = get_package("port_alder_weekly_review_system")
+func _validate_sandbox_quest_package() -> void:
+	var package: Variant = get_package("port_alder_sandbox_quest_system")
 	if not package is Dictionary:
-		_last_errors.append("Weekly-review package did not load.")
+		_last_errors.append("Sandbox quest-progression package did not load.")
 		return
-	var availability: Variant = package.get("availability")
-	if not availability is Dictionary or str(availability.get("weekday", "")) != "sunday":
-		_last_errors.append("Weekly review must open on Sunday.")
-	if not availability is Dictionary or str(availability.get("opening_block", "")) not in ["evening", "late_evening", "night"]:
-		_last_errors.append("Weekly review has an invalid opening block.")
-	var section_ids: PackedStringArray = []
-	for section_value: Variant in package.get("sections", []):
-		if section_value is Dictionary:
-			section_ids.append(str(section_value.get("id", "")))
-	for required_id: String in ["direction", "money", "time", "health", "relationships", "quests"]:
-		if required_id not in section_ids:
-			_last_errors.append("Weekly review is missing its %s section." % required_id)
-	var priorities: Variant = package.get("review_priorities")
-	if not priorities is Array or priorities.is_empty():
-		_last_errors.append("Weekly review requires authored priorities.")
-	elif int(package.get("maximum_priorities", 0)) < 1 or int(package.get("maximum_priorities", 0)) > priorities.size():
-		_last_errors.append("Weekly review maximum-priority count is invalid.")
+	if str(package.get("default_timing", "")) != "open_ended":
+		_last_errors.append("Sandbox quests must default to open-ended timing.")
+	var gate_ids: PackedStringArray = []
+	for gate_value: Variant in package.get("supported_gates", []):
+		if gate_value is Dictionary:
+			gate_ids.append(str(gate_value.get("id", "")))
+	for required_gate: String in ["attribute", "skill", "relationship", "prior_choice", "location", "life_direction"]:
+		if required_gate not in gate_ids:
+			_last_errors.append("Sandbox quests are missing the %s gate." % required_gate)
+	var all_quests: Array = get_all("quests")
+	var timed_quest_count: int = 0
+	for quest_value: Variant in all_quests:
+		if not quest_value is Dictionary:
+			continue
+		var failure: Variant = quest_value.get("failure")
+		if failure is Dictionary and failure.has("deadline"):
+			timed_quest_count += 1
+			var timing: Variant = quest_value.get("timing")
+			if not timing is Dictionary or str(timing.get("mode", "")) not in package.get("deadline_modes", []):
+				_last_errors.append("Timed quest must declare an approved timing mode: %s" % quest_value.get("id", "unknown"))
+			elif str(timing.get("reason", "")).is_empty() or str(timing.get("deadline_visibility", "")) != "shown_with_quest":
+				_last_errors.append("Timed quest must show its deadline and narrative reason: %s" % quest_value.get("id", "unknown"))
+			elif not timing.get("warnings", []) is Array or timing.get("warnings", []).is_empty():
+				_last_errors.append("Timed quest must author at least one deadline warning: %s" % quest_value.get("id", "unknown"))
+	var timed_maximum: int = int(package.get("deadline_rules", {}).get("recommended_timed_maximum_percent", 15))
+	if not all_quests.is_empty() and timed_quest_count * 100 > all_quests.size() * timed_maximum:
+		_last_errors.append("Timed quests exceed the sandbox authoring target of %d%%." % timed_maximum)

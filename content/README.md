@@ -24,6 +24,7 @@ unnamed service NPCs lives here.
 - `systems/stores.json` defines shop hours, prices, stock, and discounts.
 - `runtime/new_game_state.json` defines the complete initial runtime snapshot.
 - `systems/simulation_events.json` defines all legal state-changing operations.
+- `systems/quest_progression.json` defines sandbox discovery, gates, paths, deadline limits, and tracker rules.
 - `systems/save_system.json` defines slots, atomic writes, recovery, and migrations.
 - `vertical_slice/manifest.json` locks the required first-playable content scope.
 

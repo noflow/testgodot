@@ -21,8 +21,9 @@ performance, weekly payroll, overtime, tips, withholding, raises, and promotions
 The education slice also continues beyond enrollment with playable classes,
 studying, assignments, projects, midterms, finals, grades, academic consequences,
 credits, and first-semester completion.
-Map route confirmation and destination travel, resilient save/load, the Sunday
-reflection, complete persistent settings, and the accessibility baseline now work.
+Map route confirmation and destination travel, resilient save/load,
+player-controlled sandbox quest tracking, complete persistent settings, and the
+accessibility baseline now work.
 
 ## Purpose
 
@@ -32,8 +33,10 @@ mock-up. The player must be able to create a protagonist, make the opening life
 choice, manage basic needs, navigate the home and city, use the phone, complete a
 quest, develop an NPC relationship, advance time, and save and resume the result.
 
-The slice covers Tuesday through Sunday of the opening week. Content beyond the
-required path may remain data-complete but visually minimal.
+The slice begins on Tuesday of the opening calendar and proves play across its first
+six days. Sunday is not an endpoint: the sandbox continues without a weekly plan or
+forced quest sequence. Content beyond the required proof may remain data-complete
+but visually minimal.
 
 ## Definition of done
 
@@ -49,8 +52,8 @@ The slice is complete when a fresh installation can:
 8. Complete one institutional objective and one NPC activity.
 9. Observe time, money, needs, quests, calendar, and relationship state change.
 10. Save, close the game, reload, and resume without losing or duplicating state.
-11. Reach Sunday Evening, review the recorded week without a life score, and choose
-    zero to three optional priorities for the next week.
+11. Advance beyond Sunday without a forced review, weekly priorities, or expiration
+    of open-ended quests.
 
 All priority-zero and priority-one acceptance tests must pass. Data validation must
 report no errors.
@@ -216,11 +219,13 @@ attribute and activity test. Lily and Marcus prove home and entertainment conten
 NPC availability must come from runtime schedules. An unavailable NPC cannot accept
 a date merely because the conversation data exists.
 
-### Sunday review
+### Sandbox quest proof
 
-Reaching Sunday Evening opens the phone review. It summarizes life path, enrollment,
-employment, balances, spending, sleep, health, weather exposure, workouts,
-relationships, and quest state. It is reflective and never assigns a victory grade.
+Quests are discovered from locations, NPCs, messages, activities, institutions, or
+earlier branches and are open-ended by default. The player may track or untrack any
+discovered active quest. Advancing beyond Sunday must not open a planning screen or
+expire open-ended content. Westshore registration demonstrates the exceptional
+case: a visible institutional deadline with a narrative reason and warnings.
 
 ## Visual and audio scope
 
@@ -352,7 +357,7 @@ files never call GDScript functions directly.
 2. Load schemas and core enumerations.
 3. Load items, economy, activities, education, employment, locations, and travel.
 4. Load `.character` packages.
-5. Load global quests, conversations, and opening-week content.
+5. Load global quests, conversations, sandbox quest rules, and opening-calendar content.
 6. Load enabled mods in declared order.
 7. Validate unique IDs and all cross-references.
 8. Build immutable lookup indexes.
@@ -442,14 +447,14 @@ Implement travel, destination scenes, enrollment or employment proof, Rachel's g
 assessment, and one social activity. Completion requires time, cost, needs, and
 relationship effects to survive scene changes.
 
-### Phase 6 — Saves and weekly loop
+### Phase 6 — Saves and sandbox continuity
 
 Save slots, rotating autosaves, quicksave, checksum validation, atomic writes,
-backup recovery, migration, Continue, and load controls are implemented. Sunday
-review, complete persistent settings, and the accessibility baseline are now
+backup recovery, migration, Continue, and load controls are implemented. Sandbox
+quest tracking, complete persistent settings, and the accessibility baseline are
 implemented and covered by headless logic and live-scene probes. The remaining
-completion work is a full new-game-to-Sunday save/load round trip and stabilization
-against the complete acceptance gate.
+completion work is a full new-game-through-the-opening-calendar save/load round trip
+and stabilization against the complete acceptance gate.
 
 ### Phase 7 — Stabilization
 

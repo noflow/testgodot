@@ -1,8 +1,9 @@
 # Opening Week Playbook
 
-The opening week runs from Tuesday, August 20 through Sunday, August 25 in Year 1.
-It occurs before Westshore's fall semester and introduces the sandbox without
-forcing one correct order of activities.
+The opening calendar begins on Tuesday, August 20 in Year 1. The table below maps
+the first six days of weather, business hours, and available opportunities; it is
+not a prescribed itinerary or a deadline for completing optional content. The
+sandbox continues normally after Sunday.
 
 ## Daily rhythm
 
@@ -13,7 +14,7 @@ forcing one correct order of activities.
 | Thursday | Clear and warm | Walking or running, interviews, gym, Marcus, enrollment and employment |
 | Friday | Cool waterfront wind | Final weekday office access, Emma, applications, family time |
 | Saturday | Heavy rain | Indoor activities, chores, shopping, gym, cinema, social time |
-| Sunday | Clear and cool | Park activities, Emma, preparation, family dinner, weekly review |
+| Sunday | Clear and cool | Park activities, Emma, preparation, family dinner, free exploration |
 
 Every day defines Early Morning, Morning, Lunch, Afternoon, Evening, Late Evening,
 and Night. Short hygiene, food, phone, and planning actions can share a block. Dates,
@@ -44,12 +45,12 @@ family car.
   someone when the conflict arrives.
 - A no-show can reduce Reliability, Trust, and relationship meters or alter a quest.
 
-## Sunday review
+## Sandbox pacing
 
-The phone summarizes the chosen life direction, enrollment and employment, money,
-time use, sleep, health, weather exposure, workouts, relationships, and quest state.
-The review is reflective rather than a score. The player may set priorities and add
-important commitments to the following week's calendar.
+No Sunday screen plans the next week or assigns priorities. Most quests remain
+available until the player discovers and pursues them. NPC schedules, opening hours,
+school assessments, work shifts, dates, and rare authored quest deadlines still
+make time meaningful without turning the opening calendar into a checklist.
 
 ## Source data
 

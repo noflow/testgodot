@@ -51,7 +51,7 @@
         {"id": "encourage_patience", "condition": {"flag": "lily.supported_research_first"}, "effects": [{"operation": "schedule_event", "value": "lily_advisor_appointment"}, {"operation": "add_meter", "character": "lily_hale", "meter": "respect", "value": 3}]}
       ],
       "completion_effects": [{"operation": "create_memory", "character": "lily_hale", "value": "player_listened_to_program_doubts"}, {"operation": "unlock_relationship_chapter", "character": "lily_hale", "level": 2}],
-      "failure": {"mode": "relationship_consequence", "after_days": 6, "effects": [{"operation": "add_meter", "character": "lily_hale", "meter": "resentment", "value": 2}]}
+      "failure": {"mode": "cannot_fail", "note": "Lily's program conversation waits for the player and later context can alter the path."}
     }
   ],
   "conversations": [

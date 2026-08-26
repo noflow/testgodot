@@ -209,8 +209,6 @@ func validate_state(state: Dictionary) -> PackedStringArray:
 	for section: String in ["quest_state", "conversation_state", "calendar_state", "world_state", "household_state", "family_state", "simulation", "content_state"]:
 		if not state[section] is Dictionary:
 			errors.append("required section must be an object: %s" % section)
-	if state.has("weekly_review_state") and not state["weekly_review_state"] is Dictionary:
-		errors.append("weekly_review_state must be an object when present")
 	if not errors.is_empty():
 		return errors
 	if not state["content_version"] is String or str(state["content_version"]).is_empty():
@@ -254,21 +252,23 @@ func validate_state(state: Dictionary) -> PackedStringArray:
 			var meter_value: Variant = state["relationships"][character_id].get(meter)
 			if (not meter_value is int and not meter_value is float) or float(meter_value) < 0.0 or float(meter_value) > 100.0:
 				errors.append("relationship meter is outside 0-100: %s.%s" % [character_id, meter])
+	var quest_state: Dictionary = state["quest_state"]
+	if not quest_state.get("tracked", []) is Array:
+		errors.append("tracked quests must be an array")
+	else:
+		var seen_tracked: Dictionary = {}
+		for quest_id_value: Variant in quest_state.get("tracked", []):
+			var quest_id: String = str(quest_id_value)
+			if quest_id not in quest_state.get("active", []):
+				errors.append("tracked quest is not active: %s" % quest_id)
+			if seen_tracked.has(quest_id):
+				errors.append("tracked quest is duplicated: %s" % quest_id)
+			seen_tracked[quest_id] = true
 	var simulation: Dictionary = state.get("simulation", {})
 	if not simulation.get("pending_events", []).is_empty():
 		errors.append("a simulation transaction is still pending")
 	if simulation.get("recent_event_log", []).size() > 500:
 		errors.append("recent simulation event log exceeds 500 entries")
-	if state.get("weekly_review_state") is Dictionary:
-		var review_state: Dictionary = state["weekly_review_state"]
-		if not review_state.get("history", []) is Array or not review_state.get("selected_priorities", []) is Array:
-			errors.append("weekly review history and priorities must be arrays")
-		elif review_state.get("selected_priorities", []).size() > 3:
-			errors.append("weekly review contains more than three selected priorities")
-		if review_state.get("pending") != null and not review_state.get("pending") is Dictionary:
-			errors.append("pending weekly review must be an object or null")
-		if int(review_state.get("last_completed_week", 0)) < 0:
-			errors.append("last completed weekly review cannot be negative")
 	var content_state: Dictionary = state["content_state"]
 	if not content_state.get("loaded_packages", []) is Array:
 		errors.append("loaded content package ids must be an array")

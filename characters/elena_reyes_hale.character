@@ -64,7 +64,7 @@
       ],
       "branches": [],
       "completion_effects": [{"operation": "add_meter", "character": "elena_reyes_hale", "meter": "respect", "value": 3}, {"operation": "unlock_phone_app", "value": "household"}],
-      "failure": {"mode": "relationship_consequence", "after_days": 7, "effects": [{"operation": "add_meter", "character": "elena_reyes_hale", "meter": "resentment", "value": 4}]}
+      "failure": {"mode": "cannot_fail", "note": "Household rules remain available until the player chooses to discuss them."}
     }
   ],
   "conversations": [

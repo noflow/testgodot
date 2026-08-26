@@ -261,8 +261,6 @@ func _autosave_reasons(previous: Dictionary, current: Dictionary) -> PackedStrin
 		reasons.append("family_changed")
 	if _agreement_signature(previous) != _agreement_signature(current):
 		reasons.append("relationship_agreement_changed")
-	if current.get("weekly_review_state", {}).get("history", []).size() > previous.get("weekly_review_state", {}).get("history", []).size():
-		reasons.append("weekly_review_completed")
 	var old_location: String = str(previous.get("world_state", {}).get("current_location", "")).get_slice(".", 0)
 	var new_location: String = str(current.get("world_state", {}).get("current_location", "")).get_slice(".", 0)
 	if old_location != new_location:

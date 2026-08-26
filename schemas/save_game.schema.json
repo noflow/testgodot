@@ -59,23 +59,17 @@
       }
     },
     "relationships": {"type": "object", "additionalProperties": {"$ref": "#/$defs/relationshipState"}},
-    "quest_state": {"type": "object", "required": ["active", "completed", "failed", "deferred", "objectives", "branch_history"], "additionalProperties": true},
+    "quest_state": {
+      "type": "object",
+      "required": ["active", "completed", "failed", "deferred", "objectives", "branch_history"],
+      "properties": {"tracked": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}},
+      "additionalProperties": true
+    },
     "conversation_state": {"type": "object", "required": ["active", "completed", "seen_nodes", "cooldowns", "once_only_flags"], "additionalProperties": true},
     "calendar_state": {"type": "object", "required": ["events", "reminders", "conflicts"], "additionalProperties": true},
     "world_state": {"type": "object", "required": ["current_location", "unlocked_locations", "discovered_locations", "weather", "store_state", "world_flags", "random_seed"], "additionalProperties": true},
     "household_state": {"type": "object", "required": ["household_id", "members", "shared_inventory", "rules", "contribution_score"], "additionalProperties": true},
     "family_state": {"type": "object", "required": ["pregnancies", "children", "custody_arrangements", "child_support_orders"], "additionalProperties": true},
-    "weekly_review_state": {
-      "type": "object",
-      "required": ["pending", "history", "selected_priorities", "last_completed_week"],
-      "properties": {
-        "pending": {"type": ["object", "null"]},
-        "history": {"type": "array", "items": {"type": "object"}},
-        "selected_priorities": {"type": "array", "items": {"type": "string"}, "maxItems": 3},
-        "last_completed_week": {"type": "integer", "minimum": 0}
-      },
-      "additionalProperties": true
-    },
     "simulation": {"type": "object", "required": ["pending_events", "recent_event_log", "next_event_sequence", "last_daily_tick", "last_weekly_tick", "last_monthly_tick"], "additionalProperties": true},
     "content_state": {
       "type": "object",

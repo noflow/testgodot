@@ -50,8 +50,6 @@ var _interview_question_index: int = 0
 var _interview_answer_quality: int = 0
 var _selected_store_id: String = ""
 var _pending_manual_overwrite: String = ""
-var _review_autoprompted_key: String = ""
-var _return_to_weekly_review: bool = false
 var _pending_remap_action: String = ""
 
 
@@ -84,28 +82,11 @@ func _input(event: InputEvent) -> void:
 	get_viewport().set_input_as_handled()
 
 
-func _process(_delta: float) -> void:
-	if not GameState.has_active_game():
-		return
-	var review_status: Dictionary = ReviewService.review_status()
-	if not bool(review_status.get("due", false)):
-		return
-	var review_key: String = str(review_status.get("review_id", ""))
-	if review_key.is_empty() or review_key == _review_autoprompted_key:
-		return
-	_review_autoprompted_key = review_key
-	_open_weekly_review()
-
-
 func open_phone(default_app: String = "character_profile") -> void:
 	if not GameState.has_active_game():
 		return
 	PhoneService.sync_messages()
 	RelationshipService.sync_dates()
-	var review_status: Dictionary = ReviewService.review_status()
-	if bool(review_status.get("due", false)):
-		_open_weekly_review()
-		return
 	visible = true
 	scheduler_panel.visible = false
 	route_panel.visible = false
@@ -120,7 +101,6 @@ func close_phone() -> void:
 		return
 	scheduler_panel.visible = false
 	route_panel.visible = false
-	_return_to_weekly_review = false
 	_pending_remap_action = ""
 	visible = false
 	phone_closed.emit()
@@ -181,134 +161,6 @@ func _show_app(app_id: String) -> void:
 			_render_weather()
 		"settings":
 			_render_settings()
-
-
-func _open_weekly_review() -> void:
-	if not GameState.has_active_game():
-		return
-	var result: Dictionary = ReviewService.synchronize()
-	if not result.get("ok", false):
-		return
-	visible = true
-	scheduler_panel.visible = false
-	route_panel.visible = false
-	_current_app = "weekly_review"
-	_render_weekly_review()
-	phone_opened.emit()
-	if app_actions.get_child_count() > 0:
-		app_actions.get_child(0).grab_focus()
-
-
-func _render_weekly_review() -> void:
-	_current_app = "weekly_review"
-	_clear_container(app_actions)
-	_refresh_clock()
-	app_title.text = "WEEKLY REVIEW"
-	var review: Dictionary = ReviewService.current_review()
-	if review.is_empty():
-		app_content.text = "The weekly reflection is not available yet."
-		return
-	var summary: Dictionary = review.get("summary", {})
-	var direction: Dictionary = summary.get("direction", {})
-	var money: Dictionary = summary.get("money", {})
-	var time: Dictionary = summary.get("time", {})
-	var health: Dictionary = summary.get("health", {})
-	var relationships: Dictionary = summary.get("relationships", {})
-	var quests: Dictionary = summary.get("quests", {})
-	var job_names: PackedStringArray = PackedStringArray(direction.get("jobs", []))
-	var closest_names: PackedStringArray = []
-	for closest_value: Variant in relationships.get("closest", []):
-		if closest_value is Dictionary:
-			closest_names.append("%s (%s %d)" % [closest_value.get("name", "Contact"), str(closest_value.get("stage", "acquaintance")).replace("_", " ").capitalize(), int(closest_value.get("bond", 0))])
-	var change_lines: PackedStringArray = []
-	for key_value: Variant in relationships.get("meter_changes", {}):
-		var key: String = str(key_value)
-		var parts: PackedStringArray = key.split(":")
-		if parts.size() == 2:
-			var amount: float = float(relationships["meter_changes"][key])
-			change_lines.append("%s %s %+.0f" % [_character_name(parts[0]), parts[1].capitalize(), amount])
-	var averages: Dictionary = health.get("averages", {})
-	var selected: Array = review.get("priorities", [])
-	var selected_names: PackedStringArray = []
-	for priority_value: Variant in ReviewService.priority_definitions():
-		if priority_value is Dictionary and str(priority_value.get("id", "")) in selected:
-			selected_names.append(str(priority_value.get("name", "Priority")))
-	var lines: PackedStringArray = [
-		"[font_size=23]Week %d • %s to %s[/font_size]" % [review.get("week_number", 1), review.get("start_date", ""), review.get("end_date", "")],
-		"This is a reflection, not a score. There is no winning life path.",
-		"",
-		"DIRECTION",
-		"Life path: %s\nEducation: %s%s\nEmployment: %s" % [
-			direction.get("life_path", "Undecided"),
-			"Enrolled" if direction.get("enrolled", false) else "Not enrolled",
-			" — %s, %d course(s)" % [direction.get("program", "Program"), direction.get("course_count", 0)] if direction.get("enrolled", false) else "",
-			", ".join(job_names) if not job_names.is_empty() else "Not employed",
-		],
-		"",
-		"MONEY",
-		"Available balance $%.2f • Income $%.2f • Spending $%.2f\nTuition balance $%.2f • Student debt $%.2f • Rent due $%.2f" % [
-			money.get("available_balance", 0.0), money.get("income", 0.0), money.get("spending", 0.0),
-			money.get("tuition_balance", 0.0), money.get("student_debt", 0.0), money.get("rent_due", 0.0),
-		],
-		"",
-		"TIME AND COMMITMENTS",
-		"Time advanced %.1f hours • Completed %d • Missed %d • Cancelled %d • Late %d\nSleep sessions %d • Estimated sleep %.1f hours/day • Naps %.1f hours" % [
-			time.get("elapsed_hours", 0.0), time.get("completed_commitments", 0), time.get("missed_commitments", 0), time.get("cancelled_commitments", 0), time.get("late_arrivals", 0),
-			time.get("sleep_sessions", 0), time.get("sleep_hours_per_day", 0.0), time.get("nap_hours", 0.0),
-		],
-		"",
-		"HEALTH AND ENERGY",
-		"Average energy %.1f • Hygiene %.1f • Mood %.1f • Stress %.1f\nWeather exposure %.1f hours • Workouts %d • Impairment incidents %d • Active conditions %d" % [
-			averages.get("energy", health.get("current_energy", 0.0)), averages.get("hygiene", health.get("current_hygiene", 0.0)), averages.get("mood", 0.0), averages.get("stress", 0.0),
-			health.get("weather_exposure_hours", 0.0), health.get("workouts", 0), health.get("inebriation_incidents", 0), health.get("active_conditions", 0),
-		],
-		"",
-		"RELATIONSHIPS",
-		"Known contacts %d • Dates kept %d • Plans broken %d • Chapters unlocked %d\nClosest: %s\nChanges: %s" % [
-			relationships.get("known_contacts", 0), relationships.get("dates_kept", 0), relationships.get("dates_broken", 0), relationships.get("chapters_unlocked", 0),
-			", ".join(closest_names) if not closest_names.is_empty() else "No contacts yet",
-			"; ".join(change_lines) if not change_lines.is_empty() else "No recorded meter changes",
-		],
-		"",
-		"STORY AND QUESTS",
-		"Completed: %s\nActive: %s\nDeferred: %s\nFailed: %s • Branch changes %d" % [
-			_quest_names(quests.get("completed", [])), _quest_names(quests.get("active", [])),
-			_quest_names(quests.get("deferred", [])), _quest_names(quests.get("failed", [])), quests.get("branch_changes", 0),
-		],
-		"",
-		"NEXT-WEEK PRIORITIES (%d/3)\n%s" % [selected.size(), ", ".join(selected_names) if not selected_names.is_empty() else "None selected — continuing without priorities is valid."],
-	]
-	app_content.text = "\n".join(lines)
-	for priority_value: Variant in ReviewService.priority_definitions():
-		if priority_value is Dictionary:
-			var priority: Dictionary = priority_value
-			var priority_id: String = str(priority.get("id", ""))
-			_add_action_button("%s %s — %s" % ["✓" if priority_id in selected else "○", priority.get("name", "Priority"), priority.get("description", "")], _toggle_review_priority.bind(priority_id))
-	_add_action_button("+ Schedule a Key Commitment", _open_weekly_review_scheduler)
-	_add_action_button("Finish Review with Priorities", _complete_weekly_review.bind(true))
-	_add_action_button("Continue Without Priorities", _complete_weekly_review.bind(false))
-
-
-func _toggle_review_priority(priority_id: String) -> void:
-	var result: Dictionary = ReviewService.toggle_priority(priority_id)
-	_render_weekly_review()
-	phone_status.text = "Priorities updated." if result.get("ok", false) else str(result.get("errors", ["Priority could not be changed."])[0])
-
-
-func _open_weekly_review_scheduler() -> void:
-	_return_to_weekly_review = true
-	_open_scheduler()
-
-
-func _complete_weekly_review(keep_priorities: bool) -> void:
-	var result: Dictionary = ReviewService.complete_review(keep_priorities)
-	if not result.get("ok", false):
-		phone_status.text = str(result.get("errors", ["The weekly review could not be completed."])[0])
-		return
-	_return_to_weekly_review = false
-	_review_autoprompted_key = str(result.get("data", {}).get("review", {}).get("id", _review_autoprompted_key))
-	_show_app("calendar")
-	phone_status.text = str(result.get("data", {}).get("message", "Weekly review saved."))
 
 
 func _refresh_clock() -> void:
@@ -435,26 +287,43 @@ func _render_calendar() -> void:
 		lines.append("[color=#ef7777]CONFLICT WARNINGS: %d[/color]\nOverlapping optional plans are allowed, but you must resolve them before attending." % warning_count)
 	app_content.text = "\n\n".join(lines) if not lines.is_empty() else "No plans are scheduled."
 	_add_action_button("+ Add Plan", _open_scheduler)
-	if ReviewService.review_status().get("pending", false):
-		_add_action_button("Return to Weekly Review", _render_weekly_review)
 
 
 func _render_quests() -> void:
+	_clear_container(app_actions)
 	app_title.text = "QUESTS"
 	var state: Dictionary = GameState.current_state
-	var lines: PackedStringArray = ["ACTIVE"]
+	var tracked: Array = state["quest_state"].get("tracked", [])
+	var lines: PackedStringArray = [
+		"[color=#a9bdd0]Quests are discovered through play. Open-ended quests do not expire merely because time passes.[/color]",
+		"ACTIVE",
+	]
 	for quest_id_value: Variant in state["quest_state"].get("active", []):
 		var quest_id: String = str(quest_id_value)
 		var quest: Dictionary = ContentRegistry.get_content("quests", quest_id)
-		lines.append("[font_size=21]%s[/font_size]\n%s" % [quest.get("title", quest_id), quest.get("summary", "")])
+		var tracking_label: String = " [color=#e9a86c]• TRACKED[/color]" if quest_id in tracked else ""
+		lines.append("[font_size=21]%s[/font_size]%s\n%s" % [quest.get("title", quest_id), tracking_label, quest.get("summary", "")])
+		var timing: Variant = quest.get("timing")
+		if timing is Dictionary:
+			lines.append("[color=#efc46e]TIME-SENSITIVE • %s[/color]" % timing.get("reason", "This opportunity has an authored deadline."))
 		for objective: Variant in QuestService.get_progress(quest_id).get("objectives", []):
 			if objective is Dictionary:
 				lines.append("%s %s" % ["✓" if objective.get("completed", false) else "○", objective.get("text", objective.get("id", "Objective"))])
+		_add_action_button(
+			"Untrack %s" % quest.get("title", quest_id) if quest_id in tracked else "Track %s" % quest.get("title", quest_id),
+			_set_quest_tracking.bind(quest_id, quest_id not in tracked)
+		)
 	for section: String in ["completed", "deferred", "failed"]:
 		lines.append("\n%s" % section.to_upper())
 		var ids: Array = state["quest_state"].get(section, [])
 		lines.append(_quest_names(ids) if not ids.is_empty() else "None")
 	app_content.text = "\n".join(lines)
+
+
+func _set_quest_tracking(quest_id: String, tracked: bool) -> void:
+	var result: Dictionary = QuestService.set_tracked(quest_id, tracked)
+	phone_status.text = "Quest tracker updated." if result.get("ok", false) else str(result.get("errors", ["Quest tracking could not be updated."])[0])
+	_render_quests()
 
 
 func _render_education() -> void:
@@ -1499,12 +1368,7 @@ func _on_confirm_schedule_pressed() -> void:
 		return
 	scheduler_panel.visible = false
 	phone_status.text = "%s was added to the calendar." % title
-	if _return_to_weekly_review:
-		_return_to_weekly_review = false
-		_current_app = "weekly_review"
-		_render_weekly_review()
-	else:
-		_show_app("calendar")
+	_show_app("calendar")
 
 
 func _cancel_calendar_event(event_id: String) -> void:
@@ -1524,10 +1388,6 @@ func _cancel_calendar_event(event_id: String) -> void:
 
 func _on_close_scheduler_pressed() -> void:
 	scheduler_panel.visible = false
-	if _return_to_weekly_review:
-		_return_to_weekly_review = false
-		_current_app = "weekly_review"
-		_render_weekly_review()
 
 
 func _on_close_phone_pressed() -> void:

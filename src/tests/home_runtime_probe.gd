@@ -158,24 +158,34 @@ func _run_probe() -> void:
 		printerr("PROBE: Tuesday Evening schedule did not bring Elena and Daniel home")
 		get_tree().quit(1)
 		return
+	var tracking_result: Dictionary = QuestService.set_tracked("opening_future_choice", true)
+	phone.open_phone("quests")
+	await get_tree().process_frame
+	var app_title: Label = phone.get_node("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/ContentPanel/ContentMargin/ContentLayout/AppTitle")
+	var quest_content: RichTextLabel = phone.get_node("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/ContentPanel/ContentMargin/ContentLayout/AppContent")
+	var quest_actions: Container = phone.get_node("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/ContentPanel/ContentMargin/ContentLayout/ActionScroll/AppActions")
+	if not tracking_result.get("ok", false) or not phone.visible or app_title.text != "QUESTS" or "TRACKED" not in quest_content.text or quest_actions.get_child_count() == 0:
+		printerr("PROBE: player-controlled quest tracking did not render in the phone")
+		get_tree().quit(1)
+		return
+	phone.close_phone()
+	instance.call("_toggle_quest_panel")
+	await get_tree().process_frame
+	var tracker_panel: Control = instance.get_node("Interface/QuestPanel")
+	var tracker_text: RichTextLabel = instance.get_node("Interface/QuestPanel/Margin/Layout/QuestText")
+	if not tracker_panel.visible or "Choose Your Direction" not in tracker_text.text:
+		printerr("PROBE: HUD tracker did not show the quest the player pinned")
+		get_tree().quit(1)
+		return
+	instance.call("_toggle_quest_panel")
 	var sunday_state: Dictionary = GameState.current_state.duplicate(true)
 	sunday_state["clock"].merge({"year": 1, "month": 8, "day": 25, "weekday": "sunday", "block": "evening", "minute_within_block": 0}, true)
 	GameState.replace_state(sunday_state)
 	await get_tree().process_frame
 	await get_tree().process_frame
-	var app_title: Label = phone.get_node("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/ContentPanel/ContentMargin/ContentLayout/AppTitle")
-	var review_content: RichTextLabel = phone.get_node("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/ContentPanel/ContentMargin/ContentLayout/AppContent")
-	var review_actions: Container = phone.get_node("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/ContentPanel/ContentMargin/ContentLayout/ActionScroll/AppActions")
-	if not phone.visible or app_title.text != "WEEKLY REVIEW" or "reflection, not a score" not in review_content.text or review_actions.get_child_count() != 10:
-		printerr("PROBE: Sunday Evening did not automatically open the complete weekly review")
+	if phone.visible or GameState.current_state.has("weekly_review_state"):
+		printerr("PROBE: Sunday Evening interrupted sandbox play with a weekly-planning flow")
 		get_tree().quit(1)
 		return
-	phone.call("_toggle_review_priority", "education")
-	phone.call("_complete_weekly_review", true)
-	await get_tree().process_frame
-	if GameState.current_state["weekly_review_state"]["history"].size() != 1 or app_title.text != "CALENDAR":
-		printerr("PROBE: phone review could not save a selected priority and return to the calendar")
-		get_tree().quit(1)
-		return
-	print("PASS: Hale home runtime created rooms, schedules, all phone apps, accessibility controls, and the Sunday review flow.")
+	print("PASS: Hale home runtime created rooms, schedules, all phone apps, accessibility controls, and sandbox quest tracking.")
 	get_tree().quit(0)

@@ -26,6 +26,21 @@ func start_quest(quest_id: String, source: String = "gameplay") -> Dictionary:
 	return _commit(_engine.start_quest(GameState.current_state, quest_id, source), quest_id)
 
 
+func set_tracked(quest_id: String, tracked: bool) -> Dictionary:
+	if not GameState.has_active_game():
+		return {"ok": false, "errors": PackedStringArray(["No active game."])}
+	var result: Dictionary = SimulationService.apply_operation(
+		"quest.set_tracked",
+		{"quest_id": quest_id, "tracked": tracked},
+		"phone.quest_tracker"
+	)
+	if result.get("ok", false):
+		quest_state_changed.emit(quest_id)
+	else:
+		quest_error.emit(result.get("errors", PackedStringArray()))
+	return result
+
+
 func complete_objective(quest_id: String, objective_id: String, source: String = "gameplay") -> Dictionary:
 	return _commit(_engine.complete_objective(GameState.current_state, quest_id, objective_id, source), quest_id)
 

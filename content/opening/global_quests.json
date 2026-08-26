@@ -22,6 +22,7 @@
       ],
       "costs": {"tuition": 4000, "currency": "port_alder_dollar"},
       "completion_effects": [{"operation": "set_flag", "key": "education.enrolled", "value": true}, {"operation": "unlock_phone_app", "value": "education"}, {"operation": "schedule_event", "value": "westshore_orientation"}],
+      "timing": {"mode": "institutional_window", "reason": "Fall registration closes on an authored college date.", "deadline_visibility": "shown_with_quest", "warnings": ["seven_days_before", "one_day_before"]},
       "failure": {"mode": "branch", "deadline": "fall_registration_deadline", "result": "late_enrollment_or_defer_to_next_term"}
     },
     {
@@ -56,7 +57,7 @@
       ],
       "branches": [],
       "completion_effects": [{"operation": "set_flag", "key": "employment.employed", "value": true}, {"operation": "create_calendar_from_work_schedule"}, {"operation": "set_value", "key": "household.monthly_rent", "value": 250}, {"operation": "set_value", "key": "household.rent_due_date", "value": "09-01"}],
-      "failure": {"mode": "continue_with_consequences", "deadline": "09-01", "result": "rent_due_without_stable_income"}
+      "failure": {"mode": "cannot_fail", "result": "rent_and_living_costs_continue_independently_until_the_player_finds_work"}
     },
     {
       "id": "find_part_time_employment",

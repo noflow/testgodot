@@ -16,7 +16,6 @@ const EmploymentEngineScript: GDScript = preload("res://src/employment/employmen
 const EconomyEngineScript: GDScript = preload("res://src/economy/economy_engine.gd")
 const SaveEngineScript: GDScript = preload("res://src/save/save_engine.gd")
 const RelationshipEngineScript: GDScript = preload("res://src/relationships/relationship_engine.gd")
-const WeeklyReviewEngineScript: GDScript = preload("res://src/review/weekly_review_engine.gd")
 
 var _failures: PackedStringArray = []
 var _tests_run: int = 0
@@ -52,7 +51,7 @@ func _run_all() -> void:
 	_test_save_round_trip_rotation_recovery_and_migration()
 	_test_phone_messages_and_calendar()
 	_test_relationship_dating_agreements_and_conflicts()
-	_test_sunday_weekly_review_and_priorities()
+	_test_sandbox_quest_progression_and_tracking()
 	_test_opening_dialogue_branches()
 
 	if _failures.is_empty():
@@ -80,7 +79,7 @@ func _test_project_configuration() -> void:
 	_expect(InputMap.has_action("dialogue_skip"), "Dialogue skip input action exists.")
 	_expect(ProjectSettings.has_setting("autoload/PhoneService"), "Phone service is configured as an autoload.")
 	_expect(ProjectSettings.has_setting("autoload/RelationshipService"), "Relationship service is configured as an autoload.")
-	_expect(ProjectSettings.has_setting("autoload/ReviewService"), "Weekly review service is configured as an autoload.")
+	_expect(not ProjectSettings.has_setting("autoload/ReviewService"), "No weekly-planning service can interrupt sandbox play.")
 	_expect(ProjectSettings.has_setting("autoload/SettingsService"), "Persistent settings service is configured as an autoload.")
 	_expect(ProjectSettings.has_setting("autoload/TravelService"), "Travel service is configured as an autoload.")
 	_expect(ProjectSettings.has_setting("autoload/CityActionService"), "City action service is configured as an autoload.")
@@ -168,7 +167,7 @@ func _test_required_json_documents() -> void:
 		"res://content/systems/simulation_events.json",
 		"res://content/systems/save_system.json",
 		"res://content/systems/relationships.json",
-		"res://content/systems/weekly_review.json",
+		"res://content/systems/quest_progression.json",
 		"res://schemas/save_game.schema.json",
 	]
 	for path: String in paths:
@@ -854,7 +853,9 @@ func _test_content_registry() -> void:
 	_expect(_registry.get_content("quests", "opening_future_choice") is Dictionary, "Quests can be retrieved by id.")
 	_expect(_registry.get_all("operations").size() == 58, "Registry indexes all 58 simulation operations.")
 	_expect(_registry.get_all("date_activities").size() == 3, "Registry indexes all three opening date activities.")
-	_expect(_registry.get_all("review_priorities").size() == 7, "Registry indexes all seven weekly-review priorities.")
+	var quest_rules: Dictionary = _registry.get_package("port_alder_sandbox_quest_system")
+	_expect(quest_rules.get("default_timing", "") == "open_ended", "Quest progression defaults to open-ended sandbox timing.")
+	_expect(bool(quest_rules.get("tracker_rules", {}).get("player_controls_tracking", false)), "Sandbox rules give the player control of quest tracking.")
 	_expect(_registry.get_all("actions").size() == 10, "Registry indexes all 10 initial home actions.")
 	_expect(_registry.get_all("city_interactions").size() == 9, "Registry indexes all nine opening city interactions.")
 	_expect(_registry.get_all("phone_apps").size() == 13, "Registry indexes the foundation apps plus Education, Jobs, Money, and Shopping.")
@@ -912,8 +913,7 @@ func _test_new_game_state_factory() -> void:
 	_expect(state["content_state"]["package_manifest"].size() == 24, "Runtime state records versioned manifest details for every loaded package.")
 	_expect(str(state["content_state"]["package_manifest"][0].get("checksum", "")).length() == 64, "Content manifest entries include SHA-256 package checksums.")
 	_expect(state["world_state"]["random_seed"] == 12345, "Runtime random seed can be reproduced.")
-	_expect(state["weekly_review_state"]["history"].is_empty(), "A new game begins with an empty weekly-review history.")
-	_expect(state["simulation"]["weekly_tracking"]["start_date"] == "Y1-08-20", "A new game begins tracking the opening week for Sunday review.")
+	_expect(state["quest_state"].get("tracked", []).is_empty(), "A new game does not assign or pin quests for the player.")
 	_expect(not _contains_placeholder(state), "Runtime state contains no unresolved template placeholders.")
 	for npc_state: Variant in state["npc_states"]:
 		_expect(
@@ -1309,71 +1309,41 @@ func _test_relationship_dating_agreements_and_conflicts() -> void:
 			_expect(float(missed_state["relationships"]["emma_rowan"]["trust"]) == trust_before_no_show - 7.0, "Missing a date applies the authored trust consequence.")
 
 
-func _test_sunday_weekly_review_and_priorities() -> void:
+func _test_sandbox_quest_progression_and_tracking() -> void:
 	var factory: RefCounted = NewGameStateFactoryScript.new(_registry)
 	var simulation: RefCounted = SimulationEngineScript.new(_registry)
-	var review: RefCounted = WeeklyReviewEngineScript.new(_registry, simulation)
-	var state: Dictionary = factory.create_new_game({}, {"random_seed": 230, "save_id": "weekly-review-test"})
-	_expect(not bool(review.review_status(state).get("due", true)), "The weekly review stays closed before Sunday Evening.")
+	var state: Dictionary = factory.create_new_game({}, {"random_seed": 230, "save_id": "sandbox-quest-test"})
+	var rules: Dictionary = _registry.get_package("port_alder_sandbox_quest_system")
+	_expect(rules.get("default_timing", "") == "open_ended", "Quests are open-ended unless an author explicitly declares supported timing.")
+	_expect(bool(rules.get("path_rules", {}).get("no_weekly_quest_assignment", false)), "Sandbox rules forbid weekly quest assignment.")
+	_expect(bool(rules.get("deadline_rules", {}).get("silent_expiration_forbidden", false)), "Sandbox rules forbid silent quest expiration.")
+	_expect(int(rules.get("deadline_rules", {}).get("recommended_timed_maximum_percent", 0)) == 15, "Timed quests are capped at a rare authoring target.")
 
-	var result: Dictionary = simulation.apply_operation(state, "time.advance", {"minutes": 60}, "home.action:sleep")
+	var result: Dictionary = simulation.apply_operation(state, "quest.set_tracked", {
+		"quest_id": "opening_future_choice", "tracked": true,
+	}, "test.quest_tracker")
+	_expect(result.get("ok", false), "The player can track a discovered active quest.")
 	state = result.get("state", state)
-	result = simulation.apply_operation(state, "economy.transaction", {
-		"account": "checking", "amount": 125.0, "category": "employment", "description": "Test pay",
-	}, "test.weekly_income")
-	state = result.get("state", state)
-	result = simulation.apply_operation(state, "economy.transaction", {
-		"account": "checking", "amount": -30.0, "category": "food", "description": "Test groceries",
-	}, "test.weekly_spending")
-	state = result.get("state", state)
-	result = simulation.apply_operation(state, "relationship.adjust_meter", {
-		"character_id": "emma_rowan", "meter": "friendship", "amount": 4.0, "reason": "weekly test",
-	}, "test.weekly_relationship")
-	state = result.get("state", state)
-	state["calendar_state"]["events"].append({"id": "kept-plan", "date": "Y1-08-22", "status": "completed"})
-	state["calendar_state"]["events"].append({"id": "missed-plan", "date": "Y1-08-23", "status": "missed"})
-	_set_test_date(state, "Y1-08-25", "sunday", "evening")
-	_expect(bool(review.review_status(state).get("due", false)), "Sunday Evening makes the weekly review due.")
+	_expect(state["quest_state"].get("tracked", []) == ["opening_future_choice"], "Tracked quest state is saved independently from active progression.")
 
-	result = review.synchronize(state)
-	_expect(result.get("ok", false) and bool(result.get("data", {}).get("created", false)), "Sunday synchronization creates one pending review.")
+	result = simulation.apply_operation(state, "time.advance", {"blocks": 70}, "test.sandbox_time")
+	_expect(result.get("ok", false), "Sandbox time can advance beyond the opening week without a planning gate.")
 	state = result.get("state", state)
-	var pending: Dictionary = review.current_review(state)
-	var summary: Dictionary = pending.get("summary", {})
-	_expect(pending.get("tone", "") == "reflective_not_judgmental", "The review records its reflective, nonjudgmental tone.")
-	_expect(float(summary.get("money", {}).get("income", 0.0)) == 125.0 and float(summary.get("money", {}).get("spending", 0.0)) == 30.0, "Weekly money totals derive from the recorded ledger.")
-	_expect(int(summary.get("time", {}).get("sleep_sessions", 0)) == 1 and int(summary.get("time", {}).get("missed_commitments", 0)) == 1, "Weekly time summary records sleep and missed commitments.")
-	_expect(float(summary.get("relationships", {}).get("meter_changes", {}).get("emma_rowan:friendship", 0.0)) == 4.0, "Weekly relationship summary derives meter changes from events.")
-	_expect(summary.has("health") and summary.has("quests") and summary.has("direction"), "Weekly review includes health, quest, and life-direction sections.")
+	_expect("opening_future_choice" in state["quest_state"]["active"], "An open-ended quest remains active after unrelated weeks pass.")
+	_expect("opening_future_choice" in state["quest_state"]["tracked"], "Time passing does not change the player's tracking choice.")
+	_expect(not state.has("weekly_review_state"), "Runtime state contains no forced weekly-review system.")
 
-	for priority_id: String in ["education", "finances", "health"]:
-		result = review.toggle_priority(state, priority_id)
-		_expect(result.get("ok", false), "A weekly priority can be selected: %s." % priority_id)
-		state = result.get("state", state)
-	result = review.toggle_priority(state, "relationships")
-	_expect(not result.get("ok", true), "A fourth weekly priority is rejected by the three-priority cap.")
-	_expect(review.current_review(state).get("priorities", []).size() == 3, "A rejected fourth priority leaves the pending review unchanged.")
-
-	state["calendar_state"]["events"].append({"id": "next-week-plan", "date": "Y1-08-27", "status": "scheduled"})
-	result = review.complete_review(state, true)
-	_expect(result.get("ok", false), "A pending Sunday review can be completed.")
+	result = simulation.apply_operation(state, "quest.set_tracked", {
+		"quest_id": "opening_future_choice", "tracked": false,
+	}, "test.quest_tracker")
+	_expect(result.get("ok", false), "The player can untrack a quest without abandoning it.")
 	state = result.get("state", state)
-	var history: Array = state["weekly_review_state"]["history"]
-	_expect(history.size() == 1 and state["weekly_review_state"]["pending"] == null, "Completion moves the review from pending state into saved history.")
-	_expect(state["weekly_review_state"]["selected_priorities"].size() == 3 and state["calendar_state"]["reminders"].size() == 3, "Selected priorities persist and create three next-week calendar reminders.")
-	_expect(int(history[0].get("next_week_scheduled_commitments", 0)) == 1, "The completed reflection records already-scheduled next-week commitments.")
-	_expect(not history[0].has("score") and "does not grade" in str(history[0].get("reflection", "")), "The completed weekly review stores no victory score or life grade.")
-	_expect(str(state["simulation"]["recent_event_log"].back().get("operation", "")) == "review.complete", "Review completion is recorded through the atomic simulation interface.")
-	_expect(not bool(review.review_status(state).get("due", true)), "A completed review cannot reopen during the same week.")
-	result = review.complete_review(state, true)
-	_expect(not result.get("ok", true), "A completed weekly review cannot be submitted twice.")
+	_expect(state["quest_state"].get("tracked", []).is_empty() and "opening_future_choice" in state["quest_state"]["active"], "Untracked quests continue normally.")
 
-	var legacy_state: Dictionary = factory.create_new_game({}, {"random_seed": 231})
-	legacy_state.erase("weekly_review_state")
-	legacy_state["simulation"].erase("weekly_tracking")
-	_set_test_date(legacy_state, "Y1-08-25", "sunday", "evening")
-	result = review.synchronize(legacy_state)
-	_expect(result.get("ok", false) and result.get("state", {}).get("weekly_review_state", {}).get("pending") is Dictionary, "Weekly review safely initializes missing state from an older save.")
+	result = simulation.apply_operation(state, "quest.set_tracked", {
+		"quest_id": "enroll_at_westshore", "tracked": true,
+	}, "test.quest_tracker")
+	_expect(not result.get("ok", true), "Undiscovered or inactive quests cannot be exposed by the tracker.")
 
 
 func _test_opening_dialogue_branches() -> void:
@@ -1489,9 +1459,7 @@ func _test_save_round_trip_rotation_recovery_and_migration() -> void:
 		"cost": 0,
 		"route_ids": ["hale_home_to_alder_bay_park"],
 	}
-	state["weekly_review_state"]["pending"] = {
-		"id": "weekly-review-Y1-W001", "week_number": 1, "status": "pending", "priorities": ["education"],
-	}
+	state["quest_state"]["tracked"] = ["opening_future_choice"]
 
 	var result: Dictionary = engine.save_slot(state, "manual_1", {
 		"timestamp_utc": "2026-08-25T10:00:00",
@@ -1508,7 +1476,7 @@ func _test_save_round_trip_rotation_recovery_and_migration() -> void:
 	_expect(loaded.get("summary", {}).get("current_location", "") == "hale_home.player_bedroom", "Slot preview metadata reports the saved location.")
 	_expect(loaded.get("state", {}).get("conversation_state", {}).get("active", {}).get("node_id", "") == "future_choice", "Save/load round-trip preserves the exact waiting VN node.")
 	_expect(int(loaded.get("state", {}).get("world_state", {}).get("pending_travel", {}).get("remaining_minutes", 0)) == 9, "Save/load round-trip preserves an in-progress trip context.")
-	_expect(loaded.get("state", {}).get("weekly_review_state", {}).get("pending", {}).get("id", "") == "weekly-review-Y1-W001", "Save/load round-trip preserves a pending Sunday review and its priorities.")
+	_expect(loaded.get("state", {}).get("quest_state", {}).get("tracked", []) == ["opening_future_choice"], "Save/load round-trip preserves the player's tracked quests.")
 
 	var original_checking: float = float(state["player"]["economy"]["accounts"]["checking"])
 	state["player"]["economy"]["accounts"]["checking"] = original_checking + 77.0
@@ -1552,9 +1520,9 @@ func _test_save_round_trip_rotation_recovery_and_migration() -> void:
 	var invalid_state: Dictionary = state.duplicate(true)
 	invalid_state.erase("player")
 	_expect(not engine.save_slot(invalid_state, "invalid_slot").get("ok", true), "Invalid in-memory state is rejected before any save write.")
-	var invalid_review_state: Dictionary = state.duplicate(true)
-	invalid_review_state["weekly_review_state"]["selected_priorities"] = ["education", "career", "health", "rest"]
-	_expect(not engine.save_slot(invalid_review_state, "invalid_review_slot").get("ok", true), "Save validation rejects more than three weekly priorities.")
+	var invalid_tracking_state: Dictionary = state.duplicate(true)
+	invalid_tracking_state["quest_state"]["tracked"] = ["enroll_at_westshore"]
+	_expect(not engine.save_slot(invalid_tracking_state, "invalid_tracking_slot").get("ok", true), "Save validation rejects a tracked quest that is not active.")
 
 	var legacy_state: Dictionary = factory.create_new_game({}, {"random_seed": 501})
 	legacy_state["save_format_version"] = 0

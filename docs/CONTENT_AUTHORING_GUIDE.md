@@ -56,8 +56,24 @@ activation rules, ordered objectives, branches, rewards, failure behavior, and
 completion effects. Objectives use declarative events such as
 `conversation_completed`, `visit_location`, `obtain_item`, and `calendar_reached`.
 
-Quest branches may activate other quests. Failure should normally change later
-content rather than end the game.
+The default timing mode is `open_ended`. Do not add a deadline simply because a
+quest touches money, school, work, or an opening-calendar day. Ordinary costs,
+schedules, attendance, and NPC availability continue through their own simulation
+systems. An open-ended quest can remain active across weeks, seasons, birthdays,
+and years without failure.
+
+Use a timed quest only when its `timing.mode` is `institutional_window`,
+`scheduled_commitment`, `emergency`, or `short_lived_opportunity`. The deadline and
+narrative reason must be visible before acceptance, reminders are required, and
+expiration must branch or delay play rather than end the game. Keep timed quests
+below the 15% authoring target.
+
+Preferred gates are attributes, skills, relationship state, prior choices,
+locations, life direction, resources, and world state. Quest branches may activate
+follow-up paths. Major lockouts must be explained, and failure should normally
+change later content rather than end the game. Full discovery and deadline rules
+are in `docs/SANDBOX_QUEST_PLAYBOOK.md` and
+`content/systems/quest_progression.json`.
 
 ## Conversation structure
 
@@ -84,9 +100,10 @@ choices, resolves player-name tokens, applies node and choice effects atomically
 records history and seen nodes, and preserves the active node for save/resume.
 Once-only conversations receive a durable completion flag.
 
-The quest engine starts quests, completes objectives, selects branches from runtime
+The quest engine starts discovered quests, completes objectives, selects branches from runtime
 values, applies branch-specific household rules, starts linked quests, and exposes
-active quest definitions and progress to the phone UI. Elena's opening scene is the
+active quest definitions and progress to the phone UI. Tracking is an independent,
+player-controlled presentation choice and does not affect progression. Elena's opening scene is the
 first complete production path through both engines.
 
 Quest objectives now respond directly to their authored completion events. Current

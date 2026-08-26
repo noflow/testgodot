@@ -82,13 +82,10 @@ employment, playtime, build, and recovery state. Loading resumes an active VN no
 or routes to the saved home/city scene. F5 and F9 provide scene-independent
 quicksave and quickload controls, including during VN conversations.
 
-`ReviewService` opens one reflection from Sunday Evening onward, builds its six
-sections only from the current runtime snapshot and recorded events, and commits
-completion through `review.complete`. Weekly tracking records elapsed time,
-need-weighted health values, sleep and naps, workouts, weather exposure, and
-inebriation incidents. Completed review records retain their exact summary and up
-to three selected priorities; those priorities also become next-week calendar
-reminders. The review has no score, rank, failure state, or optimal-life judgment.
+Quest state separates active quests from the player's optional `tracked` list.
+Discovery and progress remain in saved simulation state even when a quest is not
+pinned. `quest.set_tracked` changes presentation only; it cannot start, complete,
+fail, or defer content. Open-ended quests have no elapsed-time failure processor.
 
 `SettingsService` stores device-local accessibility, audio, display, and input
 preferences separately from game saves in `user://settings.cfg`. Text scale, high
@@ -149,8 +146,6 @@ context without allowing files to grow forever.
 The game provides eight manual slots, three rotating autosaves, and one quicksave.
 Autosaves occur at day boundaries and around major scenes, quest completions,
 relationship agreements, enrollment, employment, pregnancy, and birth changes.
-Completing a weekly review is also an autosave checkpoint.
-
 Conversations and travel can be saved safely because their current node or remaining
 trip state is recorded explicitly.
 
@@ -194,5 +189,5 @@ contain private health, fertility, relationship, and family simulation state.
 - `content/runtime/new_game_state.json`
 - `content/systems/simulation_events.json`
 - `content/systems/save_system.json`
-- `content/systems/weekly_review.json`
+- `content/systems/quest_progression.json`
 - `schemas/save_game.schema.json`

@@ -518,10 +518,14 @@ func _toggle_quest_panel() -> void:
 	quest_panel.visible = not quest_panel.visible
 	player.movement_enabled = not quest_panel.visible
 	if quest_panel.visible:
-		var lines: PackedStringArray = ["[font_size=26][b]ACTIVE QUESTS[/b][/font_size]"]
-		for quest: Variant in QuestService.get_active_quests():
+		var lines: PackedStringArray = ["[font_size=26][b]TRACKED QUESTS[/b][/font_size]"]
+		var tracked: Array = GameState.current_state["quest_state"].get("tracked", [])
+		for quest_id_value: Variant in tracked:
+			var quest: Variant = ContentRegistry.get_content("quests", str(quest_id_value))
 			if quest is Dictionary:
 				lines.append("[b]%s[/b]\n%s" % [quest.get("title", quest.get("id", "Quest")), quest.get("summary", "")])
+		if tracked.is_empty():
+			lines.append("Nothing is pinned. Open the phone's Quests app to track any discovered active quest.")
 		quest_text.text = "\n\n".join(lines)
 
 

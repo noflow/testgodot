@@ -464,8 +464,8 @@ full-time and part-time job searches, weather-aware wardrobe onboarding, city
 transportation onboarding, the Westshore enrollment advisor, and the Harbor
 Employment Centre orientation.
 
-The opening Tuesday-through-Sunday calendar is now mapped across all seven daily
-blocks. The canonical city registry defines ten Port Alder districts, sixty-one
+The opening Tuesday-through-Sunday calendar is mapped across all seven daily
+blocks as a simulation fixture, not a prescribed week. The canonical city registry defines ten Port Alder districts, sixty-one
 destinations, and more than three hundred rooms, including every opening NPC home,
 rentable and purchasable housing, education, work, shopping, entertainment, health,
 family, and outdoor spaces. Transportation data supplies walking, bus, taxi, and car
@@ -526,9 +526,23 @@ location registry, so Westshore, Forge Fitness, the park, the cinema, the employ
 centre, the neighborhood, and later routed destinations do not need separate shell
 code. The Hale garage can grant daily family-car permission when required.
 
+## Sandbox quest philosophy
+
+After Elena's opening conversation, the player owns the pace. Quests are found by
+exploring, talking, checking messages and boards, doing activities, and following
+the consequences of prior choices. They are open-ended unless a rare, visible
+institutional window, scheduled commitment, emergency, or fleeting opportunity
+creates a real narrative deadline.
+
+Most progression comes from attribute, skill, relationship, location, resource,
+life-direction, and prior-choice gates. Quest chains may lead into deeper paths, and
+choices may alter or close incompatible branches, but the game does not select a
+global route, assign weekly priorities, or force a Sunday planning screen. The
+player controls which discovered quests are pinned in the phone tracker.
+
 ## Next milestones
 
 1. Add housing search, rent/purchase qualification, moving, and household transitions
-2. Complete the full new-game-to-Sunday save/load acceptance run
+2. Complete the full new-game-through-opening-calendar save/load acceptance run
 3. Stabilize and package the vertical slice against all acceptance tests
 4. Resume broader content expansion, alternative households, and the September calendar

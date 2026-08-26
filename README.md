@@ -62,11 +62,12 @@ missed and cancelled plans, five relationship chapters, and casual, exclusive, o
 open dating agreements. Other partners can witness public dates and respond from
 their own jealousy, boundaries, agreement, and authored reaction style; outcomes
 range from approval or an honest check-in to damaged trust or a breakup.
-Sunday Evening now opens a state-backed weekly reflection covering direction,
-money, commitments, health, relationships, and quests. It deliberately gives no
-life score; the player may instead choose up to three next-week priorities, add a
-calendar commitment, or continue without priorities. Completed reflections,
-priority reminders, and the underlying weekly activity totals persist in saves.
+Quest progression is now sandbox-first. Quests are discovered through exploration,
+conversations, messages, institutions, activities, and earlier choices; they are
+open-ended by default and never assigned as weekly priorities. Players choose which
+active quests to pin. Stat, skill, relationship, location, life-path, and prior-choice
+gates drive most progression, while rare visible deadlines are reserved for
+institutional windows, scheduled commitments, emergencies, or fleeting opportunities.
 The phone and main menu now share complete persistent settings for four text sizes,
 high contrast, reduced motion, screen-edge effects, camera shake, hold/toggle VN
 skipping, independent audio channels, display mode, resolution, VSync, and keyboard
@@ -101,7 +102,8 @@ Education, jobs, interviews, and repeatable actions are summarized in [docs/EDUC
 Economy, inventory, clothing, food, and stores are summarized in [docs/ECONOMY_INVENTORY_PLAYBOOK.md](docs/ECONOMY_INVENTORY_PLAYBOOK.md).
 Runtime state, simulation events, saves, and migrations are described in [docs/RUNTIME_SAVE_ARCHITECTURE.md](docs/RUNTIME_SAVE_ARCHITECTURE.md).
 Date authoring, agreements, conflicts, and relationship progression are described in [docs/RELATIONSHIP_DATING_PLAYBOOK.md](docs/RELATIONSHIP_DATING_PLAYBOOK.md).
-Sunday review behavior and the implemented settings/accessibility baseline are described in [docs/WEEKLY_REVIEW_ACCESSIBILITY_PLAYBOOK.md](docs/WEEKLY_REVIEW_ACCESSIBILITY_PLAYBOOK.md).
+Sandbox discovery, gates, paths, deadlines, and player-controlled tracking are described in [docs/SANDBOX_QUEST_PLAYBOOK.md](docs/SANDBOX_QUEST_PLAYBOOK.md).
+The implemented settings and accessibility baseline are described in [docs/ACCESSIBILITY_PLAYBOOK.md](docs/ACCESSIBILITY_PLAYBOOK.md).
 The first playable build is defined in [docs/VERTICAL_SLICE_SPECIFICATION.md](docs/VERTICAL_SLICE_SPECIFICATION.md).
 
 Validate all character and global content data with `python3 tools/validate_characters.py`.

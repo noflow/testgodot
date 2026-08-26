@@ -26,12 +26,10 @@ func apply_operation(state: Dictionary, operation: String, payload: Dictionary, 
 		return _failure("Simulation events require a source.")
 
 	var working_state: Dictionary = state.duplicate(true)
-	var tracked_minutes_before: int = int(working_state.get("simulation", {}).get("weekly_tracking", {}).get("elapsed_minutes", 0))
 	var error: String = _apply_to_working_state(working_state, operation, payload)
 	if not error.is_empty():
 		return _failure(error)
 
-	_record_weekly_activity(working_state, operation, source, tracked_minutes_before)
 	var event: Dictionary = _create_event(working_state, operation, payload, source)
 	_append_event(working_state, event)
 	return {"ok": true, "state": working_state, "event": event, "errors": PackedStringArray()}
@@ -57,8 +55,6 @@ func _apply_to_working_state(state: Dictionary, operation: String, payload: Dict
 			return _record_relationship_date(state, payload)
 		"relationship.record_conflict":
 			return _record_relationship_conflict(state, payload)
-		"review.complete":
-			return _complete_weekly_review(state, payload)
 		"economy.transaction":
 			return _apply_transaction(state, payload)
 		"economy.process_recurring":
@@ -77,6 +73,8 @@ func _apply_to_working_state(state: Dictionary, operation: String, payload: Dict
 			return _mark_phone_thread_read(state, payload)
 		"quest.start":
 			return _start_quest(state, payload)
+		"quest.set_tracked":
+			return _set_quest_tracked(state, payload)
 		"quest.objective_complete":
 			return _complete_objective(state, payload)
 		"quest.complete":
@@ -131,7 +129,6 @@ func _apply_time_advance(state: Dictionary, payload: Dictionary) -> String:
 		return str(clock_result.get("error", "Unable to advance time."))
 
 	_apply_passive_needs(state, int(clock_result["minutes_advanced"]))
-	_record_weekly_time(state, int(clock_result["minutes_advanced"]))
 	_update_weather_for_date(state)
 	var simulation: Dictionary = state["simulation"]
 	if int(clock_result["days_crossed"]) > 0:
@@ -141,53 +138,6 @@ func _apply_time_advance(state: Dictionary, payload: Dictionary) -> String:
 	if int(clock_result["months_crossed"]) > 0:
 		simulation["last_monthly_tick"] = "Y%d-%02d" % [state["clock"]["year"], state["clock"]["month"]]
 	return ""
-
-
-func _record_weekly_time(state: Dictionary, elapsed_minutes: int) -> void:
-	if elapsed_minutes <= 0:
-		return
-	var simulation: Dictionary = state["simulation"]
-	var tracking_value: Variant = simulation.get("weekly_tracking")
-	var tracking: Dictionary
-	if tracking_value is Dictionary:
-		tracking = tracking_value
-	else:
-		tracking = {}
-		simulation["weekly_tracking"] = tracking
-	var current_week: int = int(state["clock"].get("week_number", 1))
-	if int(tracking.get("week_number", current_week)) != current_week:
-		tracking.clear()
-	tracking["week_number"] = current_week
-	tracking["start_date"] = str(tracking.get("start_date", _date_string(state["clock"])))
-	tracking["elapsed_minutes"] = int(tracking.get("elapsed_minutes", 0)) + elapsed_minutes
-	var weighted: Dictionary = tracking.get("need_weighted_totals", {})
-	for need_id: String in ["energy", "hygiene", "mood", "stress"]:
-		weighted[need_id] = float(weighted.get(need_id, 0.0)) + float(state["player"]["needs"].get(need_id, 0.0)) * elapsed_minutes
-	tracking["need_weighted_totals"] = weighted
-	var location_id: String = str(state["world_state"].get("current_location", "")).get_slice(".", 0)
-	var location: Variant = _registry.get_location(location_id)
-	if location is Dictionary and bool(location.get("access", {}).get("weather_exposure", false)):
-		tracking["weather_exposure_minutes"] = int(tracking.get("weather_exposure_minutes", 0)) + elapsed_minutes
-	var impaired: bool = float(state["player"]["needs"].get("inebriation", 0.0)) >= 25.0
-	if impaired and not bool(tracking.get("inebriation_active", false)):
-		tracking["inebriation_incidents"] = int(tracking.get("inebriation_incidents", 0)) + 1
-	tracking["inebriation_active"] = impaired
-
-
-func _record_weekly_activity(state: Dictionary, operation: String, source: String, tracked_minutes_before: int) -> void:
-	if operation != "time.advance":
-		return
-	var tracking: Dictionary = state.get("simulation", {}).get("weekly_tracking", {})
-	if tracking.is_empty():
-		return
-	var elapsed: int = maxi(0, int(tracking.get("elapsed_minutes", 0)) - tracked_minutes_before)
-	if source == "home.action:sleep":
-		tracking["sleep_minutes"] = int(tracking.get("sleep_minutes", 0)) + elapsed
-		tracking["sleep_sessions"] = int(tracking.get("sleep_sessions", 0)) + 1
-	elif source == "home.action:nap":
-		tracking["nap_minutes"] = int(tracking.get("nap_minutes", 0)) + elapsed
-	elif source.begins_with("city.activity:") and "workout" in source:
-		tracking["workouts"] = int(tracking.get("workouts", 0)) + 1
 
 
 func _update_weather_for_date(state: Dictionary) -> void:
@@ -352,52 +302,6 @@ func _record_relationship_conflict(state: Dictionary, payload: Dictionary) -> St
 		agreement["ended_on"] = _date_string(state["clock"])
 		agreement["ended_reason"] = record.get("outcome", "conflict")
 		relationship["dating_agreement"] = agreement
-	return ""
-
-
-func _complete_weekly_review(state: Dictionary, payload: Dictionary) -> String:
-	var record_value: Variant = payload.get("review_record")
-	if not record_value is Dictionary:
-		return "Weekly review completion requires a review record."
-	var record: Dictionary = record_value.duplicate(true)
-	var review_id: String = str(record.get("id", ""))
-	if review_id.is_empty():
-		return "Weekly review completion requires a unique id."
-	var review_state_value: Variant = state.get("weekly_review_state")
-	if not review_state_value is Dictionary:
-		state["weekly_review_state"] = {"pending": null, "history": [], "selected_priorities": [], "last_completed_week": 0}
-	var review_state: Dictionary = state["weekly_review_state"]
-	if not review_state.get("history") is Array:
-		review_state["history"] = []
-	for existing: Variant in review_state["history"]:
-		if existing is Dictionary and str(existing.get("id", "")) == review_id:
-			return "Weekly review already contains %s." % review_id
-	var pending: Variant = review_state.get("pending")
-	if not pending is Dictionary or str(pending.get("id", "")) != review_id:
-		return "This weekly review is not currently pending."
-	review_state["history"].append(record)
-	review_state["selected_priorities"] = record.get("priorities", []).duplicate(true)
-	review_state["last_completed_week"] = int(record.get("week_number", state["clock"].get("week_number", 1)))
-	review_state["pending"] = null
-	state["player"]["flags"]["weekly_review.%s.completed" % review_id] = true
-	for priority_value: Variant in record.get("priority_details", []):
-		if not priority_value is Dictionary:
-			continue
-		var priority: Dictionary = priority_value
-		var reminder_id: String = "review-priority-%s-%s" % [review_id, priority.get("id", "priority")]
-		var duplicate_reminder: bool = false
-		for reminder_value: Variant in state["calendar_state"].get("reminders", []):
-			if reminder_value is Dictionary and str(reminder_value.get("id", "")) == reminder_id:
-				duplicate_reminder = true
-				break
-		if not duplicate_reminder:
-			state["calendar_state"]["reminders"].append({
-				"id": reminder_id,
-				"source": "weekly_review",
-				"week_number": int(record.get("week_number", 1)) + 1,
-				"priority_id": priority.get("id", ""),
-				"text": "Next-week priority: %s — %s" % [priority.get("name", "Priority"), priority.get("description", "")],
-			})
 	return ""
 
 
@@ -702,6 +606,25 @@ func _start_quest(state: Dictionary, payload: Dictionary) -> String:
 	return ""
 
 
+func _set_quest_tracked(state: Dictionary, payload: Dictionary) -> String:
+	var quest_id: String = str(payload.get("quest_id", ""))
+	var quest_state: Dictionary = state["quest_state"]
+	if _registry.get_content("quests", quest_id) == null:
+		return "Unknown quest: %s" % quest_id
+	if not payload.get("tracked") is bool:
+		return "Quest tracking requires a true or false value."
+	if not quest_state.get("tracked") is Array:
+		quest_state["tracked"] = []
+	if bool(payload["tracked"]):
+		if quest_id not in quest_state["active"]:
+			return "Only an active quest can be tracked: %s" % quest_id
+		if quest_id not in quest_state["tracked"]:
+			quest_state["tracked"].append(quest_id)
+	else:
+		quest_state["tracked"].erase(quest_id)
+	return ""
+
+
 func _complete_objective(state: Dictionary, payload: Dictionary) -> String:
 	var quest_id: String = str(payload.get("quest_id", ""))
 	var objective_id: String = str(payload.get("objective_id", ""))
@@ -723,6 +646,7 @@ func _complete_quest(state: Dictionary, payload: Dictionary) -> String:
 	if quest_id not in quest_state["active"]:
 		return "Quest is not active: %s" % quest_id
 	quest_state["active"].erase(quest_id)
+	quest_state.get("tracked", []).erase(quest_id)
 	quest_state["completed"].append(quest_id)
 	quest_state["branch_history"].append({
 		"quest_id": quest_id,
@@ -741,6 +665,7 @@ func _fail_or_defer_quest(state: Dictionary, payload: Dictionary) -> String:
 	if result not in ["deferred", "failed"]:
 		return "Quest result must be deferred or failed."
 	quest_state["active"].erase(quest_id)
+	quest_state.get("tracked", []).erase(quest_id)
 	if quest_id not in quest_state[result]:
 		quest_state[result].append(quest_id)
 	return ""

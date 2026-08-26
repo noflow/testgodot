@@ -52,7 +52,7 @@
     {"id": "VS-SIM-001", "area": "time", "priority": 0, "setup": "Known initial needs", "action": "Advance one full activity block", "expected": "Clock, needs, schedules, and due events update exactly once."},
     {"id": "VS-SIM-002", "area": "events", "priority": 0, "setup": "Atomic event with one invalid sub-effect", "action": "Apply event", "expected": "No sub-effects persist and a recoverable validation error is recorded."},
     {"id": "VS-SIM-003", "area": "schedules", "priority": 1, "setup": "Observe a named NPC across two scheduled blocks", "action": "Advance time", "expected": "NPC location and availability follow opening-week schedule data."},
-    {"id": "VS-SIM-004", "area": "sunday_review", "priority": 1, "setup": "Reach Sunday Evening", "action": "Open weekly review", "expected": "Money, health, time, relationship, and quest summaries match recorded state without a victory score."},
+    {"id": "VS-SIM-004", "area": "sandbox_continuity", "priority": 1, "setup": "Keep open-ended quests active and advance beyond Sunday", "action": "Continue normal play", "expected": "No planning screen is forced, no weekly priorities are assigned, and open-ended quests remain available."},
 
     {"id": "VS-SAVE-001", "area": "save", "priority": 0, "setup": "Changed money, needs, quest, relationship, inventory, and location", "action": "Manual save, quit, and load", "expected": "All changed values and current context match exactly with no duplicate effects."},
     {"id": "VS-SAVE-002", "area": "save", "priority": 0, "setup": "Conversation waiting at a choice", "action": "Save, quit, and load", "expected": "Conversation resumes at the same node with effects applied neither zero nor twice."},
