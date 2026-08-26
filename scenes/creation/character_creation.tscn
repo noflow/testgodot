@@ -108,14 +108,44 @@ max_length = 24
 
 [node name="BirthLabel" type="Label" parent="PageMargin/Page/CreationTabs/Identity/Fields"]
 layout_mode = 2
-text = "Birth date — must make him exactly 18 on August 20, 2026"
+text = "Birthday"
 
-[node name="BirthDate" type="LineEdit" parent="PageMargin/Page/CreationTabs/Identity/Fields"]
+[node name="BirthFields" type="HBoxContainer" parent="PageMargin/Page/CreationTabs/Identity/Fields"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="MonthField" type="VBoxContainer" parent="PageMargin/Page/CreationTabs/Identity/Fields/BirthFields"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="PageMargin/Page/CreationTabs/Identity/Fields/BirthFields/MonthField"]
+layout_mode = 2
+text = "Month"
+
+[node name="BirthMonth" type="OptionButton" parent="PageMargin/Page/CreationTabs/Identity/Fields/BirthFields/MonthField"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
-placeholder_text = "YYYY-MM-DD  (example: 2008-03-17)"
-max_length = 10
+
+[node name="DayField" type="VBoxContainer" parent="PageMargin/Page/CreationTabs/Identity/Fields/BirthFields"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="PageMargin/Page/CreationTabs/Identity/Fields/BirthFields/DayField"]
+layout_mode = 2
+text = "Day"
+
+[node name="BirthDay" type="OptionButton" parent="PageMargin/Page/CreationTabs/Identity/Fields/BirthFields/DayField"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+
+[node name="BirthDateSummary" type="Label" parent="PageMargin/Page/CreationTabs/Identity/Fields"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.706, 0.71, 1)
+text = "The birth year is calculated so the protagonist is 18 when the game begins."
+autowrap_mode = 2
 
 [node name="Gender" type="Label" parent="PageMargin/Page/CreationTabs/Identity/Fields"]
 layout_mode = 2
@@ -279,10 +309,10 @@ layout_mode = 2
 theme_override_colors/font_color = Color(0.914, 0.659, 0.424, 1)
 theme_override_font_sizes/font_size = 22
 text = "Choose one starting archetype"
-[node name="ArchetypeOption" type="OptionButton" parent="PageMargin/Page/CreationTabs/LifeDetails/Scroll/Fields"]
+[node name="ArchetypeOptions" type="GridContainer" parent="PageMargin/Page/CreationTabs/LifeDetails/Scroll/Fields"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
+columns = 3
 
 [node name="HobbyHeader" type="HBoxContainer" parent="PageMargin/Page/CreationTabs/LifeDetails/Scroll/Fields"]
 layout_mode = 2
@@ -329,13 +359,27 @@ layout_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
+theme_override_constants/line_separation = 5
 bbcode_enabled = true
 text = "Select a financial background."
 
-[node name="ReviewText" type="RichTextLabel" parent="PageMargin/Page/CreationTabs/BackgroundAndReview/Columns"]
+[node name="ReviewColumn" type="VBoxContainer" parent="PageMargin/Page/CreationTabs/BackgroundAndReview/Columns"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="PageMargin/Page/CreationTabs/BackgroundAndReview/Columns/ReviewColumn"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.404, 0.776, 0.765, 1)
+theme_override_font_sizes/font_size = 27
+text = "Review Your Character"
+
+[node name="ReviewText" type="RichTextLabel" parent="PageMargin/Page/CreationTabs/BackgroundAndReview/Columns/ReviewColumn"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/line_separation = 5
 bbcode_enabled = true
 scroll_active = true
 
@@ -369,6 +413,8 @@ text = "Next"
 
 [connection signal="pressed" from="PageMargin/Page/Header/CancelButton" to="." method="_on_cancel_pressed"]
 [connection signal="tab_changed" from="PageMargin/Page/CreationTabs" to="." method="_on_tab_changed"]
+[connection signal="item_selected" from="PageMargin/Page/CreationTabs/Identity/Fields/BirthFields/MonthField/BirthMonth" to="." method="_on_birth_month_selected"]
+[connection signal="item_selected" from="PageMargin/Page/CreationTabs/Identity/Fields/BirthFields/DayField/BirthDay" to="." method="_on_birth_day_selected"]
 [connection signal="item_selected" from="PageMargin/Page/CreationTabs/BackgroundAndReview/Columns/BackgroundColumn/BackgroundOption" to="." method="_on_background_selected"]
 [connection signal="pressed" from="PageMargin/Page/Navigation/BackButton" to="." method="_on_back_pressed"]
 [connection signal="pressed" from="PageMargin/Page/Navigation/NextButton" to="." method="_on_next_pressed"]

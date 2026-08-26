@@ -806,9 +806,23 @@ func _test_character_creation_scene() -> void:
 		return
 	var instance: Node = creation_scene.instantiate()
 	_expect(instance.get_node_or_null("PageMargin/Page/CreationTabs/Identity/Fields/FirstName") != null, "Creation scene contains identity fields.")
+	_expect(instance.get_node_or_null("PageMargin/Page/CreationTabs/Identity/Fields/BirthFields/MonthField/BirthMonth") != null, "Creation scene contains a birthday month dropdown.")
+	_expect(instance.get_node_or_null("PageMargin/Page/CreationTabs/Identity/Fields/BirthFields/DayField/BirthDay") != null, "Creation scene contains a birthday day dropdown.")
 	_expect(instance.get_node_or_null("PageMargin/Page/CreationTabs/Appearance/Fields/Grid/FaceOption") != null, "Creation scene contains appearance options.")
 	_expect(instance.get_node_or_null("PageMargin/Page/CreationTabs/Traits/Scroll/Fields/PositiveOptions") != null, "Creation scene contains trait selection.")
-	_expect(instance.get_node_or_null("PageMargin/Page/CreationTabs/BackgroundAndReview/Columns/ReviewText") != null, "Creation scene contains confirmation review.")
+	_expect(instance.get_node_or_null("PageMargin/Page/CreationTabs/LifeDetails/Scroll/Fields/ArchetypeOptions") != null, "Creation scene contains direct archetype choices.")
+	_expect(instance.get_node_or_null("PageMargin/Page/CreationTabs/BackgroundAndReview/Columns/ReviewColumn/ReviewText") != null, "Creation scene contains confirmation review.")
+	root.add_child(instance)
+	var month_option: OptionButton = instance.get_node("PageMargin/Page/CreationTabs/Identity/Fields/BirthFields/MonthField/BirthMonth")
+	var day_option: OptionButton = instance.get_node("PageMargin/Page/CreationTabs/Identity/Fields/BirthFields/DayField/BirthDay")
+	var archetype_grid: GridContainer = instance.get_node("PageMargin/Page/CreationTabs/LifeDetails/Scroll/Fields/ArchetypeOptions")
+	_expect(month_option.item_count == 12, "Birthday dropdown contains all twelve months.")
+	_expect(day_option.item_count == 31 and day_option.get_selected_id() == 17, "Birthday day dropdown starts with the valid March day range.")
+	_expect(archetype_grid.get_child_count() == 6, "All authored archetypes are visible as selectable buttons.")
+	if archetype_grid.get_child_count() > 0:
+		var archetype_button: Button = archetype_grid.get_child(0)
+		archetype_button.emit_signal("pressed")
+		_expect(instance.call("_build_choices").get("archetype", "") == "the_planner", "Selecting an archetype button stores the choice.")
 	instance.free()
 
 
@@ -967,6 +981,18 @@ func _test_character_creation_validation() -> void:
 	_expect(validation["valid"], "A complete age-18 character passes validation.")
 	_expect(validator.age_on_opening_date(valid_choices["birth_date"]) == 18, "Birth date resolves to age 18 on opening day.")
 	_expect(validator.birthday_from_birth_date(valid_choices["birth_date"]) == "03-17", "Birth date resolves to the annual birthday.")
+	_expect(validator.birth_date_for_birthday(8, 20) == "2008-08-20", "Opening-day birthday produces the correct age-18 birth year.")
+	_expect(validator.birth_date_for_birthday(8, 21) == "2007-08-21", "A birthday after opening day rolls into the prior birth year.")
+	_expect(validator.birth_date_for_birthday(2, 29) == "2008-02-29", "Leap day is available as a valid age-18 birthday.")
+	var selectable_birthdays: int = 0
+	var all_birthdays_are_eighteen: bool = true
+	for month: int in range(1, 13):
+		for day: int in validator.valid_birth_days(month):
+			selectable_birthdays += 1
+			var generated_birth_date: String = validator.birth_date_for_birthday(month, day)
+			if validator.age_on_opening_date(generated_birth_date) != 18:
+				all_birthdays_are_eighteen = false
+	_expect(selectable_birthdays == 366 and all_birthdays_are_eighteen, "Every real month/day choice, including February 29, generates an age-18 birth date.")
 
 	var wrong_age: Dictionary = valid_choices.duplicate(true)
 	wrong_age["birth_date"] = "2009-03-17"

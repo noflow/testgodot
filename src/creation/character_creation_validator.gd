@@ -55,6 +55,28 @@ func birthday_from_birth_date(birth_date: String) -> String:
 	return "" if parsed.is_empty() else "%02d-%02d" % [parsed["month"], parsed["day"]]
 
 
+func birth_date_for_birthday(month: int, day: int) -> String:
+	var config: Dictionary = _registry.get_package(CREATION_PACKAGE)
+	var opening: Dictionary = config.get("opening_reference_date", {})
+	var required_age: int = int(config.get("rules", {}).get("required_age", 18))
+	var birth_year: int = int(opening.get("year", 0)) - required_age
+	var opening_birthday: Array[int] = [int(opening.get("month", 0)), int(opening.get("day", 0))]
+	if [month, day] > opening_birthday:
+		birth_year -= 1
+	if month < 1 or month > 12 or day < 1 or day > _days_in_month(month, birth_year):
+		return ""
+	var birth_date: String = "%04d-%02d-%02d" % [birth_year, month, day]
+	return birth_date if age_on_opening_date(birth_date) == required_age else ""
+
+
+func valid_birth_days(month: int) -> PackedInt32Array:
+	var result: PackedInt32Array = []
+	for day: int in range(1, 32):
+		if not birth_date_for_birthday(month, day).is_empty():
+			result.append(day)
+	return result
+
+
 func _validate_name(
 	field: String,
 	label: String,
