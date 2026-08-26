@@ -10,6 +10,7 @@ const HomeActionEngineScript: GDScript = preload("res://src/world/home_action_en
 const PhoneEngineScript: GDScript = preload("res://src/phone/phone_engine.gd")
 const HouseholdScheduleEngineScript: GDScript = preload("res://src/world/household_schedule_engine.gd")
 const TravelEngineScript: GDScript = preload("res://src/world/travel_engine.gd")
+const NavigationAccessScript: GDScript = preload("res://src/world/navigation_access.gd")
 const CityActionEngineScript: GDScript = preload("res://src/world/city_action_engine.gd")
 const EducationEngineScript: GDScript = preload("res://src/education/education_engine.gd")
 const EmploymentEngineScript: GDScript = preload("res://src/employment/employment_engine.gd")
@@ -316,7 +317,42 @@ func _test_city_travel_and_routes() -> void:
 	var quests: RefCounted = QuestEngineScript.new(_registry, simulation)
 	var travel: RefCounted = TravelEngineScript.new(_registry, simulation, quests)
 	var state: Dictionary = factory.create_new_game({}, {"random_seed": 712})
-	_expect(state["world_state"]["unlocked_locations"].size() == 10, "New games unlock the ten connected opening destinations, including the neighboring Rowan porch.")
+	_expect(state["world_state"]["unlocked_locations"].size() == 12, "New games unlock twelve public opening destinations while private NPC homes remain hidden.")
+	_expect("cypress_hall_dorm" in state["world_state"]["unlocked_locations"] and "maple_hall_dorm" in state["world_state"]["unlocked_locations"] and "westshore_bookshop" in state["world_state"]["unlocked_locations"], "The complete public Westshore destination set is known at new game start.")
+	var navigation: RefCounted = NavigationAccessScript.new(_registry)
+	_expect(not bool(navigation.location_visibility_report(state, "rowan_family_home").get("allowed", false)), "Emma's home is invisible before a quest or invitation reveals it.")
+	_expect(not bool(navigation.target_access_report(state, "alder_heights_residential_street", "rowan_family_home.porch").get("allowed", false)), "A hidden residence does not expose its street arrow.")
+	var locked_private_plan: Dictionary = travel.plan_routes(state, "rowan_family_home")
+	_expect(not locked_private_plan.get("ok", false), "A hidden residence cannot be reached through a direct route request.")
+	var private_state: Dictionary = state.duplicate(true)
+	var private_result: Dictionary = simulation.apply_operation(private_state, "world.unlock_location", {"location_id": "rowan_family_home"}, "test.private_address")
+	private_state = private_result["state"]
+	_expect(not bool(navigation.location_visibility_report(private_state, "rowan_family_home").get("allowed", false)), "Unlocking travel data alone does not reveal a hidden residence.")
+	private_result = simulation.apply_operation(private_state, "world.discover_location", {"location_id": "rowan_family_home", "discovery_source": "invitation", "character_id": "emma_rowan"}, "test.home_invitation")
+	private_state = private_result["state"]
+	_expect(private_result.get("ok", false) and "rowan_family_home" in private_state["world_state"]["discovered_locations"], "An NPC invitation reveals and unlocks their residence.")
+	_expect(bool(navigation.location_visibility_report(private_state, "rowan_family_home").get("allowed", false)), "A discovered residence becomes visible on navigation surfaces.")
+	_expect(not bool(navigation.room_access_report(private_state, "rowan_family_home", "emma_bedroom").get("allowed", false)), "A home invitation does not automatically grant private-bedroom access.")
+	var private_plan: Dictionary = travel.plan_routes(private_state, "rowan_family_home")
+	_expect(private_plan.get("ok", false) and _route_option(private_plan, "walking").get("minutes", 0) == 4, "A revealed neighboring residence becomes reachable through the authored travel graph.")
+	private_result = simulation.apply_operation(private_state, "world.discover_location", {"location_id": "rowan_family_home", "discovery_source": "invitation", "character_id": "emma_rowan", "room_ids": ["emma_bedroom"]}, "test.private_room_invitation")
+	private_state = private_result["state"]
+	_expect(bool(navigation.room_access_report(private_state, "rowan_family_home", "emma_bedroom").get("allowed", false)), "A separate authored room grant unlocks the invited private room.")
+	_expect(not bool(navigation.room_access_report(state, "harborlight_cinema", "staff_room").get("allowed", false)), "Generic navigation cannot expose an employee-only room to a visitor.")
+	for private_home_id: String in [
+		"rowan_family_home", "westshore_shared_student_apartment", "jade_downtown_condo",
+		"lee_family_apartment", "flores_family_townhouse", "greyport_shared_apartment",
+		"donovan_family_apartment", "rachel_cedar_vale_townhouse",
+		"hannah_medical_district_apartment", "olivia_crown_point_penthouse",
+	]:
+		var invited_state: Dictionary = state.duplicate(true)
+		var invitation_result: Dictionary = simulation.apply_operation(invited_state, "world.discover_location", {
+			"location_id": private_home_id,
+			"discovery_source": "invitation",
+		}, "test.private_home_route:%s" % private_home_id)
+		invited_state = invitation_result.get("state", invited_state)
+		var invited_plan: Dictionary = travel.plan_routes(invited_state, private_home_id)
+		_expect(invitation_result.get("ok", false) and invited_plan.get("ok", false), "Discovered NPC residence has a connected route: %s" % private_home_id)
 
 	var plan: Dictionary = travel.plan_routes(state, "westshore_administration_office")
 	_expect(plan.get("ok", false), "The route planner connects Hale Home to Westshore Administration.")
@@ -324,6 +360,12 @@ func _test_city_travel_and_routes() -> void:
 	var bus_route: Dictionary = _route_option(plan, "bus")
 	_expect(bus_route["minutes"] == 32 and bus_route["cost"] == 3.0, "Bus planning includes the Morning wait and authored fare.")
 	_expect(_route_option(plan, "walking")["minutes"] == 48, "Walking uses its authored forty-eight-minute route.")
+	var bookshop_plan: Dictionary = travel.plan_routes(state, "westshore_bookshop")
+	_expect(bookshop_plan.get("ok", false) and _route_option(bookshop_plan, "walking")["minutes"] == 49, "The route graph reaches the campus bookshop through Westshore.")
+	var campus_state: Dictionary = state.duplicate(true)
+	campus_state["world_state"]["current_location"] = "westshore_campus.transit_loop"
+	var maple_plan: Dictionary = travel.plan_routes(campus_state, "maple_hall_dorm")
+	_expect(maple_plan.get("ok", false) and _route_option(maple_plan, "walking")["minutes"] == 8, "The campus transit loop connects to Maple Hall on foot.")
 
 	var closed_plan: Dictionary = travel.plan_routes(state, "harborlight_cinema")
 	_expect(closed_plan.get("ok", false), "Closed destinations still expose route comparisons.")
@@ -939,7 +981,7 @@ func _test_vertical_slice_acceptance_suite() -> void:
 		return
 
 	var tests: Array = suite.get("tests", [])
-	_expect(tests.size() == 66, "Acceptance suite contains 66 cases.")
+	_expect(tests.size() == 70, "Acceptance suite contains 70 cases.")
 	var ids: Dictionary = {}
 	for test_case: Variant in tests:
 		if test_case is Dictionary:
@@ -958,8 +1000,16 @@ func _test_content_registry() -> void:
 	_expect(_registry.get_all("districts").size() == 10, "Registry indexes all 10 districts.")
 	_expect(_registry.get_character("elena_reyes_hale") is Dictionary, "Characters can be retrieved by id.")
 	_expect(_registry.get_location("hale_home") is Dictionary, "Locations can be retrieved by id.")
+	var westshore_campus: Dictionary = _registry.get_location("westshore_campus")
+	var westshore_rooms: Dictionary = {}
+	for room_value: Variant in westshore_campus.get("rooms", []):
+		if room_value is Dictionary:
+			westshore_rooms[str(room_value.get("id", ""))] = room_value
+	_expect(westshore_rooms.size() == 10 and westshore_rooms.has("transit_loop"), "Westshore Campus exposes ten connected destinations including its transit loop.")
+	_expect(str(westshore_rooms.get("courtyard", {}).get("navigation", {}).get("left", "")) == "westshore_administration_office.reception" and str(westshore_rooms.get("courtyard", {}).get("navigation", {}).get("right", "")) == "cafeteria", "The campus courtyard connects Administration and the Cafeteria through directional paths.")
+	_expect(str(westshore_rooms.get("cafeteria", {}).get("navigation", {}).get("right", "")) == "westshore_bookshop.sales_floor" and str(westshore_rooms.get("transit_loop", {}).get("navigation", {}).get("left", "")) == "cypress_hall_dorm.lobby", "Westshore arrows reach the Bookshop and Cypress Hall lobby.")
 	_expect(_registry.get_content("quests", "opening_future_choice") is Dictionary, "Quests can be retrieved by id.")
-	_expect(_registry.get_all("operations").size() == 65, "Registry indexes all 65 simulation operations.")
+	_expect(_registry.get_all("operations").size() == 66, "Registry indexes all 66 simulation operations.")
 	_expect(_registry.get_all("date_activities").size() == 3, "Registry indexes all three opening date activities.")
 	_expect(_registry.get_all("vn_backgrounds").size() == 17, "Registry indexes the initial seventeen VN background assignments, including the Hale landing and entryway.")
 	var emma_assets: Dictionary = _registry.get_character("emma_rowan").get("asset_refs", {})

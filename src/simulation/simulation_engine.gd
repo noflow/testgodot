@@ -133,6 +133,8 @@ func _apply_to_working_state(state: Dictionary, operation: String, payload: Dict
 			return _complete_travel(state, payload)
 		"world.unlock_location":
 			return _unlock_location(state, payload)
+		"world.discover_location":
+			return _discover_location(state, payload)
 		_:
 			return "Operation is registered but not implemented yet: %s" % operation
 
@@ -1282,6 +1284,48 @@ func _unlock_location(state: Dictionary, payload: Dictionary) -> String:
 		return "Unknown location: %s" % location_id
 	if location_id not in state["world_state"]["unlocked_locations"]:
 		state["world_state"]["unlocked_locations"].append(location_id)
+	return ""
+
+
+func _discover_location(state: Dictionary, payload: Dictionary) -> String:
+	var location_id: String = str(payload.get("location_id", ""))
+	var location: Variant = _registry.get_location(location_id)
+	if not location is Dictionary:
+		return "Unknown location: %s" % location_id
+	var discovery: Dictionary = location.get("discovery", {})
+	if not bool(discovery.get("discoverable", true)):
+		return "This location cannot be discovered through gameplay: %s" % location_id
+	var discovery_source: String = str(payload.get("discovery_source", "quest"))
+	var allowed_sources: Array = discovery.get("sources", [])
+	if not allowed_sources.is_empty() and discovery_source not in allowed_sources:
+		return "The %s source cannot reveal %s." % [discovery_source, location_id]
+	var world: Dictionary = state["world_state"]
+	for collection_name: String in ["unlocked_locations", "discovered_locations"]:
+		if location_id not in world[collection_name]:
+			world[collection_name].append(location_id)
+	if not world.get("location_access") is Dictionary:
+		world["location_access"] = {}
+	var record: Dictionary = world["location_access"].get(location_id, {})
+	if not record.get("sources") is Array:
+		record["sources"] = []
+	if discovery_source not in record["sources"]:
+		record["sources"].append(discovery_source)
+	record["discovered_at"] = record.get("discovered_at", _clock.timestamp(state["clock"]))
+	var granted_by: String = str(payload.get("character_id", ""))
+	if not granted_by.is_empty():
+		if not record.get("granted_by") is Array:
+			record["granted_by"] = []
+		if granted_by not in record["granted_by"]:
+			record["granted_by"].append(granted_by)
+	if not record.get("room_grants") is Array:
+		record["room_grants"] = []
+	for room_id_value: Variant in payload.get("room_ids", []):
+		var room_id: String = str(room_id_value)
+		if not _room_exists(location, room_id):
+			return "Unknown room access grant: %s.%s" % [location_id, room_id]
+		if room_id not in record["room_grants"]:
+			record["room_grants"].append(room_id)
+	world["location_access"][location_id] = record
 	return ""
 
 

@@ -30,8 +30,16 @@ func _run_probe() -> void:
 	var navigation_panel: Control = instance.get_node_or_null("Interface/Screen/MainMargin/MainLayout/NavigationPanel")
 	var room_action_buttons: Container = instance.get_node_or_null("Interface/Screen/MainMargin/MainLayout/ActionPanel/Margin/Layout/Scroll/ActionButtons")
 	var character_text: RichTextLabel = instance.get_node_or_null("Interface/Screen/MainMargin/MainLayout/ScenePanel/Margin/Layout/CharacterText")
-	if instance.get_node_or_null("Player") != null or background_image == null or background_image.texture == null or phone == null or room_buttons == null or navigation_panel == null or room_action_buttons == null or character_text == null:
+	var scene_panel: PanelContainer = instance.get_node_or_null("Interface/Screen/MainMargin/MainLayout/ScenePanel")
+	var scene_title: Label = instance.get_node_or_null("%SceneTitle")
+	var scene_description: Label = instance.get_node_or_null("%SceneDescription")
+	if instance.get_node_or_null("Player") != null or background_image == null or background_image.texture == null or phone == null or room_buttons == null or navigation_panel == null or room_action_buttons == null or character_text == null or scene_panel == null or scene_title == null or scene_description == null:
 		printerr("PROBE: VN home backdrop, room navigation, choices, or phone were not created")
+		get_tree().quit(1)
+		return
+	var scene_style: StyleBox = scene_panel.get_theme_stylebox("panel")
+	if scene_title.visible or scene_description.visible or character_text.visible or not scene_style is StyleBoxFlat or (scene_style as StyleBoxFlat).bg_color.a > 0.001:
+		printerr("PROBE: home stage still displayed the framed location or occupancy overlay")
 		get_tree().quit(1)
 		return
 	if room_buttons.get_child_count() != 14 or navigation_panel.visible:
@@ -165,8 +173,8 @@ func _run_probe() -> void:
 	instance.call("_set_current_room", "living_room")
 	await get_tree().process_frame
 	var portrait_stage: HBoxContainer = instance.get_node("Interface/Screen/MainMargin/MainLayout/ScenePanel/Margin/Layout/PortraitStage")
-	if "Lily Hale" not in character_text.text or portrait_stage.get_child_count() != 1 or not _portrait_card_has_texture(portrait_stage.get_child(0)) or not _container_has_button_text(room_action_buttons, "Talk to Lily"):
-		printerr("PROBE: Tuesday Morning schedule did not expose Lily on the living-room VN stage")
+	if character_text.visible or portrait_stage.get_child_count() != 1 or portrait_stage.get_child(0).get_child_count() != 1 or not _portrait_card_has_texture(portrait_stage.get_child(0)) or not _container_has_button_text(room_action_buttons, "Talk to Lily"):
+		printerr("PROBE: Tuesday Morning did not render Lily as an unframed sprite on the background stage")
 		get_tree().quit(1)
 		return
 	instance.call("_open_npc_panel", "lily_hale")

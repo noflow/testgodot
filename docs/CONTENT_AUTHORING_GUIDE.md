@@ -128,7 +128,10 @@ A conversation is a directed graph. It contains:
 
 Player choices carry one or more tone tags. Effects are declarative operations such
 as `add_meter`, `set_flag`, `set_value`, `start_quest`, `schedule_event`, or
-`complete_objective`. Content packages contain no executable scripts.
+`complete_objective`. Use `discover_location` with a `location_id`, a
+`discovery_source` of `quest` or `invitation`, and an optional `character` to reveal
+an NPC residence. Optional `room_ids` are separate private-room grants; do not add
+them to an ordinary home invitation. Content packages contain no executable scripts.
 
 Line tokens use braces, for example `{player_first_name}`. A later localization
 pass will replace raw text with localization keys without changing graph logic.
@@ -170,6 +173,30 @@ rooms, declares whether it starts an authored conversation or an atomic activity
 and may provide requirements, simulation operations, state updates, and quest
 events. This keeps the city scene generic and makes additional locations importable
 without adding location-specific UI code.
+
+## Location navigation and private residences
+
+Every NPC home is referenced by its character package and defined in
+`content/world/all_locations.json`. Give it an `outside_room`, list its residents,
+and author directional `navigation` from the entrance through every shared room.
+Private homes and shared NPC apartments declare:
+
+```json
+"discovery": {
+  "discoverable": true,
+  "hidden_until_discovered": true,
+  "sources": ["quest", "invitation"]
+}
+```
+
+Rentable shared homes may also accept `housing`; public dorm buildings use
+`hidden_until_discovered: false`, while individual NPC dorm rooms retain
+`access: "invitation"`. `world.unlock_location` only enables route data and never
+reveals a hidden address. `world.discover_location` reveals it, unlocks travel, and
+records how it was learned. The centralized navigation access resolver hides
+unknown residences and denies invitation, relationship, lease, employee, and
+restricted rooms unless their specific saved permission is present. The content
+validator rejects missing home entrances and invalid arrow targets.
 
 Character quests using `activation.event: quest_completed` are synchronized after
 their prerequisite quest finishes. An optional `earliest_block` delays activation

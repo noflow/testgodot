@@ -37,6 +37,7 @@ func validate_foundation() -> PackedStringArray:
 	_build_indexes()
 	_validate_required_files()
 	_validate_character_packages()
+	_validate_navigation_package()
 	_validate_vertical_slice_manifest()
 	_validate_sandbox_quest_package()
 	_validate_housing_package()
@@ -212,6 +213,60 @@ func _validate_character_packages() -> void:
 		var home_location: String = str(character.get("home", {}).get("location_id", ""))
 		if get_location(home_location) == null:
 			_last_errors.append("Character %s has unknown home location %s." % [character_id, home_location])
+
+
+func _validate_navigation_package() -> void:
+	var locations_by_id: Dictionary = {}
+	for location_value: Variant in get_all("locations"):
+		if location_value is Dictionary:
+			locations_by_id[str(location_value.get("id", ""))] = location_value
+	for location_id_value: Variant in locations_by_id:
+		var location_id: String = str(location_id_value)
+		var location: Dictionary = locations_by_id[location_id]
+		var room_ids: PackedStringArray = []
+		for room_value: Variant in location.get("rooms", []):
+			if room_value is Dictionary:
+				room_ids.append(str(room_value.get("id", "")))
+		var outside_room: String = str(location.get("outside_room", ""))
+		if not outside_room.is_empty() and outside_room not in room_ids:
+			_last_errors.append("Location %s has an unknown outside room: %s." % [location_id, outside_room])
+		for room_value: Variant in location.get("rooms", []):
+			if not room_value is Dictionary:
+				continue
+			var room_id: String = str(room_value.get("id", ""))
+			for direction_value: Variant in room_value.get("navigation", {}):
+				var direction: String = str(direction_value)
+				if direction not in ["left", "up", "right", "down"]:
+					_last_errors.append("Room %s.%s has unsupported navigation direction %s." % [location_id, room_id, direction])
+				var target: String = str(room_value.get("navigation", {}).get(direction, ""))
+				var target_location_id: String = target.get_slice(".", 0) if target.contains(".") else location_id
+				var target_room_id: String = target.get_slice(".", 1) if target.contains(".") else target
+				var target_location: Variant = locations_by_id.get(target_location_id)
+				if not target_location is Dictionary or not _location_has_room(target_location, target_room_id):
+					_last_errors.append("Room %s.%s points to an unknown navigation target: %s." % [location_id, room_id, target])
+	for character_id_value: Variant in _characters:
+		var character_id: String = str(character_id_value)
+		var character: Dictionary = _characters[character_id]
+		var home_location_id: String = str(character.get("home", {}).get("location_id", ""))
+		if home_location_id == "hale_home":
+			continue
+		var home: Variant = locations_by_id.get(home_location_id)
+		if not home is Dictionary:
+			continue
+		if character_id not in home.get("residents", []):
+			_last_errors.append("Character %s is not listed as a resident of %s." % [character_id, home_location_id])
+		var discovery: Variant = home.get("discovery")
+		if not discovery is Dictionary or not bool(discovery.get("discoverable", false)) or not discovery.has("hidden_until_discovered"):
+			_last_errors.append("NPC home %s must explicitly define discoverable visibility." % home_location_id)
+		if str(home.get("outside_room", "")).is_empty():
+			_last_errors.append("NPC home %s requires an authored entrance room." % home_location_id)
+
+
+func _location_has_room(location: Dictionary, room_id: String) -> bool:
+	for room_value: Variant in location.get("rooms", []):
+		if room_value is Dictionary and str(room_value.get("id", "")) == room_id:
+			return true
+	return false
 
 
 func _validate_vertical_slice_manifest() -> void:

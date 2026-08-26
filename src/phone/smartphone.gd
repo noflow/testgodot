@@ -4,6 +4,7 @@ signal phone_opened
 signal phone_closed
 signal travel_completed(destination: String)
 
+const NavigationAccessScript: GDScript = preload("res://src/world/navigation_access.gd")
 const APP_ORDER: PackedStringArray = [
 	"character_profile", "contacts", "messages", "calendar", "education", "jobs", "money", "housing", "shopping", "quests",
 	"relationships", "city_map", "weather", "settings",
@@ -52,9 +53,11 @@ var _selected_store_id: String = ""
 var _selected_housing_id: String = ""
 var _pending_manual_overwrite: String = ""
 var _pending_remap_action: String = ""
+var _navigation_access: RefCounted
 
 
 func _ready() -> void:
+	_navigation_access = NavigationAccessScript.new(ContentRegistry)
 	_build_app_buttons()
 	SettingsService.settings_changed.connect(_apply_accessibility_settings)
 	_apply_accessibility_settings()
@@ -1248,6 +1251,8 @@ func _render_map() -> void:
 	]
 	for location_id_value: Variant in world.get("unlocked_locations", []):
 		var location_id: String = str(location_id_value)
+		if not bool(_navigation_access.location_visibility_report(GameState.current_state, location_id).get("allowed", false)):
+			continue
 		var location: Variant = ContentRegistry.get_location(location_id)
 		if location is Dictionary:
 			var marker: String = "[color=#67c6c3]YOU ARE HERE[/color]" if location_id == current_root else str(location.get("district", "unknown")).replace("_", " ").capitalize()
@@ -1321,7 +1326,7 @@ func _route_departure_access() -> Dictionary:
 	if room_id != outside_room:
 		return {"allowed": false, "reason": "Return to this location's entrance before starting a trip."}
 	var type_id: String = str(location.get("type", ""))
-	if type_id in ["outdoor_hub", "npc_residence", "residential_house"]:
+	if type_id in ["outdoor_hub", "residential_house"]:
 		return {"allowed": false, "reason": "Follow the scene arrows to a transit stop or public departure point before starting a trip."}
 	return {"allowed": true, "reason": "You are at a valid departure point. Choose a destination below."}
 

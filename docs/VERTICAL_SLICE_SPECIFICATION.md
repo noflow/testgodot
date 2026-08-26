@@ -133,6 +133,10 @@ actual doorways. Only the front yard exits to the neighborhood. Private bedrooms
 remain knock-first doorway scenes with changing locked or unlocked states until
 permission is granted. The shared bathroom has schedule-aware available, occupied,
 and locked states.
+The background artwork is the visible VN stage rather than a framed location-summary
+card. Directional controls float over its lower edge. When an NPC is present, the
+character portrait appears directly on the stage without a separate name or occupancy
+panel; contextual choices carry the available interaction labels.
 An occupied or locked bathroom replaces hygiene actions with knock and twenty-minute
 wait choices. The home also provides bedroom, bathroom, kitchen, dining, laundry, garage, yard interactions,
 and a state-backed wardrobe. Selecting another room does not consume time; confirmed

@@ -269,6 +269,13 @@ func _apply_effect(state: Dictionary, effect: Dictionary, source: String) -> Dic
 			if app_id not in unlocked["player"]["phone"]["unlocked_apps"]:
 				unlocked["player"]["phone"]["unlocked_apps"].append(app_id)
 			return _success(unlocked)
+		"discover_location":
+			return _simulation.apply_operation(state, "world.discover_location", {
+				"location_id": effect.get("location_id", effect.get("value", "")),
+				"discovery_source": effect.get("discovery_source", "invitation"),
+				"character_id": effect.get("character", ""),
+				"room_ids": effect.get("room_ids", []),
+			}, source)
 		"create_memory":
 			return _simulation.apply_operation(state, "memory.create", {
 				"character_id": effect.get("character"),

@@ -29,8 +29,17 @@ func _run_probe() -> void:
 	var background_image: TextureRect = instance.get_node_or_null("BackgroundImage")
 	var room_buttons: Container = instance.get_node_or_null("Interface/MainMargin/MainLayout/NavigationPanel/Margin/Layout/Scroll/RoomButtons")
 	var navigation_panel: Control = instance.get_node_or_null("Interface/MainMargin/MainLayout/NavigationPanel")
-	if phone == null or instance.get_node_or_null("Player") != null or background_image == null or background_image.texture == null or room_buttons == null or navigation_panel == null:
+	var scene_panel: PanelContainer = instance.get_node_or_null("Interface/MainMargin/MainLayout/ScenePanel")
+	var scene_title: Label = instance.get_node_or_null("%SceneTitle")
+	var scene_description: Label = instance.get_node_or_null("%SceneDescription")
+	var encounter_text: RichTextLabel = instance.get_node_or_null("%EncounterText")
+	if phone == null or instance.get_node_or_null("Player") != null or background_image == null or background_image.texture == null or room_buttons == null or navigation_panel == null or scene_panel == null or scene_title == null or scene_description == null or encounter_text == null:
 		printerr("CITY PROBE: VN backdrop, area navigation, or smartphone is missing")
+		get_tree().quit(1)
+		return
+	var scene_style: StyleBox = scene_panel.get_theme_stylebox("panel")
+	if scene_title.visible or scene_description.visible or encounter_text.visible or not scene_style is StyleBoxFlat or (scene_style as StyleBoxFlat).bg_color.a > 0.001:
+		printerr("CITY PROBE: destination stage still displayed the framed location or encounter overlay")
 		get_tree().quit(1)
 		return
 	if str(instance.get_node("Interface/Header/Margin/Layout/Top/LocationLabel").text) != "Westshore Administration Office" or navigation_panel.visible:
@@ -96,5 +105,46 @@ func _run_probe() -> void:
 		printerr("CITY PROBE: reverse route planner did not populate")
 		get_tree().quit(1)
 		return
-	print("PASS: City destination rendered immersive VN arrows, blocked interior shortcuts, entrance transit, and reverse routes.")
-	get_tree().quit(0)
+	phone.close_phone()
+	instance.queue_free()
+	await get_tree().process_frame
+	var hidden_state: Dictionary = factory.create_new_game({}, {"random_seed": 992})
+	hidden_state["world_state"]["current_location"] = "alder_heights_residential_street.hale_block"
+	GameState.replace_state(hidden_state)
+	var street_instance: Node = scene.instantiate()
+	get_tree().root.add_child(street_instance)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var rowan_arrow: Button = street_instance.get_node("%PrevRoomArrow")
+	var street_phone: Node = street_instance.get_node("Interface/Smartphone")
+	if rowan_arrow.visible:
+		printerr("CITY PROBE: Emma's undiscovered home exposed a street arrow")
+		get_tree().quit(1)
+		return
+	street_phone.open_phone("city_map")
+	await get_tree().process_frame
+	var street_map_text: RichTextLabel = street_phone.get_node("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/ContentPanel/ContentMargin/ContentLayout/AppContent")
+	if "Rowan Family Home" in str(street_map_text.text):
+		printerr("CITY PROBE: Emma's undiscovered home appeared on the phone map")
+		get_tree().quit(1)
+		return
+	street_phone.close_phone()
+	var discovery_result: Dictionary = SimulationService.apply_operation("world.discover_location", {
+		"location_id": "rowan_family_home",
+		"discovery_source": "invitation",
+		"character_id": "emma_rowan",
+	}, "probe.emma_home_invitation")
+	street_instance.call("_render_location")
+	await get_tree().process_frame
+	if not discovery_result.get("ok", false) or not rowan_arrow.visible or "Rowan Family Home" not in rowan_arrow.text:
+		printerr("CITY PROBE: invitation discovery did not reveal Emma's street arrow")
+		get_tree().quit(1)
+		return
+	var scene_tree: SceneTree = get_tree()
+	rowan_arrow.pressed.emit()
+	if str(GameState.current_state["world_state"]["current_location"]) != "rowan_family_home.porch":
+		printerr("CITY PROBE: revealed residence arrow did not arrive at the authored porch")
+		scene_tree.quit(1)
+		return
+	print("PASS: City destination rendered immersive arrows, blocked shortcuts, hid undiscovered NPC homes, and revealed invited residences.")
+	scene_tree.quit(0)

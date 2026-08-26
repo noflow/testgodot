@@ -289,6 +289,10 @@ utility rooms, garage, and yards all belong to the arrow path. Private family
 bedrooms use knock-first doorway scenes until access is granted. Their doors can be
 locked or unlocked according to the date and activity block, with reliable locks
 during authored sleeping periods and story-controlled overrides for special scenes.
+Exploration uses the background artwork itself as the VN stage. It does not place a
+framed room-summary or occupancy card over the image. Present NPC portraits appear
+directly over the background, while translucent directional controls float along the
+lower edge and contextual choices remain in their interaction layer.
 The shared bathroom likewise becomes occupied and locked during household routines
 and stable time-based busy periods. While it is blocked, hygiene choices are replaced
 by options to knock or wait twenty minutes; story scenes can explicitly force it
@@ -543,7 +547,9 @@ optional pose portraits inside its `.character` package. The same cached resolve
 serves home, city, and dialogue screens and substitutes validated fallback artwork
 when a source image is not yet available.
 
-City travel is now playable across ten connected opening destinations. The
+City travel now starts with twelve connected public destinations. NPC residences
+remain absent from arrows, routes, and the phone map until a quest, invitation, or
+housing agreement discovers them. The
 phone City Map compares graph-based walking, bus, taxi, and permitted car routes in
 both directions, including short walking connectors, bus waits, fares, arrival-time
 closures, weather warnings, vehicle permission, and impaired-driving blocks.
@@ -552,10 +558,12 @@ seven-block clock by exact minutes, charges an available account, records the tr
 updates matching quest objectives, and enters the first accessible destination
 room. A reusable city scene lays out every accessible room directly from the
 location registry, so Westshore, Forge Fitness, the park, the cinema, the employment
-centre, the neighborhood, and later routed destinations do not need separate shell
-code. Quick area lists are hidden: arrows move through each location, the Hale front
-yard leads to the residential street, and the neighborhood corner links the Rowan
-porch, Forge Fitness path, and Alder Heights bus shelter. The Hale garage can grant
+centre, the neighborhood, discovered NPC homes, and later routed destinations do
+not need separate shell code. Quick area lists are hidden: arrows move through each
+location, the Hale front yard leads to the residential street, and the neighborhood
+corner links Forge Fitness and the Alder Heights bus shelter. Emma's porch appears
+only after her address is discovered. Residence entry permission is separate from
+bedroom, employee, lease, and restricted-room permission. The Hale garage can grant
 daily family-car permission when required.
 
 ## Sandbox quest philosophy

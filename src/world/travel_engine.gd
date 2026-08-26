@@ -4,16 +4,19 @@ class_name PortAlderTravelEngine
 const TRANSPORT_PACKAGE: String = "port_alder_initial_transportation"
 const TUTORIAL_QUEST: String = "getting_around_port_alder"
 const GameClockScript: GDScript = preload("res://src/simulation/game_clock.gd")
+const NavigationAccessScript: GDScript = preload("res://src/world/navigation_access.gd")
 
 var _registry: Node
 var _simulation: RefCounted
 var _quests: RefCounted
+var _navigation_access: RefCounted
 
 
 func _init(content_registry: Node, simulation_engine: RefCounted, quest_engine: RefCounted) -> void:
 	_registry = content_registry
 	_simulation = simulation_engine
 	_quests = quest_engine
+	_navigation_access = NavigationAccessScript.new(content_registry)
 
 
 func plan_routes(state: Dictionary, destination: String) -> Dictionary:
@@ -21,6 +24,9 @@ func plan_routes(state: Dictionary, destination: String) -> Dictionary:
 	var destination_id: String = _root_location(destination)
 	if _registry.get_location(destination_id) == null:
 		return _failure("Unknown destination: %s" % destination_id)
+	var access_report: Dictionary = _navigation_access.location_entry_report(state, destination_id)
+	if not bool(access_report.get("allowed", false)):
+		return _failure(str(access_report.get("reason", "That destination is unavailable.")))
 	if destination_id not in state["world_state"].get("unlocked_locations", []):
 		return _failure("Destination is not unlocked: %s" % destination_id)
 	if origin == destination_id:
@@ -43,7 +49,7 @@ func plan_routes(state: Dictionary, destination: String) -> Dictionary:
 			"name": mode.capitalize(),
 			"origin": origin,
 			"destination": destination_id,
-			"arrival": _arrival_destination(destination_id),
+			"arrival": _arrival_destination(state, destination_id),
 			"minutes": int(path["minutes"]) + wait_minutes,
 			"travel_minutes": int(path["minutes"]),
 			"wait_minutes": wait_minutes,
@@ -430,14 +436,17 @@ func _payment_account(state: Dictionary, cost: float) -> String:
 	return ""
 
 
-func _arrival_destination(location_id: String) -> String:
+func _arrival_destination(state: Dictionary, location_id: String) -> String:
 	if location_id == "hale_home":
 		return "hale_home.front_yard"
 	var location: Variant = _registry.get_location(location_id)
 	if not location is Dictionary or location.get("rooms", []).is_empty():
 		return location_id
+	var outside_room: String = str(location.get("outside_room", ""))
+	if not outside_room.is_empty() and bool(_navigation_access.room_access_report(state, location_id, outside_room).get("allowed", false)):
+		return "%s.%s" % [location_id, outside_room]
 	for room: Variant in location.get("rooms", []):
-		if room is Dictionary and str(room.get("access", "")) not in ["employee", "restricted"]:
+		if room is Dictionary and bool(_navigation_access.room_access_report(state, location_id, str(room.get("id", ""))).get("allowed", false)):
 			return "%s.%s" % [location_id, room.get("id", "")]
 	return location_id
 

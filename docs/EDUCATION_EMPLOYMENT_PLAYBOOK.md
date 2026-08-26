@@ -22,6 +22,12 @@ debt, selects conflict-free first-semester sections, and creates dated class and
 events through December 13. Completing these authored events closes the enrollment
 quest, activates the family allowance rule, and unlocks the Education phone app.
 
+Westshore is a connected walkable district rather than a single destination menu.
+The Campus Courtyard branches to Administration, the Library, Cafeteria, academic
+wings, Career Board, Student Lounge, and Campus Transit Loop. The Cafeteria path
+reaches the Bookshop, while the Transit Loop reaches Cypress Hall, Maple Hall, and
+city transportation. Invitation-only dorm bedrooms remain off the public arrow path.
+
 ### Playable semester loop
 
 The Education app synchronizes the semester before displaying it. A four-course

@@ -376,14 +376,14 @@ func _rebuild_character_stage() -> void:
 		if bathroom_status != "available":
 			var door_message: String = "Someone is using the bathroom, and the door is locked for privacy." if bathroom_status == "occupied_locked" else "The bathroom door is locked. No one answers from inside."
 			character_text.text = "[center][font_size=25][color=#b8c7c7]%s You remain in the hallway outside.[/color][/font_size][/center]" % door_message
-			portrait_stage.visible = false
-			character_text.visible = true
+			portrait_stage.visible = true
+			character_text.visible = false
 			return
 	if bool(ROOMS[_current_room].get("private", false)):
 		var door_state: String = "locked" if _private_door_locked(_current_room) else "closed"
 		character_text.text = "[center][font_size=25][color=#b8c7c7]The private bedroom door is %s. You are at the doorway and should knock before entering.[/color][/font_size][/center]" % door_state
-		portrait_stage.visible = false
-		character_text.visible = true
+		portrait_stage.visible = true
+		character_text.visible = false
 		return
 	var lines: PackedStringArray = []
 	for character_id_value: Variant in _npc_resolutions:
@@ -396,27 +396,19 @@ func _rebuild_character_stage() -> void:
 		lines.append("[center][font_size=34][b]%s[/b][/font_size]\n[color=#e9a86c]%s[/color][/center]" % [display_name, resolution.get("activity_label", "At home")])
 		_add_portrait_card(portrait_stage, character_id, display_name, str(resolution.get("activity_label", "At home")))
 	character_text.text = "\n\n".join(lines) if not lines.is_empty() else "[center][font_size=25][color=#b8c7c7]No one else is in this room right now.[/color][/font_size][/center]"
-	portrait_stage.visible = not lines.is_empty()
-	character_text.visible = lines.is_empty()
+	portrait_stage.visible = true
+	character_text.visible = false
 
 
-func _add_portrait_card(container: HBoxContainer, character_id: String, display_name: String, subtitle: String) -> void:
+func _add_portrait_card(container: HBoxContainer, character_id: String, _display_name: String, _subtitle: String) -> void:
 	var card: VBoxContainer = VBoxContainer.new()
-	card.custom_minimum_size = Vector2(170, 0)
-	card.add_theme_constant_override("separation", 4)
+	card.custom_minimum_size = Vector2(230, 360)
 	var portrait: TextureRect = TextureRect.new()
-	portrait.custom_minimum_size = Vector2(170, 250)
+	portrait.custom_minimum_size = Vector2(230, 360)
 	portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	VNAssetService.apply_portrait(portrait, character_id)
 	card.add_child(portrait)
-	var name_label: Label = Label.new()
-	name_label.text = "%s\n%s" % [display_name, subtitle]
-	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	name_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	name_label.add_theme_font_size_override("font_size", 16)
-	name_label.add_theme_color_override("font_color", Color("eef6f5"))
-	card.add_child(name_label)
 	container.add_child(card)
 
 

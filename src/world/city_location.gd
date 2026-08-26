@@ -1,5 +1,6 @@
 extends Control
 
+const NavigationAccessScript: GDScript = preload("res://src/world/navigation_access.gd")
 const MONTH_NAMES: PackedStringArray = [
 	"January", "February", "March", "April", "May", "June",
 	"July", "August", "September", "October", "November", "December",
@@ -28,6 +29,7 @@ var _location_id: String = ""
 var _location: Dictionary = {}
 var _rooms: Array = []
 var _current_room_id: String = ""
+var _navigation_access: RefCounted
 
 
 func _ready() -> void:
@@ -45,6 +47,7 @@ func _ready() -> void:
 		get_tree().change_scene_to_file(AppConstants.HALE_HOME_SCENE)
 		return
 	_location = definition
+	_navigation_access = NavigationAccessScript.new(ContentRegistry)
 	_collect_accessible_rooms()
 	_restore_arrival_room()
 	smartphone.phone_opened.connect(_on_phone_opened)
@@ -76,11 +79,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _collect_accessible_rooms() -> void:
-	_rooms.clear()
-	for room: Variant in _location.get("rooms", []):
-		if not room is Dictionary or str(room.get("access", "")) in ["employee", "restricted"]:
-			continue
-		_rooms.append(room)
+	_rooms = _navigation_access.accessible_rooms(GameState.current_state, _location_id)
 	if _rooms.is_empty():
 		_rooms.append({"id": "main_area", "name": _location.get("name", _location_id)})
 
@@ -220,6 +219,10 @@ func _move_direction(direction: String, fallback_index: int) -> void:
 
 
 func _move_to_navigation_target(target: String) -> void:
+	var access: Dictionary = _navigation_access.target_access_report(GameState.current_state, _location_id, target)
+	if not bool(access.get("allowed", false)):
+		status_label.text = str(access.get("reason", "That path is unavailable right now."))
+		return
 	if not target.contains("."):
 		_select_room(target)
 		return
@@ -255,6 +258,13 @@ func _navigation_target_name(target: String) -> String:
 	var room_id: String = target.get_slice(".", 1)
 	var location: Variant = ContentRegistry.get_location(location_id)
 	if location is Dictionary:
+		var outside_room: String = str(location.get("outside_room", ""))
+		if outside_room.is_empty() and not location.get("rooms", []).is_empty() and location.get("rooms", [])[0] is Dictionary:
+			outside_room = str(location.get("rooms", [])[0].get("id", ""))
+		if room_id == outside_room:
+			var location_label: String = str(location.get("name", location_id)).trim_prefix("Westshore ")
+			location_label = location_label.trim_suffix(" Dorm")
+			return location_label
 		for room: Variant in location.get("rooms", []):
 			if room is Dictionary and str(room.get("id", "")) == room_id:
 				return str(room.get("name", location.get("name", location_id)))
@@ -263,18 +273,9 @@ func _navigation_target_name(target: String) -> String:
 
 
 func _valid_navigation_target(target: String) -> bool:
-	if target.is_empty():
+	if _navigation_access == null:
 		return false
-	if not target.contains("."):
-		return not _room_definition(target).is_empty()
-	var location: Variant = ContentRegistry.get_location(target.get_slice(".", 0))
-	if not location is Dictionary:
-		return false
-	var room_id: String = target.get_slice(".", 1)
-	for room: Variant in location.get("rooms", []):
-		if room is Dictionary and str(room.get("id", "")) == room_id:
-			return str(room.get("access", "")) not in ["employee", "restricted"]
-	return false
+	return bool(_navigation_access.target_access_report(GameState.current_state, _location_id, target).get("allowed", false))
 
 
 func _can_open_route_planner_here() -> bool:
@@ -283,7 +284,7 @@ func _can_open_route_planner_here() -> bool:
 	var type_id: String = str(_location.get("type", ""))
 	if type_id == "transport_stop":
 		return true
-	return type_id not in ["outdoor_hub", "npc_residence", "residential_house"]
+	return type_id not in ["outdoor_hub", "residential_house"]
 
 
 func _rebuild_encounter_stage() -> void:
@@ -304,26 +305,19 @@ func _rebuild_encounter_stage() -> void:
 		encounter_text.text = "[center][font_size=24][color=#b8c7c7]The location is open for sandbox activities. Scheduled characters and future encounters can appear on this stage.[/color][/font_size][/center]"
 	else:
 		encounter_text.text = "[center][font_size=25][color=#e9a86c]STORY ENCOUNTER AVAILABLE[/color][/font_size]\n\n[font_size=24]%s[/font_size][/center]" % "\n".join(encounter_names)
-	portrait_stage.visible = portrait_count > 0
-	encounter_text.visible = portrait_count == 0
+	portrait_stage.visible = true
+	encounter_text.visible = false
 
 
-func _add_portrait_card(character_id: String, display_name: String) -> void:
+func _add_portrait_card(character_id: String, _display_name: String) -> void:
 	var card: VBoxContainer = VBoxContainer.new()
-	card.custom_minimum_size = Vector2(180, 0)
-	card.add_theme_constant_override("separation", 4)
+	card.custom_minimum_size = Vector2(230, 360)
 	var portrait: TextureRect = TextureRect.new()
-	portrait.custom_minimum_size = Vector2(180, 250)
+	portrait.custom_minimum_size = Vector2(230, 360)
 	portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	VNAssetService.apply_portrait(portrait, character_id)
 	card.add_child(portrait)
-	var name_label: Label = Label.new()
-	name_label.text = display_name
-	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	name_label.add_theme_font_size_override("font_size", 18)
-	name_label.add_theme_color_override("font_color", Color("eef6f5"))
-	card.add_child(name_label)
 	portrait_stage.add_child(card)
 
 

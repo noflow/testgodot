@@ -697,6 +697,24 @@ func _apply_completion_effect(state: Dictionary, effect: Dictionary) -> void:
 				)
 		"unlock_phone_section", "unlock_activity":
 			state["player"]["flags"]["unlocked.%s" % str(effect.get("value", ""))] = true
+		"discover_location":
+			var location_id: String = str(effect.get("location_id", effect.get("value", "")))
+			if not location_id.is_empty() and _registry.get_location(location_id) is Dictionary:
+				for collection_name: String in ["unlocked_locations", "discovered_locations"]:
+					if location_id not in state["world_state"][collection_name]:
+						state["world_state"][collection_name].append(location_id)
+				if not state["world_state"].get("location_access") is Dictionary:
+					state["world_state"]["location_access"] = {}
+				var record: Dictionary = state["world_state"]["location_access"].get(location_id, {})
+				for record_key: String in ["sources", "granted_by", "room_grants"]:
+					if not record.get(record_key) is Array:
+						record[record_key] = []
+				if "quest" not in record["sources"]:
+					record["sources"].append("quest")
+				for room_id: Variant in effect.get("room_ids", []):
+					if str(room_id) not in record["room_grants"]:
+						record["room_grants"].append(str(room_id))
+				state["world_state"]["location_access"][location_id] = record
 		"unlock_relationship_chapter":
 			var character_id: String = str(effect.get("character", ""))
 			if state["relationships"].has(character_id):
