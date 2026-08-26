@@ -4,7 +4,7 @@
   "institution": {
     "id": "westshore_college",
     "name": "Westshore College",
-    "fall_semester": {"orientation": "Y1-08-30", "classes_begin": "Y1-09-03", "classes_end": "Y1-12-13", "exam_week_begins": "Y1-12-16"},
+    "fall_semester": {"id": "fall_y1", "orientation": "Y1-08-30", "classes_begin": "Y1-09-03", "classes_end": "Y1-12-13", "exam_week_begins": "Y1-12-16", "term_complete": "Y1-12-20"},
     "operating_days": ["monday", "tuesday", "wednesday", "thursday", "friday"],
     "teaching_blocks": ["morning", "lunch", "afternoon"],
     "closed_blocks": ["evening", "late_evening", "night"],
@@ -41,7 +41,29 @@
   "academic_rules": {
     "grade_components": {"attendance": 15, "assignments": 30, "projects": 25, "exams": 30},
     "letter_grades": [{"minimum": 90, "grade": "A"}, {"minimum": 80, "grade": "B"}, {"minimum": 70, "grade": "C"}, {"minimum": 60, "grade": "D"}, {"minimum": 0, "grade": "F"}],
-    "attendance": {"late_penalty": 1, "absence_penalty": 4, "three_unexcused_absences_flag": "academic_warning"},
+    "attendance": {"late_after_minutes": 15, "maximum_late_minutes": 60, "late_grade_value": 80, "late_penalty": 1, "absence_penalty": 4, "warning_absences": 3, "three_unexcused_absences_flag": "academic_warning"},
+    "assessment_calendar": {
+      "assignments": [
+        {"sequence": 1, "due": "Y1-09-27", "available_days_before": 14},
+        {"sequence": 2, "due": "Y1-10-25", "available_days_before": 14},
+        {"sequence": 3, "due": "Y1-11-22", "available_days_before": 14}
+      ],
+      "project": {"due": "Y1-12-06", "available_days_before": 28},
+      "midterm_window_begins": "Y1-10-14",
+      "final_blocks": ["morning", "lunch", "afternoon"]
+    },
+    "assessment_weights_within_component": {"assignment": 1, "project": 1, "midterm": 10, "final": 20},
+    "coursework_effort": {
+      "standard": {"minutes": 90, "score_modifier": 0, "preparation_gain": 12, "energy_cost": 8, "stress_cost": 2, "experience": 100},
+      "thorough": {"minutes": 180, "score_modifier": 10, "preparation_gain": 22, "energy_cost": 15, "stress_cost": 4, "experience": 170}
+    },
+    "class_approaches": {
+      "balanced": {"performance_modifier": 0, "energy_cost": 8, "stress_cost": 1, "experience": 90},
+      "engaged": {"performance_modifier": 8, "energy_cost": 12, "stress_cost": 3, "experience": 120},
+      "quiet_notes": {"performance_modifier": 3, "energy_cost": 6, "stress_cost": 0, "experience": 75}
+    },
+    "academic_standing": {"good_standing_minimum": 70, "probation_minimum": 60, "suspension_review_below": 50, "passing_course_percent": 60, "default_course_credits": 3, "laboratory_course_credits": 4},
+    "semester_reputation_change": {"excellent": 8, "strong": 5, "passing": 2, "failed": -6},
     "performance_factors": ["focus", "energy", "study_skill", "course_skill", "attendance", "assignment_completion", "stress"],
     "schedule_conflict_policy": "class_and_work_may_overlap_but_both_cannot_be_attended",
     "program_change": {"allowed_between_semesters": true, "mid_semester_requires_advisor": true, "credits_may_transfer": true},

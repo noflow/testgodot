@@ -413,13 +413,43 @@ func _create_class_schedule(state: Dictionary, source: String) -> Dictionary:
 
 	var changed: Dictionary = state.duplicate(true)
 	var education: Dictionary = changed["player"]["education"]
+	var semester: Dictionary = _registry.get_package("westshore_education_system").get("institution", {}).get("fall_semester", {})
 	education["institution"] = "westshore_college"
 	education["course_load"] = load_id
 	education["enrolled"] = true
 	education["courses"] = course_ids.duplicate(true)
+	education["course_sections"] = {}
+	education["attendance_history"] = []
+	education["assessments"] = []
+	education["assessment_results"] = []
+	education["course_preparation"] = {}
+	education["semester_number"] = 1
+	education["semester"] = {
+		"id": semester.get("id", "fall_y1"),
+		"number": 1,
+		"status": "enrolled",
+		"phase": "pre_orientation",
+		"orientation": semester.get("orientation", "Y1-08-30"),
+		"classes_begin": semester.get("classes_begin", "Y1-09-03"),
+		"classes_end": semester.get("classes_end", "Y1-12-13"),
+		"exam_week_begins": semester.get("exam_week_begins", "Y1-12-16"),
+		"term_complete": semester.get("term_complete", "Y1-12-20"),
+	}
+	for selection: Variant in selected_sections:
+		if not selection is Dictionary:
+			continue
+		var selected_course: Dictionary = selection["course"]
+		var selected_section: Dictionary = selection["section"]
+		education["course_sections"][str(selected_course.get("id", ""))] = {
+			"section_id": selected_section.get("id", "A"),
+			"days": selected_section.get("days", []).duplicate(true),
+			"block": selected_section.get("block", "morning"),
+			"lab": selected_course.get("lab", {}).duplicate(true),
+		}
 	for course_id_value: Variant in course_ids:
-		education["grades"][str(course_id_value)] = {"current_percent": 0.0, "status": "not_started"}
+		education["grades"][str(course_id_value)] = {"current_percent": 0.0, "letter_grade": "—", "graded_weight": 0.0, "component_scores": {}, "status": "not_started"}
 		education["attendance"][str(course_id_value)] = {"attended": 0, "late": 0, "absent": 0}
+		education["course_preparation"][str(course_id_value)] = 0.0
 
 	var created_count: int = 0
 	var cursor: Dictionary = {"year": 1, "month": 9, "day": 3, "weekday": "tuesday"}

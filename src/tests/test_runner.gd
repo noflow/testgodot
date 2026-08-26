@@ -11,6 +11,7 @@ const PhoneEngineScript: GDScript = preload("res://src/phone/phone_engine.gd")
 const HouseholdScheduleEngineScript: GDScript = preload("res://src/world/household_schedule_engine.gd")
 const TravelEngineScript: GDScript = preload("res://src/world/travel_engine.gd")
 const CityActionEngineScript: GDScript = preload("res://src/world/city_action_engine.gd")
+const EducationEngineScript: GDScript = preload("res://src/education/education_engine.gd")
 const EmploymentEngineScript: GDScript = preload("res://src/employment/employment_engine.gd")
 const EconomyEngineScript: GDScript = preload("res://src/economy/economy_engine.gd")
 
@@ -41,6 +42,7 @@ func _run_all() -> void:
 	_test_household_schedules_and_conversations()
 	_test_city_travel_and_routes()
 	_test_city_institutions_and_fitness()
+	_test_playable_education_semester()
 	_test_employment_applications_interviews_and_offers()
 	_test_recurring_economy_and_shopping()
 	_test_phone_messages_and_calendar()
@@ -69,6 +71,7 @@ func _test_project_configuration() -> void:
 	_expect(ProjectSettings.has_setting("autoload/PhoneService"), "Phone service is configured as an autoload.")
 	_expect(ProjectSettings.has_setting("autoload/TravelService"), "Travel service is configured as an autoload.")
 	_expect(ProjectSettings.has_setting("autoload/CityActionService"), "City action service is configured as an autoload.")
+	_expect(ProjectSettings.has_setting("autoload/EducationService"), "Education service is configured as an autoload.")
 	_expect(ProjectSettings.has_setting("autoload/EmploymentService"), "Employment service is configured as an autoload.")
 	_expect(ProjectSettings.has_setting("autoload/EconomyService"), "Economy service is configured as an autoload.")
 
@@ -371,6 +374,102 @@ func _test_city_institutions_and_fitness() -> void:
 	_expect(int(state["relationships"]["rachel_morgan"].get("unlocked_chapter_level", 0)) == 2, "First Rep unlocks Rachel's second relationship chapter.")
 
 
+func _test_playable_education_semester() -> void:
+	var simulation: RefCounted = SimulationEngineScript.new(_registry)
+	var education: RefCounted = EducationEngineScript.new(_registry, simulation)
+	var state: Dictionary = _create_enrolled_computer_state(1301)
+	var result: Dictionary = education.sync_education(state)
+	_expect(result.get("ok", false), "The education engine initializes an enrolled semester from the authored Westshore schedule.")
+	state = result["state"]
+	_expect(state["player"]["education"]["assessments"].size() == 24, "Four courses generate three assignments, one project, one midterm, and one final each.")
+	var scheduled_exams: int = 0
+	for event_value: Variant in state["calendar_state"].get("events", []):
+		if event_value is Dictionary and str(event_value.get("type", "")) == "exam":
+			scheduled_exams += 1
+	_expect(scheduled_exams == 8, "Midterms and finals create eight required exam events in the Calendar.")
+	_expect(str(state["player"]["education"]["semester"].get("phase", "")) == "pre_orientation", "The semester begins in its authored pre-orientation phase.")
+
+	_set_test_date(state, "Y1-09-03", "tuesday", "afternoon")
+	state["world_state"]["current_location"] = "westshore_campus.courtyard"
+	var class_status: Dictionary = education.class_status(state)
+	_expect(not class_status.get("ready", true) and "Classroom Wing" in str(class_status.get("reason", "")), "Class attendance is unavailable until the player enters the scheduled campus room.")
+	state["world_state"]["current_location"] = "westshore_campus.classrooms"
+	class_status = education.class_status(state)
+	_expect(class_status.get("ready", false) and str(class_status.get("event", {}).get("course_id", "")) == "CST115", "The current campus room exposes the scheduled Tuesday-afternoon Computer Hardware class.")
+	result = education.attend_class(state, "engaged")
+	_expect(result.get("ok", false), "A scheduled class can be attended with a chosen participation approach.")
+	state = result["state"]
+	_expect(int(state["player"]["education"]["attendance"]["CST115"]["attended"]) == 1, "Class attendance is recorded in the persistent course register.")
+	_expect(str(result.get("data", {}).get("record", {}).get("status", "")) == "present" and float(result.get("data", {}).get("performance", 0.0)) > 0.0, "Attendance stores punctuality and calculated classroom performance.")
+	_expect(float(state["player"]["skill_experience"].get("computer_repair", 0.0)) > 0.0, "Attending class grants experience in the course's authored subject skills.")
+	_expect(str(state["clock"]["block"]) == "evening", "A class consumes its scheduled activity block.")
+	_set_test_date(state, "Y1-09-05", "thursday", "afternoon")
+	state["clock"]["minute_within_block"] = 30
+	state["world_state"]["current_location"] = "westshore_campus.classrooms"
+	result = education.attend_class(state, "quiet_notes")
+	_expect(result.get("ok", false) and str(result.get("data", {}).get("record", {}).get("status", "")) == "late", "Arriving after fifteen minutes but within the grace window records late attendance.")
+	state = result["state"]
+	_expect(int(state["player"]["education"]["attendance"]["CST115"]["late"]) == 1, "Late attendance uses its own persistent course counter.")
+
+	_set_test_date(state, "Y1-09-13", "friday", "evening")
+	state["world_state"]["current_location"] = "hale_home.player_bedroom"
+	result = education.study_course(state, "CST115", "standard")
+	_expect(result.get("ok", false), "An enrolled course can be studied from an approved home study location.")
+	state = result["state"]
+	_expect(float(state["player"]["education"]["course_preparation"]["CST115"]) == 12.0, "A standard study session adds persistent course preparation.")
+	result = education.complete_assessment(state, "cst115-assignment-1", "thorough")
+	_expect(result.get("ok", false), "Available coursework can be completed with a selected effort level.")
+	state = result["state"]
+	_expect(str(_employment_record(state["player"]["education"]["assessments"], "cst115-assignment-1").get("status", "")) == "completed", "Submitted coursework is resolved exactly once.")
+	_expect(float(result.get("data", {}).get("result", {}).get("score", 0.0)) > 0.0 and float(state["player"]["education"]["grades"]["CST115"].get("graded_weight", 0.0)) >= 45.0, "Coursework receives a calculated score and immediately updates the weighted gradebook.")
+
+	_set_test_date(state, "Y1-09-28", "saturday", "morning")
+	result = education.sync_education(state)
+	_expect(result.get("ok", false) and int(result.get("data", {}).get("missed_assessments", 0)) == 3, "Passing an unresolved shared deadline records the other three first assignments as missed.")
+	state = result["state"]
+	_expect(bool(state["player"]["flags"].get("academic_warning", false)), "Three unexcused course absences activate the authored academic warning.")
+
+	var midterm: Dictionary = _employment_record(state["player"]["education"]["assessments"], "cst115-midterm")
+	var midterm_event: Dictionary = _employment_record(state["calendar_state"]["events"], str(midterm.get("calendar_event_id", "")))
+	_set_test_date(state, str(midterm.get("due_date", "Y1-10-15")), str(midterm_event.get("weekday", "tuesday")), str(midterm.get("block", "afternoon")))
+	state["world_state"]["current_location"] = str(midterm.get("location", "westshore_campus.classrooms"))
+	result = education.complete_assessment(state, "cst115-midterm", "exam")
+	_expect(result.get("ok", false), "A midterm can be taken only in its scheduled campus block and room.")
+	state = result["state"]
+	_expect(str(_employment_record(state["player"]["education"]["assessments"], "cst115-midterm").get("status", "")) == "completed", "The midterm result resolves both the assessment and its required calendar event.")
+
+	_set_test_date(state, "Y1-12-21", "saturday", "morning")
+	result = education.sync_education(state)
+	_expect(result.get("ok", false), "The education engine closes the semester after the authored term-complete date.")
+	state = result["state"]
+	_expect(str(state["player"]["education"]["semester"].get("status", "")) == "completed" and state["player"]["education"]["semester_history"].size() == 1, "Semester completion creates one immutable academic-history record.")
+	_expect(bool(state["player"]["education"].get("registration_hold", false)) and str(state["player"]["education"].get("academic_standing", "")) == "suspension_review", "Severe failed-term performance creates a registration hold and suspension review.")
+
+	var passing_state: Dictionary = _create_enrolled_computer_state(1302)
+	result = education.sync_education(passing_state)
+	passing_state = result["state"]
+	for course_id_value: Variant in passing_state["player"]["education"]["courses"]:
+		passing_state["player"]["education"]["attendance"][str(course_id_value)] = {"attended": 20, "late": 0, "absent": 0}
+	for assessment_value: Variant in passing_state["player"]["education"]["assessments"]:
+		if not assessment_value is Dictionary:
+			continue
+		assessment_value["status"] = "completed"
+		assessment_value["score"] = 85.0
+		passing_state["player"]["education"]["assessment_results"].append({
+			"id": "result-%s" % assessment_value["id"], "assessment_id": assessment_value["id"], "course_id": assessment_value["course_id"],
+			"type": assessment_value["type"], "score": 85.0, "status": "completed",
+		})
+	for calendar_event: Variant in passing_state["calendar_state"].get("events", []):
+		if calendar_event is Dictionary and str(calendar_event.get("course_id", "")) in passing_state["player"]["education"]["courses"]:
+			calendar_event["status"] = "completed"
+	_set_test_date(passing_state, "Y1-12-21", "saturday", "morning")
+	result = education.sync_education(passing_state)
+	_expect(result.get("ok", false), "A fully resolved passing term also completes through the same semester processor.")
+	passing_state = result["state"]
+	_expect(int(passing_state["player"]["education"].get("credits_earned", 0)) == 12 and int(passing_state["player"]["education"].get("semesters_completed", 0)) == 1, "Passing four three-credit courses advances semester and credit progression.")
+	_expect(str(passing_state["player"]["education"].get("academic_standing", "")) == "good_standing" and float(passing_state["player"]["reputations"].get("academic", 0.0)) > 0.0, "Strong term results preserve good standing and improve academic reputation.")
+
+
 func _test_employment_applications_interviews_and_offers() -> void:
 	var factory: RefCounted = NewGameStateFactoryScript.new(_registry)
 	var simulation: RefCounted = SimulationEngineScript.new(_registry)
@@ -660,7 +759,7 @@ func _test_content_registry() -> void:
 	_expect(_registry.get_all("operations").size() == 55, "Registry indexes all 55 simulation operations.")
 	_expect(_registry.get_all("actions").size() == 10, "Registry indexes all 10 initial home actions.")
 	_expect(_registry.get_all("city_interactions").size() == 9, "Registry indexes all nine opening city interactions.")
-	_expect(_registry.get_all("phone_apps").size() == 12, "Registry indexes the nine foundation apps plus Jobs, Money, and Shopping.")
+	_expect(_registry.get_all("phone_apps").size() == 13, "Registry indexes the foundation apps plus Education, Jobs, Money, and Shopping.")
 
 
 func _test_new_game_state_factory() -> void:
@@ -1190,6 +1289,35 @@ func _active_job_for_test(state: Dictionary, job_id: String) -> Dictionary:
 		if active_job is Dictionary and str(active_job.get("job_id", "")) == job_id:
 			return active_job
 	return {}
+
+
+func _create_enrolled_computer_state(random_seed: int) -> Dictionary:
+	var factory: RefCounted = NewGameStateFactoryScript.new(_registry)
+	var simulation: RefCounted = SimulationEngineScript.new(_registry)
+	var quests: RefCounted = QuestEngineScript.new(_registry, simulation)
+	var dialogue: RefCounted = DialogueEngineScript.new(_registry, simulation, quests)
+	var state: Dictionary = factory.create_new_game({}, {"random_seed": random_seed})
+	var result: Dictionary = quests.start_quest(state, "enroll_at_westshore", "test.education_setup")
+	state = result["state"]
+	state["world_state"]["current_location"] = "westshore_administration_office.advisor_office"
+	result = quests.record_event(state, "location_entered", {"location": "westshore_administration_office"}, "test.education_setup")
+	state = result["state"]
+	result = dialogue.begin(state, "westshore_enrollment_advisor")
+	state = result["state"]
+	result = dialogue.advance(state)
+	state = result["state"]
+	result = dialogue.choose(state, "ready")
+	state = result["state"]
+	result = dialogue.choose(state, "computers")
+	state = result["state"]
+	result = dialogue.advance(state)
+	state = result["state"]
+	result = dialogue.choose(state, "full_time")
+	state = result["state"]
+	result = dialogue.advance(state)
+	state = result["state"]
+	result = dialogue.choose(state, "loan")
+	return result.get("state", {})
 
 
 func _test_clock_date(state: Dictionary) -> String:

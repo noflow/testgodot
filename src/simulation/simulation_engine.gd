@@ -89,6 +89,12 @@ func _apply_to_working_state(state: Dictionary, operation: String, payload: Dict
 			return _complete_calendar_arrival(state, payload)
 		"memory.create":
 			return _create_memory(state, payload)
+		"education.enroll":
+			return _apply_education_enrollment(state, payload)
+		"education.attendance":
+			return _apply_education_attendance(state, payload)
+		"education.grade":
+			return _apply_education_grade(state, payload)
 		"employment.apply":
 			return _apply_employment_application(state, payload)
 		"employment.interview":
@@ -411,8 +417,8 @@ func _schedule_calendar_event(state: Dictionary, payload: Dictionary) -> String:
 			continue
 		var existing_type: String = str(existing.get("type", ""))
 		var new_type: String = str(calendar_event.get("type", ""))
-		if existing_type in ["class", "work", "interview"] or new_type in ["class", "work", "interview"]:
-			return "This time conflicts with a required class, shift, or interview."
+		if existing_type in ["class", "exam", "work", "interview"] or new_type in ["class", "exam", "work", "interview"]:
+			return "This time conflicts with a required class, shift, interview, or exam."
 		state["calendar_state"]["conflicts"].append({
 			"event_ids": [str(existing.get("id", "")), event_id],
 			"date": date,
@@ -628,6 +634,114 @@ func _create_memory(state: Dictionary, payload: Dictionary) -> String:
 		"tags": payload.get("tags", []).duplicate(true),
 		"created_on": _date_string(state["clock"]),
 	})
+	return ""
+
+
+func _apply_education_enrollment(state: Dictionary, payload: Dictionary) -> String:
+	var program_id: String = str(payload.get("program", ""))
+	if _registry.get_content("programs", program_id) == null:
+		return "Unknown education program: %s" % program_id
+	var load_id: String = str(payload.get("load", ""))
+	if load_id not in ["full_time", "part_time"]:
+		return "Education enrollment requires a full-time or part-time load."
+	var courses: Array = payload.get("courses", [])
+	if courses.is_empty():
+		return "Education enrollment requires at least one course."
+	for course_id_value: Variant in courses:
+		if _registry.get_content("courses", str(course_id_value)) == null:
+			return "Unknown enrolled course: %s" % course_id_value
+	var education: Dictionary = state["player"]["education"]
+	education["institution"] = "westshore_college"
+	education["program"] = program_id
+	education["course_load"] = load_id
+	education["courses"] = courses.duplicate(true)
+	education["tuition_plan"] = payload.get("tuition_plan")
+	education["enrolled"] = true
+	education["enrollment_date"] = _date_string(state["clock"])
+	return ""
+
+
+func _apply_education_attendance(state: Dictionary, payload: Dictionary) -> String:
+	var course_id: String = str(payload.get("course_id", ""))
+	if course_id not in state["player"]["education"].get("courses", []):
+		return "This course is not part of the active enrollment: %s" % course_id
+	var attendance_value: Variant = payload.get("attendance_record")
+	if not attendance_value is Dictionary:
+		return "Education attendance requires an attendance record."
+	var attendance_record: Dictionary = attendance_value.duplicate(true)
+	var record_id: String = str(attendance_record.get("id", ""))
+	var event_id: String = str(attendance_record.get("calendar_event_id", ""))
+	var attendance_status: String = str(attendance_record.get("status", payload.get("status", "")))
+	if record_id.is_empty() or event_id.is_empty() or attendance_status not in ["present", "late", "absent"]:
+		return "Education attendance identity or status is invalid."
+	for existing: Variant in state["player"]["education"].get("attendance_history", []):
+		if existing is Dictionary and str(existing.get("id", "")) == record_id:
+			return "Education attendance was already recorded: %s" % record_id
+	var calendar_event: Dictionary = {}
+	for event_value: Variant in state["calendar_state"].get("events", []):
+		if event_value is Dictionary and str(event_value.get("id", "")) == event_id:
+			calendar_event = event_value
+			break
+	if calendar_event.is_empty() or str(calendar_event.get("course_id", "")) != course_id:
+		return "Education attendance has an invalid calendar event."
+	if str(calendar_event.get("status", "scheduled")) != "scheduled":
+		return "Education calendar event is no longer scheduled: %s" % event_id
+	if not state["player"]["education"].get("attendance") is Dictionary:
+		state["player"]["education"]["attendance"] = {}
+	if not state["player"]["education"]["attendance"].has(course_id):
+		state["player"]["education"]["attendance"][course_id] = {"attended": 0, "late": 0, "absent": 0}
+	var counters: Dictionary = state["player"]["education"]["attendance"][course_id]
+	var counter_key: String = "attended" if attendance_status == "present" else attendance_status
+	counters[counter_key] = int(counters.get(counter_key, 0)) + 1
+	state["player"]["education"]["attendance_history"].append(attendance_record)
+	calendar_event["status"] = "missed" if attendance_status == "absent" else "completed"
+	calendar_event["attendance"] = attendance_status
+	calendar_event["performance"] = float(attendance_record.get("performance", payload.get("performance", 0.0)))
+	calendar_event["completed_at"] = _clock.timestamp(state["clock"])
+	return ""
+
+
+func _apply_education_grade(state: Dictionary, payload: Dictionary) -> String:
+	var course_id: String = str(payload.get("course_id", ""))
+	if course_id not in state["player"]["education"].get("courses", []):
+		return "This course is not part of the active enrollment: %s" % course_id
+	var result_value: Variant = payload.get("assessment_result")
+	if not result_value is Dictionary:
+		return "Education grading requires an assessment result."
+	var assessment_result: Dictionary = result_value.duplicate(true)
+	var assessment_id: String = str(assessment_result.get("assessment_id", payload.get("assessment", "")))
+	var result_id: String = str(assessment_result.get("id", ""))
+	if result_id.is_empty() or assessment_id.is_empty() or str(assessment_result.get("course_id", "")) != course_id:
+		return "Education assessment result identity is invalid."
+	if not payload.get("score") is int and not payload.get("score") is float:
+		return "Education assessment scores must be numeric."
+	assessment_result["score"] = clampf(float(payload["score"]), 0.0, 100.0)
+	var assessment: Dictionary = {}
+	for assessment_value: Variant in state["player"]["education"].get("assessments", []):
+		if assessment_value is Dictionary and str(assessment_value.get("id", "")) == assessment_id:
+			assessment = assessment_value
+			break
+	if assessment.is_empty() or str(assessment.get("course_id", "")) != course_id:
+		return "Unknown course assessment: %s" % assessment_id
+	if str(assessment.get("status", "scheduled")) != "scheduled":
+		return "Course assessment is already resolved: %s" % assessment_id
+	for existing: Variant in state["player"]["education"].get("assessment_results", []):
+		if existing is Dictionary and str(existing.get("id", "")) == result_id:
+			return "Education assessment result was already recorded: %s" % result_id
+	var result_status: String = str(assessment_result.get("status", "completed"))
+	if result_status not in ["completed", "missed"]:
+		return "Unknown education assessment result: %s" % result_status
+	assessment["status"] = result_status
+	assessment["score"] = assessment_result["score"]
+	assessment["resolved_at"] = _clock.timestamp(state["clock"])
+	state["player"]["education"]["assessment_results"].append(assessment_result)
+	var calendar_event_id: String = str(assessment.get("calendar_event_id", ""))
+	for event_value: Variant in state["calendar_state"].get("events", []):
+		if event_value is Dictionary and str(event_value.get("id", "")) == calendar_event_id:
+			event_value["status"] = "missed" if result_status == "missed" else "completed"
+			event_value["score"] = assessment_result["score"]
+			event_value["completed_at"] = _clock.timestamp(state["clock"])
+			break
 	return ""
 
 

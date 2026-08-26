@@ -6,6 +6,7 @@
     {"id": "contacts", "name": "Contacts", "icon": "C", "description": "Known people and their discovered public information."},
     {"id": "messages", "name": "Messages", "icon": "M", "description": "Authored message threads and replies."},
     {"id": "calendar", "name": "Calendar", "icon": "D", "description": "Plans, dates, classes, interviews, and shifts."},
+    {"id": "education", "name": "Education", "icon": "E", "description": "Courses, attendance, coursework, examinations, grades, and academic standing."},
     {"id": "jobs", "name": "Jobs", "icon": "J", "description": "Search listings, apply, interview, review offers, and manage employment."},
     {"id": "money", "name": "Money", "icon": "$", "description": "Accounts, bills, tuition, receipts, and weekly budget summaries."},
     {"id": "shopping", "name": "Shopping", "icon": "B", "description": "Browse Port Alder stores, compare prices, and purchase inventory."},

@@ -10,13 +10,17 @@ new-game state creation, seven-block clock, core simulation, VN dialogue, quest
 branching, required character creation, and Elena's playable opening are
 implemented. The connected Hale home, room collisions, essential needs actions,
 household supplies, wardrobe equipment, reusable phone shell, all nine required
-foundation apps, and the additional playable Jobs app are implemented. The app
+foundation apps, and the additional playable Education, Jobs, Money, and Shopping
+apps are implemented. The app
 views use live runtime data. Authored opening texts, quick
 replies, calendar scheduling,
 NPC commitment rejection, optional double-booking warnings, weather/outfit checks,
 quest progress, relationships, map discovery, and initial settings controls work.
 The employment slice continues beyond hiring with playable shifts, attendance and
 performance, weekly payroll, overtime, tips, withholding, raises, and promotions.
+The education slice also continues beyond enrollment with playable classes,
+studying, assignments, projects, midterms, finals, grades, academic consequences,
+credits, and first-semester completion.
 Map route confirmation and destination travel now work; save/load controls remain
 dependent on their later runtime phase.
 
@@ -141,6 +145,7 @@ Required apps:
 
 Implemented expansion apps:
 
+- Education: class attendance, studying, coursework, exams, grades, and standing
 - Jobs: listings, applications, interviews, shifts, payroll, and career progress
 - Money: accounts, tuition, rent, debt, ledger, receipts, and weekly budgets
 - Shopping: seven store catalogs, live quotes, purchases, discounts, and tax
@@ -189,8 +194,9 @@ Every life path must be completable far enough to prove its system:
   or practice an interview.
 - Both: create a class schedule and save a compatible part-time availability profile.
 
-The slice does not need to simulate the entire semester or a ninety-day promotion.
-Those outcomes remain validated content for later builds.
+The required opening-week proof stops after schedule creation, but the implementation
+now continues through the full first semester and a ninety-day employment review.
+Later-semester course catalogs and graduation remain future content.
 
 ### Required NPC proof
 

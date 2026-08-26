@@ -22,6 +22,37 @@ debt, selects conflict-free first-semester sections, and creates dated class and
 events through December 13. Completing these authored events closes the enrollment
 quest, activates the family allowance rule, and unlocks the Education phone app.
 
+### Playable semester loop
+
+The Education app synchronizes the semester before displaying it. A four-course
+full-time load creates twenty-four assessments: three assignments, one project,
+one midterm, and one final per course. A two-course part-time load creates twelve.
+Assignments open fourteen days before their shared deadlines; projects open
+twenty-eight days before their deadline. Midterms replace a regular class meeting,
+and finals occupy conflict-free Morning, Lunch, or Afternoon exam-week slots.
+
+Classes and laboratories can only be attended during their Calendar block in the
+scheduled Westshore room. Arriving within fifteen minutes is present, arriving
+within sixty minutes is late, and passing that window records an absence. Balanced,
+engaged, and quiet-notes approaches trade Energy and Stress for participation and
+subject-skill experience. Any class left unresolved after its attendance window is
+closed automatically and cannot be claimed twice.
+
+The player can study in the Hale bedroom, dining room, or Westshore Library.
+Standard and thorough sessions consume different amounts of time and Energy while
+building Study skill and persistent course preparation. Standard or thorough
+coursework uses that preparation, Focus, Intelligence, Energy, Stress, course
+difficulty, and relevant skills to calculate its score. Exams must be taken in their
+scheduled campus room and block.
+
+The live gradebook normalizes only components that have received a result. At term
+close it applies all four authored weights: Attendance 15%, Assignments 30%, Project
+25%, and Exams 30%. Three absences create an academic warning. Low averages can
+produce warning or probation, and a term below 50% creates a registration hold and
+suspension review. Passed courses award three credits, or four for a course with a
+lab. Closing the term stores its course results, average, credits, standing, and
+academic-reputation change in semester history.
+
 ## Employment
 
 The opening catalog contains thirteen jobs covering retail, food service, cinema,

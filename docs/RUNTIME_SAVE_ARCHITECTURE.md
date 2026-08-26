@@ -48,7 +48,7 @@ contact. Triggered character texts are synchronized from `.character` packages a
 deduplicated by authored message ID. Replies, unread state, relationship effects,
 quest effects, and their five-minute time cost use atomic simulation events.
 Calendar plans validate dates, blocks, known participants, and fixed NPC work or
-school commitments. Required work/class/interview overlaps are rejected; optional
+school commitments. Required work/class/interview/exam overlaps are rejected; optional
 overlaps are preserved with explicit conflict records. Weather advances from the
 authored opening-week forecast whenever the game date changes.
 
@@ -63,6 +63,15 @@ records. It composes ledger transactions, relationship consequences, debt accrua
 weekly summaries, store pricing, payment splits, receipts, and inventory delivery
 without mutating authored economy or store packages. A purchase is committed only
 after both storage capacity and complete purchasing power validate.
+
+`EducationService` initializes assessments from the enrolled course schedule and
+synchronizes every required academic event against the live clock. It records each
+class attendance result and assessment result exactly once, closes overdue events,
+recalculates component-weighted grades, and updates semester phase and academic
+standing. Studying, class participation, coursework, and exams compose registered
+time, need, skill, attendance, and grade operations before committing a new state.
+The save retains course sections, preparation, attendance history, assessment
+results, credits, registration holds, and immutable semester summaries.
 
 ## Runtime state
 

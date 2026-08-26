@@ -30,6 +30,22 @@ from the item package, so store content references item ids rather than repeatin
 prices. Education tuition and background-specific aid awards live in
 `systems/education.json`.
 
+## Global education authoring
+
+Westshore remains data-driven. Programs reference ordered first-semester course
+IDs; courses declare subject skills, difficulty, sections, and an optional lab.
+Institution dates and the allowed Morning, Lunch, and Afternoon teaching blocks
+live beside the catalog. `academic_rules` owns grade-component weights, attendance
+grace, assignment and exam cadence, player effort choices, passing thresholds, and
+academic-standing consequences. Runtime assessment and grade records belong only
+to the save and must never be authored back into the course catalog.
+
+Each enrolled course currently receives the common assessment pattern from
+`assessment_calendar`: three assignments, one semester project, a midterm placed
+into a real class event, and a final placed in exam week. Adding a course therefore
+requires no phone or engine changes as long as its ID, skills, difficulty, and at
+least one section are valid.
+
 ## Quest structure
 
 Each quest has an ID unique within its package, a category, title, summary,

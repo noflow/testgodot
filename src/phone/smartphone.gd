@@ -5,7 +5,7 @@ signal phone_closed
 signal travel_completed(destination: String)
 
 const APP_ORDER: PackedStringArray = [
-	"character_profile", "contacts", "messages", "calendar", "jobs", "money", "shopping", "quests",
+	"character_profile", "contacts", "messages", "calendar", "education", "jobs", "money", "shopping", "quests",
 	"relationships", "city_map", "weather", "settings",
 ]
 const BLOCKS: PackedStringArray = [
@@ -114,6 +114,8 @@ func _show_app(app_id: String) -> void:
 			_render_messages()
 		"calendar":
 			_render_calendar()
+		"education":
+			_render_education()
 		"jobs":
 			_render_jobs()
 		"money":
@@ -245,7 +247,7 @@ func _render_calendar() -> void:
 			"With %s • " % ", ".join(participants) if not participants.is_empty() else "",
 			status.capitalize(),
 		])
-		var required_type: bool = str(calendar_event.get("type", "")) in ["class", "work", "interview"]
+		var required_type: bool = bool(calendar_event.get("required", false)) or str(calendar_event.get("type", "")) in ["class", "exam", "work", "interview"]
 		if status == "scheduled" and not required_type and str(calendar_event.get("source", "")) != "opening_future_talk":
 			_add_action_button("Cancel %s" % title, _cancel_calendar_event.bind(str(calendar_event.get("id", ""))))
 	var warning_count: int = 0
@@ -274,6 +276,100 @@ func _render_quests() -> void:
 		var ids: Array = state["quest_state"].get(section, [])
 		lines.append(_quest_names(ids) if not ids.is_empty() else "None")
 	app_content.text = "\n".join(lines)
+
+
+func _render_education() -> void:
+	_clear_container(app_actions)
+	app_title.text = "EDUCATION"
+	var sync_result: Dictionary = EducationService.sync_education()
+	if not sync_result.get("ok", false):
+		phone_status.text = str(sync_result.get("errors", ["Education records could not be synchronized."])[0])
+		app_content.text = "Education records are unavailable."
+		return
+	if not sync_result.get("data", {}).get("notices", []).is_empty():
+		phone_status.text = " • ".join(sync_result["data"]["notices"])
+	var education: Dictionary = GameState.current_state["player"]["education"]
+	if not bool(education.get("enrolled", false)):
+		app_content.text = "You are not currently enrolled. Visit Westshore Administration while the enrollment quest is active to choose a program and course load."
+		return
+	var program: Variant = ContentRegistry.get_content("programs", str(education.get("program", "")))
+	var semester: Dictionary = education.get("semester", {})
+	var lines: PackedStringArray = [
+		"[font_size=23]WESTSHORE COLLEGE[/font_size]",
+		"%s • %s" % [program.get("name", education.get("program", "Program")) if program is Dictionary else str(education.get("program", "Program")).replace("_", " ").capitalize(), str(education.get("course_load", education.get("load", ""))).replace("_", " ").capitalize()],
+		"Semester %d • %s" % [education.get("semester_number", 1), str(semester.get("phase", "pre_orientation")).replace("_", " ").capitalize()],
+		"Standing: [color=#e9a86c]%s[/color] • Credits earned: %d" % [str(education.get("academic_standing", "good_standing")).replace("_", " ").capitalize(), education.get("credits_earned", 0)],
+	]
+	if bool(education.get("registration_hold", false)):
+		lines.append("[color=#ef7777]Registration hold: an advisor review is required before the next semester.[/color]")
+	var class_status: Dictionary = EducationService.class_status()
+	var class_event: Dictionary = class_status.get("event", {})
+	var next_class: Dictionary = class_status.get("next_event", {})
+	lines.append("\n[font_size=23]CLASS STATUS[/font_size]")
+	if not class_event.is_empty():
+		lines.append("%s • %s\n%s" % [class_event.get("title", "Class"), _location_name(str(class_event.get("location", ""))), class_status.get("reason", "Ready to attend now.")])
+	elif not next_class.is_empty():
+		lines.append("Next: %s\n%s • %s • %s" % [next_class.get("title", "Class"), next_class.get("date", ""), str(next_class.get("block", "")).replace("_", " ").capitalize(), _location_name(str(next_class.get("location", "")))])
+	else:
+		lines.append(str(class_status.get("reason", "No classes are currently scheduled.")))
+	if bool(class_status.get("ready", false)):
+		for approach_id: String in ["balanced", "engaged", "quiet_notes"]:
+			_add_action_button("Attend Class — %s" % approach_id.replace("_", " ").capitalize(), _attend_education_class.bind(approach_id))
+	lines.append("\n[font_size=23]COURSES AND GRADES[/font_size]")
+	for course_id_value: Variant in education.get("courses", []):
+		var course_id: String = str(course_id_value)
+		var course: Variant = ContentRegistry.get_content("courses", course_id)
+		var grade: Dictionary = education.get("grades", {}).get(course_id, {})
+		var attendance: Dictionary = education.get("attendance", {}).get(course_id, {})
+		lines.append("[font_size=20]%s[/font_size]\n%.1f%% • %s • %s\nAttendance %d present / %d late / %d absent • Preparation %.0f" % [
+			course.get("name", course_id) if course is Dictionary else course_id,
+			float(grade.get("current_percent", 0.0)), grade.get("letter_grade", "—"), str(grade.get("status", "not_started")).replace("_", " ").capitalize(),
+			attendance.get("attended", 0), attendance.get("late", 0), attendance.get("absent", 0), float(education.get("course_preparation", {}).get(course_id, 0.0)),
+		])
+		_add_action_button("Study %s — 90 min" % (course.get("name", course_id) if course is Dictionary else course_id), _study_education_course.bind(course_id, "standard"))
+		_add_action_button("Study Thoroughly — %s — 3 hr" % (course.get("name", course_id) if course is Dictionary else course_id), _study_education_course.bind(course_id, "thorough"))
+	lines.append("\n[font_size=23]UPCOMING COURSEWORK[/font_size]")
+	var upcoming: Array = EducationService.upcoming_assessments(8)
+	if upcoming.is_empty():
+		lines.append("No unresolved assessments.")
+	var today_value: int = _phone_date_value("Y%d-%02d-%02d" % [GameState.current_state["clock"]["year"], GameState.current_state["clock"]["month"], GameState.current_state["clock"]["day"]])
+	for assessment_value: Variant in upcoming:
+		if not assessment_value is Dictionary:
+			continue
+		var assessment: Dictionary = assessment_value
+		var assessment_type: String = str(assessment.get("type", "assignment"))
+		lines.append("%s\n%s • %s • Opens %s" % [assessment.get("title", assessment.get("id", "Assessment")), assessment.get("due_date", ""), str(assessment.get("block", "")).replace("_", " ").capitalize(), assessment.get("available_date", "")])
+		var available_now: bool = today_value >= _phone_date_value(str(assessment.get("available_date", assessment.get("due_date", "")))) and today_value <= _phone_date_value(str(assessment.get("due_date", "")))
+		if assessment_type in ["midterm", "final"]:
+			var clock: Dictionary = GameState.current_state["clock"]
+			if available_now and str(assessment.get("due_date", "")) == "Y%d-%02d-%02d" % [clock["year"], clock["month"], clock["day"]] and str(assessment.get("block", "")) == str(clock["block"]):
+				_add_action_button("Take %s" % assessment.get("title", "Exam"), _complete_education_assessment.bind(str(assessment.get("id", "")), "exam"))
+		elif available_now:
+			_add_action_button("Complete Standard — %s" % assessment.get("title", "Coursework"), _complete_education_assessment.bind(str(assessment.get("id", "")), "standard"))
+			_add_action_button("Complete Thoroughly — %s" % assessment.get("title", "Coursework"), _complete_education_assessment.bind(str(assessment.get("id", "")), "thorough"))
+	app_content.text = "\n\n".join(lines)
+
+
+func _attend_education_class(approach_id: String) -> void:
+	var result: Dictionary = EducationService.attend_class(approach_id)
+	if result.get("ok", false):
+		var record: Dictionary = result.get("data", {}).get("record", {})
+		phone_status.text = "%s recorded with %.1f performance." % [str(record.get("status", "present")).capitalize(), float(record.get("performance", 0.0))]
+	else:
+		phone_status.text = str(result.get("errors", ["Class attendance failed."])[0])
+	_render_education()
+
+
+func _study_education_course(course_id: String, effort_id: String) -> void:
+	var result: Dictionary = EducationService.study_course(course_id, effort_id)
+	phone_status.text = "Study completed; preparation increased by %.0f." % float(result.get("data", {}).get("preparation_gain", 0.0)) if result.get("ok", false) else str(result.get("errors", ["Study session failed."])[0])
+	_render_education()
+
+
+func _complete_education_assessment(assessment_id: String, effort_id: String) -> void:
+	var result: Dictionary = EducationService.complete_assessment(assessment_id, effort_id)
+	phone_status.text = "%s submitted with a %.1f%% score." % [result.get("data", {}).get("assessment", {}).get("title", "Assessment"), result.get("data", {}).get("result", {}).get("score", 0.0)] if result.get("ok", false) else str(result.get("errors", ["Assessment could not be completed."])[0])
+	_render_education()
 
 
 func _render_jobs() -> void:
@@ -1178,6 +1274,11 @@ func _location_name(destination: String) -> String:
 func _short_location_name(location_id: String) -> String:
 	var location: Variant = ContentRegistry.get_location(location_id)
 	return str(location.get("name", location_id)) if location is Dictionary else location_id.replace("_", " ").capitalize()
+
+
+func _phone_date_value(date: String) -> int:
+	var parts: PackedStringArray = date.trim_prefix("Y").split("-")
+	return -1 if parts.size() != 3 else int(parts[0]) * 372 + int(parts[1]) * 31 + int(parts[2])
 
 
 func _date_after_days(clock: Dictionary, offset: int) -> Dictionary:
