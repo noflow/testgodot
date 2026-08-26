@@ -68,6 +68,9 @@ open-ended by default and never assigned as weekly priorities. Players choose wh
 active quests to pin. Stat, skill, relationship, location, life-path, and prior-choice
 gates drive most progression, while rare visible deadlines are reserved for
 institutional windows, scheduled commitments, emergencies, or fleeting opportunities.
+Discovered side stories become optional phone offers rather than starting silently;
+the player can accept, postpone, reconsider, or decline them without exposing hidden
+future quests.
 The phone and main menu now share complete persistent settings for four text sizes,
 high contrast, reduced motion, screen-edge effects, camera shake, hold/toggle VN
 skipping, independent audio channels, display mode, resolution, VSync, and keyboard

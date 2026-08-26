@@ -15,7 +15,8 @@ apps are implemented. The app
 views use live runtime data. Authored opening texts, quick
 replies, calendar scheduling,
 NPC commitment rejection, optional double-booking warnings, weather/outfit checks,
-quest progress, relationships, map discovery, and complete persistent settings work.
+quest discovery, gated offers, accept/postpone/decline decisions, progress,
+relationships, map discovery, and complete persistent settings work.
 The employment slice continues beyond hiring with playable shifts, attendance and
 performance, weekly payroll, overtime, tips, withholding, raises, and promotions.
 The education slice also continues beyond enrollment with playable classes,
@@ -222,8 +223,9 @@ a date merely because the conversation data exists.
 ### Sandbox quest proof
 
 Quests are discovered from locations, NPCs, messages, activities, institutions, or
-earlier branches and are open-ended by default. The player may track or untrack any
-discovered active quest. Advancing beyond Sunday must not open a planning screen or
+earlier branches and are open-ended by default. Optional discoveries become offers;
+the player can accept, postpone, reconsider, decline, track, or untrack them.
+Advancing beyond Sunday must not open a planning screen or
 expire open-ended content. Westshore registration demonstrates the exceptional
 case: a visible institutional deadline with a narrative reason and warnings.
 

@@ -13,7 +13,129 @@ func _init(content_registry: Node, simulation_engine: RefCounted) -> void:
 func start_quest(state: Dictionary, quest_id: String, source: String) -> Dictionary:
 	if quest_id in state["quest_state"]["active"]:
 		return _success(state)
-	return _simulation.apply_operation(state, "quest.start", {"quest_id": quest_id}, source)
+	return _simulation.apply_operation(state, "quest.start", {"quest_id": quest_id, "discovery_source": source}, source)
+
+
+func discover_quest(state: Dictionary, quest_id: String, source: String) -> Dictionary:
+	var quest: Variant = _registry.get_content("quests", quest_id)
+	if not quest is Dictionary:
+		return _failure("Unknown quest: %s" % quest_id)
+	var quest_state: Dictionary = state["quest_state"]
+	if quest_id in quest_state.get("completed", []) or quest_id in quest_state.get("failed", []) or quest_id in quest_state.get("deferred", []):
+		return _success(state)
+	var working: Dictionary = state
+	var newly_discovered: bool = quest_id not in quest_state.get("discovered", [])
+	if newly_discovered:
+		var discovery_result: Dictionary = _simulation.apply_operation(
+			working,
+			"quest.discover",
+			{"quest_id": quest_id, "discovery_source": source},
+			source
+		)
+		if not discovery_result.get("ok", false):
+			return discovery_result
+		working = discovery_result["state"]
+	var policy: String = str(quest.get("discovery", {}).get(
+		"policy", _registry.get_package("port_alder_sandbox_quest_system").get("default_discovery_policy", "offer")
+	))
+	if policy == "auto_start":
+		if not bool(gate_report(working, quest_id).get("met", false)):
+			return _success(
+				working,
+				PackedStringArray(),
+				PackedStringArray([quest_id]) if newly_discovered else PackedStringArray()
+			)
+		var start_result: Dictionary = start_quest(working, quest_id, "%s.auto_start" % source)
+		if not start_result.get("ok", false):
+			return start_result
+		return _success(
+			start_result["state"],
+			PackedStringArray([quest_id]),
+			PackedStringArray([quest_id]) if newly_discovered else PackedStringArray()
+		)
+	var availability_result: Dictionary = sync_availability(working, "%s.gates" % source)
+	if not availability_result.get("ok", false):
+		return availability_result
+	return _success(
+		availability_result["state"],
+		PackedStringArray(),
+		PackedStringArray([quest_id]) if newly_discovered else PackedStringArray(),
+		availability_result.get("available", PackedStringArray())
+	)
+
+
+func accept_quest(state: Dictionary, quest_id: String, source: String) -> Dictionary:
+	var report: Dictionary = gate_report(state, quest_id)
+	if not report.get("known", false):
+		return _failure("Unknown quest: %s" % quest_id)
+	if not report.get("met", false):
+		var reasons: PackedStringArray = PackedStringArray(report.get("visible_failures", []))
+		return _failure(reasons[0] if not reasons.is_empty() else "This quest is not available yet.")
+	return _simulation.apply_operation(state, "quest.accept", {"quest_id": quest_id, "decision_source": source}, source)
+
+
+func postpone_quest(state: Dictionary, quest_id: String, source: String) -> Dictionary:
+	return _simulation.apply_operation(state, "quest.postpone", {"quest_id": quest_id, "decision_source": source}, source)
+
+
+func decline_quest(state: Dictionary, quest_id: String, source: String) -> Dictionary:
+	return _simulation.apply_operation(state, "quest.decline", {"quest_id": quest_id, "decision_source": source}, source)
+
+
+func reconsider_quest(state: Dictionary, quest_id: String, source: String) -> Dictionary:
+	if quest_id not in state["quest_state"].get("postponed", []):
+		return _failure("Quest is not postponed: %s" % quest_id)
+	var report: Dictionary = gate_report(state, quest_id)
+	if not report.get("met", false):
+		var reasons: PackedStringArray = PackedStringArray(report.get("visible_failures", []))
+		return _failure(reasons[0] if not reasons.is_empty() else "This quest is not available yet.")
+	return _simulation.apply_operation(
+		state,
+		"quest.set_available",
+		{"quest_id": quest_id, "available": true, "reconsider": true, "decision_source": source},
+		source
+	)
+
+
+func sync_availability(state: Dictionary, source: String) -> Dictionary:
+	var working: Dictionary = state
+	var became_available: PackedStringArray = []
+	var became_unavailable: PackedStringArray = []
+	var quest_state: Dictionary = working["quest_state"]
+	for quest_id_value: Variant in quest_state.get("discovered", []):
+		var quest_id: String = str(quest_id_value)
+		var quest: Variant = _registry.get_content("quests", quest_id)
+		if quest is Dictionary and str(quest.get("discovery", {}).get("policy", "offer")) == "auto_start":
+			continue
+		if quest_id in quest_state.get("active", []) or quest_id in quest_state.get("completed", []) or quest_id in quest_state.get("failed", []) or quest_id in quest_state.get("deferred", []):
+			continue
+		if quest_id in quest_state.get("postponed", []):
+			continue
+		var should_be_available: bool = bool(gate_report(working, quest_id).get("met", false))
+		var is_available: bool = quest_id in quest_state.get("available", [])
+		if should_be_available == is_available:
+			continue
+		var result: Dictionary = _simulation.apply_operation(
+			working,
+			"quest.set_available",
+			{"quest_id": quest_id, "available": should_be_available},
+			source
+		)
+		if not result.get("ok", false):
+			return result
+		working = result["state"]
+		quest_state = working["quest_state"]
+		if should_be_available:
+			became_available.append(quest_id)
+		else:
+			became_unavailable.append(quest_id)
+	return {
+		"ok": true,
+		"state": working,
+		"available": became_available,
+		"unavailable": became_unavailable,
+		"errors": PackedStringArray(),
+	}
 
 
 func complete_objective(
@@ -52,7 +174,7 @@ func record_event(state: Dictionary, event_name: String, payload: Dictionary, so
 			continue
 		if not _event_condition_matches(quest.get("activation", {}), event_name, payload):
 			continue
-		var activation_result: Dictionary = start_quest(working, quest_id, "%s.activation" % source)
+		var activation_result: Dictionary = discover_quest(working, quest_id, "%s.activation" % source)
 		if not activation_result.get("ok", false):
 			return activation_result
 		working = activation_result["state"]
@@ -76,7 +198,8 @@ func record_event(state: Dictionary, event_name: String, payload: Dictionary, so
 			if not objective_result.get("ok", false):
 				return objective_result
 			working = objective_result["state"]
-	return _success(working)
+	var availability_result: Dictionary = sync_availability(working, "%s.availability" % source)
+	return availability_result if not availability_result.get("ok", false) else _success(availability_result["state"])
 
 
 func complete_quest(state: Dictionary, quest_id: String, source: String) -> Dictionary:
@@ -105,12 +228,19 @@ func complete_quest(state: Dictionary, quest_id: String, source: String) -> Dict
 	var activation_result: Dictionary = sync_automatic_activations(working, "%s.followups" % source)
 	if not activation_result.get("ok", false):
 		return activation_result
-	return _success(activation_result["state"], activation_result["activated"])
+	return _success(
+		activation_result["state"],
+		activation_result["activated"],
+		activation_result.get("discovered", PackedStringArray()),
+		activation_result.get("available", PackedStringArray())
+	)
 
 
 func sync_automatic_activations(state: Dictionary, source: String) -> Dictionary:
 	var working: Dictionary = state
 	var activated: PackedStringArray = []
+	var discovered: PackedStringArray = []
+	var available: PackedStringArray = []
 	for quest: Variant in _registry.get_all("quests"):
 		if not quest is Dictionary:
 			continue
@@ -119,14 +249,21 @@ func sync_automatic_activations(state: Dictionary, source: String) -> Dictionary
 			continue
 		if quest_id in working["quest_state"].get("failed", []) or quest_id in working["quest_state"].get("deferred", []):
 			continue
-		if not _automatic_activation_ready(working, quest):
+		if not _state_activation_ready(working, quest):
 			continue
-		var result: Dictionary = start_quest(working, quest_id, source)
+		var result: Dictionary = discover_quest(working, quest_id, source)
 		if not result.get("ok", false):
-			return {"ok": false, "state": state, "activated": PackedStringArray(), "errors": result.get("errors", PackedStringArray())}
+			return {"ok": false, "state": state, "activated": PackedStringArray(), "discovered": PackedStringArray(), "available": PackedStringArray(), "errors": result.get("errors", PackedStringArray())}
 		working = result["state"]
-		activated.append(quest_id)
-	return {"ok": true, "state": working, "activated": activated, "errors": PackedStringArray()}
+		activated.append_array(result.get("activated", PackedStringArray()))
+		discovered.append_array(result.get("discovered", PackedStringArray()))
+		available.append_array(result.get("available", PackedStringArray()))
+	var availability_result: Dictionary = sync_availability(working, "%s.availability" % source)
+	if not availability_result.get("ok", false):
+		return availability_result
+	working = availability_result["state"]
+	available.append_array(availability_result.get("available", PackedStringArray()))
+	return {"ok": true, "state": working, "activated": activated, "discovered": discovered, "available": available, "errors": PackedStringArray()}
 
 
 func apply_matching_branch(state: Dictionary, quest_id: String, source: String) -> Dictionary:
@@ -156,9 +293,20 @@ func get_active_quests(state: Dictionary) -> Array:
 	return active
 
 
+func get_discovered_quests(state: Dictionary) -> Array:
+	return _quest_definitions(state.get("quest_state", {}).get("discovered", []))
+
+
+func get_available_quests(state: Dictionary) -> Array:
+	return _quest_definitions(state.get("quest_state", {}).get("available", []))
+
+
 func get_progress(state: Dictionary, quest_id: String) -> Dictionary:
 	var quest: Variant = _registry.get_content("quests", quest_id)
 	if not quest is Dictionary:
+		return {}
+	var quest_state: Dictionary = state.get("quest_state", {})
+	if quest_id not in quest_state.get("discovered", []) and quest_id not in quest_state.get("active", []) and quest_id not in quest_state.get("completed", []) and quest_id not in quest_state.get("failed", []) and quest_id not in quest_state.get("deferred", []):
 		return {}
 	var completed: Dictionary = state["quest_state"].get("objectives", {}).get(quest_id, {})
 	var objectives: Array = []
@@ -171,8 +319,39 @@ func get_progress(state: Dictionary, quest_id: String) -> Dictionary:
 		"quest_id": quest_id,
 		"title": quest.get("title", quest_id),
 		"active": quest_id in state["quest_state"]["active"],
+		"discovered": quest_id in state["quest_state"].get("discovered", []),
+		"available": quest_id in state["quest_state"].get("available", []),
+		"postponed": quest_id in state["quest_state"].get("postponed", []),
 		"completed": quest_id in state["quest_state"]["completed"],
+		"gates": gate_report(state, quest_id),
 		"objectives": objectives,
+	}
+
+
+func gate_report(state: Dictionary, quest_id: String) -> Dictionary:
+	var quest: Variant = _registry.get_content("quests", quest_id)
+	if not quest is Dictionary:
+		return {"known": false, "met": false, "requirements": [], "visible_failures": PackedStringArray(), "has_hidden_failures": false}
+	var results: Array = []
+	var visible_failures: PackedStringArray = []
+	var has_hidden_failures: bool = false
+	for requirement_value: Variant in quest.get("requirements", []):
+		if not requirement_value is Dictionary:
+			continue
+		var result: Dictionary = _evaluate_requirement(state, requirement_value)
+		results.append(result)
+		if bool(result.get("met", false)):
+			continue
+		if bool(result.get("visible", true)):
+			visible_failures.append(str(result.get("reason", "Requirement not met.")))
+		else:
+			has_hidden_failures = true
+	return {
+		"known": true,
+		"met": visible_failures.is_empty() and not has_hidden_failures,
+		"requirements": results,
+		"visible_failures": visible_failures,
+		"has_hidden_failures": has_hidden_failures,
 	}
 
 
@@ -187,22 +366,140 @@ func _matching_branch(state: Dictionary, quest: Dictionary) -> Dictionary:
 	return {}
 
 
-func _automatic_activation_ready(state: Dictionary, quest: Dictionary) -> bool:
+func _state_activation_ready(state: Dictionary, quest: Dictionary) -> bool:
 	var activation: Dictionary = quest.get("activation", {})
-	if str(activation.get("event", "")) != "quest_completed":
+	var event_name: String = str(activation.get("event", ""))
+	if event_name == "quest_completed":
+		var prerequisite: String = str(activation.get("quest", ""))
+		if prerequisite.is_empty() or prerequisite not in state["quest_state"]["completed"]:
+			return false
+		var earliest_block: String = str(activation.get("earliest_block", ""))
+		if earliest_block.is_empty():
+			return true
+		var completion_date: String = _quest_completion_date(state, prerequisite)
+		var current_date: String = "Y%d-%02d-%02d" % [state["clock"]["year"], state["clock"]["month"], state["clock"]["day"]]
+		if not completion_date.is_empty() and completion_date != current_date:
+			return true
+		const BLOCKS: PackedStringArray = ["early_morning", "morning", "lunch", "afternoon", "evening", "late_evening", "night"]
+		return BLOCKS.find(str(state["clock"]["block"])) >= BLOCKS.find(earliest_block)
+	if event_name == "sandbox_activated":
+		return bool(state["player"].get("flags", {}).get("sandbox.active", false))
+	if event_name == "location_discovered":
+		return str(activation.get("location", "")) in state["world_state"].get("discovered_locations", [])
+	if activation.has("value_equals"):
+		var equals: Array = activation.get("value_equals", [])
+		return equals.size() == 2 and _get_state_value(state, str(equals[0])) == equals[1]
+	if activation.has("value_in"):
+		var contained: Array = activation.get("value_in", [])
+		return contained.size() == 2 and contained[1] is Array and _get_state_value(state, str(contained[0])) in contained[1]
+	return false
+
+
+func _quest_definitions(quest_ids: Array) -> Array:
+	var definitions: Array = []
+	for quest_id_value: Variant in quest_ids:
+		var quest: Variant = _registry.get_content("quests", str(quest_id_value))
+		if quest is Dictionary:
+			definitions.append(quest)
+	return definitions
+
+
+func _evaluate_requirement(state: Dictionary, requirement: Dictionary) -> Dictionary:
+	var requirement_type: String = str(requirement.get("type", ""))
+	var visible: bool = str(requirement.get("visibility", "visible")) != "hidden"
+	var current: Variant = null
+	var met: bool = false
+	match requirement_type:
+		"attribute":
+			current = state["player"].get("attributes", {}).get(str(requirement.get("id", "")), 0)
+			met = _number_requirement_met(float(current), requirement)
+		"skill":
+			current = state["player"].get("skills", {}).get(str(requirement.get("id", "")), 0)
+			met = _number_requirement_met(float(current), requirement)
+		"relationship":
+			var relationship: Dictionary = state["relationships"].get(str(requirement.get("character_id", "")), {})
+			var field: String = str(requirement.get("meter", "relationship_level"))
+			current = relationship.get(field, 0)
+			met = _number_requirement_met(float(current), requirement)
+		"prior_choice", "world_state":
+			current = _get_state_value(state, str(requirement.get("path", "")))
+			met = _value_requirement_met(current, requirement)
+		"quest":
+			var required_quest: String = str(requirement.get("quest_id", ""))
+			var required_status: String = str(requirement.get("status", "completed"))
+			current = required_status
+			met = required_quest in state["quest_state"].get(required_status, [])
+		"location":
+			var location_id: String = str(requirement.get("location_id", ""))
+			var location_state: String = str(requirement.get("state", "discovered"))
+			current = location_state
+			if location_state == "current":
+				var current_location: String = str(state["world_state"].get("current_location", ""))
+				met = current_location == location_id or current_location.begins_with("%s." % location_id)
+			elif location_state == "unlocked":
+				met = location_id in state["world_state"].get("unlocked_locations", [])
+			else:
+				met = location_id in state["world_state"].get("discovered_locations", [])
+		"life_direction":
+			current = state["player"].get("life_path", "undecided")
+			met = _value_requirement_met(current, requirement)
+		"resource":
+			var resource_id: String = str(requirement.get("resource", "money"))
+			if resource_id == "money":
+				var accounts: Dictionary = state["player"].get("economy", {}).get("accounts", {})
+				current = float(accounts.get("wallet_cash", 0.0)) + float(accounts.get("checking", 0.0))
+				met = _number_requirement_met(float(current), requirement)
+			elif resource_id == "item":
+				current = _inventory_quantity(state, str(requirement.get("item_id", "")))
+				met = int(current) >= int(requirement.get("minimum", 1))
+		_:
+			met = false
+	var reason: String = str(requirement.get("description", ""))
+	if reason.is_empty():
+		reason = _default_requirement_reason(requirement_type, requirement)
+	return {
+		"type": requirement_type,
+		"met": met,
+		"visible": visible,
+		"reason": reason,
+		"current": current if visible else null,
+	}
+
+
+func _number_requirement_met(current: float, requirement: Dictionary) -> bool:
+	if requirement.has("minimum") and current < float(requirement["minimum"]):
 		return false
-	var prerequisite: String = str(activation.get("quest", ""))
-	if prerequisite.is_empty() or prerequisite not in state["quest_state"]["completed"]:
+	if requirement.has("maximum") and current > float(requirement["maximum"]):
 		return false
-	var earliest_block: String = str(activation.get("earliest_block", ""))
-	if earliest_block.is_empty():
-		return true
-	var completion_date: String = _quest_completion_date(state, prerequisite)
-	var current_date: String = "Y%d-%02d-%02d" % [state["clock"]["year"], state["clock"]["month"], state["clock"]["day"]]
-	if not completion_date.is_empty() and completion_date != current_date:
-		return true
-	const BLOCKS: PackedStringArray = ["early_morning", "morning", "lunch", "afternoon", "evening", "late_evening", "night"]
-	return BLOCKS.find(str(state["clock"]["block"])) >= BLOCKS.find(earliest_block)
+	return true
+
+
+func _value_requirement_met(current: Variant, requirement: Dictionary) -> bool:
+	if requirement.has("equals"):
+		return current == requirement["equals"]
+	if requirement.get("values") is Array:
+		return current in requirement["values"]
+	return false
+
+
+func _inventory_quantity(state: Dictionary, item_id: String) -> int:
+	var quantity: int = 0
+	for container_value: Variant in state["player"].get("inventory", {}).get("containers", []):
+		if not container_value is Dictionary:
+			continue
+		for stack_value: Variant in container_value.get("items", []):
+			if stack_value is Dictionary and str(stack_value.get("item_id", "")) == item_id:
+				quantity += int(stack_value.get("quantity", 0))
+	return quantity
+
+
+func _default_requirement_reason(requirement_type: String, requirement: Dictionary) -> String:
+	var name: String = str(requirement.get("id", requirement.get("meter", requirement_type))).replace("_", " ").capitalize()
+	if requirement.has("minimum"):
+		return "%s %s or higher is required." % [name, requirement.get("minimum")]
+	if requirement.has("maximum"):
+		return "%s must be %s or lower." % [name, requirement.get("maximum")]
+	return "A %s requirement is not met yet." % requirement_type.replace("_", " ")
 
 
 func _quest_completion_date(state: Dictionary, quest_id: String) -> String:
@@ -353,8 +650,20 @@ func _calendar_has_event(state: Dictionary, event_id: String) -> bool:
 	return false
 
 
-func _success(state: Dictionary, activated: PackedStringArray = PackedStringArray()) -> Dictionary:
-	return {"ok": true, "state": state, "activated": activated, "errors": PackedStringArray()}
+func _success(
+	state: Dictionary,
+	activated: PackedStringArray = PackedStringArray(),
+	discovered: PackedStringArray = PackedStringArray(),
+	available: PackedStringArray = PackedStringArray()
+) -> Dictionary:
+	return {
+		"ok": true,
+		"state": state,
+		"activated": activated,
+		"discovered": discovered,
+		"available": available,
+		"errors": PackedStringArray(),
+	}
 
 
 func _failure(message: String) -> Dictionary:

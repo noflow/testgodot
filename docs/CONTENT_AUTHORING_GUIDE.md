@@ -52,7 +52,8 @@ least one section are valid.
 ## Quest structure
 
 Each quest has an ID unique within its package, a category, title, summary,
-activation rules, ordered objectives, branches, rewards, failure behavior, and
+discovery policy, activation rules, optional requirements, ordered objectives,
+branches, rewards, failure behavior, and
 completion effects. Objectives use declarative events such as
 `conversation_completed`, `visit_location`, `obtain_item`, and `calendar_reached`.
 
@@ -74,6 +75,25 @@ follow-up paths. Major lockouts must be explained, and failure should normally
 change later content rather than end the game. Full discovery and deadline rules
 are in `docs/SANDBOX_QUEST_PLAYBOOK.md` and
 `content/systems/quest_progression.json`.
+
+Every quest declares `discovery.policy` as `offer` or `auto_start` and a registered
+`discovery.source`. `offer` is the normal side-story behavior. Use `auto_start` only
+when the player has already committed through the opening, a tutorial action, or a
+direct branch choice. Requirements are an array of declarative gates. For example:
+
+```json
+{
+  "discovery": {"policy": "offer", "source": "world_exploration"},
+  "requirements": [
+    {"type": "attribute", "id": "health", "minimum": 20, "visibility": "visible", "description": "Health 20 or higher is required."},
+    {"type": "prior_choice", "path": "player.flags.met_trainer", "equals": true, "visibility": "hidden"}
+  ]
+}
+```
+
+Visible descriptions must tell the player how to qualify. Hidden requirements must
+not include spoiler text. The runtime reevaluates known gates when relevant state
+changes and whenever the Quests app opens.
 
 ## Conversation structure
 

@@ -71,6 +71,16 @@ func _apply_to_working_state(state: Dictionary, operation: String, payload: Dict
 			return _append_phone_message(state, payload)
 		"phone.mark_thread_read":
 			return _mark_phone_thread_read(state, payload)
+		"quest.discover":
+			return _discover_quest(state, payload)
+		"quest.set_available":
+			return _set_quest_available(state, payload)
+		"quest.accept":
+			return _accept_quest(state, payload)
+		"quest.postpone":
+			return _postpone_quest(state, payload)
+		"quest.decline":
+			return _decline_quest(state, payload)
 		"quest.start":
 			return _start_quest(state, payload)
 		"quest.set_tracked":
@@ -601,9 +611,110 @@ func _start_quest(state: Dictionary, payload: Dictionary) -> String:
 	var quest_state: Dictionary = state["quest_state"]
 	if quest_id in quest_state["active"] or quest_id in quest_state["completed"]:
 		return "Quest is already active or completed: %s" % quest_id
+	_ensure_quest_discovery_state(quest_state)
+	if quest_id not in quest_state["discovered"]:
+		quest_state["discovered"].append(quest_id)
+		quest_state["discovery_history"].append({
+			"quest_id": quest_id,
+			"source": str(payload.get("discovery_source", "direct_path")),
+			"discovered_on": _date_string(state["clock"]),
+		})
+	quest_state["available"].erase(quest_id)
+	quest_state["postponed"].erase(quest_id)
+	quest_state["deferred"].erase(quest_id)
 	quest_state["active"].append(quest_id)
 	quest_state["objectives"][quest_id] = {}
 	return ""
+
+
+func _discover_quest(state: Dictionary, payload: Dictionary) -> String:
+	var quest_id: String = str(payload.get("quest_id", ""))
+	if _registry.get_content("quests", quest_id) == null:
+		return "Unknown quest: %s" % quest_id
+	var quest_state: Dictionary = state["quest_state"]
+	_ensure_quest_discovery_state(quest_state)
+	if quest_id in quest_state["completed"] or quest_id in quest_state["failed"] or quest_id in quest_state["deferred"]:
+		return "A terminal quest cannot be rediscovered: %s" % quest_id
+	if quest_id in quest_state["discovered"]:
+		return ""
+	quest_state["discovered"].append(quest_id)
+	quest_state["discovery_history"].append({
+		"quest_id": quest_id,
+		"source": str(payload.get("discovery_source", "gameplay")),
+		"discovered_on": _date_string(state["clock"]),
+	})
+	return ""
+
+
+func _set_quest_available(state: Dictionary, payload: Dictionary) -> String:
+	var quest_id: String = str(payload.get("quest_id", ""))
+	var quest_state: Dictionary = state["quest_state"]
+	_ensure_quest_discovery_state(quest_state)
+	if not payload.get("available") is bool:
+		return "Quest availability requires a true or false value."
+	if quest_id not in quest_state["discovered"]:
+		return "Only a discovered quest can become available: %s" % quest_id
+	if quest_id in quest_state["active"] or quest_id in quest_state["completed"] or quest_id in quest_state["failed"] or quest_id in quest_state["deferred"]:
+		return "A started or terminal quest cannot change offer availability: %s" % quest_id
+	if bool(payload["available"]):
+		if quest_id not in quest_state["available"]:
+			quest_state["available"].append(quest_id)
+		if bool(payload.get("reconsider", false)):
+			quest_state["postponed"].erase(quest_id)
+			quest_state["decision_history"].append({"quest_id": quest_id, "decision": "reconsidered", "source": str(payload.get("decision_source", "gameplay")), "date": _date_string(state["clock"])})
+	else:
+		quest_state["available"].erase(quest_id)
+	return ""
+
+
+func _accept_quest(state: Dictionary, payload: Dictionary) -> String:
+	var quest_id: String = str(payload.get("quest_id", ""))
+	var quest_state: Dictionary = state["quest_state"]
+	_ensure_quest_discovery_state(quest_state)
+	if quest_id not in quest_state["available"]:
+		return "Quest is not currently available to accept: %s" % quest_id
+	var start_error: String = _start_quest(state, {"quest_id": quest_id})
+	if not start_error.is_empty():
+		return start_error
+	quest_state["decision_history"].append({"quest_id": quest_id, "decision": "accepted", "source": str(payload.get("decision_source", "gameplay")), "date": _date_string(state["clock"])})
+	return ""
+
+
+func _postpone_quest(state: Dictionary, payload: Dictionary) -> String:
+	var quest_id: String = str(payload.get("quest_id", ""))
+	var quest_state: Dictionary = state["quest_state"]
+	_ensure_quest_discovery_state(quest_state)
+	if quest_id not in quest_state["available"]:
+		return "Quest is not currently available to postpone: %s" % quest_id
+	quest_state["available"].erase(quest_id)
+	if quest_id not in quest_state["postponed"]:
+		quest_state["postponed"].append(quest_id)
+	quest_state["decision_history"].append({"quest_id": quest_id, "decision": "postponed", "source": str(payload.get("decision_source", "gameplay")), "date": _date_string(state["clock"])})
+	return ""
+
+
+func _decline_quest(state: Dictionary, payload: Dictionary) -> String:
+	var quest_id: String = str(payload.get("quest_id", ""))
+	var quest_state: Dictionary = state["quest_state"]
+	_ensure_quest_discovery_state(quest_state)
+	if quest_id not in quest_state["available"]:
+		return "Quest is not currently available to decline: %s" % quest_id
+	quest_state["available"].erase(quest_id)
+	quest_state["postponed"].erase(quest_id)
+	if quest_id not in quest_state["deferred"]:
+		quest_state["deferred"].append(quest_id)
+	quest_state["decision_history"].append({"quest_id": quest_id, "decision": "declined", "source": str(payload.get("decision_source", "gameplay")), "date": _date_string(state["clock"])})
+	return ""
+
+
+func _ensure_quest_discovery_state(quest_state: Dictionary) -> void:
+	for key: String in ["discovered", "available", "postponed", "discovery_history", "decision_history"]:
+		if not quest_state.get(key) is Array:
+			quest_state[key] = []
+	for status: String in ["active", "completed", "failed", "deferred"]:
+		for quest_id: Variant in quest_state.get(status, []):
+			if quest_id not in quest_state["discovered"]:
+				quest_state["discovered"].append(quest_id)
 
 
 func _set_quest_tracked(state: Dictionary, payload: Dictionary) -> String:
@@ -647,6 +758,8 @@ func _complete_quest(state: Dictionary, payload: Dictionary) -> String:
 		return "Quest is not active: %s" % quest_id
 	quest_state["active"].erase(quest_id)
 	quest_state.get("tracked", []).erase(quest_id)
+	quest_state.get("available", []).erase(quest_id)
+	quest_state.get("postponed", []).erase(quest_id)
 	quest_state["completed"].append(quest_id)
 	quest_state["branch_history"].append({
 		"quest_id": quest_id,
@@ -666,6 +779,8 @@ func _fail_or_defer_quest(state: Dictionary, payload: Dictionary) -> String:
 		return "Quest result must be deferred or failed."
 	quest_state["active"].erase(quest_id)
 	quest_state.get("tracked", []).erase(quest_id)
+	quest_state.get("available", []).erase(quest_id)
+	quest_state.get("postponed", []).erase(quest_id)
 	if quest_id not in quest_state[result]:
 		quest_state[result].append(quest_id)
 	return ""

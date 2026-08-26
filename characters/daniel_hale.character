@@ -112,6 +112,8 @@
       "category": "character_story",
       "title": "A Quiet Check-In",
       "summary": "Catch up with Dad after making your first decision about the future.",
+      "discovery": {"policy": "offer", "source": "prior_quest_branch"},
+      "requirements": [{"type": "relationship", "character_id": "daniel_hale", "meter": "respect", "minimum": 40, "visibility": "visible", "description": "Daniel needs enough mutual respect for an honest adult conversation."}],
       "activation": {"event": "quest_completed", "quest": "opening_future_choice", "earliest_block": "evening"},
       "availability": {"location": "hale_home.living_room", "blocks": ["evening", "late_evening"]},
       "objectives": [

@@ -7,6 +7,8 @@
       "category": "main_life_goal",
       "title": "Enroll at Westshore",
       "summary": "Choose a program, arrange tuition, and build your first-semester schedule.",
+      "discovery": {"policy": "auto_start", "source": "life_direction"},
+      "requirements": [{"type": "life_direction", "values": ["college", "college_and_employment"], "visibility": "visible", "description": "Choose college or the combined college-and-work direction first."}],
       "activation": {"value_in": ["player.life_path", ["college", "college_and_employment"]]},
       "availability": {"days": ["monday", "tuesday", "wednesday", "thursday", "friday"], "blocks": ["morning", "lunch", "afternoon"], "location": "westshore_administration_office"},
       "objectives": [
@@ -30,6 +32,7 @@
       "category": "opportunity",
       "title": "Westshore Financial Aid",
       "summary": "Meet with Financial Aid and complete a funding application for the semester.",
+      "discovery": {"policy": "auto_start", "source": "prior_choice"},
       "activation": {"event": "tuition_aid_selected"},
       "availability": {"days": ["monday", "tuesday", "wednesday", "thursday", "friday"], "blocks": ["morning", "lunch", "afternoon"], "location": "westshore_administration_office.financial_aid"},
       "objectives": [
@@ -46,6 +49,8 @@
       "category": "main_life_goal",
       "title": "Find Employment",
       "summary": "Search job listings, submit applications, interview, and accept a suitable full-time position.",
+      "discovery": {"policy": "auto_start", "source": "life_direction"},
+      "requirements": [{"type": "life_direction", "values": ["employment"], "visibility": "visible", "description": "Choose employment as the initial life direction first."}],
       "activation": {"value_equals": ["player.life_path", "employment"]},
       "availability": {"phone_app": "jobs", "alternate_location": "harbor_employment_centre"},
       "objectives": [
@@ -64,6 +69,8 @@
       "category": "opportunity",
       "title": "Find Part-Time Employment",
       "summary": "Find work that fits around Westshore classes.",
+      "discovery": {"policy": "auto_start", "source": "life_direction"},
+      "requirements": [{"type": "life_direction", "values": ["college_and_employment"], "visibility": "visible", "description": "Choose the combined college-and-work direction first."}],
       "activation": {"value_equals": ["player.life_path", "college_and_employment"]},
       "availability": {"phone_app": "jobs", "alternate_locations": ["westshore_campus.career_board", "harbor_employment_centre"]},
       "objectives": [
@@ -81,6 +88,7 @@
       "category": "routine_activity",
       "title": "Ready for Port Alder",
       "summary": "Use the forecast and wardrobe to dress safely for the weather.",
+      "discovery": {"policy": "auto_start", "source": "tutorial"},
       "activation": {"event": "sandbox_activated"},
       "availability": {"location": "hale_home.player_bedroom", "blocks": ["early_morning", "morning", "lunch", "afternoon", "evening", "late_evening", "night"]},
       "objectives": [
@@ -98,6 +106,7 @@
       "category": "routine_activity",
       "title": "Getting Around Port Alder",
       "summary": "Learn how walking, buses, taxis, and cars consume time and money.",
+      "discovery": {"policy": "auto_start", "source": "tutorial"},
       "activation": {"event": "first_exit_from_hale_home"},
       "availability": {"locations": ["alder_heights_residential_street", "alder_heights_bus_stop"]},
       "objectives": [

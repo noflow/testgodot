@@ -2,6 +2,11 @@
   "format_version": 1,
   "package_id": "port_alder_sandbox_quest_system",
   "default_timing": "open_ended",
+  "default_discovery_policy": "offer",
+  "discovery_policies": [
+    {"id": "offer", "result": "Discover the quest and present it as an optional offer when its gates are met."},
+    {"id": "auto_start", "result": "Start immediately only for opening, tutorial, committed, or direct-consequence paths."}
+  ],
   "quest_types": [
     {"id": "discovery", "purpose": "Found through exploration, conversation, messages, activities, or institutions at the player's pace."},
     {"id": "opportunity", "purpose": "Becomes possible when player stats, skills, resources, or relationships meet authored gates."},
@@ -13,12 +18,13 @@
     {"id": "skill", "examples": ["cooking", "fitness", "academics", "career_skills"]},
     {"id": "relationship", "examples": ["friendship_level", "love_level", "trust", "relationship_chapter"]},
     {"id": "prior_choice", "examples": ["conversation_choice", "quest_branch", "agreement", "promise"]},
+    {"id": "quest", "examples": ["discovered", "available", "active", "completed", "deferred"]},
     {"id": "location", "examples": ["discovered", "visited", "invited", "resident"]},
     {"id": "life_direction", "examples": ["education", "career", "housing", "relationship", "family"]},
     {"id": "resource", "examples": ["money", "inventory", "vehicle", "housing"]},
     {"id": "world_state", "examples": ["season", "semester_phase", "employment_status", "NPC_availability"]}
   ],
-  "discovery_sources": ["world_exploration", "NPC_conversation", "phone_message", "job_board", "college_board", "relationship_event", "activity_result", "health_event", "owned_item", "prior_quest_branch"],
+  "discovery_sources": ["opening_scene", "tutorial", "life_direction", "world_exploration", "NPC_conversation", "phone_message", "job_board", "college_board", "relationship_event", "activity_result", "health_event", "owned_item", "prior_choice", "prior_quest_branch"],
   "deadline_modes": ["institutional_window", "scheduled_commitment", "emergency", "short_lived_opportunity"],
   "deadline_rules": {
     "timed_quests_are_rare": true,
@@ -43,5 +49,13 @@
     "untracked_quests_continue_normally": true,
     "open_ended_quests_never_fail_from_age": true,
     "calendar_contains_commitments_not_weekly_goals": true
+  },
+  "decision_rules": {
+    "accept_starts_quest": true,
+    "postpone_keeps_quest_discovered": true,
+    "postponed_quests_require_player_reconsideration": true,
+    "decline_moves_to_deferred": true,
+    "gate_failures_explain_visible_requirements": true,
+    "hidden_requirements_never_spoil_story_content": true
   }
 }

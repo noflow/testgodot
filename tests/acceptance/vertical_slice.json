@@ -48,6 +48,9 @@
     {"id": "VS-QUEST-004", "area": "relationships", "priority": 0, "setup": "Emma walk scheduled", "action": "Arrive on time and complete the conversation", "expected": "Quest, memory, meters, and chosen friendship or romantic branch update once."},
     {"id": "VS-QUEST-005", "area": "relationships", "priority": 1, "setup": "Emma walk scheduled", "action": "Arrive after no-show threshold", "expected": "No-show consequences apply and the original scene does not play as on-time."},
     {"id": "VS-QUEST-006", "area": "fitness", "priority": 1, "setup": "Rachel is available at Forge Fitness", "action": "Complete assessment and choose Strength", "expected": "Strength plan unlocks and beginner workout is added to calendar."},
+    {"id": "VS-QUEST-007", "area": "discovery", "priority": 0, "setup": "First visit to Forge Fitness", "action": "Discover First Rep", "expected": "The quest appears as an available offer but remains inactive until the player accepts it."},
+    {"id": "VS-QUEST-008", "area": "gates", "priority": 1, "setup": "A discovered quest has an unmet visible stat or relationship gate", "action": "Open Quests", "expected": "The offer remains inactive and clearly explains the known requirement without exposing hidden requirements."},
+    {"id": "VS-QUEST-009", "area": "decisions", "priority": 1, "setup": "A side-quest offer is available", "action": "Postpone, reconsider, then accept or decline", "expected": "Every decision moves the quest to the correct saved state without silently starting it."},
 
     {"id": "VS-SIM-001", "area": "time", "priority": 0, "setup": "Known initial needs", "action": "Advance one full activity block", "expected": "Clock, needs, schedules, and due events update exactly once."},
     {"id": "VS-SIM-002", "area": "events", "priority": 0, "setup": "Atomic event with one invalid sub-effect", "action": "Apply event", "expected": "No sub-effects persist and a recoverable validation error is recorded."},

@@ -35,6 +35,8 @@
       "category": "character_story",
       "title": "One Last Summer Movie",
       "summary": "Join Marcus for a late screening and learn about the film he is afraid to finish.",
+      "discovery": {"policy": "offer", "source": "phone_message"},
+      "requirements": [{"type": "relationship", "character_id": "marcus_lee", "meter": "friendship", "minimum": 35, "visibility": "visible", "description": "Friendship 35 or higher is needed before Marcus shares his personal film project."}],
       "activation": {"event": "sandbox_activated"},
       "availability": {"days": ["opening_tuesday", "wednesday", "thursday"], "blocks": ["evening", "late_evening"], "location": "harborlight_cinema.lobby"},
       "objectives": [

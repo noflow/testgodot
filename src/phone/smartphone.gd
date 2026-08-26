@@ -292,20 +292,36 @@ func _render_calendar() -> void:
 func _render_quests() -> void:
 	_clear_container(app_actions)
 	app_title.text = "QUESTS"
+	QuestService.sync_automatic_activations("phone.quests.discovery")
+	QuestService.sync_availability("phone.quests.gates")
 	var state: Dictionary = GameState.current_state
 	var tracked: Array = state["quest_state"].get("tracked", [])
 	var lines: PackedStringArray = [
 		"[color=#a9bdd0]Quests are discovered through play. Open-ended quests do not expire merely because time passes.[/color]",
-		"ACTIVE",
 	]
+	var available: Array = state["quest_state"].get("available", [])
+	lines.append("\nAVAILABLE OFFERS")
+	if available.is_empty():
+		lines.append("None right now. Explore, talk to people, and build your abilities at your own pace.")
+	for quest_id_value: Variant in available:
+		var quest_id: String = str(quest_id_value)
+		var quest: Dictionary = ContentRegistry.get_content("quests", quest_id)
+		lines.append("[font_size=21]%s[/font_size]\n%s" % [quest.get("title", quest_id), quest.get("summary", "")])
+		_append_quest_timing(lines, quest)
+		_append_gate_summary(lines, QuestService.gate_report(quest_id), true)
+		_add_action_button("Accept %s" % quest.get("title", quest_id), _decide_quest.bind("accept", quest_id))
+		_add_action_button("Postpone %s" % quest.get("title", quest_id), _decide_quest.bind("postpone", quest_id))
+		_add_action_button("Decline %s (move to Deferred)" % quest.get("title", quest_id), _decide_quest.bind("decline", quest_id))
+
+	lines.append("\nACTIVE")
+	if state["quest_state"].get("active", []).is_empty():
+		lines.append("None")
 	for quest_id_value: Variant in state["quest_state"].get("active", []):
 		var quest_id: String = str(quest_id_value)
 		var quest: Dictionary = ContentRegistry.get_content("quests", quest_id)
 		var tracking_label: String = " [color=#e9a86c]• TRACKED[/color]" if quest_id in tracked else ""
 		lines.append("[font_size=21]%s[/font_size]%s\n%s" % [quest.get("title", quest_id), tracking_label, quest.get("summary", "")])
-		var timing: Variant = quest.get("timing")
-		if timing is Dictionary:
-			lines.append("[color=#efc46e]TIME-SENSITIVE • %s[/color]" % timing.get("reason", "This opportunity has an authored deadline."))
+		_append_quest_timing(lines, quest)
 		for objective: Variant in QuestService.get_progress(quest_id).get("objectives", []):
 			if objective is Dictionary:
 				lines.append("%s %s" % ["✓" if objective.get("completed", false) else "○", objective.get("text", objective.get("id", "Objective"))])
@@ -313,11 +329,67 @@ func _render_quests() -> void:
 			"Untrack %s" % quest.get("title", quest_id) if quest_id in tracked else "Track %s" % quest.get("title", quest_id),
 			_set_quest_tracking.bind(quest_id, quest_id not in tracked)
 		)
+
+	var waiting: Array = []
+	for quest_id_value: Variant in state["quest_state"].get("discovered", []):
+		var quest_id: String = str(quest_id_value)
+		if quest_id in state["quest_state"].get("available", []) or quest_id in state["quest_state"].get("active", []) or quest_id in state["quest_state"].get("completed", []) or quest_id in state["quest_state"].get("deferred", []) or quest_id in state["quest_state"].get("failed", []):
+			continue
+		waiting.append(quest_id)
+	lines.append("\nDISCOVERED — NOT ACTIVE")
+	if waiting.is_empty():
+		lines.append("None")
+	for quest_id_value: Variant in waiting:
+		var quest_id: String = str(quest_id_value)
+		var quest: Dictionary = ContentRegistry.get_content("quests", quest_id)
+		var postponed: bool = quest_id in state["quest_state"].get("postponed", [])
+		lines.append("[font_size=21]%s[/font_size] • %s\n%s" % [quest.get("title", quest_id), "POSTPONED" if postponed else "GATED", quest.get("summary", "")])
+		_append_gate_summary(lines, QuestService.gate_report(quest_id), false)
+		if postponed:
+			_add_action_button("Reconsider %s" % quest.get("title", quest_id), _decide_quest.bind("reconsider", quest_id))
 	for section: String in ["completed", "deferred", "failed"]:
 		lines.append("\n%s" % section.to_upper())
 		var ids: Array = state["quest_state"].get(section, [])
 		lines.append(_quest_names(ids) if not ids.is_empty() else "None")
 	app_content.text = "\n".join(lines)
+
+
+func _append_quest_timing(lines: PackedStringArray, quest: Dictionary) -> void:
+	var timing: Variant = quest.get("timing")
+	if timing is Dictionary:
+		lines.append("[color=#efc46e]TIME-SENSITIVE • %s[/color]" % timing.get("reason", "This opportunity has an authored deadline."))
+
+
+func _append_gate_summary(lines: PackedStringArray, report: Dictionary, show_ready: bool) -> void:
+	var failures: PackedStringArray = PackedStringArray(report.get("visible_failures", []))
+	if failures.is_empty() and not bool(report.get("has_hidden_failures", false)):
+		if show_ready:
+			lines.append("[color=#86d69b]Requirements met.[/color]")
+		return
+	for reason: String in failures:
+		lines.append("[color=#efc46e]LOCKED • %s[/color]" % reason)
+	if bool(report.get("has_hidden_failures", false)):
+		lines.append("[color=#a9bdd0]More context must be discovered in the world.[/color]")
+
+
+func _decide_quest(decision: String, quest_id: String) -> void:
+	var result: Dictionary
+	match decision:
+		"accept":
+			result = QuestService.accept_quest(quest_id)
+		"postpone":
+			result = QuestService.postpone_quest(quest_id)
+		"decline":
+			result = QuestService.decline_quest(quest_id)
+		"reconsider":
+			result = QuestService.reconsider_quest(quest_id)
+		_:
+			result = {"ok": false, "errors": ["Unknown quest decision."]}
+	if result.get("ok", false) and decision == "accept":
+		PhoneService.sync_messages()
+	var success_labels: Dictionary = {"accept": "accepted", "postpone": "postponed", "decline": "declined", "reconsider": "made available again"}
+	phone_status.text = "Quest %s." % success_labels.get(decision, "updated") if result.get("ok", false) else str(result.get("errors", ["Quest decision could not be applied."])[0])
+	_render_quests()
 
 
 func _set_quest_tracking(quest_id: String, tracked: bool) -> void:

@@ -256,14 +256,21 @@ func _test_household_schedules_and_conversations() -> void:
 	var result: Dictionary = quests.complete_quest(state, "opening_future_choice", "test.household_opening_complete")
 	_expect(result.get("ok", false), "Completing the opening quest synchronizes immediate character-story activations.")
 	state = result["state"]
-	_expect("under_this_roof" in state["quest_state"]["active"], "Elena's household quest activates after the opening.")
-	_expect("one_year_ahead" not in state["quest_state"]["active"], "Lily's quest waits until its authored earliest block.")
-	_expect("a_quiet_check_in" not in state["quest_state"]["active"], "Daniel's quest waits until Evening.")
+	_expect("under_this_roof" in state["quest_state"]["available"], "Elena's household quest becomes an optional offer after the opening.")
+	_expect("under_this_roof" not in state["quest_state"]["active"], "Discovering Elena's quest does not accept it for the player.")
+	_expect("one_year_ahead" not in state["quest_state"]["discovered"], "Lily's quest waits until its authored earliest block.")
+	_expect("a_quiet_check_in" not in state["quest_state"]["discovered"], "Daniel's quest waits until Evening.")
+	result = quests.accept_quest(state, "under_this_roof", "test.accept_household_rules")
+	_expect(result.get("ok", false), "The player can accept Elena's discovered household offer.")
+	state = result["state"]
 
 	state["clock"]["block"] = "lunch"
 	result = quests.sync_automatic_activations(state, "test.household_lunch")
 	state = result["state"]
-	_expect("one_year_ahead" in state["quest_state"]["active"], "Lily's story quest activates at Lunch.")
+	_expect("one_year_ahead" in state["quest_state"]["available"], "Lily's story quest becomes available at Lunch when its trust gate is met.")
+	result = quests.accept_quest(state, "one_year_ahead", "test.accept_lily_story")
+	state = result["state"]
+	_expect(result.get("ok", false) and "one_year_ahead" in state["quest_state"]["active"], "Accepting Lily's offer starts her story quest.")
 	lily = schedules.resolve_character(state, "lily_hale")
 	_expect(lily["present"] and lily["room"] == "kitchen", "Lily moves to the kitchen for her Lunch story scene.")
 	state["world_state"]["current_location"] = "hale_home.kitchen"
@@ -272,7 +279,10 @@ func _test_household_schedules_and_conversations() -> void:
 	state["clock"]["block"] = "evening"
 	result = quests.sync_automatic_activations(state, "test.household_evening")
 	state = result["state"]
-	_expect("a_quiet_check_in" in state["quest_state"]["active"], "Daniel's first story quest activates at Evening.")
+	_expect("a_quiet_check_in" in state["quest_state"]["available"], "Daniel's first story becomes an available offer at Evening.")
+	result = quests.accept_quest(state, "a_quiet_check_in", "test.accept_daniel_story")
+	state = result["state"]
+	_expect(result.get("ok", false) and "a_quiet_check_in" in state["quest_state"]["active"], "Accepting Daniel's offer starts his story quest.")
 	elena = schedules.resolve_character(state, "elena_reyes_hale")
 	daniel = schedules.resolve_character(state, "daniel_hale")
 	lily = schedules.resolve_character(state, "lily_hale")
@@ -435,7 +445,10 @@ func _test_city_institutions_and_fitness() -> void:
 	state["world_state"]["current_location"] = "forge_fitness.front_desk"
 	result = quests.record_event(state, "location_discovered", {"location": "forge_fitness"}, "test.forge")
 	state = result["state"]
-	_expect("first_rep" in state["quest_state"]["active"], "Discovering Forge Fitness activates Rachel's First Rep quest.")
+	_expect("first_rep" in state["quest_state"]["available"] and "first_rep" not in state["quest_state"]["active"], "Discovering Forge Fitness reveals Rachel's quest without accepting it.")
+	result = quests.accept_quest(state, "first_rep", "test.accept_first_rep")
+	state = result["state"]
+	_expect(result.get("ok", false) and "first_rep" in state["quest_state"]["active"], "The player can accept Rachel's available quest.")
 	result = dialogue.begin(state, "rachel_fitness_assessment")
 	state = result["state"]
 	_expect(state["quest_state"]["objectives"]["first_rep"]["visit_gym"], "Beginning Rachel's scene records the first NPC encounter.")
@@ -831,7 +844,7 @@ func _test_vertical_slice_acceptance_suite() -> void:
 		return
 
 	var tests: Array = suite.get("tests", [])
-	_expect(tests.size() == 53, "Acceptance suite contains 53 cases.")
+	_expect(tests.size() == 56, "Acceptance suite contains 56 cases.")
 	var ids: Dictionary = {}
 	for test_case: Variant in tests:
 		if test_case is Dictionary:
@@ -851,7 +864,7 @@ func _test_content_registry() -> void:
 	_expect(_registry.get_character("elena_reyes_hale") is Dictionary, "Characters can be retrieved by id.")
 	_expect(_registry.get_location("hale_home") is Dictionary, "Locations can be retrieved by id.")
 	_expect(_registry.get_content("quests", "opening_future_choice") is Dictionary, "Quests can be retrieved by id.")
-	_expect(_registry.get_all("operations").size() == 58, "Registry indexes all 58 simulation operations.")
+	_expect(_registry.get_all("operations").size() == 63, "Registry indexes all 63 simulation operations.")
 	_expect(_registry.get_all("date_activities").size() == 3, "Registry indexes all three opening date activities.")
 	var quest_rules: Dictionary = _registry.get_package("port_alder_sandbox_quest_system")
 	_expect(quest_rules.get("default_timing", "") == "open_ended", "Quest progression defaults to open-ended sandbox timing.")
@@ -913,6 +926,9 @@ func _test_new_game_state_factory() -> void:
 	_expect(state["content_state"]["package_manifest"].size() == 24, "Runtime state records versioned manifest details for every loaded package.")
 	_expect(str(state["content_state"]["package_manifest"][0].get("checksum", "")).length() == 64, "Content manifest entries include SHA-256 package checksums.")
 	_expect(state["world_state"]["random_seed"] == 12345, "Runtime random seed can be reproduced.")
+	_expect(state["quest_state"].get("discovered", []) == ["opening_future_choice"], "Only the opening quest is discovered in a fresh game.")
+	_expect(state["quest_state"].get("available", []).is_empty(), "A fresh game has no unsolicited quest offers.")
+	_expect(state["quest_state"].get("discovery_history", []).size() == 1, "Initial quest discovery has durable provenance.")
 	_expect(state["quest_state"].get("tracked", []).is_empty(), "A new game does not assign or pin quests for the player.")
 	_expect(not _contains_placeholder(state), "Runtime state contains no unresolved template placeholders.")
 	for npc_state: Variant in state["npc_states"]:
@@ -1312,6 +1328,7 @@ func _test_relationship_dating_agreements_and_conflicts() -> void:
 func _test_sandbox_quest_progression_and_tracking() -> void:
 	var factory: RefCounted = NewGameStateFactoryScript.new(_registry)
 	var simulation: RefCounted = SimulationEngineScript.new(_registry)
+	var quests: RefCounted = QuestEngineScript.new(_registry, simulation)
 	var state: Dictionary = factory.create_new_game({}, {"random_seed": 230, "save_id": "sandbox-quest-test"})
 	var rules: Dictionary = _registry.get_package("port_alder_sandbox_quest_system")
 	_expect(rules.get("default_timing", "") == "open_ended", "Quests are open-ended unless an author explicitly declares supported timing.")
@@ -1344,6 +1361,41 @@ func _test_sandbox_quest_progression_and_tracking() -> void:
 		"quest_id": "enroll_at_westshore", "tracked": true,
 	}, "test.quest_tracker")
 	_expect(not result.get("ok", true), "Undiscovered or inactive quests cannot be exposed by the tracker.")
+
+	var gated_state: Dictionary = factory.create_new_game({}, {"random_seed": 232})
+	gated_state["player"]["attributes"]["health"] = 10
+	result = quests.record_event(gated_state, "location_discovered", {"location": "forge_fitness"}, "test.discovery")
+	gated_state = result.get("state", gated_state)
+	_expect("first_rep" in gated_state["quest_state"]["discovered"] and "first_rep" not in gated_state["quest_state"]["available"], "Exploration can reveal a quest while an authored stat gate keeps it unavailable.")
+	var report: Dictionary = quests.gate_report(gated_state, "first_rep")
+	_expect(not report.get("met", true) and "Health 20" in str(report.get("visible_failures", [""])[0]), "Visible stat gates explain exactly what the player needs.")
+	gated_state["player"]["attributes"]["health"] = 50
+	result = quests.sync_availability(gated_state, "test.health_recovered")
+	gated_state = result.get("state", gated_state)
+	_expect("first_rep" in gated_state["quest_state"]["available"], "Meeting a stat gate makes a discovered quest available without rediscovery.")
+	result = quests.postpone_quest(gated_state, "first_rep", "test.postpone")
+	gated_state = result.get("state", gated_state)
+	_expect("first_rep" in gated_state["quest_state"]["postponed"] and "first_rep" not in gated_state["quest_state"]["available"], "Postponing keeps the quest discovered without accepting it.")
+	result = quests.sync_availability(gated_state, "test.postponed_sync")
+	gated_state = result.get("state", gated_state)
+	_expect("first_rep" not in gated_state["quest_state"]["available"], "A postponed quest is not offered again until the player reconsiders it.")
+	result = quests.reconsider_quest(gated_state, "first_rep", "test.reconsider")
+	gated_state = result.get("state", gated_state)
+	_expect("first_rep" in gated_state["quest_state"]["available"] and "first_rep" not in gated_state["quest_state"]["postponed"], "Reconsidering restores a still-qualified offer.")
+	result = quests.accept_quest(gated_state, "first_rep", "test.accept")
+	gated_state = result.get("state", gated_state)
+	_expect("first_rep" in gated_state["quest_state"]["active"] and "first_rep" not in gated_state["quest_state"]["available"], "Accepting moves an offer into active progression.")
+	_expect(gated_state["quest_state"]["decision_history"].size() == 3 and gated_state["quest_state"]["decision_history"].back().get("source", "") == "test.accept", "Postpone, reconsider, and accept decisions retain their source in saved history.")
+
+	var declined_state: Dictionary = factory.create_new_game({}, {"random_seed": 233})
+	declined_state["player"]["flags"]["sandbox.active"] = true
+	result = quests.sync_automatic_activations(declined_state, "test.sandbox_discovery")
+	declined_state = result.get("state", declined_state)
+	_expect("before_everything_changes" in declined_state["quest_state"]["available"], "A sandbox event can reveal an organically gated relationship offer.")
+	result = quests.decline_quest(declined_state, "before_everything_changes", "test.decline")
+	declined_state = result.get("state", declined_state)
+	_expect("before_everything_changes" in declined_state["quest_state"]["deferred"] and "before_everything_changes" not in declined_state["quest_state"]["active"], "Declining defers a quest instead of silently starting or failing it.")
+	_expect(declined_state["quest_state"]["decision_history"].back().get("decision", "") == "declined", "Declining records a durable player decision.")
 
 
 func _test_opening_dialogue_branches() -> void:
@@ -1460,6 +1512,10 @@ func _test_save_round_trip_rotation_recovery_and_migration() -> void:
 		"route_ids": ["hale_home_to_alder_bay_park"],
 	}
 	state["quest_state"]["tracked"] = ["opening_future_choice"]
+	state["quest_state"]["discovered"].append("first_rep")
+	state["quest_state"]["postponed"].append("first_rep")
+	state["quest_state"]["discovery_history"].append({"quest_id": "first_rep", "source": "save_test", "discovered_on": "Y1-08-20"})
+	state["quest_state"]["decision_history"].append({"quest_id": "first_rep", "decision": "postponed", "source": "save_test", "date": "Y1-08-20"})
 
 	var result: Dictionary = engine.save_slot(state, "manual_1", {
 		"timestamp_utc": "2026-08-25T10:00:00",
@@ -1477,6 +1533,8 @@ func _test_save_round_trip_rotation_recovery_and_migration() -> void:
 	_expect(loaded.get("state", {}).get("conversation_state", {}).get("active", {}).get("node_id", "") == "future_choice", "Save/load round-trip preserves the exact waiting VN node.")
 	_expect(int(loaded.get("state", {}).get("world_state", {}).get("pending_travel", {}).get("remaining_minutes", 0)) == 9, "Save/load round-trip preserves an in-progress trip context.")
 	_expect(loaded.get("state", {}).get("quest_state", {}).get("tracked", []) == ["opening_future_choice"], "Save/load round-trip preserves the player's tracked quests.")
+	_expect(loaded.get("state", {}).get("quest_state", {}).get("postponed", []) == ["first_rep"], "Save/load round-trip preserves postponed discoveries.")
+	_expect(loaded.get("state", {}).get("quest_state", {}).get("decision_history", []).back().get("decision", "") == "postponed", "Save/load round-trip preserves quest decision history.")
 
 	var original_checking: float = float(state["player"]["economy"]["accounts"]["checking"])
 	state["player"]["economy"]["accounts"]["checking"] = original_checking + 77.0

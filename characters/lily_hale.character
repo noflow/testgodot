@@ -39,6 +39,8 @@
       "category": "character_story",
       "title": "One Year Ahead",
       "summary": "Help Lily confront her doubts about Social Sciences and decide whether to change programs.",
+      "discovery": {"policy": "offer", "source": "prior_quest_branch"},
+      "requirements": [{"type": "relationship", "character_id": "lily_hale", "meter": "trust", "minimum": 40, "visibility": "visible", "description": "Lily needs enough trust to share her uncertainty about college."}],
       "activation": {"event": "quest_completed", "quest": "opening_future_choice", "earliest_block": "lunch"},
       "availability": {"location": "hale_home.kitchen", "days": ["opening_tuesday", "wednesday", "friday"], "blocks": ["lunch", "evening", "late_evening"]},
       "objectives": [

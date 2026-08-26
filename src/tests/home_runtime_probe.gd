@@ -164,8 +164,20 @@ func _run_probe() -> void:
 	var app_title: Label = phone.get_node("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/ContentPanel/ContentMargin/ContentLayout/AppTitle")
 	var quest_content: RichTextLabel = phone.get_node("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/ContentPanel/ContentMargin/ContentLayout/AppContent")
 	var quest_actions: Container = phone.get_node("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/ContentPanel/ContentMargin/ContentLayout/ActionScroll/AppActions")
-	if not tracking_result.get("ok", false) or not phone.visible or app_title.text != "QUESTS" or "TRACKED" not in quest_content.text or quest_actions.get_child_count() == 0:
+	if not tracking_result.get("ok", false) or not phone.visible or app_title.text != "QUESTS" or "AVAILABLE OFFERS" not in quest_content.text or "TRACKED" not in quest_content.text or quest_actions.get_child_count() < 4:
 		printerr("PROBE: player-controlled quest tracking did not render in the phone")
+		get_tree().quit(1)
+		return
+	phone.call("_decide_quest", "postpone", "before_everything_changes")
+	await get_tree().process_frame
+	if "before_everything_changes" not in GameState.current_state["quest_state"].get("postponed", []) or "before_everything_changes" in GameState.current_state["quest_state"].get("active", []):
+		printerr("PROBE: phone could not postpone a discovered quest without starting it")
+		get_tree().quit(1)
+		return
+	phone.call("_decide_quest", "reconsider", "before_everything_changes")
+	await get_tree().process_frame
+	if "before_everything_changes" not in GameState.current_state["quest_state"].get("available", []):
+		printerr("PROBE: phone could not reconsider a postponed quest offer")
 		get_tree().quit(1)
 		return
 	phone.close_phone()

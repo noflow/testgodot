@@ -253,17 +253,33 @@ func validate_state(state: Dictionary) -> PackedStringArray:
 			if (not meter_value is int and not meter_value is float) or float(meter_value) < 0.0 or float(meter_value) > 100.0:
 				errors.append("relationship meter is outside 0-100: %s.%s" % [character_id, meter])
 	var quest_state: Dictionary = state["quest_state"]
-	if not quest_state.get("tracked", []) is Array:
-		errors.append("tracked quests must be an array")
-	else:
-		var seen_tracked: Dictionary = {}
-		for quest_id_value: Variant in quest_state.get("tracked", []):
+	for list_name: String in ["discovered", "available", "active", "tracked", "postponed", "completed", "failed", "deferred"]:
+		if not quest_state.get(list_name, []) is Array:
+			errors.append("quest-state list must be an array: %s" % list_name)
+			continue
+		var seen_ids: Dictionary = {}
+		for quest_id_value: Variant in quest_state.get(list_name, []):
 			var quest_id: String = str(quest_id_value)
-			if quest_id not in quest_state.get("active", []):
-				errors.append("tracked quest is not active: %s" % quest_id)
-			if seen_tracked.has(quest_id):
-				errors.append("tracked quest is duplicated: %s" % quest_id)
-			seen_tracked[quest_id] = true
+			if seen_ids.has(quest_id):
+				errors.append("quest is duplicated in %s: %s" % [list_name, quest_id])
+			seen_ids[quest_id] = true
+	if quest_state.has("discovered") and quest_state.get("discovered") is Array:
+		for list_name: String in ["available", "active", "postponed", "completed", "failed", "deferred"]:
+			for quest_id_value: Variant in quest_state.get(list_name, []):
+				if quest_id_value not in quest_state["discovered"]:
+					errors.append("%s quest is not discovered: %s" % [list_name, quest_id_value])
+	for quest_id_value: Variant in quest_state.get("tracked", []):
+		if quest_id_value not in quest_state.get("active", []):
+			errors.append("tracked quest is not active: %s" % quest_id_value)
+	for quest_id_value: Variant in quest_state.get("available", []):
+		if quest_id_value in quest_state.get("active", []) or quest_id_value in quest_state.get("completed", []) or quest_id_value in quest_state.get("failed", []) or quest_id_value in quest_state.get("deferred", []):
+			errors.append("available quest is already started or terminal: %s" % quest_id_value)
+	for quest_id_value: Variant in quest_state.get("postponed", []):
+		if quest_id_value in quest_state.get("available", []):
+			errors.append("postponed quest cannot also be available: %s" % quest_id_value)
+	for history_name: String in ["discovery_history", "decision_history", "branch_history"]:
+		if not quest_state.get(history_name, []) is Array:
+			errors.append("quest history must be an array: %s" % history_name)
 	var simulation: Dictionary = state.get("simulation", {})
 	if not simulation.get("pending_events", []).is_empty():
 		errors.append("a simulation transaction is still pending")

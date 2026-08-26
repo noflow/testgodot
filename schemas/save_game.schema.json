@@ -62,7 +62,14 @@
     "quest_state": {
       "type": "object",
       "required": ["active", "completed", "failed", "deferred", "objectives", "branch_history"],
-      "properties": {"tracked": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}},
+      "properties": {
+        "discovered": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "available": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "tracked": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "postponed": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "discovery_history": {"type": "array"},
+        "decision_history": {"type": "array"}
+      },
       "additionalProperties": true
     },
     "conversation_state": {"type": "object", "required": ["active", "completed", "seen_nodes", "cooldowns", "once_only_flags"], "additionalProperties": true},

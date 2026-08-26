@@ -64,7 +64,7 @@
       {"character_id": "olivia_price", "discovered": false, "phone_contact": false, "current_location": "olivia_crown_point_penthouse", "schedule_phase": "opening_week", "relationship_source": "character_package.relationship_defaults"}
     ],
     "relationships": {},
-    "quest_state": {"active": ["opening_future_choice"], "tracked": [], "completed": [], "failed": [], "deferred": [], "objectives": {}, "branch_history": []},
+    "quest_state": {"discovered": ["opening_future_choice"], "available": [], "active": ["opening_future_choice"], "tracked": [], "postponed": [], "completed": [], "failed": [], "deferred": [], "objectives": {}, "branch_history": [], "discovery_history": [{"quest_id": "opening_future_choice", "source": "new_game_started", "discovered_on": "Y1-08-20"}], "decision_history": []},
     "conversation_state": {"active": null, "completed": [], "seen_nodes": {}, "cooldowns": {}, "once_only_flags": []},
     "calendar_state": {"events": [{"id": "$opening_scene_event", "source": "opening_future_talk", "date": "Y1-08-20", "block": "morning", "participants": ["elena_reyes_hale"], "status": "scheduled"}], "reminders": [], "conflicts": []},
     "world_state": {"current_location": "hale_home.player_bedroom", "unlocked_locations": ["hale_home", "alder_heights_residential_street", "alder_heights_bus_stop", "alder_bay_park", "forge_fitness", "westshore_campus", "westshore_administration_office", "harbor_employment_centre", "harborlight_cinema"], "discovered_locations": ["hale_home"], "weather": "$from_opening_week", "store_state": {}, "world_flags": {}, "pending_travel": null, "last_trip": null, "random_seed": "$generated_seed"},

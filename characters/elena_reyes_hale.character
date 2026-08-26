@@ -39,6 +39,7 @@
       "category": "main_life_goal",
       "title": "Choose Your Direction",
       "summary": "Decide whether to attend Westshore College, seek employment, or do both.",
+      "discovery": {"policy": "auto_start", "source": "opening_scene"},
       "activation": {"event": "new_game_started", "date": "opening_tuesday", "block": "morning"},
       "objectives": [
         {"id": "hear_elena_out", "text": "Talk with Mom about your future.", "completion": {"event": "conversation_node_reached", "conversation": "opening_future_talk", "node": "future_choice"}},
@@ -57,6 +58,7 @@
       "category": "character_story",
       "title": "Under This Roof",
       "summary": "Learn the Hale household rules and agree on chores, guests, and privacy.",
+      "discovery": {"policy": "offer", "source": "prior_quest_branch"},
       "activation": {"event": "quest_completed", "quest": "opening_future_choice"},
       "objectives": [
         {"id": "review_rules", "text": "Ask Mom about the household rules.", "completion": {"event": "conversation_completed", "conversation": "household_rules_talk"}},

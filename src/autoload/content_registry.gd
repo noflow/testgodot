@@ -240,6 +240,15 @@ func _validate_sandbox_quest_package() -> void:
 		return
 	if str(package.get("default_timing", "")) != "open_ended":
 		_last_errors.append("Sandbox quests must default to open-ended timing.")
+	if str(package.get("default_discovery_policy", "")) != "offer":
+		_last_errors.append("Sandbox quests must default to optional offers.")
+	var discovery_policies: PackedStringArray = []
+	for policy_value: Variant in package.get("discovery_policies", []):
+		if policy_value is Dictionary:
+			discovery_policies.append(str(policy_value.get("id", "")))
+	for required_policy: String in ["offer", "auto_start"]:
+		if required_policy not in discovery_policies:
+			_last_errors.append("Sandbox quests are missing the %s discovery policy." % required_policy)
 	var gate_ids: PackedStringArray = []
 	for gate_value: Variant in package.get("supported_gates", []):
 		if gate_value is Dictionary:
@@ -252,6 +261,23 @@ func _validate_sandbox_quest_package() -> void:
 	for quest_value: Variant in all_quests:
 		if not quest_value is Dictionary:
 			continue
+		var quest_id: String = str(quest_value.get("id", "unknown"))
+		var discovery: Variant = quest_value.get("discovery")
+		if not discovery is Dictionary:
+			_last_errors.append("Quest must explicitly declare how it is discovered: %s" % quest_id)
+		else:
+			if str(discovery.get("policy", "")) not in discovery_policies:
+				_last_errors.append("Quest has an invalid discovery policy: %s" % quest_id)
+			if str(discovery.get("source", "")) not in package.get("discovery_sources", []):
+				_last_errors.append("Quest has an invalid discovery source: %s" % quest_id)
+		for requirement_value: Variant in quest_value.get("requirements", []):
+			if not requirement_value is Dictionary:
+				_last_errors.append("Quest requirement must be an object: %s" % quest_id)
+				continue
+			if str(requirement_value.get("type", "")) not in gate_ids:
+				_last_errors.append("Quest has an unsupported gate type: %s" % quest_id)
+			if str(requirement_value.get("visibility", "visible")) not in ["visible", "hidden"]:
+				_last_errors.append("Quest gate visibility must be visible or hidden: %s" % quest_id)
 		var failure: Variant = quest_value.get("failure")
 		if failure is Dictionary and failure.has("deadline"):
 			timed_quest_count += 1

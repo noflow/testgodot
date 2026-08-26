@@ -10,6 +10,7 @@ explore the city, build a routine, meet people, and discover stories in any orde
 - Every quest is open-ended unless its data explicitly declares a supported timing mode.
 - Advancing days, weeks, birthdays, or years never fails an open-ended quest.
 - Quests appear only after the player discovers them through play.
+- Side quests become offers and do not enter the active log until accepted.
 - The player chooses which discovered active quests to pin in the tracker.
 - Untracked quests keep their state and can be resumed later without a penalty.
 - Stats, skills, relationships, locations, resources, life direction, and prior
@@ -18,6 +19,20 @@ explore the city, build a routine, meet people, and discover stories in any orde
   selector and no weekly assignment screen.
 
 The machine-readable rules live in `content/systems/quest_progression.json`.
+
+## Quest state flow
+
+An undiscovered quest is hidden and has no persisted list entry. An in-world trigger
+moves it to `discovered`. If every authored gate is met, an optional quest also
+enters `available`; Accept moves it to `active`. Postpone removes the offer but keeps
+the quest discovered and records it in `postponed` until the player chooses
+Reconsider. Decline moves it to `deferred`. Completion and authored failure move an
+active quest to their terminal lists.
+
+`auto_start` is reserved for the opening scene, onboarding tutorials, choices the
+player already committed to, and direct consequences of a branch. All other quests
+use the default `offer` policy. Discovery and decision histories retain the source,
+date, and player decision in the save.
 
 ## Discovery
 
@@ -51,6 +66,13 @@ alternate route should exist where it fits the story. Earlier choices may change
 scene, open a new chain, close an incompatible branch, or cause an NPC to remember
 what happened.
 
+Gate entries use a `type`, type-specific identifier or path, optional `minimum`,
+`maximum`, `equals`, or `values`, and `visibility`. Visible failures show their
+authored `description`. Hidden failures reveal only that more world context is
+needed, preventing spoilers. Supported runtime evaluators cover attributes, skills,
+relationship meters or levels, prior state choices, quest status, locations, life
+direction, money, inventory items, and world state.
+
 ## Deadlines
 
 Timed quests are exceptional. A deadline is allowed only for an institutional
@@ -70,9 +92,11 @@ continue independently if the player chose that direction.
 
 ## Tracker behavior
 
-The phone lists discovered active, completed, deferred, and failed quests. Each
-active quest has a Track or Untrack action. The HUD shortcut shows only the quests
-the player deliberately pinned and gives no judgment when nothing is tracked.
+The phone lists available offers, gated or postponed discoveries, active quests,
+completed quests, deferred quests, and failed quests. Offers expose Accept,
+Postpone, and Decline; postponed quests expose Reconsider. Each active quest has a
+Track or Untrack action. The HUD shortcut shows only the quests the player
+deliberately pinned and gives no judgment when nothing is tracked.
 Calendar entries are appointments and commitments, never system-assigned weekly
 goals.
 
@@ -81,10 +105,9 @@ goals.
 Before adding a quest:
 
 1. Choose discovery, opportunity, path, or urgent as its purpose.
-2. Define the in-world discovery source.
-3. Prefer meaningful gates and consequences over elapsed-time checks.
+2. Define the in-world discovery source and use `offer` unless automatic start is justified.
+3. Prefer meaningful, reusable gates and consequences over elapsed-time checks.
 4. If it is timed, declare a supported timing mode, visible reason, and warnings.
 5. Make failure branch, delay, or alter later content where possible.
 6. Test that months of unrelated sandbox play cannot expire an open-ended quest.
 7. Test that follow-ups respect prior choices and do not reveal themselves early.
-

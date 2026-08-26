@@ -82,10 +82,12 @@ employment, playtime, build, and recovery state. Loading resumes an active VN no
 or routes to the saved home/city scene. F5 and F9 provide scene-independent
 quicksave and quickload controls, including during VN conversations.
 
-Quest state separates active quests from the player's optional `tracked` list.
-Discovery and progress remain in saved simulation state even when a quest is not
-pinned. `quest.set_tracked` changes presentation only; it cannot start, complete,
-fail, or defer content. Open-ended quests have no elapsed-time failure processor.
+Quest state stores `discovered`, `available`, `active`, `tracked`, `postponed`,
+`completed`, `deferred`, and `failed` lists plus discovery, decision, branch, and
+objective histories. Hidden quests have no state entry. `quest.discover` records an
+in-world source; gate synchronization controls offers; `quest.accept`,
+`quest.postpone`, and `quest.decline` preserve player agency. `quest.set_tracked`
+changes presentation only. Open-ended quests have no elapsed-time failure processor.
 
 `SettingsService` stores device-local accessibility, audio, display, and input
 preferences separately from game saves in `user://settings.cfg`. Text scale, high

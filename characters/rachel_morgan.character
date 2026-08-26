@@ -22,6 +22,8 @@
       "category": "opportunity",
       "title": "First Rep",
       "summary": "Complete a safe fitness assessment with Rachel and choose an initial training goal.",
+      "discovery": {"policy": "offer", "source": "world_exploration"},
+      "requirements": [{"type": "attribute", "id": "health", "minimum": 20, "visibility": "visible", "description": "Health 20 or higher is required for Rachel's introductory assessment."}],
       "activation": {"event": "location_discovered", "location": "forge_fitness"},
       "availability": {"days": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday"], "blocks": ["early_morning", "morning", "lunch", "afternoon", "evening"], "location": "forge_fitness.front_desk", "requires_npc_free": "rachel_morgan"},
       "objectives": [
