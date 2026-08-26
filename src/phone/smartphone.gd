@@ -1438,6 +1438,20 @@ func _on_confirm_schedule_pressed() -> void:
 	if not result.get("ok", false):
 		scheduler_status.text = str(result.get("errors", ["The plan could not be scheduled."])[0])
 		return
+	if not character_id.is_empty():
+		var event_type_id: String = str(event_type.get("id", "personal"))
+		var quest_result: Dictionary = QuestService.record_event(
+			"calendar_event_created",
+			{
+				"tag": "date_or_hangout" if event_type_id in ["date", "hangout"] else event_type_id,
+				"participant": character_id,
+				"event_type": event_type_id,
+			},
+			"phone.calendar"
+		)
+		if not quest_result.get("ok", false):
+			scheduler_status.text = str(quest_result.get("errors", ["Quest progress could not be updated."])[0])
+			return
 	scheduler_panel.visible = false
 	phone_status.text = "%s was added to the calendar." % title
 	_show_app("calendar")

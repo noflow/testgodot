@@ -25,6 +25,10 @@ credits, and first-semester completion.
 Map route confirmation and destination travel, resilient save/load,
 player-controlled sandbox quest tracking, complete persistent settings, and the
 accessibility baseline now work.
+An automated connected-run probe also completes character creation, Elena's college
+branch, home and phone interactions, bus travel, Westshore enrollment, Emma's
+calendar-gated waterfront story, and an isolated save/load resume at the saved city
+room.
 
 ## Purpose
 
@@ -454,9 +458,9 @@ relationship effects to survive scene changes.
 Save slots, rotating autosaves, quicksave, checksum validation, atomic writes,
 backup recovery, migration, Continue, and load controls are implemented. Sandbox
 quest tracking, complete persistent settings, and the accessibility baseline are
-implemented and covered by headless logic and live-scene probes. The remaining
-completion work is a full new-game-through-the-opening-calendar save/load round trip
-and stabilization against the complete acceptance gate.
+implemented and covered by headless logic and live-scene probes. The connected
+new-game-through-the-opening-calendar save/load round trip is implemented and runs
+as part of the standard Godot test suite.
 
 ### Phase 7 — Stabilization
 

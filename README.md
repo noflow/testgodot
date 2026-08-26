@@ -76,6 +76,11 @@ high contrast, reduced motion, screen-edge effects, camera shake, hold/toggle VN
 skipping, independent audio channels, display mode, resolution, VSync, and keyboard
 or controller remapping. VN lines can also be replayed, and accessibility choices
 apply across character creation, dialogue, home, city, and phone interfaces.
+The automated connected-run probe now drives the actual character-creation controls,
+Elena's college opening branch, a home hygiene action, live Quest and Calendar apps,
+bus travel, Westshore enrollment, Emma's scheduled waterfront story, and an isolated
+save/load resume at Alder Bay Park. Calendar-authored character scenes require the
+correct current appointment, and phone-created hangouts advance their owning quests.
 
 ## Planned technology
 
@@ -108,6 +113,7 @@ Date authoring, agreements, conflicts, and relationship progression are describe
 Sandbox discovery, gates, paths, deadlines, and player-controlled tracking are described in [docs/SANDBOX_QUEST_PLAYBOOK.md](docs/SANDBOX_QUEST_PLAYBOOK.md).
 The implemented settings and accessibility baseline are described in [docs/ACCESSIBILITY_PLAYBOOK.md](docs/ACCESSIBILITY_PLAYBOOK.md).
 The first playable build is defined in [docs/VERTICAL_SLICE_SPECIFICATION.md](docs/VERTICAL_SLICE_SPECIFICATION.md).
+The connected automated route and its matching manual checks are documented in [docs/VERTICAL_SLICE_PLAYTEST.md](docs/VERTICAL_SLICE_PLAYTEST.md).
 
 Validate all character and global content data with `python3 tools/validate_characters.py`.
 

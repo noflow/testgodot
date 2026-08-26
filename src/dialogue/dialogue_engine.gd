@@ -187,21 +187,29 @@ func _finish(state: Dictionary, conversation: Dictionary) -> Dictionary:
 	if not quest_result.get("ok", false):
 		return quest_result
 	working = quest_result["state"]
+	var completed_calendar_event_id: String = ""
 	for calendar_event: Variant in working["calendar_state"].get("events", []):
 		if not calendar_event is Dictionary or str(calendar_event.get("source", "")) != str(conversation["id"]):
 			continue
 		if str(calendar_event.get("status", "scheduled")) != "scheduled":
 			continue
+		completed_calendar_event_id = str(calendar_event.get("id", ""))
+		break
+	if completed_calendar_event_id.is_empty():
+		var calendar_participant: String = str(conversation.get("activation", {}).get("calendar_participant", ""))
+		if not calendar_participant.is_empty():
+			var participant_event: Dictionary = _current_calendar_event_for_participant(working, calendar_participant)
+			completed_calendar_event_id = str(participant_event.get("id", ""))
+	if not completed_calendar_event_id.is_empty():
 		result = _simulation.apply_operation(
 			working,
 			"calendar.arrival",
-			{"event_id": calendar_event.get("id")},
+			{"event_id": completed_calendar_event_id},
 			"dialogue.end"
 		)
 		if not result.get("ok", false):
 			return result
 		working = result["state"]
-		break
 	return {"ok": true, "state": working, "ended": true, "view": {}, "errors": PackedStringArray()}
 
 
@@ -568,7 +576,36 @@ func _activation_error(state: Dictionary, conversation: Dictionary) -> String:
 					character.get("display_name", activation["npc_available"]),
 					str(commitment.get("activity", "work")).replace("_", " "),
 				]
+	if activation.has("calendar_participant"):
+		var participant_id: String = str(activation["calendar_participant"])
+		if _current_calendar_event_for_participant(state, participant_id).is_empty():
+			return "This scene requires a current calendar plan with %s." % _speaker_name(participant_id, state)
 	return ""
+
+
+func _current_calendar_event_for_participant(state: Dictionary, character_id: String) -> Dictionary:
+	var current_date: String = "Y%d-%02d-%02d" % [
+		int(state["clock"].get("year", 1)),
+		int(state["clock"].get("month", 1)),
+		int(state["clock"].get("day", 1)),
+	]
+	var current_block: String = str(state["clock"].get("block", ""))
+	var current_location: String = str(state.get("world_state", {}).get("current_location", ""))
+	for event_value: Variant in state.get("calendar_state", {}).get("events", []):
+		if not event_value is Dictionary:
+			continue
+		var event: Dictionary = event_value
+		if str(event.get("status", "scheduled")) != "scheduled":
+			continue
+		if character_id not in event.get("participants", []):
+			continue
+		if str(event.get("date", "")) != current_date or str(event.get("block", "")) != current_block:
+			continue
+		var event_location: String = str(event.get("location", ""))
+		if not event_location.is_empty() and event_location.get_slice(".", 0) != current_location.get_slice(".", 0):
+			continue
+		return event
+	return {}
 
 
 func _active_context(state: Dictionary) -> Dictionary:
