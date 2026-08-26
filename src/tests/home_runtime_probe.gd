@@ -25,29 +25,30 @@ func _run_probe() -> void:
 	await get_tree().process_frame
 	await get_tree().process_frame
 	var phone: Node = instance.get_node_or_null("Interface/Smartphone")
-	var household_actors: Node = instance.get_node_or_null("HouseholdActors")
-	if instance.get_node_or_null("RoomAreas/PlayerBedroom") == null or instance.get_node_or_null("Walls") == null or phone == null or household_actors == null:
-		printerr("PROBE: runtime rooms, walls, household actors, or phone were not created")
+	var room_buttons: Container = instance.get_node_or_null("Interface/Screen/MainMargin/MainLayout/NavigationPanel/Margin/Layout/Scroll/RoomButtons")
+	var room_action_buttons: Container = instance.get_node_or_null("Interface/Screen/MainMargin/MainLayout/ActionPanel/Margin/Layout/Scroll/ActionButtons")
+	if instance.get_node_or_null("Player") != null or instance.get_node_or_null("Backdrop") == null or phone == null or room_buttons == null or room_action_buttons == null:
+		printerr("PROBE: VN home backdrop, room navigation, choices, or phone were not created")
 		get_tree().quit(1)
 		return
-	if household_actors.get_child_count() != 1 or household_actors.get_node_or_null("LilyHale") == null:
-		printerr("PROBE: Tuesday Morning schedule did not place only Lily at home")
+	if room_buttons.get_child_count() != 12:
+		printerr("PROBE: VN home did not expose all twelve authored rooms")
 		get_tree().quit(1)
 		return
 	instance.call("_set_current_room", "living_room")
-	var lily_interaction: Dictionary = instance.call("_find_nearest_interaction", Vector2(315, 600))
-	if str(lily_interaction.get("character_id", "")) != "lily_hale":
-		printerr("PROBE: Lily did not expose a direct proximity interaction")
+	await get_tree().process_frame
+	var character_text: RichTextLabel = instance.get_node("Interface/Screen/MainMargin/MainLayout/ScenePanel/Margin/Layout/CharacterText")
+	if "Lily Hale" not in character_text.text or not _container_has_button_text(room_action_buttons, "Talk to Lily"):
+		printerr("PROBE: Tuesday Morning schedule did not expose Lily on the living-room VN stage")
 		get_tree().quit(1)
 		return
 	instance.call("_open_npc_panel", "lily_hale")
-	var npc_action_panel: Control = instance.get_node("Interface/ActionPanel")
-	var npc_action_buttons: Container = instance.get_node("Interface/ActionPanel/Margin/Layout/Scroll/ActionButtons")
-	if not npc_action_panel.visible or npc_action_buttons.get_child_count() == 0:
+	var npc_action_buttons: Container = instance.get_node("Interface/Screen/MainMargin/MainLayout/ActionPanel/Margin/Layout/Scroll/ActionButtons")
+	if npc_action_buttons.get_child_count() < 2:
 		printerr("PROBE: household interaction did not expose authored dialogue")
 		get_tree().quit(1)
 		return
-	instance.call("_on_close_panel_pressed")
+	instance.call("_render_room")
 	phone.open_phone()
 	await get_tree().process_frame
 	if not phone.visible or phone.get_node("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/Navigation/NavMargin/NavScroll/AppButtons").get_child_count() != 13:
@@ -83,7 +84,7 @@ func _run_probe() -> void:
 	await get_tree().process_frame
 	var settings_content: RichTextLabel = phone.get_node("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/ContentPanel/ContentMargin/ContentLayout/AppContent")
 	var settings_actions: Container = phone.get_node("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/ContentPanel/ContentMargin/ContentLayout/ActionScroll/AppActions")
-	if settings_actions.get_child_count() < 38 or "Screen-edge effects" not in settings_content.text or "CONTROLS" not in settings_content.text:
+	if settings_actions.get_child_count() < 34 or "Screen-edge effects" not in settings_content.text or "CONTROLS" not in settings_content.text:
 		printerr("PROBE: Settings app did not expose its accessibility, audio, display, save, and remapping controls")
 		get_tree().quit(1)
 		return
@@ -108,7 +109,7 @@ func _run_probe() -> void:
 	await get_tree().process_frame
 	var menu_settings_summary: RichTextLabel = menu_settings.get_node("Panel/Margin/Layout/Columns/SettingsSummary")
 	var menu_settings_actions: Container = menu_settings.get_node("Panel/Margin/Layout/Columns/ActionScroll/SettingsActions")
-	if not menu_settings.visible or menu_settings_actions.get_child_count() != 34 or "ACCESSIBILITY" not in menu_settings_summary.text or "CONTROLS" not in menu_settings_summary.text:
+	if not menu_settings.visible or menu_settings_actions.get_child_count() != 30 or "ACCESSIBILITY" not in menu_settings_summary.text or "CONTROLS" not in menu_settings_summary.text:
 		printerr("PROBE: reusable main-menu settings panel did not render every settings category")
 		get_tree().quit(1)
 		return
@@ -154,8 +155,9 @@ func _run_probe() -> void:
 	TimeService.advance_blocks(3, "probe.household_evening")
 	await get_tree().process_frame
 	await get_tree().process_frame
-	if household_actors.get_child_count() != 2 or household_actors.get_node_or_null("ElenaReyesHale") == null or household_actors.get_node_or_null("DanielHale") == null:
-		printerr("PROBE: Tuesday Evening schedule did not bring Elena and Daniel home")
+	var resolutions: Dictionary = instance.get("_npc_resolutions")
+	if not bool(resolutions.get("elena_reyes_hale", {}).get("present", false)) or not bool(resolutions.get("daniel_hale", {}).get("present", false)):
+		printerr("PROBE: Tuesday Evening schedule did not make Elena and Daniel available at home")
 		get_tree().quit(1)
 		return
 	var tracking_result: Dictionary = QuestService.set_tracked("opening_future_choice", true)
@@ -199,5 +201,12 @@ func _run_probe() -> void:
 		printerr("PROBE: Sunday Evening interrupted sandbox play with a weekly-planning flow")
 		get_tree().quit(1)
 		return
-	print("PASS: Hale home runtime created rooms, schedules, all phone apps, accessibility controls, and sandbox quest tracking.")
+	print("PASS: Hale home runtime created VN room navigation, scheduled character encounters, all phone apps, accessibility controls, and sandbox quest tracking.")
 	get_tree().quit(0)
+
+
+func _container_has_button_text(container: Container, fragment: String) -> bool:
+	for child: Node in container.get_children():
+		if child is Button and fragment in child.text:
+			return true
+	return false

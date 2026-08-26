@@ -2,7 +2,7 @@
 
 Status: pre-production working specification  
 Engine: Godot 4 with GDScript  
-Presentation: 2D top-down exploration with VN-style dialogue scenes
+Presentation: Ren'Py-style visual novel and menu-driven sandbox navigation in Godot
 
 ## High concept
 
@@ -497,8 +497,8 @@ state resolution, distributed starting inventory, the seven-block calendar clock
 an atomic event processor for the first playable state changes, the VN dialogue and
 quest engines, data-driven character creation with validated age and selection
 limits, Elena's playable college, employment, or combined opening path, and the
-connected twelve-space Hale home. The home now supports collision-based movement,
-private bedroom boundaries, sleeping, food, water, cooking, hygiene, laundry,
+connected twelve-space Hale home. The home now uses static VN stages and room-choice
+navigation, preserves private bedroom boundaries, and supports sleeping, food, water, cooking, hygiene, laundry,
 household supplies, needs changes, and wardrobe equipment. The reusable phone now
 implements the nine First Week Foundations apps with live profile data, discovered
 contacts, character-authored message threads, quick replies, a conflict-aware
@@ -507,9 +507,9 @@ destinations, forecast-driven outfit checks, and complete persistent settings.
 
 The Hale household is now schedule-driven. Elena, Daniel, and Lily resolve their
 current work, school, errands, and home routines from their own `.character` files.
-When home, reusable top-down actors appear in the authored room; when committed
+When home, characters appear on the authored room's VN stage; when committed
 elsewhere, their persistent NPC location and availability update instead. Direct
-interaction exposes time- and quest-appropriate VN conversations plus authored
+choices expose time- and quest-appropriate VN conversations plus authored
 ambient chat. Follow-up character quests activate automatically when prerequisites
 and earliest activity blocks are satisfied. Daniel's opening-night `a_quiet_check_in`
 quest and conversation complete the first playable family set.

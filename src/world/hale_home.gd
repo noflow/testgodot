@@ -1,22 +1,109 @@
-extends Node2D
+extends Control
 
-const WALL_THICKNESS: float = 12.0
-const INTERACTION_DISTANCE: float = 88.0
 const HouseholdScheduleEngineScript: GDScript = preload("res://src/world/household_schedule_engine.gd")
-const HouseholdNpcActorScene: PackedScene = preload("res://scenes/world/household_npc_actor.tscn")
 const HOUSEHOLD_CHARACTER_IDS: PackedStringArray = ["elena_reyes_hale", "daniel_hale", "lily_hale"]
 const MONTH_NAMES: PackedStringArray = [
 	"January", "February", "March", "April", "May", "June",
 	"July", "August", "September", "October", "November", "December",
 ]
 
-@onready var player: CharacterBody2D = %Player
+const ROOMS: Dictionary = {
+	"player_bedroom": {
+		"name": "Your Bedroom",
+		"description": "Morning light slips through the blinds. Your bed, wardrobe, desk, and phone make this the quiet center of your life at home.",
+		"color": Color("243b4b"),
+	},
+	"upstairs_hall": {
+		"name": "Upstairs Hall",
+		"description": "Family photographs line the hall between the bedrooms and bathroom. Closed doors deserve a knock.",
+		"color": Color("34404a"),
+	},
+	"family_bathroom": {
+		"name": "Family Bathroom",
+		"description": "A shared bathroom with a shower, deep tub, mirror, and the everyday supplies needed to stay clean and presentable.",
+		"color": Color("23505a"),
+	},
+	"lily_bedroom": {
+		"name": "Lily's Bedroom",
+		"description": "Lily's room is private. You need her permission before entering.",
+		"color": Color("4a3547"),
+		"private": true,
+	},
+	"living_room": {
+		"name": "Living Room",
+		"description": "A comfortable shared room for television, reading, family conversations, and the occasional guest.",
+		"color": Color("344b43"),
+	},
+	"dining_room": {
+		"name": "Dining Room",
+		"description": "The family table sits beneath a warm pendant light. Meals here often become conversations about everyone's day.",
+		"color": Color("4d4534"),
+	},
+	"kitchen": {
+		"name": "Kitchen",
+		"description": "The kitchen is stocked with basic groceries, snacks, and enough equipment to prepare a simple meal.",
+		"color": Color("3b4c39"),
+	},
+	"parents_bedroom": {
+		"name": "Parents' Bedroom",
+		"description": "Your parents' room is private. You should knock and wait for permission.",
+		"color": Color("493737"),
+		"private": true,
+	},
+	"backyard": {
+		"name": "Backyard",
+		"description": "A fenced green space with room to exercise, relax in the coastal air, or host a small gathering.",
+		"color": Color("294b39"),
+	},
+	"laundry_room": {
+		"name": "Laundry Room",
+		"description": "The washer, dryer, and folding counter keep the household wardrobe clean and ready for the weather.",
+		"color": Color("334953"),
+	},
+	"garage": {
+		"name": "Garage",
+		"description": "Storage shelves and Daniel's tools surround the family car. Using it depends on the household agreement.",
+		"color": Color("41464a"),
+	},
+	"front_yard": {
+		"name": "Front Yard",
+		"description": "The front walk opens toward Alder Heights and the rest of Port Alder. Choose a destination on your phone before leaving.",
+		"color": Color("344e3a"),
+	},
+}
+
+const ROOM_ORDER: PackedStringArray = [
+	"player_bedroom", "upstairs_hall", "family_bathroom", "lily_bedroom",
+	"living_room", "dining_room", "kitchen", "parents_bedroom",
+	"backyard", "laundry_room", "garage", "front_yard",
+]
+
+const INTERACTIONS: Array = [
+	{"room": "player_bedroom", "label": "Bed", "actions": ["nap", "sleep"]},
+	{"room": "player_bedroom", "label": "Open Wardrobe", "special": "wardrobe"},
+	{"room": "player_bedroom", "label": "Use Phone", "special": "phone"},
+	{"room": "family_bathroom", "label": "Shower or Bath", "actions": ["shower", "bath"]},
+	{"room": "family_bathroom", "label": "Bathroom Sink", "actions": ["brush_teeth", "groom"]},
+	{"room": "upstairs_hall", "label": "Knock on Lily's Door", "special": "lily_door"},
+	{"room": "upstairs_hall", "label": "Knock on Parents' Door", "special": "parents_door"},
+	{"room": "living_room", "label": "Relax on the Sofa", "special": "sofa"},
+	{"room": "dining_room", "label": "Have a Snack", "actions": ["eat_snack"]},
+	{"room": "kitchen", "label": "Kitchen Counter", "actions": ["drink_water", "eat_snack", "cook_basic_meal"]},
+	{"room": "laundry_room", "label": "Do Laundry", "actions": ["do_laundry"]},
+	{"room": "garage", "label": "Check the Family Car", "special": "family_car"},
+	{"room": "backyard", "label": "Spend Time Outside", "special": "backyard"},
+	{"room": "front_yard", "label": "Open City Map", "special": "leave_home"},
+]
+
+@onready var backdrop: ColorRect = %Backdrop
 @onready var room_label: Label = %RoomLabel
+@onready var scene_title: Label = %SceneTitle
+@onready var scene_description: Label = %SceneDescription
+@onready var character_text: RichTextLabel = %CharacterText
 @onready var clock_label: Label = %ClockLabel
 @onready var needs_label: Label = %NeedsLabel
-@onready var interaction_prompt: Label = %InteractionPrompt
 @onready var status_label: Label = %StatusLabel
-@onready var action_panel: PanelContainer = %ActionPanel
+@onready var room_buttons: VBoxContainer = %RoomButtons
 @onready var action_title: Label = %ActionTitle
 @onready var action_buttons: VBoxContainer = %ActionButtons
 @onready var wardrobe_panel: PanelContainer = %WardrobePanel
@@ -25,41 +112,8 @@ const MONTH_NAMES: PackedStringArray = [
 @onready var quest_panel: PanelContainer = %QuestPanel
 @onready var quest_text: RichTextLabel = %QuestText
 @onready var smartphone: Control = %Smartphone
-@onready var household_actors: Node2D = %HouseholdActors
 
-var _rooms: Dictionary = {
-	"player_bedroom": {"name": "Player Bedroom", "rect": Rect2(20, 20, 400, 330), "color": Color("253b49")},
-	"upstairs_hall": {"name": "Upstairs Hall", "rect": Rect2(420, 20, 480, 330), "color": Color("293f47")},
-	"family_bathroom": {"name": "Family Bathroom", "rect": Rect2(900, 20, 300, 330), "color": Color("244951")},
-	"lily_bedroom": {"name": "Lily's Bedroom — Private", "rect": Rect2(1200, 20, 380, 330), "color": Color("483747")},
-	"living_room": {"name": "Living Room", "rect": Rect2(20, 350, 480, 340), "color": Color("34443d")},
-	"dining_room": {"name": "Dining Room", "rect": Rect2(500, 350, 300, 340), "color": Color("484335")},
-	"kitchen": {"name": "Kitchen", "rect": Rect2(800, 350, 400, 340), "color": Color("3e4938")},
-	"parents_bedroom": {"name": "Parents' Bedroom — Private", "rect": Rect2(1200, 350, 380, 340), "color": Color("453737")},
-	"backyard": {"name": "Backyard", "rect": Rect2(20, 690, 380, 290), "color": Color("294735")},
-	"laundry_room": {"name": "Laundry Room", "rect": Rect2(400, 690, 250, 290), "color": Color("34454b")},
-	"garage": {"name": "Garage", "rect": Rect2(650, 690, 500, 290), "color": Color("3d4144")},
-	"front_yard": {"name": "Front Yard", "rect": Rect2(1150, 690, 430, 290), "color": Color("334a36")},
-}
-var _interactions: Array = [
-	{"id": "bed", "room": "player_bedroom", "position": Vector2(155, 118), "label": "Bed", "actions": ["nap", "sleep"]},
-	{"id": "wardrobe", "room": "player_bedroom", "position": Vector2(365, 92), "label": "Wardrobe", "special": "wardrobe"},
-	{"id": "desk", "room": "player_bedroom", "position": Vector2(350, 288), "label": "Desk and Phone", "special": "phone"},
-	{"id": "bath_fixture", "room": "family_bathroom", "position": Vector2(1105, 105), "label": "Shower and Bath", "actions": ["shower", "bath"]},
-	{"id": "bath_sink", "room": "family_bathroom", "position": Vector2(960, 275), "label": "Bathroom Sink", "actions": ["brush_teeth", "groom"]},
-	{"id": "lily_door", "room": "upstairs_hall", "position": Vector2(1180, 175), "label": "Lily's Door", "special": "lily_door"},
-	{"id": "parents_door", "room": "kitchen", "position": Vector2(1180, 520), "label": "Parents' Door", "special": "parents_door"},
-	{"id": "sofa", "room": "living_room", "position": Vector2(180, 500), "label": "Living Room Sofa", "special": "sofa"},
-	{"id": "dining_table", "room": "dining_room", "position": Vector2(650, 520), "label": "Dining Table", "actions": ["eat_snack"]},
-	{"id": "kitchen_counter", "room": "kitchen", "position": Vector2(1000, 500), "label": "Kitchen Counter", "actions": ["drink_water", "eat_snack", "cook_basic_meal"]},
-	{"id": "laundry", "room": "laundry_room", "position": Vector2(525, 815), "label": "Washer and Dryer", "actions": ["do_laundry"]},
-	{"id": "family_car", "room": "garage", "position": Vector2(900, 835), "label": "Family Car", "special": "family_car"},
-	{"id": "backyard", "room": "backyard", "position": Vector2(185, 830), "label": "Backyard", "special": "backyard"},
-	{"id": "front_gate", "room": "front_yard", "position": Vector2(1410, 910), "label": "Leave Home", "special": "leave_home"},
-]
-var _wall_segments: Array = []
 var _current_room: String = "player_bedroom"
-var _nearest_interaction: Dictionary = {}
 var _schedule_engine: RefCounted
 var _npc_resolutions: Dictionary = {}
 var _schedule_signature: String = ""
@@ -69,28 +123,21 @@ func _ready() -> void:
 	if not GameState.has_active_game():
 		get_tree().change_scene_to_file(AppConstants.MAIN_MENU_SCENE)
 		return
-	SettingsService.settings_changed.connect(_apply_accessibility_settings)
-	_apply_accessibility_settings()
-	_build_rooms()
-	_build_walls()
+	if not SettingsService.settings_changed.is_connected(_apply_accessibility_settings):
+		SettingsService.settings_changed.connect(_apply_accessibility_settings)
 	_schedule_engine = HouseholdScheduleEngineScript.new(ContentRegistry)
-	player.interact_requested.connect(_on_interact_requested)
 	smartphone.phone_opened.connect(_on_phone_opened)
 	smartphone.phone_closed.connect(_on_phone_closed)
 	smartphone.travel_completed.connect(_on_travel_completed)
-	_restore_player_location()
+	_restore_room()
 	_sync_household_schedule(true)
+	_render_room()
 	_refresh_hud()
-	queue_redraw()
+	_apply_accessibility_settings()
 
 
 func _process(_delta: float) -> void:
 	_sync_household_schedule()
-	_nearest_interaction = _find_nearest_interaction(player.global_position)
-	if _nearest_interaction.is_empty() or _modal_open():
-		interaction_prompt.text = ""
-	else:
-		interaction_prompt.text = "E / A — %s" % _nearest_interaction["label"]
 	_refresh_hud()
 
 
@@ -100,224 +147,156 @@ func _unhandled_input(event: InputEvent) -> void:
 			smartphone.close_phone()
 			get_viewport().set_input_as_handled()
 		return
-	if event.is_action_pressed("cancel") and _modal_open():
+	if event.is_action_pressed("cancel") and (wardrobe_panel.visible or quest_panel.visible):
 		_close_panels()
 		get_viewport().set_input_as_handled()
-	elif event.is_action_pressed("quest_tracker") and not action_panel.visible and not wardrobe_panel.visible:
+	elif event.is_action_pressed("quest_tracker"):
 		_toggle_quest_panel()
 		get_viewport().set_input_as_handled()
-	elif event.is_action_pressed("phone") and not _modal_open():
+	elif event.is_action_pressed("phone"):
 		smartphone.open_phone()
 		get_viewport().set_input_as_handled()
-	elif event.is_action_pressed("city_map") and not _modal_open():
+	elif event.is_action_pressed("city_map"):
 		smartphone.open_phone("city_map")
 		get_viewport().set_input_as_handled()
 
 
-func _draw() -> void:
-	for room_id: Variant in _rooms:
-		var room: Dictionary = _rooms[room_id]
-		var rect: Rect2 = room["rect"]
-		draw_rect(rect, room["color"], true)
-		draw_rect(rect, Color("72878b"), false, 2.0)
-		draw_string(
-			ThemeDB.fallback_font,
-			rect.position + Vector2(14, 28),
-			str(room["name"]),
-			HORIZONTAL_ALIGNMENT_LEFT,
-			rect.size.x - 28,
-			17,
-			Color(0.83, 0.89, 0.89, 0.72)
-		)
-	for segment: Variant in _wall_segments:
-		draw_line(segment[0], segment[1], Color("c3d0cf"), WALL_THICKNESS, true)
-	for interaction: Dictionary in _interactions:
-		var marker_color: Color = Color("e9a86c") if not interaction.has("special") else Color("67c6c3")
-		draw_circle(interaction["position"], 10.0, marker_color)
-		draw_circle(interaction["position"], 10.0, Color("eef6f5"), false, 2.0)
+func _restore_room() -> void:
+	var location: String = str(GameState.current_state["world_state"].get("current_location", "hale_home.player_bedroom"))
+	var room_id: String = location.trim_prefix("hale_home.") if location.begins_with("hale_home.") else "player_bedroom"
+	_current_room = room_id if ROOMS.has(room_id) and not bool(ROOMS[room_id].get("private", false)) else "player_bedroom"
+	_update_world_location(false)
 
 
-func _build_rooms() -> void:
-	var room_parent: Node2D = Node2D.new()
-	room_parent.name = "RoomAreas"
-	add_child(room_parent)
-	for room_id: Variant in _rooms:
-		var room: Dictionary = _rooms[room_id]
-		var rect: Rect2 = room["rect"]
-		var area: Area2D = Area2D.new()
-		area.name = str(room_id).to_pascal_case()
-		area.collision_layer = 0
-		area.collision_mask = 1
-		area.position = rect.get_center()
-		var shape_node: CollisionShape2D = CollisionShape2D.new()
-		var shape: RectangleShape2D = RectangleShape2D.new()
-		shape.size = rect.size - Vector2(WALL_THICKNESS * 2.0, WALL_THICKNESS * 2.0)
-		shape_node.shape = shape
-		area.add_child(shape_node)
-		area.body_entered.connect(_on_room_entered.bind(str(room_id)))
-		room_parent.add_child(area)
-
-
-func _build_walls() -> void:
-	var wall_parent: Node2D = Node2D.new()
-	wall_parent.name = "Walls"
-	add_child(wall_parent)
-	# Outer shell. The front gate becomes a transition once city travel is implemented.
-	_add_wall(wall_parent, Vector2(20, 20), Vector2(1580, 20))
-	_add_wall(wall_parent, Vector2(20, 20), Vector2(20, 980))
-	_add_wall(wall_parent, Vector2(1580, 20), Vector2(1580, 980))
-	_add_wall(wall_parent, Vector2(20, 980), Vector2(1580, 980))
-	# Top-row vertical divisions. Lily's room remains fully private.
-	_add_vertical_with_gap(wall_parent, 420, 20, 350, 150, 230)
-	_add_vertical_with_gap(wall_parent, 900, 20, 350, 145, 225)
-	_add_wall(wall_parent, Vector2(1200, 20), Vector2(1200, 350))
-	# Middle-row divisions. The parents' bedroom remains fully private.
-	_add_vertical_with_gap(wall_parent, 500, 350, 690, 480, 560)
-	_add_vertical_with_gap(wall_parent, 800, 350, 690, 480, 560)
-	_add_wall(wall_parent, Vector2(1200, 350), Vector2(1200, 690))
-	# Ground/outdoor divisions.
-	_add_vertical_with_gap(wall_parent, 400, 690, 980, 790, 870)
-	_add_vertical_with_gap(wall_parent, 650, 690, 980, 790, 870)
-	_add_vertical_with_gap(wall_parent, 1150, 690, 980, 790, 870)
-	# Horizontal divisions between floors, with open doorways where permitted.
-	_add_horizontal_sections(wall_parent, 350, [20, 180, 260, 620, 700, 1010, 1090, 1580])
-	_add_horizontal_sections(wall_parent, 690, [20, 180, 260, 560, 640, 960, 1040, 1580])
-
-
-func _add_vertical_with_gap(
-	parent: Node2D,
-	x: float,
-	start_y: float,
-	end_y: float,
-	gap_start: float,
-	gap_end: float
-) -> void:
-	_add_wall(parent, Vector2(x, start_y), Vector2(x, gap_start))
-	_add_wall(parent, Vector2(x, gap_end), Vector2(x, end_y))
-
-
-func _add_horizontal_sections(parent: Node2D, y: float, points: Array) -> void:
-	for index: int in range(0, points.size() - 1, 2):
-		_add_wall(parent, Vector2(points[index], y), Vector2(points[index + 1], y))
-
-
-func _add_wall(parent: Node2D, start: Vector2, end: Vector2) -> void:
-	_wall_segments.append([start, end])
-	var body: StaticBody2D = StaticBody2D.new()
-	body.position = (start + end) * 0.5
-	var collision: CollisionShape2D = CollisionShape2D.new()
-	var shape: RectangleShape2D = RectangleShape2D.new()
-	if is_equal_approx(start.y, end.y):
-		shape.size = Vector2(absf(end.x - start.x) + WALL_THICKNESS, WALL_THICKNESS)
-	else:
-		shape.size = Vector2(WALL_THICKNESS, absf(end.y - start.y) + WALL_THICKNESS)
-	collision.shape = shape
-	body.add_child(collision)
-	parent.add_child(body)
-
-
-func _on_room_entered(body: Node2D, room_id: String) -> void:
-	if body == player:
-		_set_current_room(room_id)
+func _select_room(room_id: String) -> void:
+	if not ROOMS.has(room_id):
+		return
+	if bool(ROOMS[room_id].get("private", false)):
+		status_label.text = "%s is private. Knock and wait for permission." % ROOMS[room_id]["name"]
+		return
+	var changed: bool = room_id != _current_room
+	_current_room = room_id
+	_update_world_location(changed)
+	_render_room()
 
 
 func _set_current_room(room_id: String) -> void:
-	if not _rooms.has(room_id):
-		return
-	_current_room = room_id
-	room_label.text = str(_rooms[room_id]["name"])
-	var location_path: String = "hale_home.%s" % room_id
-	if str(GameState.current_state["world_state"].get("current_location", "")) == location_path:
-		return
-	var next_state: Dictionary = GameState.current_state.duplicate(true)
-	next_state["world_state"]["current_location"] = location_path
-	GameState.replace_state(next_state)
+	_select_room(room_id)
 
 
-func _find_nearest_interaction(world_position: Vector2) -> Dictionary:
-	var closest: Dictionary = {}
-	var closest_distance: float = INTERACTION_DISTANCE
-	for interaction: Dictionary in _interactions:
-		if str(interaction["room"]) != _current_room:
-			continue
-		var distance: float = world_position.distance_to(interaction["position"])
-		if distance < closest_distance:
-			closest = interaction
-			closest_distance = distance
-	for character_id: Variant in _npc_resolutions:
+func _update_world_location(record_event: bool) -> void:
+	var location_path: String = "hale_home.%s" % _current_room
+	if str(GameState.current_state["world_state"].get("current_location", "")) != location_path:
+		var next_state: Dictionary = GameState.current_state.duplicate(true)
+		next_state["world_state"]["current_location"] = location_path
+		GameState.replace_state(next_state)
+	if record_event:
+		QuestService.record_event("location_entered", {"location": location_path}, "home.room_selected")
+
+
+func _render_room() -> void:
+	if not is_node_ready() or not ROOMS.has(_current_room):
+		return
+	var room: Dictionary = ROOMS[_current_room]
+	backdrop.color = room.get("color", Color("243b4b"))
+	room_label.text = str(room["name"])
+	scene_title.text = str(room["name"]).to_upper()
+	scene_description.text = str(room["description"])
+	_rebuild_room_buttons()
+	_rebuild_character_stage()
+	_rebuild_room_actions()
+
+
+func _rebuild_room_buttons() -> void:
+	_clear_container(room_buttons)
+	for room_id: String in ROOM_ORDER:
+		var room: Dictionary = ROOMS[room_id]
+		var button: Button = Button.new()
+		var current_prefix: String = "● " if room_id == _current_room else ""
+		var private_suffix: String = "  • Private" if bool(room.get("private", false)) else ""
+		button.text = "%s%s%s" % [current_prefix, room["name"], private_suffix]
+		button.custom_minimum_size = Vector2(0, 43)
+		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		button.disabled = bool(room.get("private", false))
+		button.pressed.connect(_select_room.bind(room_id))
+		room_buttons.add_child(button)
+
+
+func _rebuild_character_stage() -> void:
+	var lines: PackedStringArray = []
+	for character_id_value: Variant in _npc_resolutions:
+		var character_id: String = str(character_id_value)
 		var resolution: Dictionary = _npc_resolutions[character_id]
 		if not bool(resolution.get("present", false)) or str(resolution.get("room", "")) != _current_room:
 			continue
-		var coordinates: Array = resolution.get("position", [])
-		if coordinates.size() != 2:
-			continue
-		var npc_position: Vector2 = Vector2(float(coordinates[0]), float(coordinates[1]))
-		var distance: float = world_position.distance_to(npc_position)
-		if distance < closest_distance:
-			closest = {
-				"id": "npc:%s" % character_id,
-				"room": resolution.get("room", ""),
-				"position": npc_position,
-				"label": "Talk to %s" % _first_name(str(character_id)),
-				"character_id": str(character_id),
-			}
-			closest_distance = distance
-	return closest
+		var character: Variant = ContentRegistry.get_character(character_id)
+		var display_name: String = str(character.get("display_name", character_id)) if character is Dictionary else character_id
+		lines.append("[center][font_size=34][b]%s[/b][/font_size]\n[color=#e9a86c]%s[/color][/center]" % [display_name, resolution.get("activity_label", "At home")])
+	character_text.text = "\n\n".join(lines) if not lines.is_empty() else "[center][font_size=25][color=#b8c7c7]No one else is in this room right now.[/color][/font_size][/center]"
 
 
-func _on_interact_requested(_world_position: Vector2) -> void:
-	if _nearest_interaction.is_empty() or _modal_open():
-		return
-	if _nearest_interaction.has("character_id"):
-		_open_npc_panel(str(_nearest_interaction["character_id"]))
-	elif _nearest_interaction.has("actions"):
-		_open_action_panel(_nearest_interaction)
-	else:
-		_handle_special(str(_nearest_interaction.get("special", "")))
-
-
-func _open_action_panel(interaction: Dictionary) -> void:
+func _rebuild_room_actions() -> void:
 	_clear_container(action_buttons)
-	action_title.text = str(interaction["label"])
-	for action_id: Variant in interaction["actions"]:
-		var action: Variant = ContentRegistry.get_content("actions", str(action_id))
-		if not action is Dictionary:
+	action_title.text = "CHOICES • %s" % ROOMS[_current_room]["name"]
+	for interaction: Dictionary in INTERACTIONS:
+		if str(interaction.get("room", "")) != _current_room:
 			continue
-		var button: Button = Button.new()
-		button.text = "%s — %s" % [action.get("name", action_id), action.get("description", "")]
-		button.custom_minimum_size = Vector2(0, 46)
-		button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		button.pressed.connect(_on_action_selected.bind(str(action_id)))
-		action_buttons.add_child(button)
-	action_panel.visible = true
-	player.movement_enabled = false
-	SettingsService.apply_accessibility(action_panel)
-	if action_buttons.get_child_count() > 0:
-		action_buttons.get_child(0).grab_focus()
+		if interaction.has("actions"):
+			for action_id_value: Variant in interaction["actions"]:
+				_add_home_action_button(str(action_id_value))
+		else:
+			_add_choice_button(str(interaction["label"]), _handle_special.bind(str(interaction.get("special", ""))))
+	for character_id_value: Variant in _npc_resolutions:
+		var character_id: String = str(character_id_value)
+		var resolution: Dictionary = _npc_resolutions[character_id]
+		if bool(resolution.get("present", false)) and str(resolution.get("room", "")) == _current_room:
+			_add_choice_button("Talk to %s" % _first_name(character_id), _open_npc_panel.bind(character_id))
+	if action_buttons.get_child_count() == 0:
+		_add_choice_button("There is nothing you need to do here right now.", Callable(), false)
+	SettingsService.apply_accessibility(action_buttons)
+
+
+func _add_home_action_button(action_id: String) -> void:
+	var action: Variant = ContentRegistry.get_content("actions", action_id)
+	if action is Dictionary:
+		_add_choice_button("%s\n%s" % [action.get("name", action_id), action.get("description", "")], _on_action_selected.bind(action_id))
+
+
+func _add_choice_button(label: String, callback: Callable, enabled: bool = true) -> Button:
+	var button: Button = Button.new()
+	button.text = label
+	button.custom_minimum_size = Vector2(0, 56)
+	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	button.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	button.disabled = not enabled
+	if enabled:
+		button.pressed.connect(callback)
+	action_buttons.add_child(button)
+	return button
 
 
 func _on_action_selected(action_id: String) -> void:
 	var result: Dictionary = HomeActionService.perform(action_id)
 	if result.get("ok", false):
-		status_label.text = "%s completed. Time and state updated." % result["action"].get("name", action_id)
+		status_label.text = "%s completed. Time and your condition were updated." % result["action"].get("name", action_id)
 	else:
-		status_label.text = str(result.get("errors", ["Action could not be completed."])[0])
-	_close_panels()
+		status_label.text = str(result.get("errors", ["That action could not be completed."])[0])
+	_sync_household_schedule(true)
+	_render_room()
 	_refresh_hud()
+
+
+func _perform_home_action(action_id: String) -> void:
+	_on_action_selected(action_id)
 
 
 func _handle_special(special: String) -> void:
 	match special:
-		"wardrobe":
-			_open_wardrobe()
-		"phone":
-			smartphone.open_phone()
-		"lily_door":
-			status_label.text = "You knock. Lily asks for privacy right now, so the door remains closed."
-		"parents_door":
-			status_label.text = "Your parents' room is private. You cannot enter without permission."
-		"sofa":
-			status_label.text = "The living room is available for household conversations and relaxation."
+		"wardrobe": _open_wardrobe()
+		"phone": smartphone.open_phone()
+		"lily_door": status_label.text = "You knock. Lily asks for privacy right now, so the door remains closed."
+		"parents_door": status_label.text = "You knock. Your parents' room remains private until they invite you in."
+		"sofa": status_label.text = "You settle near the sofa. This is a natural place for family conversations and quiet downtime."
 		"family_car":
 			var permission: String = str(GameState.current_state["player"]["transportation"]["family_car_permission"])
 			if permission == "regular_shared_access":
@@ -328,14 +307,12 @@ func _handle_special(special: String) -> void:
 				var next_state: Dictionary = GameState.current_state.duplicate(true)
 				next_state["world_state"]["world_flags"]["family_car_permission_date"] = "Y%d-%02d-%02d" % [next_state["clock"]["year"], next_state["clock"]["month"], next_state["clock"]["day"]]
 				GameState.replace_state(next_state)
-				status_label.text = "You ask to use the family car. Permission is granted for today; return it with fuel and report any damage."
-		"backyard":
-			status_label.text = "The backyard can host exercise, relaxation, and small gatherings."
+				status_label.text = "Permission is granted for today. Return the car with fuel and report any damage."
+		"backyard": status_label.text = "The backyard can host exercise, relaxation, and small gatherings. More activities can unlock here later."
 		"leave_home":
-			_remember_player_position()
 			TravelService.start_transportation_tutorial("home.front_gate")
 			smartphone.open_phone("city_map")
-			status_label.text = "Choose an unlocked Port Alder destination and compare routes."
+			status_label.text = "Choose an unlocked Port Alder destination and confirm a route."
 
 
 func _open_npc_panel(character_id: String) -> void:
@@ -344,45 +321,27 @@ func _open_npc_panel(character_id: String) -> void:
 		return
 	_clear_container(action_buttons)
 	action_title.text = "%s • %s" % [character.get("display_name", character_id), _npc_resolutions.get(character_id, {}).get("activity_label", "At home")]
-	var conversations: Array = _available_conversations(character)
-	for conversation: Dictionary in conversations:
-		var button: Button = Button.new()
-		button.text = "Talk — %s" % conversation.get("title", str(conversation.get("id", "Conversation")).replace("_", " ").capitalize())
-		button.custom_minimum_size = Vector2(0, 48)
-		button.pressed.connect(_on_conversation_selected.bind(str(conversation.get("id", ""))))
-		action_buttons.add_child(button)
+	for conversation: Dictionary in _available_conversations(character):
+		_add_choice_button("Talk • %s" % conversation.get("title", str(conversation.get("id", "Conversation")).replace("_", " ").capitalize()), _on_conversation_selected.bind(str(conversation.get("id", ""))))
 	var ambient_line: String = _ambient_line(character)
 	if not ambient_line.is_empty():
-		var chat_button: Button = Button.new()
-		chat_button.text = "Chat"
-		chat_button.custom_minimum_size = Vector2(0, 48)
-		chat_button.pressed.connect(_on_ambient_chat_selected.bind(character_id, ambient_line))
-		action_buttons.add_child(chat_button)
+		_add_choice_button("Chat for a few minutes", _on_ambient_chat_selected.bind(character_id, ambient_line))
 	if action_buttons.get_child_count() == 0:
-		var unavailable: Button = Button.new()
-		unavailable.text = "%s has nothing new to discuss right now." % _first_name(character_id)
-		unavailable.disabled = true
-		action_buttons.add_child(unavailable)
-	action_panel.visible = true
-	player.movement_enabled = false
-	SettingsService.apply_accessibility(action_panel)
-	if action_buttons.get_child_count() > 0:
-		action_buttons.get_child(0).grab_focus()
+		_add_choice_button("%s has nothing new to discuss right now." % _first_name(character_id), Callable(), false)
+	_add_choice_button("Back to room choices", _render_room)
+	SettingsService.apply_accessibility(action_buttons)
 
 
 func _available_conversations(character: Dictionary) -> Array:
 	var available: Array = []
 	for conversation: Variant in character.get("conversations", []):
-		if not conversation is Dictionary:
-			continue
-		var availability: Dictionary = DialogueService.can_begin(str(conversation.get("id", "")))
-		if availability.get("ok", false):
+		if conversation is Dictionary and DialogueService.can_begin(str(conversation.get("id", ""))).get("ok", false):
 			available.append(conversation)
 	return available
 
 
 func _on_conversation_selected(conversation_id: String) -> void:
-	_remember_player_position()
+	_update_world_location(false)
 	var result: Dictionary = DialogueService.begin(conversation_id)
 	if not result.get("ok", false):
 		status_label.text = str(result.get("errors", ["That conversation is not available right now."])[0])
@@ -393,7 +352,8 @@ func _on_conversation_selected(conversation_id: String) -> void:
 func _on_ambient_chat_selected(character_id: String, line: String) -> void:
 	TimeService.advance_minutes(5, "home.ambient_chat:%s" % character_id)
 	status_label.text = "%s: “%s”" % [_first_name(character_id), line]
-	_close_panels()
+	_sync_household_schedule(true)
+	_render_room()
 
 
 func _ambient_line(character: Dictionary) -> String:
@@ -417,43 +377,9 @@ func _sync_household_schedule(force: bool = false) -> void:
 	_npc_resolutions = sync_result.get("resolutions", {})
 	if sync_result.get("changed", false):
 		GameState.replace_state(sync_result["state"])
-	_rebuild_household_actors()
-
-
-func _rebuild_household_actors() -> void:
-	for child: Node in household_actors.get_children():
-		household_actors.remove_child(child)
-		child.queue_free()
-	for character_id: Variant in _npc_resolutions:
-		var resolution: Dictionary = _npc_resolutions[character_id]
-		if not bool(resolution.get("present", false)):
-			continue
-		var character: Dictionary = ContentRegistry.get_character(str(character_id))
-		var color_hex: String = str(character.get("home_routine", {}).get("actor_color", "67c6c3"))
-		var actor: CharacterBody2D = HouseholdNpcActorScene.instantiate()
-		household_actors.add_child(actor)
-		actor.configure(resolution, color_hex)
-
-
-func _restore_player_location() -> void:
-	var world: Dictionary = GameState.current_state["world_state"]
-	var location: String = str(world.get("current_location", "hale_home.player_bedroom"))
-	var room_id: String = location.trim_prefix("hale_home.") if location.begins_with("hale_home.") else "player_bedroom"
-	if not _rooms.has(room_id):
-		room_id = "player_bedroom"
-	var saved_position: Array = world.get("home_player_position", [])
-	if saved_position.size() == 2:
-		player.position = Vector2(float(saved_position[0]), float(saved_position[1]))
-	else:
-		player.position = _rooms[room_id]["rect"].get_center()
-	_set_current_room(room_id)
-
-
-func _remember_player_position() -> void:
-	var next_state: Dictionary = GameState.current_state.duplicate(true)
-	next_state["world_state"]["current_location"] = "hale_home.%s" % _current_room
-	next_state["world_state"]["home_player_position"] = [player.position.x, player.position.y]
-	GameState.replace_state(next_state)
+	if is_node_ready():
+		_rebuild_character_stage()
+		_rebuild_room_actions()
 
 
 func _first_name(character_id: String) -> String:
@@ -486,18 +412,11 @@ func _open_wardrobe() -> void:
 			wardrobe_list.add_child(button)
 	_refresh_outfit_text()
 	wardrobe_panel.visible = true
-	player.movement_enabled = false
 	SettingsService.apply_accessibility(wardrobe_panel)
-	if wardrobe_list.get_child_count() > 0:
-		wardrobe_list.get_child(0).grab_focus()
 
 
 func _on_equip_item(item_id: String, slot: String) -> void:
-	var result: Dictionary = SimulationService.apply_operation(
-		"inventory.equip",
-		{"item_id": item_id, "wardrobe_slot": slot},
-		"home.wardrobe"
-	)
+	var result: Dictionary = SimulationService.apply_operation("inventory.equip", {"item_id": item_id, "wardrobe_slot": slot}, "home.wardrobe")
 	if result.get("ok", false):
 		status_label.text = "Outfit updated."
 		_open_wardrobe()
@@ -516,7 +435,6 @@ func _refresh_outfit_text() -> void:
 
 func _toggle_quest_panel() -> void:
 	quest_panel.visible = not quest_panel.visible
-	player.movement_enabled = not quest_panel.visible
 	if quest_panel.visible:
 		var lines: PackedStringArray = ["[font_size=26][b]TRACKED QUESTS[/b][/font_size]"]
 		var tracked: Array = GameState.current_state["quest_state"].get("tracked", [])
@@ -525,64 +443,55 @@ func _toggle_quest_panel() -> void:
 			if quest is Dictionary:
 				lines.append("[b]%s[/b]\n%s" % [quest.get("title", quest.get("id", "Quest")), quest.get("summary", "")])
 		if tracked.is_empty():
-			lines.append("Nothing is pinned. Open the phone's Quests app to track any discovered active quest.")
+			lines.append("Nothing is pinned. Open the phone's Quests app to track a discovered quest.")
 		quest_text.text = "\n\n".join(lines)
 
 
 func _refresh_hud() -> void:
-	if not GameState.has_active_game():
+	if not GameState.has_active_game() or not is_node_ready():
 		return
 	var state: Dictionary = GameState.current_state
 	var clock: Dictionary = state["clock"]
 	var month_index: int = clampi(int(clock["month"]) - 1, 0, MONTH_NAMES.size() - 1)
-	clock_label.text = "%s • %s • %s" % [
-		str(clock["weekday"]).capitalize(),
-		str(clock["block"]).replace("_", " ").capitalize(),
-		"%s %d" % [MONTH_NAMES[month_index], clock["day"]],
-	]
+	clock_label.text = "%s • %s • %s %d" % [str(clock["weekday"]).capitalize(), str(clock["block"]).replace("_", " ").capitalize(), MONTH_NAMES[month_index], clock["day"]]
 	var needs: Dictionary = state["player"]["needs"]
-	needs_label.text = "Energy %d   Hunger %d   Hydration %d   Hygiene %d   Stress %d" % [
-		int(needs["energy"]), int(needs["hunger"]), int(needs["hydration"]),
-		int(needs["hygiene"]), int(needs["stress"]),
-	]
-
-
-func _modal_open() -> bool:
-	return action_panel.visible or wardrobe_panel.visible or quest_panel.visible or smartphone.is_open()
+	needs_label.text = "Energy %d   Hunger %d   Hydration %d   Hygiene %d   Stress %d" % [int(needs["energy"]), int(needs["hunger"]), int(needs["hydration"]), int(needs["hygiene"]), int(needs["stress"])]
 
 
 func _close_panels() -> void:
-	action_panel.visible = false
 	wardrobe_panel.visible = false
 	quest_panel.visible = false
-	player.movement_enabled = true
-
-
-func _clear_container(container: Container) -> void:
-	for child: Node in container.get_children():
-		container.remove_child(child)
-		child.queue_free()
 
 
 func _on_close_panel_pressed() -> void:
 	_close_panels()
 
 
+func _on_phone_button_pressed() -> void:
+	smartphone.open_phone()
+
+
+func _on_map_button_pressed() -> void:
+	smartphone.open_phone("city_map")
+
+
 func _on_phone_opened() -> void:
-	player.movement_enabled = false
+	_close_panels()
 
 
 func _on_phone_closed() -> void:
-	player.movement_enabled = true
+	_refresh_hud()
 
 
 func _on_travel_completed(destination: String) -> void:
 	var location_id: String = destination.get_slice(".", 0)
-	if location_id != "hale_home":
-		var next_state: Dictionary = GameState.current_state.duplicate(true)
-		next_state["world_state"]["home_player_position"] = [player.position.x, player.position.y]
-		GameState.replace_state(next_state)
 	get_tree().change_scene_to_file(AppConstants.HALE_HOME_SCENE if location_id == "hale_home" else AppConstants.CITY_LOCATION_SCENE)
+
+
+func _clear_container(container: Container) -> void:
+	for child: Node in container.get_children():
+		container.remove_child(child)
+		child.queue_free()
 
 
 func _apply_accessibility_settings() -> void:

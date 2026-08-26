@@ -3,12 +3,12 @@
 Status: approved implementation target once reviewed  
 Build name: First Week Foundations  
 Engine: Godot 4.x stable with GDScript  
-Presentation: 2D top-down exploration with VN-style conversations
+Presentation: Ren'Py-style visual novel and menu-driven sandbox navigation in Godot
 
 Implementation status: Phase 0 project foundation complete. Phase 1 content loading,
 new-game state creation, seven-block clock, core simulation, VN dialogue, quest
 branching, required character creation, and Elena's playable opening are
-implemented. The connected Hale home, room collisions, essential needs actions,
+implemented. The connected Hale home, VN room navigation, essential needs actions,
 household supplies, wardrobe equipment, reusable phone shell, all nine required
 foundation apps, and the additional playable Education, Jobs, Money, and Shopping
 apps are implemented. The app
@@ -50,7 +50,7 @@ The slice is complete when a fresh installation can:
 1. Start a new game and create a valid protagonist.
 2. Play Elena's opening scene and select college, employment, or both.
 3. Enter the sandbox with the correct quests, rent, and allowance rules.
-4. Walk through the Hale home and use its essential rooms.
+4. Navigate the Hale home by room menu and use its essential rooms.
 5. Satisfy Hygiene, Hunger, Hydration, Energy, and wardrobe requirements.
 6. Use every required phone app without opening developer tools.
 7. Leave home and travel to at least three city destinations.
@@ -104,12 +104,12 @@ The life choice produces:
 - Both: `enroll_at_westshore` and `find_part_time_employment`, no rent while
   enrolled, weekly allowance active.
 
-When the conversation ends, the phone quest tracker unlocks and free movement
-begins without a chapter-selection screen.
+When the conversation ends, the phone quest tracker unlocks and the open sandbox
+begins without a chapter-selection screen or forced route.
 
 ### Home exploration
 
-The Hale home is a connected top-down scene. The slice requires the player bedroom,
+The Hale home is a connected visual-novel location screen. The slice requires the player bedroom,
 upstairs hall, family bathroom, Lily's door, parents' door, living room, kitchen,
 dining room, laundry room, garage, front yard, and backyard.
 
@@ -124,22 +124,24 @@ Essential interactions:
 - Access the family car only when permission and requirements allow
 - Exit through the front yard
 
-Implementation note: the current playable home contains all twelve required spaces,
-free movement, collision boundaries, blocked private bedrooms, bedroom, bathroom,
-kitchen, dining, laundry, garage, yard interactions, and a state-backed wardrobe.
-Elena, Daniel, and Lily now appear in authored rooms according to work, school, and
-home routines stored in their character packages. Direct interaction offers active
+Implementation note: the current playable home exposes all twelve required spaces
+through a room menu, keeps private bedrooms disabled until permission is granted,
+and provides bedroom, bathroom, kitchen, dining, laundry, garage, yard interactions,
+and a state-backed wardrobe. Selecting another room does not consume time; confirmed
+activities, conversations, and travel do. Elena, Daniel, and Lily appear on the VN
+character stage according to work, school, and home routines stored in their character packages. Contextual choices offer active
 story conversations or short ambient dialogue; unavailable family members remain at
 their external schedule locations. The front gate now opens route confirmation, and
 daily family-car permission can be requested from the garage.
 
 Private doors require knocking or permission. The player cannot enter an occupied
-bathroom or restricted bedroom by walking through a collision boundary.
+bathroom or restricted bedroom by selecting a disabled room entry.
 
 ### Phone
 
-The phone pauses direct movement but not the current game timestamp until an action
-that consumes time is confirmed. It must work with keyboard, mouse, and controller.
+The phone overlays the current VN location. Opening menus does not advance time;
+only a confirmed action that declares a duration does. It must work with keyboard,
+mouse, and controller.
 
 Required apps:
 
@@ -241,9 +243,9 @@ in the required path.
 Minimum visual set:
 
 - Main-menu background
-- Player placeholder sprite with four-direction movement
-- Household and four featured NPC placeholder sprites
-- Hale home tiles and room props
+- Player identity/profile placeholder art
+- Household and four featured NPC placeholder portraits or standing character art
+- Hale home room backdrops and prop illustrations
 - Exterior hub, Westshore, employment office, gym, park, and cinema backdrops
 - VN dialogue frame with speaker name, text, portrait area, choices, and history
 - Phone frame and icons for all required apps
@@ -265,8 +267,8 @@ Default actions:
 
 | Action | Keyboard and mouse | Controller |
 | --- | --- | --- |
-| Move | WASD or arrows | Left stick or D-pad |
-| Interact | E or left click | South face button |
+| Navigate choices | Arrow keys, mouse, or Tab | Left stick or D-pad |
+| Select / advance | E, Space, Enter, or left click | South face button |
 | Cancel/back | Escape or right click | East face button |
 | Phone | Tab | Select/View button |
 | Quest tracker | Q | Left shoulder |
@@ -411,7 +413,7 @@ These are development targets, not promises for the final full-city build.
 - Full alcohol social events
 - Licensed professional-companion gameplay
 - Remaining relationship chapters beyond opening arcs
-- Full city free-roaming and every district interior
+- Finished background art for every city room and district interior
 - Mod creation UI; only base content loading is required
 - Optional local LLM support
 - Final artwork, animation, voice acting, localization, achievements, and cloud saves
@@ -439,8 +441,8 @@ Elena's complete opening scene. Completion requires all three life-path branches
 
 ### Phase 3 — Home and needs
 
-Implement movement, collision, room transitions, interactions, wardrobe, Hygiene,
-food, and sleep. Completion requires leaving the house in a valid outfit.
+Implement VN room navigation, contextual choices, scheduled household appearances,
+wardrobe, Hygiene, food, and sleep. Completion requires leaving the house in a valid outfit.
 
 ### Phase 4 — Phone and calendar
 

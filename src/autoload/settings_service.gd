@@ -6,7 +6,7 @@ const SETTINGS_PATH: String = "user://settings.cfg"
 const TEXT_SCALES: Array = [1.0, 1.25, 1.5, 1.75]
 const WINDOW_SIZES: PackedStringArray = ["1280x720", "1600x900", "1920x1080"]
 const REMAPPABLE_ACTIONS: PackedStringArray = [
-	"move_up", "move_down", "move_left", "move_right", "interact", "cancel", "phone",
+	"interact", "cancel", "phone",
 	"quest_tracker", "city_map", "dialogue_history", "dialogue_skip", "pause", "quicksave", "quickload",
 ]
 

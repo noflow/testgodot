@@ -218,23 +218,24 @@ func _test_hale_home_scene() -> void:
 	if home_scene == null:
 		return
 	var instance: Node = home_scene.instantiate()
-	_expect(instance.get_node_or_null("Player") != null, "Hale home contains a collision-enabled player.")
-	_expect(instance.get_node_or_null("HouseholdActors") != null, "Hale home contains a reusable household actor layer.")
-	_expect(instance.get_node_or_null("Interface/TopMargin/TopLayout/Header/RoomLabel") != null, "Hale home contains its room HUD.")
-	_expect(instance.get_node_or_null("Interface/ActionPanel") != null, "Hale home contains the home-action panel.")
+	_expect(instance.get_node_or_null("Player") == null, "Hale home has no movement-controlled player object.")
+	_expect(instance.get_node_or_null("Backdrop") != null, "Hale home contains its static VN backdrop.")
+	_expect(instance.get_node_or_null("Interface/Screen/Header/Margin/Layout/Top/RoomLabel") != null, "Hale home contains its VN location header.")
+	_expect(instance.get_node_or_null("Interface/Screen/MainMargin/MainLayout/NavigationPanel/Margin/Layout/Scroll/RoomButtons") != null, "Hale home contains menu-driven room navigation.")
+	_expect(instance.get_node_or_null("Interface/Screen/MainMargin/MainLayout/ActionPanel/Margin/Layout/Scroll/ActionButtons") != null, "Hale home contains persistent VN choices.")
 	_expect(instance.get_node_or_null("Interface/WardrobePanel") != null, "Hale home contains the wardrobe panel.")
 	_expect(instance.get_node_or_null("Interface/QuestPanel") != null, "Hale home retains the quest tracker.")
 	_expect(instance.get_node_or_null("Interface/Smartphone") != null, "Hale home contains the reusable smartphone.")
 	instance.free()
-	var actor_scene: PackedScene = load("res://scenes/world/household_npc_actor.tscn")
-	_expect(actor_scene != null, "Reusable household NPC actor scene loads.")
 	var city_scene: PackedScene = load("res://scenes/locations/city_location.tscn")
 	_expect(city_scene != null, "Reusable city destination scene loads.")
 	if city_scene != null:
 		var city_instance: Node = city_scene.instantiate()
-		_expect(city_instance.get_node_or_null("Player") != null, "City destination scene contains the top-down player.")
+		_expect(city_instance.get_node_or_null("Player") == null, "City destination scene has no movement-controlled player object.")
+		_expect(city_instance.get_node_or_null("Backdrop") != null, "City destination scene contains its static VN backdrop.")
 		_expect(city_instance.get_node_or_null("Interface/Smartphone") != null, "City destination scene contains the reusable smartphone.")
-		_expect(city_instance.get_node_or_null("Interface/ActionPanel") != null, "City destination scene contains its room activity panel.")
+		_expect(city_instance.get_node_or_null("Interface/MainMargin/MainLayout/NavigationPanel/Margin/Layout/Scroll/RoomButtons") != null, "City destination scene contains menu-driven area navigation.")
+		_expect(city_instance.get_node_or_null("Interface/MainMargin/MainLayout/ActionPanel") != null, "City destination scene contains its VN activity choices.")
 		city_instance.free()
 
 

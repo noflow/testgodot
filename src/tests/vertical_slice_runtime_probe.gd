@@ -169,7 +169,7 @@ func _exercise_home_and_phone() -> bool:
 	get_tree().root.add_child(home)
 	await get_tree().process_frame
 	await get_tree().process_frame
-	if not _check(home.get_node_or_null("Player") != null and home.get_node_or_null("Interface/Smartphone") != null, "Hale home did not create its player and phone"):
+	if not _check(home.get_node_or_null("Player") == null and home.get_node_or_null("Backdrop") != null and home.get_node_or_null("Interface/Smartphone") != null, "Hale home did not create its VN backdrop and phone"):
 		home.free()
 		return false
 	home.call("_set_current_room", "family_bathroom")

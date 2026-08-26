@@ -11,18 +11,18 @@ slice is complete. Phase 1 includes full content indexing, resolved new-game sta
 the seven-block calendar clock, atomic simulation operations, the VN dialogue and
 quest engines, complete data-driven character creation, Elena's playable
 three-branch opening scene, and the first connected Hale home sandbox. The home
-includes room collisions, private doors, needs-aware food and hygiene actions,
+uses Ren'Py-style room menus, static scene stages, private doors, needs-aware food and hygiene actions,
 sleep, laundry, household storage, and a working wardrobe. The reusable smartphone
 now provides the nine vertical-slice apps plus Education, Jobs, Money, and Shopping, authored character messages and replies,
 NPC-aware calendar scheduling, live relationships, weather/outfit checks, the city
 map, quest progress, character statistics, and complete persistent settings. Elena,
 Daniel, and Lily now follow their character-authored work, school, and home-room
-schedules, appear as reusable top-down actors, and expose available story or ambient
-conversations through direct exploration.
+schedules, appear as scheduled character encounters on the VN stage, and expose
+available story or ambient conversations through contextual choices.
 The City Map now plans and confirms graph-based walking, bus, taxi, and permitted
 car travel across nine opening destinations. Trips charge fares, advance the live
 clock, respect closures and safety requirements, update quests, and arrive in a
-reusable data-driven destination scene with explorable rooms.
+reusable data-driven destination scene with menu-selectable areas.
 Westshore Administration, Harbor Employment Centre, and Forge Fitness now expose
 room-specific activity panels. The Westshore advisor creates an actual semester
 schedule and tuition state; Harbor provides employment orientation, listing review,
@@ -86,8 +86,8 @@ correct current appointment, and phone-created hangouts advance their owning que
 
 - Godot 4.7.2 stable
 - GDScript
-- 2D top-down exploration
-- VN-style dialogue presentation
+- Ren'Py-style visual-novel presentation built in Godot
+- Static location stages, character portraits, and menu-driven room navigation
 - PC first: Windows, macOS, and Linux
 - Data-driven quests, schedules, and character packages
 - One importable `.character` file per major character

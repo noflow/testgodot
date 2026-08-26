@@ -26,8 +26,9 @@ func _run_probe() -> void:
 	await get_tree().process_frame
 	await get_tree().process_frame
 	var phone: Node = instance.get_node_or_null("Interface/Smartphone")
-	if phone == null or instance.get_node_or_null("Player") == null:
-		printerr("CITY PROBE: player or smartphone is missing")
+	var room_buttons: Container = instance.get_node_or_null("Interface/MainMargin/MainLayout/NavigationPanel/Margin/Layout/Scroll/RoomButtons")
+	if phone == null or instance.get_node_or_null("Player") != null or instance.get_node_or_null("Backdrop") == null or room_buttons == null:
+		printerr("CITY PROBE: VN backdrop, area navigation, or smartphone is missing")
 		get_tree().quit(1)
 		return
 	if str(instance.get_node("Interface/Header/Margin/Layout/Top/LocationLabel").text) != "Westshore Administration Office":
@@ -36,9 +37,9 @@ func _run_probe() -> void:
 		return
 	instance.call("_on_interact_requested", Vector2.ZERO)
 	await get_tree().process_frame
-	var action_panel: Control = instance.get_node("Interface/ActionPanel")
-	var action_buttons: VBoxContainer = instance.get_node("Interface/ActionPanel/Margin/Layout/Scroll/ActionButtons")
-	if not action_panel.visible or action_buttons.get_child_count() != 1 or action_buttons.get_child(0).disabled:
+	var action_panel: Control = instance.get_node("Interface/MainMargin/MainLayout/ActionPanel")
+	var action_buttons: VBoxContainer = instance.get_node("Interface/MainMargin/MainLayout/ActionPanel/Margin/Layout/Scroll/ActionButtons")
+	if not action_panel.visible or room_buttons.get_child_count() == 0 or action_buttons.get_child_count() != 1 or action_buttons.get_child(0).disabled:
 		printerr("CITY PROBE: enrollment activity did not populate")
 		get_tree().quit(1)
 		return
@@ -51,5 +52,5 @@ func _run_probe() -> void:
 		printerr("CITY PROBE: reverse route planner did not populate")
 		get_tree().quit(1)
 		return
-	print("PASS: City destination rendered data-driven rooms, institutional actions, and reverse travel routes.")
+	print("PASS: City destination rendered data-driven VN areas, institutional choices, and reverse travel routes.")
 	get_tree().quit(0)

@@ -1,93 +1,127 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://src/world/hale_home.gd" id="1_home"]
-[ext_resource type="Script" path="res://src/world/top_down_player.gd" id="2_player"]
-[ext_resource type="PackedScene" path="res://scenes/phone/smartphone.tscn" id="3_phone"]
+[ext_resource type="PackedScene" path="res://scenes/phone/smartphone.tscn" id="2_phone"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_player"]
-radius = 18.0
+[sub_resource type="StyleBoxFlat" id="StyleBox_header"]
+bg_color = Color(0.025, 0.055, 0.073, 0.96)
+border_width_bottom = 2
+border_color = Color(0.404, 0.776, 0.765, 1)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_modal"]
-bg_color = Color(0.055, 0.102, 0.129, 0.98)
+[sub_resource type="StyleBoxFlat" id="StyleBox_panel"]
+bg_color = Color(0.035, 0.07, 0.09, 0.94)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.32, 0.48, 0.5, 0.9)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_scene"]
+bg_color = Color(0.045, 0.085, 0.105, 0.72)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.914, 0.659, 0.424, 0.8)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_modal"]
+bg_color = Color(0.025, 0.055, 0.073, 0.99)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
 border_color = Color(0.404, 0.776, 0.765, 1)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
 
-[node name="HaleHome" type="Node2D"]
+[node name="HaleHome" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("1_home")
 
-[node name="HouseholdActors" type="Node2D" parent="."]
+[node name="Backdrop" type="ColorRect" parent="."]
 unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.141, 0.231, 0.294, 1)
+mouse_filter = 2
 
-[node name="Player" type="CharacterBody2D" parent="."]
-unique_name_in_owner = true
-position = Vector2(210, 180)
-collision_layer = 1
-collision_mask = 1
-script = ExtResource("2_player")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
-shape = SubResource("CircleShape2D_player")
-
-[node name="Camera2D" type="Camera2D" parent="Player"]
-position = Vector2(0, 0)
-enabled = true
-position_smoothing_enabled = true
-position_smoothing_speed = 8.0
-limit_left = 0
-limit_top = 0
-limit_right = 1600
-limit_bottom = 1000
+[node name="BackdropShade" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.01, 0.02, 0.03, 0.28)
+mouse_filter = 2
 
 [node name="Interface" type="CanvasLayer" parent="."]
 layer = 10
 
-[node name="Smartphone" parent="Interface" instance=ExtResource("3_phone")]
-unique_name_in_owner = true
+[node name="Screen" type="Control" parent="Interface"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="TopShade" type="ColorRect" parent="Interface"]
+[node name="Header" type="PanelContainer" parent="Interface/Screen"]
+layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_bottom = 82.0
+offset_bottom = 94.0
 grow_horizontal = 2
-color = Color(0.035, 0.063, 0.086, 0.94)
-mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBox_header")
 
-[node name="TopMargin" type="MarginContainer" parent="Interface"]
-anchors_preset = 10
-anchor_right = 1.0
-offset_bottom = 82.0
-grow_horizontal = 2
+[node name="Margin" type="MarginContainer" parent="Interface/Screen/Header"]
+layout_mode = 2
 theme_override_constants/margin_left = 24
 theme_override_constants/margin_top = 12
 theme_override_constants/margin_right = 24
 theme_override_constants/margin_bottom = 10
-mouse_filter = 2
 
-[node name="TopLayout" type="VBoxContainer" parent="Interface/TopMargin"]
+[node name="Layout" type="VBoxContainer" parent="Interface/Screen/Header/Margin"]
 layout_mode = 2
 theme_override_constants/separation = 5
-mouse_filter = 2
 
-[node name="Header" type="HBoxContainer" parent="Interface/TopMargin/TopLayout"]
+[node name="Top" type="HBoxContainer" parent="Interface/Screen/Header/Margin/Layout"]
 layout_mode = 2
-mouse_filter = 2
 
-[node name="RoomLabel" type="Label" parent="Interface/TopMargin/TopLayout/Header"]
+[node name="HomeLabel" type="Label" parent="Interface/Screen/Header/Margin/Layout/Top"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.404, 0.776, 0.765, 1)
+theme_override_font_sizes/font_size = 15
+text = "HALE FAMILY HOME  /"
+
+[node name="RoomLabel" type="Label" parent="Interface/Screen/Header/Margin/Layout/Top"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.404, 0.776, 0.765, 1)
+theme_override_colors/font_color = Color(0.925, 0.965, 0.96, 1)
 theme_override_font_sizes/font_size = 23
-text = "Player Bedroom"
+text = "Your Bedroom"
 
-[node name="ClockLabel" type="Label" parent="Interface/TopMargin/TopLayout/Header"]
+[node name="ClockLabel" type="Label" parent="Interface/Screen/Header/Margin/Layout/Top"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.914, 0.659, 0.424, 1)
@@ -95,115 +129,219 @@ theme_override_font_sizes/font_size = 17
 text = "Tuesday • Morning • August 20"
 horizontal_alignment = 2
 
-[node name="NeedsLabel" type="Label" parent="Interface/TopMargin/TopLayout"]
+[node name="NeedsLabel" type="Label" parent="Interface/Screen/Header/Margin/Layout"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.78, 0.86, 0.86, 1)
 theme_override_font_sizes/font_size = 15
 text = "Energy 75   Hunger 20   Hydration 15   Hygiene 80   Stress 25"
 
-[node name="BottomShade" type="ColorRect" parent="Interface"]
-anchors_preset = 12
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = -80.0
-grow_horizontal = 2
-grow_vertical = 0
-color = Color(0.035, 0.063, 0.086, 0.94)
-mouse_filter = 2
-
-[node name="BottomMargin" type="MarginContainer" parent="Interface"]
-anchors_preset = 12
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = -80.0
-grow_horizontal = 2
-grow_vertical = 0
-theme_override_constants/margin_left = 24
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 24
-theme_override_constants/margin_bottom = 10
-mouse_filter = 2
-
-[node name="BottomLayout" type="VBoxContainer" parent="Interface/BottomMargin"]
-layout_mode = 2
-theme_override_constants/separation = 4
-mouse_filter = 2
-
-[node name="InteractionPrompt" type="Label" parent="Interface/BottomMargin/BottomLayout"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.914, 0.659, 0.424, 1)
-theme_override_font_sizes/font_size = 18
-text = "E / A — Interact"
-horizontal_alignment = 1
-
-[node name="StatusLabel" type="Label" parent="Interface/BottomMargin/BottomLayout"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.78, 0.86, 0.86, 1)
-text = "WASD / arrows to move • E / Space to interact • Q for quests • Tab for phone"
-horizontal_alignment = 1
-autowrap_mode = 2
-
-[node name="ActionPanel" type="PanelContainer" parent="Interface"]
-unique_name_in_owner = true
-visible = false
+[node name="MainMargin" type="MarginContainer" parent="Interface/Screen"]
+layout_mode = 1
 anchors_preset = 15
-anchor_left = 0.2
-anchor_top = 0.15
-anchor_right = 0.8
-anchor_bottom = 0.85
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 108.0
+offset_bottom = -112.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_modal")
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_right = 20
 
-[node name="Margin" type="MarginContainer" parent="Interface/ActionPanel"]
+[node name="MainLayout" type="HBoxContainer" parent="Interface/Screen/MainMargin"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="NavigationPanel" type="PanelContainer" parent="Interface/Screen/MainMargin/MainLayout"]
+custom_minimum_size = Vector2(275, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_panel")
+
+[node name="Margin" type="MarginContainer" parent="Interface/Screen/MainMargin/MainLayout/NavigationPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 14
+
+[node name="Layout" type="VBoxContainer" parent="Interface/Screen/MainMargin/MainLayout/NavigationPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="Interface/Screen/MainMargin/MainLayout/NavigationPanel/Margin/Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.404, 0.776, 0.765, 1)
+theme_override_font_sizes/font_size = 20
+text = "GO TO ROOM"
+
+[node name="Hint" type="Label" parent="Interface/Screen/MainMargin/MainLayout/NavigationPanel/Margin/Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.68, 0.76, 0.76, 1)
+text = "Room changes do not advance time."
+autowrap_mode = 2
+
+[node name="Scroll" type="ScrollContainer" parent="Interface/Screen/MainMargin/MainLayout/NavigationPanel/Margin/Layout"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="RoomButtons" type="VBoxContainer" parent="Interface/Screen/MainMargin/MainLayout/NavigationPanel/Margin/Layout/Scroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="ScenePanel" type="PanelContainer" parent="Interface/Screen/MainMargin/MainLayout"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBox_scene")
+
+[node name="Margin" type="MarginContainer" parent="Interface/Screen/MainMargin/MainLayout/ScenePanel"]
 layout_mode = 2
 theme_override_constants/margin_left = 28
 theme_override_constants/margin_top = 24
 theme_override_constants/margin_right = 28
 theme_override_constants/margin_bottom = 24
 
-[node name="Layout" type="VBoxContainer" parent="Interface/ActionPanel/Margin"]
+[node name="Layout" type="VBoxContainer" parent="Interface/Screen/MainMargin/MainLayout/ScenePanel/Margin"]
 layout_mode = 2
 theme_override_constants/separation = 14
 
-[node name="ActionTitle" type="Label" parent="Interface/ActionPanel/Margin/Layout"]
+[node name="SceneTitle" type="Label" parent="Interface/Screen/MainMargin/MainLayout/ScenePanel/Margin/Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.914, 0.659, 0.424, 1)
+theme_override_font_sizes/font_size = 34
+text = "YOUR BEDROOM"
+horizontal_alignment = 1
+
+[node name="SceneDescription" type="Label" parent="Interface/Screen/MainMargin/MainLayout/ScenePanel/Margin/Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.93, 0.92, 1)
+theme_override_font_sizes/font_size = 17
+text = "A static visual-novel location description appears here."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="StageDivider" type="HSeparator" parent="Interface/Screen/MainMargin/MainLayout/ScenePanel/Margin/Layout"]
+layout_mode = 2
+
+[node name="CharacterText" type="RichTextLabel" parent="Interface/Screen/MainMargin/MainLayout/ScenePanel/Margin/Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+bbcode_enabled = true
+text = "[center]No one else is in this room.[/center]"
+fit_content = false
+scroll_active = false
+vertical_alignment = 1
+
+[node name="StageNote" type="Label" parent="Interface/Screen/MainMargin/MainLayout/ScenePanel/Margin/Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.61, 0.7, 0.71, 1)
+theme_override_font_sizes/font_size = 14
+text = "Alder Heights • Hale Family Home"
+horizontal_alignment = 1
+
+[node name="ActionPanel" type="PanelContainer" parent="Interface/Screen/MainMargin/MainLayout"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(365, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_panel")
+
+[node name="Margin" type="MarginContainer" parent="Interface/Screen/MainMargin/MainLayout/ActionPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 14
+
+[node name="Layout" type="VBoxContainer" parent="Interface/Screen/MainMargin/MainLayout/ActionPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ActionTitle" type="Label" parent="Interface/Screen/MainMargin/MainLayout/ActionPanel/Margin/Layout"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.404, 0.776, 0.765, 1)
-theme_override_font_sizes/font_size = 28
-text = "Choose an Action"
+theme_override_font_sizes/font_size = 20
+text = "CHOICES"
+autowrap_mode = 2
 
-[node name="Scroll" type="ScrollContainer" parent="Interface/ActionPanel/Margin/Layout"]
+[node name="Scroll" type="ScrollContainer" parent="Interface/Screen/MainMargin/MainLayout/ActionPanel/Margin/Layout"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="ActionButtons" type="VBoxContainer" parent="Interface/ActionPanel/Margin/Layout/Scroll"]
+[node name="ActionButtons" type="VBoxContainer" parent="Interface/Screen/MainMargin/MainLayout/ActionPanel/Margin/Layout/Scroll"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
-[node name="CloseButton" type="Button" parent="Interface/ActionPanel/Margin/Layout"]
-custom_minimum_size = Vector2(0, 44)
+[node name="Footer" type="PanelContainer" parent="Interface/Screen"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -98.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBox_header")
+
+[node name="Margin" type="MarginContainer" parent="Interface/Screen/Footer"]
 layout_mode = 2
-text = "Close (Esc)"
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_top = 9
+theme_override_constants/margin_right = 22
+theme_override_constants/margin_bottom = 9
+
+[node name="Layout" type="VBoxContainer" parent="Interface/Screen/Footer/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="StatusLabel" type="Label" parent="Interface/Screen/Footer/Margin/Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.88, 0.93, 0.92, 1)
+text = "Choose a room or activity. The sandbox is open."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Buttons" type="HBoxContainer" parent="Interface/Screen/Footer/Margin/Layout"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 12
+
+[node name="PhoneButton" type="Button" parent="Interface/Screen/Footer/Margin/Layout/Buttons"]
+custom_minimum_size = Vector2(150, 38)
+layout_mode = 2
+text = "Phone  [Tab]"
+
+[node name="QuestButton" type="Button" parent="Interface/Screen/Footer/Margin/Layout/Buttons"]
+custom_minimum_size = Vector2(150, 38)
+layout_mode = 2
+text = "Quest Tracker  [Q]"
+
+[node name="MapButton" type="Button" parent="Interface/Screen/Footer/Margin/Layout/Buttons"]
+custom_minimum_size = Vector2(150, 38)
+layout_mode = 2
+text = "City Map  [M]"
 
 [node name="WardrobePanel" type="PanelContainer" parent="Interface"]
 unique_name_in_owner = true
 visible = false
+layout_mode = 1
 anchors_preset = 15
-anchor_left = 0.12
+anchor_left = 0.13
 anchor_top = 0.09
-anchor_right = 0.88
+anchor_right = 0.87
 anchor_bottom = 0.91
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_modal")
+theme_override_styles/panel = SubResource("StyleBox_modal")
 
 [node name="Margin" type="MarginContainer" parent="Interface/WardrobePanel"]
 layout_mode = 2
@@ -239,27 +377,27 @@ theme_override_constants/separation = 6
 
 [node name="OutfitText" type="RichTextLabel" parent="Interface/WardrobePanel/Margin/Layout/Columns"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(300, 0)
+custom_minimum_size = Vector2(320, 0)
 layout_mode = 2
 bbcode_enabled = true
-fit_content = false
 
 [node name="CloseButton" type="Button" parent="Interface/WardrobePanel/Margin/Layout"]
 custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
-text = "Close Wardrobe (Esc)"
+text = "Close Wardrobe"
 
 [node name="QuestPanel" type="PanelContainer" parent="Interface"]
 unique_name_in_owner = true
 visible = false
+layout_mode = 1
 anchors_preset = 15
-anchor_left = 0.56
+anchor_left = 0.55
 anchor_top = 0.1
 anchor_right = 0.94
 anchor_bottom = 0.88
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_modal")
+theme_override_styles/panel = SubResource("StyleBox_modal")
 
 [node name="Margin" type="MarginContainer" parent="Interface/QuestPanel"]
 layout_mode = 2
@@ -277,13 +415,17 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 bbcode_enabled = true
-scroll_active = true
 
 [node name="CloseButton" type="Button" parent="Interface/QuestPanel/Margin/Layout"]
 custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
-text = "Close Tracker (Q / Esc)"
+text = "Close Tracker"
 
-[connection signal="pressed" from="Interface/ActionPanel/Margin/Layout/CloseButton" to="." method="_on_close_panel_pressed"]
+[node name="Smartphone" parent="Interface" instance=ExtResource("2_phone")]
+unique_name_in_owner = true
+
+[connection signal="pressed" from="Interface/Screen/Footer/Margin/Layout/Buttons/PhoneButton" to="." method="_on_phone_button_pressed"]
+[connection signal="pressed" from="Interface/Screen/Footer/Margin/Layout/Buttons/QuestButton" to="." method="_toggle_quest_panel"]
+[connection signal="pressed" from="Interface/Screen/Footer/Margin/Layout/Buttons/MapButton" to="." method="_on_map_button_pressed"]
 [connection signal="pressed" from="Interface/WardrobePanel/Margin/Layout/CloseButton" to="." method="_on_close_panel_pressed"]
 [connection signal="pressed" from="Interface/QuestPanel/Margin/Layout/CloseButton" to="." method="_on_close_panel_pressed"]
