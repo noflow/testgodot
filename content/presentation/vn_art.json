@@ -7,7 +7,9 @@
   },
   "vn_backgrounds": [
     {"id": "hale_home.player_bedroom", "location": "hale_home", "room": "player_bedroom", "path": "res://assets/art/backgrounds/hale_home/player_bedroom.svg", "credit": "Original Port Alder placeholder"},
+    {"id": "hale_home.upstairs_landing", "location": "hale_home", "room": "upstairs_landing", "path": "res://assets/art/backgrounds/hale_home/living_room.svg", "credit": "Original Port Alder placeholder"},
     {"id": "hale_home.upstairs_hall", "location": "hale_home", "room": "upstairs_hall", "path": "res://assets/art/backgrounds/hale_home/living_room.svg", "credit": "Original Port Alder placeholder"},
+    {"id": "hale_home.entryway", "location": "hale_home", "room": "entryway", "path": "res://assets/art/backgrounds/hale_home/living_room.svg", "credit": "Original Port Alder placeholder"},
     {"id": "hale_home.family_bathroom", "location": "hale_home", "room": "family_bathroom", "path": "res://assets/art/backgrounds/hale_home/family_bathroom.svg", "credit": "Original Port Alder placeholder"},
     {"id": "hale_home.lily_bedroom", "location": "hale_home", "room": "lily_bedroom", "path": "res://assets/art/backgrounds/hale_home/player_bedroom.svg", "credit": "Original Port Alder placeholder"},
     {"id": "hale_home.parents_bedroom", "location": "hale_home", "room": "parents_bedroom", "path": "res://assets/art/backgrounds/hale_home/player_bedroom.svg", "credit": "Original Port Alder placeholder"},

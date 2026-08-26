@@ -15,7 +15,7 @@ contract-ending feature is used; moving is not an automatic cancellation.
 3. Review unmet enrollment, credit, income, or cash requirements.
 4. Acquire a qualified listing.
 5. Move in now or keep the property for later.
-6. Navigate its rooms with the same on-scene left, right, and outside arrows used throughout the city.
+6. Navigate its physically adjacent rooms with the same contextual up, down, left, and right arrows used throughout the city.
 7. Pay monthly charges through the economy system.
 
 ## Initial market

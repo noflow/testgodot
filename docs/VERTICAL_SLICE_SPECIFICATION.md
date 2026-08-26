@@ -110,7 +110,7 @@ begins without a chapter-selection screen or forced route.
 ### Home exploration
 
 The Hale home is a connected visual-novel location screen. The slice requires the player bedroom,
-upstairs hall, family bathroom, Lily's door, parents' door, living room, kitchen,
+upstairs landing, upstairs hall, front entryway, family bathroom, Lily's door, parents' door, living room, kitchen,
 dining room, laundry room, garage, front yard, and backyard.
 
 Essential interactions:
@@ -124,17 +124,27 @@ Essential interactions:
 - Access the family car only when permission and requirements allow
 - Exit through the front yard
 
-Implementation note: the current playable home exposes all twelve required spaces
-through directional arrows and an accessible room list, exposes private bedrooms as knock-first doorway scenes with changing locked or unlocked states until permission is granted,
-and gives the shared bathroom schedule-aware available, occupied, and locked states.
+Implementation note: the current playable home exposes all fourteen required spaces
+only through contextual up, down, left, and right arrows. The former quick-travel room
+list is hidden, as are directions with no real destination. Movement follows an
+adjacency graph: the bedroom opens onto an upstairs landing with a return arrow, the
+landing connects to the bedroom hall and stairs down to the entryway, and downstairs rooms connect through their
+actual doorways. Only the front yard exits to the neighborhood. Private bedrooms
+remain knock-first doorway scenes with changing locked or unlocked states until
+permission is granted. The shared bathroom has schedule-aware available, occupied,
+and locked states.
 An occupied or locked bathroom replaces hygiene actions with knock and twenty-minute
 wait choices. The home also provides bedroom, bathroom, kitchen, dining, laundry, garage, yard interactions,
 and a state-backed wardrobe. Selecting another room does not consume time; confirmed
 activities, conversations, and travel do. Elena, Daniel, and Lily appear on the VN
 character stage according to work, school, and home routines stored in their character packages. Contextual choices offer active
 story conversations or short ambient dialogue; unavailable family members remain at
-their external schedule locations. The front gate now opens route confirmation, and
-daily family-car permission can be requested from the garage.
+their external schedule locations. The front gate leads to the Hale block, neighborhood
+corner, neighboring porch, gym path, and bus shelter. Destination selection is exposed
+at a valid transit entrance rather than as a room shortcut. The phone map remains
+viewable anywhere, but route confirmation stays locked until the player reaches an
+authored public entrance or transit stop. Daily family-car
+permission can be requested from the garage.
 
 Private doors require knocking or permission. Selecting an occupied bathroom or
 restricted bedroom moves the player to its doorway, never through the closed door.

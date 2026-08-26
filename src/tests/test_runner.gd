@@ -316,7 +316,7 @@ func _test_city_travel_and_routes() -> void:
 	var quests: RefCounted = QuestEngineScript.new(_registry, simulation)
 	var travel: RefCounted = TravelEngineScript.new(_registry, simulation, quests)
 	var state: Dictionary = factory.create_new_game({}, {"random_seed": 712})
-	_expect(state["world_state"]["unlocked_locations"].size() == 9, "New games unlock the nine connected opening destinations.")
+	_expect(state["world_state"]["unlocked_locations"].size() == 10, "New games unlock the ten connected opening destinations, including the neighboring Rowan porch.")
 
 	var plan: Dictionary = travel.plan_routes(state, "westshore_administration_office")
 	_expect(plan.get("ok", false), "The route planner connects Hale Home to Westshore Administration.")
@@ -939,7 +939,7 @@ func _test_vertical_slice_acceptance_suite() -> void:
 		return
 
 	var tests: Array = suite.get("tests", [])
-	_expect(tests.size() == 65, "Acceptance suite contains 65 cases.")
+	_expect(tests.size() == 66, "Acceptance suite contains 66 cases.")
 	var ids: Dictionary = {}
 	for test_case: Variant in tests:
 		if test_case is Dictionary:
@@ -961,7 +961,7 @@ func _test_content_registry() -> void:
 	_expect(_registry.get_content("quests", "opening_future_choice") is Dictionary, "Quests can be retrieved by id.")
 	_expect(_registry.get_all("operations").size() == 65, "Registry indexes all 65 simulation operations.")
 	_expect(_registry.get_all("date_activities").size() == 3, "Registry indexes all three opening date activities.")
-	_expect(_registry.get_all("vn_backgrounds").size() == 15, "Registry indexes the initial fifteen VN background assignments.")
+	_expect(_registry.get_all("vn_backgrounds").size() == 17, "Registry indexes the initial seventeen VN background assignments, including the Hale landing and entryway.")
 	var emma_assets: Dictionary = _registry.get_character("emma_rowan").get("asset_refs", {})
 	_expect(not emma_assets.get("portraits", []).is_empty() and str(emma_assets["portraits"][0].get("id", "")) == "default", "Character packages declare their own default portrait artwork.")
 	var quest_rules: Dictionary = _registry.get_package("port_alder_sandbox_quest_system")

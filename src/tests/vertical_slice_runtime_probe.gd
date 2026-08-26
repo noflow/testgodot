@@ -212,6 +212,12 @@ func _exercise_home_and_phone() -> bool:
 
 
 func _travel_and_enroll() -> bool:
+	var walk_result: Dictionary = TravelService.travel("alder_heights_residential_street", "walking", "probe.leave_home")
+	if not _check(walk_result.get("ok", false) and str(GameState.current_state["world_state"]["current_location"]) == "alder_heights_residential_street.hale_block", "player could not walk from the Hale front path to the neighborhood"):
+		return false
+	walk_result = TravelService.travel("alder_heights_bus_stop", "walking", "probe.walk_to_bus_stop")
+	if not _check(walk_result.get("ok", false) and str(GameState.current_state["world_state"]["current_location"]) == "alder_heights_bus_stop.shelter", "player could not walk from the neighborhood to the bus stop"):
+		return false
 	var route_plan: Dictionary = TravelService.plan_routes("westshore_administration_office")
 	if not _check(route_plan.get("ok", false) and _route_available(route_plan, "bus"), "bus route to Westshore Administration was unavailable"):
 		return false

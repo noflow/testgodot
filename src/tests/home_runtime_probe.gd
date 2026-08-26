@@ -27,34 +27,75 @@ func _run_probe() -> void:
 	var phone: Node = instance.get_node_or_null("Interface/Smartphone")
 	var background_image: TextureRect = instance.get_node_or_null("BackgroundImage")
 	var room_buttons: Container = instance.get_node_or_null("Interface/Screen/MainMargin/MainLayout/NavigationPanel/Margin/Layout/Scroll/RoomButtons")
+	var navigation_panel: Control = instance.get_node_or_null("Interface/Screen/MainMargin/MainLayout/NavigationPanel")
 	var room_action_buttons: Container = instance.get_node_or_null("Interface/Screen/MainMargin/MainLayout/ActionPanel/Margin/Layout/Scroll/ActionButtons")
 	var character_text: RichTextLabel = instance.get_node_or_null("Interface/Screen/MainMargin/MainLayout/ScenePanel/Margin/Layout/CharacterText")
-	if instance.get_node_or_null("Player") != null or background_image == null or background_image.texture == null or phone == null or room_buttons == null or room_action_buttons == null or character_text == null:
+	if instance.get_node_or_null("Player") != null or background_image == null or background_image.texture == null or phone == null or room_buttons == null or navigation_panel == null or room_action_buttons == null or character_text == null:
 		printerr("PROBE: VN home backdrop, room navigation, choices, or phone were not created")
 		get_tree().quit(1)
 		return
-	if room_buttons.get_child_count() != 12:
-		printerr("PROBE: VN home did not expose all twelve authored rooms")
+	if room_buttons.get_child_count() != 14 or navigation_panel.visible:
+		printerr("PROBE: immersive home did not retain fourteen authored spaces while hiding quick room travel")
 		get_tree().quit(1)
 		return
-	var previous_arrow: Button = instance.get_node_or_null("Interface/Screen/MainMargin/MainLayout/ScenePanel/Margin/Layout/DirectionalNavigation/PrevRoomArrow")
-	var outside_arrow: Button = instance.get_node_or_null("Interface/Screen/MainMargin/MainLayout/ScenePanel/Margin/Layout/DirectionalNavigation/OutsideArrow")
-	var next_arrow: Button = instance.get_node_or_null("Interface/Screen/MainMargin/MainLayout/ScenePanel/Margin/Layout/DirectionalNavigation/NextRoomArrow")
-	if previous_arrow == null or outside_arrow == null or next_arrow == null or not previous_arrow.disabled or "Upstairs Hall" not in next_arrow.text:
-		printerr("PROBE: on-scene Ren'Py directional arrows were not initialized for the bedroom")
+	var previous_arrow: Button = instance.get_node_or_null("%PrevRoomArrow")
+	var outside_arrow: Button = instance.get_node_or_null("%OutsideArrow")
+	var down_arrow: Button = instance.get_node_or_null("%DownRoomArrow")
+	var next_arrow: Button = instance.get_node_or_null("%NextRoomArrow")
+	if previous_arrow == null or outside_arrow == null or down_arrow == null or next_arrow == null or previous_arrow.visible or outside_arrow.visible or next_arrow.visible or not down_arrow.visible or "Upstairs Landing" not in down_arrow.text:
+		printerr("PROBE: bedroom did not show only its real exit to the upstairs landing")
 		get_tree().quit(1)
 		return
-	for expected_room: String in ["upstairs_hall", "lily_bedroom", "family_bathroom", "parents_bedroom", "living_room", "dining_room", "kitchen"]:
-		next_arrow.pressed.emit()
-		await get_tree().process_frame
-		if str(GameState.current_state["world_state"]["current_location"]) != "hale_home.%s" % expected_room:
-			printerr("PROBE: Hale arrows could not traverse the requested room: %s" % expected_room)
-			get_tree().quit(1)
-			return
-		if expected_room in ["lily_bedroom", "parents_bedroom"] and not _container_has_button_text(room_action_buttons, "Knock"):
-			printerr("PROBE: private bedroom doorway did not preserve its knock-first boundary: %s" % expected_room)
-			get_tree().quit(1)
-			return
+	down_arrow.pressed.emit()
+	await get_tree().process_frame
+	if str(GameState.current_state["world_state"]["current_location"]) != "hale_home.upstairs_landing" or not outside_arrow.visible or "Your Bedroom" not in outside_arrow.text:
+		printerr("PROBE: player could not leave and return to the player bedroom from the landing")
+		get_tree().quit(1)
+		return
+	outside_arrow.pressed.emit()
+	down_arrow.pressed.emit()
+	previous_arrow.pressed.emit()
+	await get_tree().process_frame
+	if str(GameState.current_state["world_state"]["current_location"]) != "hale_home.upstairs_hall":
+		printerr("PROBE: upstairs landing did not connect the player bedroom to the bedroom hall")
+		get_tree().quit(1)
+		return
+	previous_arrow.pressed.emit()
+	await get_tree().process_frame
+	if str(GameState.current_state["world_state"]["current_location"]) != "hale_home.lily_bedroom" or not _container_has_button_text(room_action_buttons, "Knock"):
+		printerr("PROBE: left hallway arrow did not reach Lily's knock-first doorway")
+		get_tree().quit(1)
+		return
+	next_arrow.pressed.emit()
+	down_arrow.pressed.emit()
+	await get_tree().process_frame
+	if str(GameState.current_state["world_state"]["current_location"]) != "hale_home.family_bathroom":
+		printerr("PROBE: bathroom was not reachable through the upstairs hall")
+		get_tree().quit(1)
+		return
+	outside_arrow.pressed.emit()
+	outside_arrow.pressed.emit()
+	await get_tree().process_frame
+	if str(GameState.current_state["world_state"]["current_location"]) != "hale_home.parents_bedroom" or not _container_has_button_text(room_action_buttons, "Knock"):
+		printerr("PROBE: up hallway arrow did not reach the parents' knock-first doorway")
+		get_tree().quit(1)
+		return
+	down_arrow.pressed.emit()
+	next_arrow.pressed.emit()
+	down_arrow.pressed.emit()
+	await get_tree().process_frame
+	if str(GameState.current_state["world_state"]["current_location"]) != "hale_home.entryway":
+		printerr("PROBE: bedroom floor did not lead downstairs to the front entryway")
+		get_tree().quit(1)
+		return
+	previous_arrow.pressed.emit()
+	down_arrow.pressed.emit()
+	next_arrow.pressed.emit()
+	await get_tree().process_frame
+	if str(GameState.current_state["world_state"]["current_location"]) != "hale_home.kitchen":
+		printerr("PROBE: kitchen path did not require entryway, living room, and dining room traversal")
+		get_tree().quit(1)
+		return
 	var daytime_state: Dictionary = GameState.current_state.duplicate(true)
 	var night_state: Dictionary = daytime_state.duplicate(true)
 	night_state["clock"]["block"] = "night"
@@ -106,19 +147,20 @@ func _run_probe() -> void:
 	GameState.replace_state(daytime_state)
 	instance.call("_sync_household_schedule", true)
 	instance.call("_set_current_room", "kitchen")
-	outside_arrow.pressed.emit()
-	await get_tree().process_frame
-	if str(GameState.current_state["world_state"]["current_location"]) != "hale_home.front_yard" or "City Map" not in outside_arrow.text:
-		printerr("PROBE: outside arrow did not move to the Hale front yard")
+	if not outside_arrow.disabled:
+		printerr("PROBE: kitchen incorrectly exposed a direct outside shortcut")
 		get_tree().quit(1)
 		return
+	previous_arrow.pressed.emit()
 	outside_arrow.pressed.emit()
+	next_arrow.pressed.emit()
+	next_arrow.pressed.emit()
 	await get_tree().process_frame
-	if not phone.visible or str(phone.get_node("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/ContentPanel/ContentMargin/ContentLayout/AppTitle").text) != "CITY MAP":
-		printerr("PROBE: front-yard outside arrow did not open the city map")
+	if str(GameState.current_state["world_state"]["current_location"]) != "hale_home.front_yard" or "Hale Block" not in outside_arrow.text:
+		printerr("PROBE: kitchen-to-outside path did not pass dining, living, entryway, and front yard")
 		get_tree().quit(1)
 		return
-	phone.close_phone()
+	down_arrow.pressed.emit()
 	instance.call("_set_current_room", "player_bedroom")
 	instance.call("_set_current_room", "living_room")
 	await get_tree().process_frame
@@ -230,12 +272,11 @@ func _run_probe() -> void:
 	phone.call("_open_route_planner", "alder_bay_park")
 	await get_tree().process_frame
 	var route_panel: Control = phone.get_node("RoutePanel")
-	var route_option: OptionButton = phone.get_node("RoutePanel/Margin/Layout/RouteOption")
-	if not route_panel.visible or route_option.item_count != 4 or phone.get_node("RoutePanel/Margin/Layout/Buttons/ConfirmTravelButton").disabled:
-		printerr("PROBE: city map route confirmation did not populate four available modes")
+	var phone_status_label: Label = phone.get_node("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/ContentPanel/ContentMargin/ContentLayout/PhoneStatus")
+	if route_panel.visible or "front yard" not in str(phone_status_label.text).to_lower():
+		printerr("PROBE: phone map bypassed the home's immersive room and doorway path")
 		get_tree().quit(1)
 		return
-	phone.call("_on_close_route_pressed")
 	phone.call("_open_scheduler", "emma_rowan")
 	await get_tree().process_frame
 	if not phone.get_node("SchedulerPanel").visible or phone.get_node("SchedulerPanel/Margin/Layout/DayOption").item_count != 7:

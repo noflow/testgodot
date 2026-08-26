@@ -10,6 +10,7 @@
   ],
   "local_links": [
     {"from": "hale_home", "to": "alder_heights_residential_street", "mode": "walking", "minutes": 2, "cost": 0},
+    {"from": "alder_heights_residential_street", "to": "rowan_family_home", "mode": "walking", "minutes": 2, "cost": 0},
     {"from": "alder_heights_residential_street", "to": "alder_heights_bus_stop", "mode": "walking", "minutes": 6, "cost": 0},
     {"from": "alder_heights_residential_street", "to": "forge_fitness", "mode": "walking", "minutes": 24, "cost": 0},
     {"from": "alder_heights_residential_street", "to": "alder_bay_park", "mode": "walking", "minutes": 25, "cost": 0}

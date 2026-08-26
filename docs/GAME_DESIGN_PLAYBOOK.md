@@ -278,11 +278,13 @@ Rentable and purchasable housing includes:
 - Luxury homes
 - Penthouses
 
-Homes contain functional VN rooms connected by on-scene directional arrows. Left
-and right arrows move between accessible rooms, while the outside arrow moves to
-the building exit and then opens the city map. A full room list remains available
-as an accessibility-friendly navigation alternative. The player's room, Lily's
-doorway, the parents' doorway, family bathroom, living room, dining room, kitchen,
+Homes contain functional VN rooms connected by on-scene up, down, left, and right
+arrows. Each arrow represents an adjacent door, stairway, or exterior path; room-list
+teleportation is not shown during play, and directions without destinations remain
+hidden. The player must move from the bedroom onto the upstairs landing, through
+the bedroom hall or down to the entryway, through connected downstairs rooms, and out
+the front yard before reaching the neighborhood. The player's room, Lily's doorway,
+the parents' doorway, family bathroom, entryway, living room, dining room, kitchen,
 utility rooms, garage, and yards all belong to the arrow path. Private family
 bedrooms use knock-first doorway scenes until access is granted. Their doors can be
 locked or unlocked according to the date and activity block, with reliable locks
@@ -517,8 +519,9 @@ state resolution, distributed starting inventory, the seven-block calendar clock
 an atomic event processor for the first playable state changes, the VN dialogue and
 quest engines, data-driven character creation with validated age and selection
 limits, Elena's playable college, employment, or combined opening path, and the
-connected twelve-space Hale home. The home now uses static VN stages and room-choice
-navigation, preserves private bedroom boundaries, and supports sleeping, food, water, cooking, hygiene, laundry,
+connected fourteen-space Hale home. The home now uses static VN stages and a physical
+adjacency graph with no side-panel teleportation, preserves private bedroom boundaries,
+and supports sleeping, food, water, cooking, hygiene, laundry,
 household supplies, needs changes, and wardrobe equipment. The reusable phone now
 implements the nine First Week Foundations apps with live profile data, discovered
 contacts, character-authored message threads, quick replies, a conflict-aware
@@ -540,7 +543,7 @@ optional pose portraits inside its `.character` package. The same cached resolve
 serves home, city, and dialogue screens and substitutes validated fallback artwork
 when a source image is not yet available.
 
-City travel is now playable across the nine connected opening destinations. The
+City travel is now playable across ten connected opening destinations. The
 phone City Map compares graph-based walking, bus, taxi, and permitted car routes in
 both directions, including short walking connectors, bus waits, fares, arrival-time
 closures, weather warnings, vehicle permission, and impaired-driving blocks.
@@ -550,7 +553,10 @@ updates matching quest objectives, and enters the first accessible destination
 room. A reusable city scene lays out every accessible room directly from the
 location registry, so Westshore, Forge Fitness, the park, the cinema, the employment
 centre, the neighborhood, and later routed destinations do not need separate shell
-code. The Hale garage can grant daily family-car permission when required.
+code. Quick area lists are hidden: arrows move through each location, the Hale front
+yard leads to the residential street, and the neighborhood corner links the Rowan
+porch, Forge Fitness path, and Alder Heights bus shelter. The Hale garage can grant
+daily family-car permission when required.
 
 ## Sandbox quest philosophy
 

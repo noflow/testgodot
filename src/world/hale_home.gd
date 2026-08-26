@@ -18,6 +18,16 @@ const ROOMS: Dictionary = {
 		"description": "Family photographs line the hall between the bedrooms and bathroom. Closed doors deserve a knock.",
 		"color": Color("34404a"),
 	},
+	"upstairs_landing": {
+		"name": "Upstairs Landing",
+		"description": "Your bedroom opens onto the landing. The bedroom hall is to one side, and the stairs lead down toward the front entryway.",
+		"color": Color("3a4448"),
+	},
+	"entryway": {
+		"name": "Front Entryway",
+		"description": "The staircase meets the front door here. The living room opens to one side, while the porch and neighborhood wait beyond the door.",
+		"color": Color("3d463f"),
+	},
 	"family_bathroom": {
 		"name": "Family Bathroom",
 		"description": "A shared bathroom with a shower, deep tub, mirror, and the everyday supplies needed to stay clean and presentable.",
@@ -73,14 +83,26 @@ const ROOMS: Dictionary = {
 }
 
 const ROOM_ORDER: PackedStringArray = [
-	"player_bedroom", "upstairs_hall", "family_bathroom", "lily_bedroom",
+	"player_bedroom", "upstairs_landing", "upstairs_hall", "entryway", "family_bathroom", "lily_bedroom",
 	"living_room", "dining_room", "kitchen", "parents_bedroom",
 	"backyard", "laundry_room", "garage", "front_yard",
 ]
-const NAVIGABLE_ROOM_ORDER: PackedStringArray = [
-	"player_bedroom", "upstairs_hall", "lily_bedroom", "family_bathroom", "parents_bedroom", "living_room",
-	"dining_room", "kitchen", "backyard", "laundry_room", "garage", "front_yard",
-]
+const ROOM_EXITS: Dictionary = {
+	"player_bedroom": {"down": "upstairs_landing"},
+	"upstairs_landing": {"up": "player_bedroom", "left": "upstairs_hall", "down": "entryway"},
+	"upstairs_hall": {"left": "lily_bedroom", "up": "parents_bedroom", "right": "upstairs_landing", "down": "family_bathroom"},
+	"lily_bedroom": {"right": "upstairs_hall"},
+	"parents_bedroom": {"down": "upstairs_hall"},
+	"family_bathroom": {"up": "upstairs_hall"},
+	"entryway": {"left": "living_room", "up": "upstairs_landing", "right": "front_yard"},
+	"living_room": {"right": "entryway", "down": "dining_room"},
+	"dining_room": {"up": "living_room", "right": "kitchen"},
+	"kitchen": {"left": "dining_room", "right": "laundry_room", "down": "backyard"},
+	"backyard": {"up": "kitchen"},
+	"laundry_room": {"left": "kitchen", "right": "garage"},
+	"garage": {"left": "laundry_room", "down": "front_yard"},
+	"front_yard": {"left": "garage", "up": "alder_heights_residential_street.hale_block", "down": "entryway"},
+}
 const PRIVATE_DOOR_RULES: Dictionary = {
 	"lily_bedroom": {"always_locked_blocks": ["early_morning", "night"], "chance_percent": 45, "salt": 17},
 	"parents_bedroom": {"always_locked_blocks": ["night"], "chance_percent": 35, "salt": 43},
@@ -113,7 +135,7 @@ const INTERACTIONS: Array = [
 	{"room": "laundry_room", "label": "Do Laundry", "actions": ["do_laundry"]},
 	{"room": "garage", "label": "Check the Family Car", "special": "family_car"},
 	{"room": "backyard", "label": "Spend Time Outside", "special": "backyard"},
-	{"room": "front_yard", "label": "Open City Map", "special": "leave_home"},
+	{"room": "front_yard", "label": "Walk Out to Alder Heights", "special": "leave_home"},
 ]
 
 @onready var backdrop: ColorRect = %Backdrop
@@ -131,6 +153,7 @@ const INTERACTIONS: Array = [
 @onready var action_buttons: VBoxContainer = %ActionButtons
 @onready var previous_room_arrow: Button = %PrevRoomArrow
 @onready var outside_arrow: Button = %OutsideArrow
+@onready var down_room_arrow: Button = %DownRoomArrow
 @onready var next_room_arrow: Button = %NextRoomArrow
 @onready var wardrobe_panel: PanelContainer = %WardrobePanel
 @onready var wardrobe_list: VBoxContainer = %WardrobeList
@@ -264,39 +287,86 @@ func _rebuild_room_buttons() -> void:
 
 
 func _refresh_directional_navigation() -> void:
-	var current_index: int = NAVIGABLE_ROOM_ORDER.find(_current_room)
-	var previous_id: String = NAVIGABLE_ROOM_ORDER[current_index - 1] if current_index > 0 else ""
-	var next_id: String = NAVIGABLE_ROOM_ORDER[current_index + 1] if current_index >= 0 and current_index + 1 < NAVIGABLE_ROOM_ORDER.size() else ""
-	previous_room_arrow.disabled = previous_id.is_empty()
-	previous_room_arrow.text = "◀ %s" % (ROOMS[previous_id]["name"] if not previous_id.is_empty() else "No Previous Room")
-	next_room_arrow.disabled = next_id.is_empty()
-	next_room_arrow.text = "%s ▶" % (ROOMS[next_id]["name"] if not next_id.is_empty() else "No Next Room")
-	outside_arrow.text = "▲ Leave Home / City Map" if _current_room == "front_yard" else "▲ Outside • Front Yard"
+	var left_target: String = _room_exit("left")
+	var up_target: String = _room_exit("up")
+	var down_target: String = _room_exit("down")
+	var right_target: String = _room_exit("right")
+	_configure_direction_button(previous_room_arrow, left_target, "◀", "Left")
+	_configure_direction_button(outside_arrow, up_target, "▲", "Up")
+	_configure_direction_button(down_room_arrow, down_target, "▼", "Down")
+	_configure_direction_button(next_room_arrow, right_target, "▶", "Right", true)
 	SettingsService.apply_accessibility(previous_room_arrow)
 	SettingsService.apply_accessibility(outside_arrow)
+	SettingsService.apply_accessibility(down_room_arrow)
 	SettingsService.apply_accessibility(next_room_arrow)
 
 
 func _on_previous_room_pressed() -> void:
-	var current_index: int = NAVIGABLE_ROOM_ORDER.find(_current_room)
-	if current_index > 0:
-		_select_room(NAVIGABLE_ROOM_ORDER[current_index - 1])
+	_move_through_exit("left")
 
 
 func _on_next_room_pressed() -> void:
-	var current_index: int = NAVIGABLE_ROOM_ORDER.find(_current_room)
-	if current_index >= 0 and current_index + 1 < NAVIGABLE_ROOM_ORDER.size():
-		_select_room(NAVIGABLE_ROOM_ORDER[current_index + 1])
+	_move_through_exit("right")
 
 
 func _on_outside_pressed() -> void:
-	if _current_room != "front_yard":
-		_select_room("front_yard")
-		status_label.text = "You head outside to the front yard. Use the up arrow again to open Port Alder."
+	_move_through_exit("up")
+
+
+func _on_down_room_pressed() -> void:
+	_move_through_exit("down")
+
+
+func _room_exit(direction: String) -> String:
+	return str(ROOM_EXITS.get(_current_room, {}).get(direction, ""))
+
+
+func _configure_direction_button(button: Button, target: String, symbol: String, _fallback: String, symbol_after: bool = false) -> void:
+	var has_target: bool = not target.is_empty()
+	button.visible = has_target
+	button.disabled = not has_target
+	if not has_target:
+		button.text = ""
 		return
+	var label: String = _navigation_target_name(target)
+	button.text = "%s %s" % [label, symbol] if symbol_after else "%s %s" % [symbol, label]
+
+
+func _navigation_target_name(target: String) -> String:
+	if ROOMS.has(target):
+		return str(ROOMS[target].get("name", target.replace("_", " ").capitalize()))
+	var location_id: String = target.get_slice(".", 0)
+	var room_id: String = target.get_slice(".", 1)
+	var location: Variant = ContentRegistry.get_location(location_id)
+	if location is Dictionary:
+		for room: Variant in location.get("rooms", []):
+			if room is Dictionary and str(room.get("id", "")) == room_id:
+				return str(room.get("name", location.get("name", location_id)))
+		return str(location.get("name", location_id))
+	return target.replace("_", " ").capitalize()
+
+
+func _move_through_exit(direction: String) -> void:
+	var target: String = _room_exit(direction)
+	if target.is_empty():
+		return
+	if not target.contains("."):
+		_select_room(target)
+		return
+	_travel_to_adjacent_location(target)
+
+
+func _travel_to_adjacent_location(target: String) -> void:
+	var destination_id: String = target.get_slice(".", 0)
 	TravelService.start_transportation_tutorial("home.directional_exit")
-	smartphone.open_phone("city_map")
-	status_label.text = "Choose an unlocked Port Alder destination and confirm a route."
+	var result: Dictionary = TravelService.travel(destination_id, "walking", "home.directional_exit")
+	if not result.get("ok", false):
+		status_label.text = str(result.get("errors", ["You cannot use that path right now."])[0])
+		return
+	var next_state: Dictionary = GameState.current_state.duplicate(true)
+	next_state["world_state"]["current_location"] = target
+	GameState.replace_state(next_state)
+	get_tree().change_scene_to_file(AppConstants.CITY_LOCATION_SCENE)
 
 
 func _rebuild_character_stage() -> void:
@@ -449,9 +519,10 @@ func _handle_special(special: String) -> void:
 				status_label.text = "Permission is granted for today. Return the car with fuel and report any damage."
 		"backyard": status_label.text = "The backyard can host exercise, relaxation, and small gatherings. More activities can unlock here later."
 		"leave_home":
-			TravelService.start_transportation_tutorial("home.front_gate")
-			smartphone.open_phone("city_map")
-			status_label.text = "Choose an unlocked Port Alder destination and confirm a route."
+			if _current_room == "front_yard":
+				_travel_to_adjacent_location("alder_heights_residential_street.hale_block")
+			else:
+				status_label.text = "Reach the front entryway and front yard before leaving home."
 
 
 func _wait_for_bathroom() -> void:

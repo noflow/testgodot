@@ -1238,8 +1238,11 @@ func _render_map() -> void:
 	app_title.text = "CITY MAP"
 	var world: Dictionary = GameState.current_state["world_state"]
 	var current_root: String = str(world["current_location"]).get_slice(".", 0)
+	var departure_access: Dictionary = _route_departure_access()
 	var lines: PackedStringArray = [
 		"Current location: [color=#e9a86c]%s[/color]" % _location_name(str(world["current_location"])),
+		"",
+		str(departure_access.get("reason", "")),
 		"",
 		"UNLOCKED DESTINATIONS",
 	]
@@ -1249,13 +1252,21 @@ func _render_map() -> void:
 		if location is Dictionary:
 			var marker: String = "[color=#67c6c3]YOU ARE HERE[/color]" if location_id == current_root else str(location.get("district", "unknown")).replace("_", " ").capitalize()
 			lines.append("• %s — %s" % [location.get("name", location_id), marker])
-			if location_id != current_root:
+			if location_id != current_root and bool(departure_access.get("allowed", false)):
 				_add_action_button("Plan route to %s" % location.get("name", location_id), _open_route_planner.bind(location_id))
-	lines.append("\nSelect a destination to compare walking, bus, taxi, and car routes. Closed destinations remain visible but cannot be confirmed.")
+	if bool(departure_access.get("allowed", false)):
+		lines.append("\nSelect a destination to compare walking, bus, taxi, and car routes. Closed destinations remain visible but cannot be confirmed.")
+	else:
+		lines.append("\nThe map is still available for planning, but it cannot move you past rooms, hallways, or doors.")
 	app_content.text = "\n".join(lines)
 
 
 func _open_route_planner(destination: String) -> void:
+	var departure_access: Dictionary = _route_departure_access()
+	if not bool(departure_access.get("allowed", false)):
+		route_panel.visible = false
+		phone_status.text = str(departure_access.get("reason", "Reach an exit before starting a trip."))
+		return
 	var plan: Dictionary = TravelService.plan_routes(destination)
 	if not plan.get("ok", false):
 		phone_status.text = str(plan.get("errors", ["No route is available."])[0])
@@ -1292,6 +1303,27 @@ func _open_route_planner(destination: String) -> void:
 	_update_route_summary(route_option.selected)
 	scheduler_panel.visible = false
 	route_panel.visible = true
+
+
+func _route_departure_access() -> Dictionary:
+	var current_path: String = str(GameState.current_state.get("world_state", {}).get("current_location", ""))
+	var location_id: String = current_path.get_slice(".", 0)
+	var room_id: String = current_path.get_slice(".", 1)
+	if location_id == "hale_home":
+		return {"allowed": false, "reason": "Leave through the Hale home entryway and front yard before starting a trip."}
+	var location: Variant = ContentRegistry.get_location(location_id)
+	if not location is Dictionary:
+		return {"allowed": false, "reason": "Reach a recognized entrance or transit stop before starting a trip."}
+	var outside_room: String = str(location.get("outside_room", ""))
+	var rooms: Array = location.get("rooms", [])
+	if outside_room.is_empty() and not rooms.is_empty() and rooms[0] is Dictionary:
+		outside_room = str(rooms[0].get("id", ""))
+	if room_id != outside_room:
+		return {"allowed": false, "reason": "Return to this location's entrance before starting a trip."}
+	var type_id: String = str(location.get("type", ""))
+	if type_id in ["outdoor_hub", "npc_residence", "residential_house"]:
+		return {"allowed": false, "reason": "Follow the scene arrows to a transit stop or public departure point before starting a trip."}
+	return {"allowed": true, "reason": "You are at a valid departure point. Choose a destination below."}
 
 
 func _update_route_summary(index: int) -> void:

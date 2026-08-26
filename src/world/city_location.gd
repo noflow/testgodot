@@ -21,6 +21,7 @@ const MONTH_NAMES: PackedStringArray = [
 @onready var action_buttons: VBoxContainer = %ActionButtons
 @onready var previous_room_arrow: Button = %PrevRoomArrow
 @onready var outside_arrow: Button = %OutsideArrow
+@onready var down_room_arrow: Button = %DownRoomArrow
 @onready var next_room_arrow: Button = %NextRoomArrow
 
 var _location_id: String = ""
@@ -50,7 +51,7 @@ func _ready() -> void:
 	smartphone.phone_closed.connect(_on_phone_closed)
 	smartphone.travel_completed.connect(_on_travel_completed)
 	location_label.text = str(_location.get("name", _location_id))
-	status_label.text = "Choose an area, activity, conversation, or a new destination."
+	status_label.text = "Use the scene arrows to move through connected paths, doors, and rooms."
 	_render_location()
 	_refresh_hud()
 	_apply_accessibility_settings()
@@ -149,23 +150,30 @@ func _refresh_directional_navigation() -> void:
 	var current_index: int = _room_index(_current_room_id)
 	var previous_id: String = _directional_target("left", current_index - 1)
 	var next_id: String = _directional_target("right", current_index + 1)
-	previous_room_arrow.disabled = previous_id.is_empty()
-	previous_room_arrow.text = "◀ %s" % (_room_name(previous_id) if not previous_id.is_empty() else "No Previous Area")
-	next_room_arrow.disabled = next_id.is_empty()
-	next_room_arrow.text = "%s ▶" % (_room_name(next_id) if not next_id.is_empty() else "No Next Area")
-	var exit_room: String = _outside_room_id()
-	outside_arrow.text = "▲ Outside / City Map" if _current_room_id == exit_room else "▲ Exit via %s" % _room_name(exit_room)
+	var up_id: String = _directional_target("up", -1)
+	var down_id: String = _directional_target("down", -1)
+	_configure_direction_button(previous_room_arrow, previous_id, "◀", "Left")
+	_configure_direction_button(next_room_arrow, next_id, "▶", "Right", true)
+	_configure_direction_button(down_room_arrow, down_id, "▼", "Down")
+	if up_id.is_empty() and _can_open_route_planner_here():
+		outside_arrow.visible = true
+		outside_arrow.disabled = false
+		outside_arrow.text = "▲ Choose Bus Destination" if str(_location.get("type", "")) == "transport_stop" else "▲ Transit / Destinations"
+	else:
+		_configure_direction_button(outside_arrow, up_id, "▲", "Up")
 	SettingsService.apply_accessibility(previous_room_arrow)
 	SettingsService.apply_accessibility(outside_arrow)
+	SettingsService.apply_accessibility(down_room_arrow)
 	SettingsService.apply_accessibility(next_room_arrow)
 
 
 func _directional_target(direction: String, fallback_index: int) -> String:
 	var room: Dictionary = _room_definition(_current_room_id)
-	var authored_id: String = str(room.get("navigation", {}).get(direction, ""))
-	if not authored_id.is_empty() and not _room_definition(authored_id).is_empty():
-		return authored_id
-	if fallback_index >= 0 and fallback_index < _rooms.size():
+	var navigation: Dictionary = room.get("navigation", {})
+	if not navigation.is_empty():
+		var authored_id: String = str(navigation.get(direction, ""))
+		return authored_id if _valid_navigation_target(authored_id) else ""
+	if direction in ["left", "right"] and fallback_index >= 0 and fallback_index < _rooms.size():
 		return str(_rooms[fallback_index].get("id", ""))
 	return ""
 
@@ -185,25 +193,97 @@ func _outside_room_id() -> String:
 
 
 func _on_previous_room_pressed() -> void:
-	var target: String = _directional_target("left", _room_index(_current_room_id) - 1)
-	if not target.is_empty():
-		_select_room(target)
+	_move_direction("left", _room_index(_current_room_id) - 1)
 
 
 func _on_next_room_pressed() -> void:
-	var target: String = _directional_target("right", _room_index(_current_room_id) + 1)
-	if not target.is_empty():
-		_select_room(target)
+	_move_direction("right", _room_index(_current_room_id) + 1)
 
 
 func _on_outside_pressed() -> void:
-	var exit_room: String = _outside_room_id()
-	if _current_room_id != exit_room:
-		_select_room(exit_room)
-		status_label.text = "You move toward the exit. Use the up arrow again to open Port Alder."
+	var target: String = _directional_target("up", -1)
+	if not target.is_empty():
+		_move_to_navigation_target(target)
+	elif _can_open_route_planner_here():
+		smartphone.open_phone("city_map")
+		status_label.text = "Choose a destination from this transit point."
+
+
+func _on_down_room_pressed() -> void:
+	_move_direction("down", -1)
+
+
+func _move_direction(direction: String, fallback_index: int) -> void:
+	var target: String = _directional_target(direction, fallback_index)
+	if not target.is_empty():
+		_move_to_navigation_target(target)
+
+
+func _move_to_navigation_target(target: String) -> void:
+	if not target.contains("."):
+		_select_room(target)
 		return
-	smartphone.open_phone("city_map")
-	status_label.text = "Choose an unlocked destination and confirm a route."
+	var destination_id: String = target.get_slice(".", 0)
+	if destination_id == _location_id:
+		_select_room(target.get_slice(".", 1))
+		return
+	var result: Dictionary = TravelService.travel(destination_id, "walking", "world.directional_path")
+	if not result.get("ok", false):
+		status_label.text = str(result.get("errors", ["That path is unavailable right now."])[0])
+		return
+	var next_state: Dictionary = GameState.current_state.duplicate(true)
+	next_state["world_state"]["current_location"] = target
+	GameState.replace_state(next_state)
+	get_tree().change_scene_to_file(AppConstants.HALE_HOME_SCENE if destination_id == "hale_home" else AppConstants.CITY_LOCATION_SCENE)
+
+
+func _configure_direction_button(button: Button, target: String, symbol: String, _fallback: String, symbol_after: bool = false) -> void:
+	var has_target: bool = not target.is_empty()
+	button.visible = has_target
+	button.disabled = not has_target
+	if not has_target:
+		button.text = ""
+		return
+	var label: String = _navigation_target_name(target)
+	button.text = "%s %s" % [label, symbol] if symbol_after else "%s %s" % [symbol, label]
+
+
+func _navigation_target_name(target: String) -> String:
+	if not target.contains("."):
+		return _room_name(target)
+	var location_id: String = target.get_slice(".", 0)
+	var room_id: String = target.get_slice(".", 1)
+	var location: Variant = ContentRegistry.get_location(location_id)
+	if location is Dictionary:
+		for room: Variant in location.get("rooms", []):
+			if room is Dictionary and str(room.get("id", "")) == room_id:
+				return str(room.get("name", location.get("name", location_id)))
+		return str(location.get("name", location_id))
+	return target.replace("_", " ").capitalize()
+
+
+func _valid_navigation_target(target: String) -> bool:
+	if target.is_empty():
+		return false
+	if not target.contains("."):
+		return not _room_definition(target).is_empty()
+	var location: Variant = ContentRegistry.get_location(target.get_slice(".", 0))
+	if not location is Dictionary:
+		return false
+	var room_id: String = target.get_slice(".", 1)
+	for room: Variant in location.get("rooms", []):
+		if room is Dictionary and str(room.get("id", "")) == room_id:
+			return str(room.get("access", "")) not in ["employee", "restricted"]
+	return false
+
+
+func _can_open_route_planner_here() -> bool:
+	if _current_room_id != _outside_room_id():
+		return false
+	var type_id: String = str(_location.get("type", ""))
+	if type_id == "transport_stop":
+		return true
+	return type_id not in ["outdoor_hub", "npc_residence", "residential_house"]
 
 
 func _rebuild_encounter_stage() -> void:

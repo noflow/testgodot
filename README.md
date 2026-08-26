@@ -11,7 +11,7 @@ slice is complete. Phase 1 includes full content indexing, resolved new-game sta
 the seven-block calendar clock, atomic simulation operations, the VN dialogue and
 quest engines, complete data-driven character creation, Elena's playable
 three-branch opening scene, and the first connected Hale home sandbox. The home
-uses Ren'Py-style on-scene navigation arrows and room menus, static scene stages, private doors, needs-aware food and hygiene actions,
+uses Ren'Py-style on-scene navigation arrows that show only real adjacent destinations, static scene stages, private doors, needs-aware food and hygiene actions,
 sleep, laundry, household storage, and a working wardrobe. The reusable smartphone
 now provides the nine vertical-slice apps plus Education, Jobs, Money, and Shopping, authored character messages and replies,
 NPC-aware calendar scheduling, live relationships, weather/outfit checks, the city
@@ -102,7 +102,7 @@ correct current appointment, and phone-created hangouts advance their owning que
 - Godot 4.7.2 stable
 - GDScript
 - Ren'Py-style visual-novel presentation built in Godot
-- Static location stages, character portraits, on-scene directional room navigation, and schedule-aware locked bedroom and bathroom doors
+- Static location stages, character portraits, immersive adjacency-based arrow navigation without room-list teleportation, and schedule-aware locked bedroom and bathroom doors
 - PC first: Windows, macOS, and Linux
 - Data-driven quests, schedules, and character packages
 - One importable `.character` file per major character
