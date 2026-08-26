@@ -93,6 +93,12 @@ func _apply_to_working_state(state: Dictionary, operation: String, payload: Dict
 			return _apply_employment_interview(state, payload)
 		"employment.accept_offer":
 			return _accept_employment_offer(state, payload)
+		"employment.shift":
+			return _apply_employment_shift(state, payload)
+		"economy.payday":
+			return _apply_employment_payday(state, payload)
+		"employment.promote_or_raise":
+			return _apply_employment_career_change(state, payload)
 		"travel.complete":
 			return _complete_travel(state, payload)
 		"world.unlock_location":
@@ -682,6 +688,139 @@ func _accept_employment_offer(state: Dictionary, payload: Dictionary) -> String:
 	state["player"]["employment"]["active_jobs"].append(active_job)
 	state["player"]["employment"]["employed"] = true
 	return ""
+
+
+func _apply_employment_shift(state: Dictionary, payload: Dictionary) -> String:
+	var job_id: String = str(payload.get("job_id", ""))
+	var active_job: Dictionary = _active_employment_job(state, job_id)
+	if active_job.is_empty():
+		return "This job is not active: %s" % job_id
+	var shift_value: Variant = payload.get("shift_record")
+	if not shift_value is Dictionary:
+		return "Employment shifts require a shift record."
+	var shift: Dictionary = shift_value.duplicate(true)
+	var shift_id: String = str(shift.get("id", ""))
+	if shift_id.is_empty() or str(shift.get("job_id", "")) != job_id:
+		return "Employment shift identity is invalid."
+	for existing: Variant in state["player"]["employment"].get("work_history", []):
+		if existing is Dictionary and str(existing.get("id", "")) == shift_id:
+			return "Employment shift was already recorded: %s" % shift_id
+	var calendar_event_ids: Array = shift.get("calendar_event_ids", [])
+	if calendar_event_ids.is_empty():
+		return "Employment shifts require scheduled calendar events."
+	for event_id_value: Variant in calendar_event_ids:
+		var calendar_event: Dictionary = _find_employment_record(state["calendar_state"].get("events", []), str(event_id_value))
+		if calendar_event.is_empty() or str(calendar_event.get("job_id", "")) != job_id:
+			return "Employment shift has an invalid calendar event."
+		if str(calendar_event.get("status", "scheduled")) != "scheduled":
+			return "Employment calendar event is no longer scheduled: %s" % event_id_value
+	var attendance: String = str(shift.get("attendance", "absent"))
+	if attendance not in ["present", "late", "absent"]:
+		return "Unknown shift attendance result: %s" % attendance
+	for event_id_value: Variant in calendar_event_ids:
+		var calendar_event: Dictionary = _find_employment_record(state["calendar_state"]["events"], str(event_id_value))
+		calendar_event["status"] = "missed" if attendance == "absent" else "completed"
+		calendar_event["attendance"] = attendance
+		calendar_event["completed_at"] = _clock.timestamp(state["clock"])
+	state["player"]["employment"]["work_history"].append(shift)
+	if not active_job.has("shift_history"):
+		active_job["shift_history"] = []
+	active_job["shift_history"].append(shift_id)
+	active_job["shifts_completed"] = int(active_job.get("shifts_completed", 0)) + (0 if attendance == "absent" else 1)
+	active_job["shifts_missed"] = int(active_job.get("shifts_missed", 0)) + (1 if attendance == "absent" else 0)
+	active_job["late_shifts"] = int(active_job.get("late_shifts", 0)) + (1 if attendance == "late" else 0)
+	active_job["hours_worked_total"] = float(active_job.get("hours_worked_total", 0.0)) + float(shift.get("hours_worked", 0.0))
+	active_job["performance"] = clampf(float(shift.get("performance_after", active_job.get("performance", 50.0))), 0.0, 100.0)
+	active_job["last_shift_date"] = shift.get("date")
+	var pending: Dictionary = active_job.get("pending_pay", {}).duplicate(true)
+	pending["hours"] = float(pending.get("hours", 0.0)) + float(shift.get("hours_worked", 0.0))
+	pending["overtime_hours"] = float(pending.get("overtime_hours", 0.0)) + float(shift.get("overtime_hours", 0.0))
+	pending["gross_wages"] = float(pending.get("gross_wages", 0.0)) + float(shift.get("gross_wages", 0.0))
+	pending["tips"] = float(pending.get("tips", 0.0)) + float(shift.get("tips", 0.0))
+	active_job["pending_pay"] = pending
+	return ""
+
+
+func _apply_employment_payday(state: Dictionary, payload: Dictionary) -> String:
+	var job_id: String = str(payload.get("job_id", ""))
+	var active_job: Dictionary = _active_employment_job(state, job_id)
+	if active_job.is_empty():
+		return "This job is not active: %s" % job_id
+	var pay_value: Variant = payload.get("pay_record")
+	if not pay_value is Dictionary:
+		return "Payday requires a payroll record."
+	var pay_record: Dictionary = pay_value.duplicate(true)
+	var net: float = float(pay_record.get("net", 0.0))
+	if net < 0.0:
+		return "Net pay cannot be negative."
+	var transaction_error: String = _apply_transaction(state, {
+		"id": pay_record.get("id", "payday-%s" % job_id),
+		"timestamp": _clock.timestamp(state["clock"]),
+		"type": "income",
+		"amount": net,
+		"account": "checking",
+		"description": "Paycheck — %s" % active_job.get("employer", job_id),
+		"category": "employment",
+		"job_id": job_id,
+		"gross": pay_record.get("gross", 0.0),
+		"tips": pay_record.get("tips", 0.0),
+		"withholding": pay_record.get("withholding", 0.0),
+	})
+	if not transaction_error.is_empty():
+		return transaction_error
+	if not state["player"]["employment"].has("payroll_history"):
+		state["player"]["employment"]["payroll_history"] = []
+	state["player"]["employment"]["payroll_history"].append(pay_record)
+	if not active_job.has("payroll_history"):
+		active_job["payroll_history"] = []
+	active_job["payroll_history"].append(str(pay_record.get("id", "")))
+	active_job["lifetime_gross"] = float(active_job.get("lifetime_gross", 0.0)) + float(pay_record.get("gross", 0.0)) + float(pay_record.get("tips", 0.0))
+	active_job["lifetime_net"] = float(active_job.get("lifetime_net", 0.0)) + net
+	active_job["pending_pay"] = {"hours": 0.0, "overtime_hours": 0.0, "gross_wages": 0.0, "tips": 0.0}
+	active_job["next_payday"] = payload.get("next_payday")
+	return ""
+
+
+func _apply_employment_career_change(state: Dictionary, payload: Dictionary) -> String:
+	var job_id: String = str(payload.get("job_id", ""))
+	var active_job: Dictionary = _active_employment_job(state, job_id)
+	if active_job.is_empty():
+		return "This job is not active: %s" % job_id
+	var change_type: String = str(payload.get("change_type", ""))
+	if change_type not in ["raise", "promotion"]:
+		return "Career changes must be a raise or promotion."
+	var new_pay_value: Variant = payload.get("new_pay")
+	if not new_pay_value is int and not new_pay_value is float:
+		return "Career changes require numeric pay."
+	var new_pay: float = float(new_pay_value)
+	if new_pay <= float(active_job.get("hourly_pay", 0.0)):
+		return "Career change pay must increase."
+	var history_entry: Dictionary = {
+		"id": payload.get("change_id", "career-change-%s-%d" % [job_id, active_job.get("career_history", []).size() + 1]),
+		"type": change_type,
+		"date": _date_string(state["clock"]),
+		"old_title": active_job.get("title", ""),
+		"new_title": payload.get("new_title", active_job.get("title", "")),
+		"old_pay": active_job.get("hourly_pay", 0.0),
+		"new_pay": new_pay,
+		"performance": active_job.get("performance", 50.0),
+	}
+	if not active_job.has("career_history"):
+		active_job["career_history"] = []
+	active_job["career_history"].append(history_entry)
+	active_job["hourly_pay"] = new_pay
+	if change_type == "promotion":
+		active_job["title"] = payload.get("new_title", active_job.get("title", ""))
+		active_job["career_level"] = int(active_job.get("career_level", 0)) + 1
+		active_job["pending_promotion"] = null
+	return ""
+
+
+func _active_employment_job(state: Dictionary, job_id: String) -> Dictionary:
+	for active_job: Variant in state["player"]["employment"].get("active_jobs", []):
+		if active_job is Dictionary and str(active_job.get("job_id", "")) == job_id and str(active_job.get("status", "active")) == "active":
+			return active_job
+	return {}
 
 
 func _find_employment_record(records: Array, record_id: String) -> Dictionary:

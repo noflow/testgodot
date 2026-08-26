@@ -411,6 +411,54 @@ func _test_employment_applications_interviews_and_offers() -> void:
 	_expect(_calendar_event_type_count(state, "work") > 100, "Accepting a full-time contract creates six weeks of work-block calendar events.")
 	_expect("find_employment" in state["quest_state"]["completed"], "A qualifying forty-hour contract completes the full-time employment quest.")
 	_expect(state["player"]["housing"]["monthly_rent"] == 250, "Completing the employment path activates the Hale household rent rule.")
+	var first_work_event: Dictionary = _first_scheduled_work_event(state, "grocery_stock_clerk")
+	_set_clock_to_employment_event(state, first_work_event)
+	var shift_status: Dictionary = employment.shift_status(state, "grocery_stock_clerk")
+	_expect(shift_status.get("ready", false), "The first contracted workday becomes clock-in ready at its scheduled block.")
+	state["player"]["employment"]["work_history"].append({
+		"id": "test-prior-week-hours", "job_id": "test_second_job", "date": first_work_event.get("date", ""),
+		"week_key": shift_status.get("shift", {}).get("week_key", ""), "hours_worked": 39.0,
+	})
+	var checking_before_shift: float = float(state["player"]["economy"]["accounts"]["checking"])
+	result = employment.perform_shift(state, "grocery_stock_clerk", "ambitious")
+	_expect(result.get("ok", false), "A scheduled shift can be played with a selected work approach.")
+	state = result["state"]
+	var played_shift: Dictionary = result.get("data", {}).get("shift", {})
+	_expect(float(played_shift.get("hours_worked", 0.0)) == 8.0, "A grouped weekday full-time shift records eight paid hours.")
+	_expect(float(played_shift.get("overtime_hours", 0.0)) == 7.0, "Hours above forty across jobs receive overtime treatment.")
+	_expect(float(played_shift.get("gross_wages", 0.0)) == 207.0, "The overtime multiplier produces the expected gross wages.")
+	_expect(_calendar_work_status_count(state, "grocery_stock_clerk", str(first_work_event.get("date", "")), "completed") == 4, "Clocking out completes every authored block in that workday.")
+	_expect(float(state["player"]["economy"]["accounts"]["checking"]) == checking_before_shift, "Shift earnings accrue until payday instead of depositing immediately.")
+	var active_job: Dictionary = _active_job_for_test(state, "grocery_stock_clerk")
+	_expect(float(active_job.get("pending_pay", {}).get("gross_wages", 0.0)) == 207.0, "Completed shift wages accrue in the job's pending payroll.")
+	active_job["next_payday"] = _test_clock_date(state)
+	result = employment.sync_employment(state)
+	_expect(result.get("ok", false), "Employment synchronization processes a due payday.")
+	state = result["state"]
+	active_job = _active_job_for_test(state, "grocery_stock_clerk")
+	_expect(float(state["player"]["economy"]["accounts"]["checking"]) > checking_before_shift, "Net pay is deposited into checking on payday.")
+	_expect(state["player"]["employment"].get("payroll_history", []).size() == 1, "Payday creates an immutable payroll history record.")
+	var first_paycheck: Dictionary = state["player"]["employment"]["payroll_history"][0]
+	_expect(is_equal_approx(float(first_paycheck.get("withholding", 0.0)), 16.56) and is_equal_approx(float(first_paycheck.get("net", 0.0)), 190.44), "Weekly payroll applies the authored eight-percent withholding bracket.")
+	_expect(float(active_job.get("pending_pay", {}).get("gross_wages", -1.0)) == 0.0, "Payday clears accrued wages for the next period.")
+	_expect(str(state["player"]["economy"]["ledger"][-1].get("category", "")) == "employment", "Payday creates an employment income ledger entry.")
+	active_job["performance"] = 80.0
+	active_job["probation_end_date"] = _test_clock_date(state)
+	active_job["next_review_date"] = _test_clock_date(state)
+	result = employment.process_career_review(state, "grocery_stock_clerk")
+	_expect(result.get("ok", false), "A due ninety-day career review can be completed after probation.")
+	state = result["state"]
+	active_job = _active_job_for_test(state, "grocery_stock_clerk")
+	_expect(float(active_job.get("hourly_pay", 0.0)) > 18.0, "Strong performance earns a data-driven percentage raise.")
+	_expect(active_job.get("pending_promotion") is Dictionary, "Meeting the next role's requirements exposes a promotion opening.")
+	result = employment.accept_promotion(state, "grocery_stock_clerk")
+	_expect(result.get("ok", false), "An available authored promotion can be accepted.")
+	state = result["state"]
+	active_job = _active_job_for_test(state, "grocery_stock_clerk")
+	_expect(str(active_job.get("title", "")) == "Senior Stock Clerk", "Promotion updates the player's current job title.")
+	_expect(int(active_job.get("career_level", 0)) == 1, "Promotion advances the authored career level.")
+	var next_promotion: Dictionary = employment.career_review_status(state, "grocery_stock_clerk").get("promotion", {})
+	_expect(not next_promotion.get("eligible", false) and not next_promotion.get("missing", []).is_empty(), "The next promotion remains locked behind its authored leadership requirement.")
 
 	state = factory.create_new_game({}, {"random_seed": 919})
 	state["player"]["education"]["enrolled"] = true
@@ -439,6 +487,17 @@ func _test_employment_applications_interviews_and_offers() -> void:
 	state = result["state"]
 	_expect("find_part_time_employment" in state["quest_state"]["completed"], "A compatible part-time contract completes the college employment quest.")
 	_expect(float(state["player"]["employment"]["active_jobs"][0]["weekly_hours"]) <= 24.0, "The accepted student job stays within the authored weekly-hour ceiling.")
+	var missed_event: Dictionary = _first_scheduled_work_event(state, "cinema_attendant")
+	_set_clock_to_employment_event(state, missed_event)
+	state["clock"]["minute_within_block"] = 61
+	var performance_before_miss: float = float(_active_job_for_test(state, "cinema_attendant").get("performance", 50.0))
+	result = employment.sync_employment(state)
+	_expect(result.get("ok", false), "Employment synchronization reconciles a passed clock-in window.")
+	state = result["state"]
+	var cinema_job: Dictionary = _active_job_for_test(state, "cinema_attendant")
+	_expect(int(cinema_job.get("shifts_missed", 0)) == 1, "A shift more than sixty minutes late is recorded as missed.")
+	_expect(float(cinema_job.get("performance", 50.0)) == performance_before_miss - 8.0, "A missed shift applies the authored performance consequence.")
+	_expect(float(state["player"]["reputations"].get("professional", 0.0)) == -2.0, "A missed shift lowers professional reputation.")
 
 
 func _test_character_creation_scene() -> void:
@@ -1012,6 +1071,39 @@ func _calendar_event_type_count(state: Dictionary, event_type: String) -> int:
 		if calendar_event is Dictionary and str(calendar_event.get("type", "")) == event_type:
 			count += 1
 	return count
+
+
+func _first_scheduled_work_event(state: Dictionary, job_id: String) -> Dictionary:
+	var first: Dictionary = {}
+	for calendar_event: Variant in state["calendar_state"].get("events", []):
+		if not calendar_event is Dictionary or str(calendar_event.get("type", "")) != "work" or str(calendar_event.get("job_id", "")) != job_id or str(calendar_event.get("status", "scheduled")) != "scheduled":
+			continue
+		if first.is_empty() or str(calendar_event.get("date", "")) < str(first.get("date", "")) or (str(calendar_event.get("date", "")) == str(first.get("date", "")) and _test_block_index(str(calendar_event.get("block", ""))) < _test_block_index(str(first.get("block", "")))):
+			first = calendar_event
+	return first
+
+
+func _calendar_work_status_count(state: Dictionary, job_id: String, date: String, status: String) -> int:
+	var count: int = 0
+	for calendar_event: Variant in state["calendar_state"].get("events", []):
+		if calendar_event is Dictionary and str(calendar_event.get("type", "")) == "work" and str(calendar_event.get("job_id", "")) == job_id and str(calendar_event.get("date", "")) == date and str(calendar_event.get("status", "")) == status:
+			count += 1
+	return count
+
+
+func _active_job_for_test(state: Dictionary, job_id: String) -> Dictionary:
+	for active_job: Variant in state["player"]["employment"].get("active_jobs", []):
+		if active_job is Dictionary and str(active_job.get("job_id", "")) == job_id:
+			return active_job
+	return {}
+
+
+func _test_clock_date(state: Dictionary) -> String:
+	return "Y%d-%02d-%02d" % [state["clock"]["year"], state["clock"]["month"], state["clock"]["day"]]
+
+
+func _test_block_index(block: String) -> int:
+	return ["early_morning", "morning", "lunch", "afternoon", "evening", "late_evening", "night"].find(block)
 
 
 func _employment_application_for_job(state: Dictionary, job_id: String) -> Dictionary:

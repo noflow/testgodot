@@ -184,6 +184,13 @@
     "probation_days": 30,
     "performance_range": [0, 100],
     "performance_factors": ["attendance", "punctuality", "task_quality", "relevant_skill", "energy", "focus", "customer_or_team_feedback"],
+    "shift_clock_in": {"on_time_grace_minutes": 15, "maximum_late_minutes": 60},
+    "work_approaches": [
+      {"id": "steady", "name": "Work Steadily", "description": "Use a dependable pace with balanced quality and energy costs.", "quality_modifier": 5, "feedback_modifier": 3, "energy_cost_per_hour": 1.5, "stress_change": 0},
+      {"id": "ambitious", "name": "Push for Results", "description": "Chase stronger results at a higher Energy and Stress cost.", "quality_modifier": 15, "feedback_modifier": 2, "energy_cost_per_hour": 2.5, "stress_change": 5},
+      {"id": "careful", "name": "Focus on Accuracy", "description": "Prioritize precision and consistency over speed.", "quality_modifier": 10, "feedback_modifier": 5, "energy_cost_per_hour": 1.8, "stress_change": 2},
+      {"id": "team_focused", "name": "Support the Team", "description": "Build coworker and customer goodwill while completing the shift.", "quality_modifier": 3, "feedback_modifier": 14, "energy_cost_per_hour": 1.7, "stress_change": 1}
+    ],
     "raises": {"review_interval_days": 90, "typical_percent_range": [2, 8]},
     "promotion_requires_opening": true,
     "shift_trade_requires_approval": true,

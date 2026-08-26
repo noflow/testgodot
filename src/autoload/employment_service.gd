@@ -55,6 +55,30 @@ func accept_offer(job_id: String, schedule_id: String) -> Dictionary:
 	return _commit(_engine.accept_offer(GameState.current_state, job_id, schedule_id))
 
 
+func sync_employment() -> Dictionary:
+	return _commit(_engine.sync_employment(GameState.current_state))
+
+
+func shift_status(job_id: String) -> Dictionary:
+	return {"ready": false, "reason": "No active game."} if not GameState.has_active_game() else _engine.shift_status(GameState.current_state, job_id)
+
+
+func perform_shift(job_id: String, approach_id: String) -> Dictionary:
+	return _commit(_engine.perform_shift(GameState.current_state, job_id, approach_id))
+
+
+func career_review_status(job_id: String) -> Dictionary:
+	return {"due": false, "reason": "No active game."} if not GameState.has_active_game() else _engine.career_review_status(GameState.current_state, job_id)
+
+
+func process_career_review(job_id: String) -> Dictionary:
+	return _commit(_engine.process_career_review(GameState.current_state, job_id))
+
+
+func accept_promotion(job_id: String) -> Dictionary:
+	return _commit(_engine.accept_promotion(GameState.current_state, job_id))
+
+
 func _commit(result: Dictionary) -> Dictionary:
 	if not result.get("ok", false):
 		employment_error.emit(result.get("errors", PackedStringArray()))

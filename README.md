@@ -33,7 +33,11 @@ The Jobs phone app now provides filters, live qualification reports, calendar-aw
 availability, applications, scheduled video interviews, scored interview choices,
 offers, compatible schedule selection, contract acceptance, and six weeks of work
 calendar events. Both the full-time and college/part-time employment quests are
-playable through contract acceptance.
+playable through contract acceptance. Active employees can clock into grouped daily
+shifts with four work approaches, earn regular wages, overtime, and tips, receive
+weekly net pay after authored withholding, and build a performance record. Missed
+shifts carry consequences, while ninety-day reviews provide data-driven raises and
+open each job's authored promotion path when its requirements are met.
 
 ## Planned technology
 

@@ -37,7 +37,7 @@
       "health": {"conditions": [], "injuries": [], "medications": [], "allergies": [], "immunity_profile": "$generated_hidden", "recovery_profile": "$generated_hidden", "insurance": "family_plan", "doctor": null, "therapist": null, "last_checkup": null, "private_records_unlocked": false},
       "reproductive_health": {"fertility_tier": "$generated_hidden", "reproductive_capability": "can_impregnate", "fertility_known": false, "contraception_knowledge": "basic", "sti_status": "$generated_hidden", "last_sti_screening": null},
       "education": {"institution": null, "program": null, "course_load": null, "enrolled": false, "courses": [], "grades": {}, "attendance": {}, "tuition_plan": null, "student_debt": 0, "credentials": []},
-      "employment": {"employed": false, "active_jobs": [], "applications": [], "interviews": [], "work_history": [], "certifications": [], "availability_profile": {}},
+      "employment": {"employed": false, "active_jobs": [], "applications": [], "interviews": [], "work_history": [], "payroll_history": [], "certifications": [], "availability_profile": {}},
       "economy": {"financial_background": "$player_choice", "accounts": "$from_starting_budget", "credit_score": 650, "debts": [], "recurring_transactions": [], "ledger": []},
       "inventory": {"containers": "$initialize_from_inventory_system", "equipped_outfit": {}, "starting_loadout": "$from_financial_background"},
       "housing": {"residence": "hale_home", "room": "hale_home.player_bedroom", "household": "hale_household", "monthly_rent": 0, "rent_first_due": "Y1-09-01", "assigned_chores": [], "guest_permissions": "ask_household"},

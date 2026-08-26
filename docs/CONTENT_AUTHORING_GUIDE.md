@@ -70,6 +70,12 @@ city-facing events include `location_discovered`, `location_entered`,
 `activity_completed`. When the last objective completes,
 the quest engine applies its branch and completion effects automatically.
 
+Employment runtime actions use the registered `employment.shift`,
+`economy.payday`, and `employment.promote_or_raise` operations. Add job-specific
+advancement to `promotion_path`; each step may require performance, one skill, or
+professional reputation. Global clock-in grace, work-approach modifiers, probation,
+raise ranges, and review timing live in `employment_rules` rather than phone code.
+
 Room actions owned by an institution or location live in
 `content/systems/city_interactions.json`. A city interaction names its location and
 rooms, declares whether it starts an authored conversation or an atomic activity,

@@ -276,6 +276,11 @@ func _render_jobs() -> void:
 	if not _interview_job_id.is_empty():
 		_render_interview_question()
 		return
+	var sync_result: Dictionary = EmploymentService.sync_employment()
+	if not sync_result.get("ok", false):
+		phone_status.text = str(sync_result.get("errors", ["Employment records could not be synchronized."])[0])
+	elif not sync_result.get("data", {}).get("notices", []).is_empty():
+		phone_status.text = " • ".join(sync_result["data"]["notices"])
 	app_title.text = "JOBS"
 	if not _selected_job_id.is_empty():
 		_render_job_detail(_selected_job_id)
@@ -288,6 +293,18 @@ func _render_jobs() -> void:
 		"Applications: %d • Active jobs: %d" % [employment.get("applications", []).size(), employment.get("active_jobs", []).size()],
 		"Qualified means every authored skill, trait, education, attribute, health, and licensing requirement is currently met.",
 	]
+	for active_job_value: Variant in employment.get("active_jobs", []):
+		if not active_job_value is Dictionary or str(active_job_value.get("status", "active")) != "active":
+			continue
+		var active_job: Dictionary = active_job_value
+		var pending: Dictionary = active_job.get("pending_pay", {})
+		var shift_status: Dictionary = EmploymentService.shift_status(str(active_job.get("job_id", "")))
+		lines.append("[font_size=21]%s[/font_size]\n%s • $%.2f/hour • Performance %.0f\nPending gross: $%.2f • %s\n%s" % [
+			active_job.get("title", active_job.get("job_id", "Job")), active_job.get("employer", ""),
+			float(active_job.get("hourly_pay", 0.0)), float(active_job.get("performance", 50.0)),
+			float(pending.get("gross_wages", 0.0)) + float(pending.get("tips", 0.0)),
+			active_job.get("next_payday", "No payday scheduled"), shift_status.get("reason", ""),
+		])
 	for entry: Variant in listings:
 		if not entry is Dictionary:
 			continue
@@ -320,13 +337,14 @@ func _render_job_detail(job_id: String) -> void:
 	app_title.text = str(job.get("title", job_id)).to_upper()
 	var qualification: Dictionary = EmploymentService.qualification_report(job_id)
 	var application: Dictionary = _employment_application(job_id)
+	var active_job: Dictionary = _active_employment_job(job_id)
 	var lines: PackedStringArray = [
 		"[font_size=23]%s[/font_size]" % job.get("employer", ""),
 		"Location: %s" % _location_name(str(job.get("location", ""))),
 		"Type: %s" % _joined_labels(job.get("employment_types", [])),
 	]
 	if job.has("hourly_pay"):
-		lines.append("Pay: $%.2f per hour" % float(job.get("hourly_pay", 0.0)))
+		lines.append("Pay: $%.2f per hour" % float(active_job.get("hourly_pay", job.get("hourly_pay", 0.0))))
 	elif job.has("booking_pay_range"):
 		lines.append("Pay: $%d–$%d per booking" % [job["booking_pay_range"][0], job["booking_pay_range"][1]])
 	lines.append("\nREQUIREMENTS — %s" % ("[color=#67c6c3]MET[/color]" if qualification.get("qualified", false) else "[color=#ef7777]NOT MET[/color]"))
@@ -343,6 +361,29 @@ func _render_job_detail(job_id: String) -> void:
 				_joined_labels(schedule.get("days", [])),
 				_joined_labels(schedule.get("blocks", [])),
 			])
+	if not active_job.is_empty():
+		var pending: Dictionary = active_job.get("pending_pay", {})
+		var shift_status: Dictionary = EmploymentService.shift_status(job_id)
+		var review_status: Dictionary = EmploymentService.career_review_status(job_id)
+		lines.append("\nACTIVE EMPLOYMENT")
+		lines.append("Current title: [color=#67c6c3]%s[/color]" % active_job.get("title", job.get("title", job_id)))
+		lines.append("Performance: %.1f/100 • Career level %d" % [float(active_job.get("performance", 50.0)), int(active_job.get("career_level", 0))])
+		lines.append("Shifts completed: %d • Late: %d • Missed: %d" % [active_job.get("shifts_completed", 0), active_job.get("late_shifts", 0), active_job.get("shifts_missed", 0)])
+		lines.append("Hours worked: %.2f • Lifetime net: $%.2f" % [float(active_job.get("hours_worked_total", 0.0)), float(active_job.get("lifetime_net", 0.0))])
+		lines.append("Pending pay: %.2f hours • $%.2f gross/tips" % [float(pending.get("hours", 0.0)), float(pending.get("gross_wages", 0.0)) + float(pending.get("tips", 0.0))])
+		var latest_payroll: Dictionary = _latest_payroll_record(job_id)
+		if not latest_payroll.is_empty():
+			lines.append("Last paycheck: $%.2f net ($%.2f wages + $%.2f tips − $%.2f withholding)" % [
+				float(latest_payroll.get("net", 0.0)), float(latest_payroll.get("gross", 0.0)),
+				float(latest_payroll.get("tips", 0.0)), float(latest_payroll.get("withholding", 0.0)),
+			])
+		lines.append("Next payday: %s • %s" % [active_job.get("next_payday", "Unscheduled"), review_status.get("reason", "")])
+		lines.append("Next shift: %s" % shift_status.get("reason", "No scheduled shift."))
+		var pending_promotion: Variant = active_job.get("pending_promotion")
+		if pending_promotion is Dictionary:
+			lines.append("[color=#e9a86c]Promotion opening: %s[/color]" % pending_promotion.get("title", "New role"))
+		elif review_status.get("promotion", {}).get("available", false):
+			lines.append("Next promotion: %s — %s" % [review_status["promotion"].get("step", {}).get("title", "New role"), review_status["promotion"].get("reason", "")])
 	if application.is_empty():
 		lines.append("\nAPPLICATION\nNo application submitted.")
 	else:
@@ -355,6 +396,17 @@ func _render_job_detail(job_id: String) -> void:
 			lines.append("Interview score: %d • %s" % [int(application.get("interview_score", 0)), str(application.get("interview_outcome", stage)).replace("_", " ").capitalize()])
 	app_content.text = "\n".join(lines)
 	_add_action_button("← All Listings", _close_job_detail)
+	if not active_job.is_empty():
+		var active_shift_status: Dictionary = EmploymentService.shift_status(job_id)
+		if bool(active_shift_status.get("ready", false)):
+			for approach: Variant in ContentRegistry.get_package("port_alder_employment_system").get("employment_rules", {}).get("work_approaches", []):
+				if approach is Dictionary:
+					_add_action_button("Clock In — %s" % approach.get("name", approach.get("id", "Work")), _perform_job_shift.bind(job_id, str(approach.get("id", "steady"))))
+		var active_review_status: Dictionary = EmploymentService.career_review_status(job_id)
+		if bool(active_review_status.get("due", false)):
+			_add_action_button("Complete 90-Day Career Review", _process_job_review.bind(job_id))
+		if active_job.get("pending_promotion") is Dictionary:
+			_add_action_button("Accept Promotion — %s" % active_job["pending_promotion"].get("title", "New Role"), _accept_job_promotion.bind(job_id))
 	if application.is_empty() and bool(qualification.get("qualified", false)):
 		for employment_type: Variant in job.get("employment_types", []):
 			var type_id: String = str(employment_type)
@@ -460,6 +512,35 @@ func _finish_job_interview() -> void:
 func _accept_job_offer(job_id: String, schedule_id: String) -> void:
 	var result: Dictionary = EmploymentService.accept_offer(job_id, schedule_id)
 	phone_status.text = "Offer accepted. Your first six weeks of shifts are on the Calendar." if result.get("ok", false) else str(result.get("errors", ["Offer could not be accepted."])[0])
+	_render_jobs()
+
+
+func _perform_job_shift(job_id: String, approach_id: String) -> void:
+	var result: Dictionary = EmploymentService.perform_shift(job_id, approach_id)
+	if result.get("ok", false):
+		var shift: Dictionary = result.get("data", {}).get("shift", {})
+		phone_status.text = "Shift complete: %.2f hours, $%.2f wages, performance %.1f." % [
+			float(shift.get("hours_worked", 0.0)), float(shift.get("gross_wages", 0.0)) + float(shift.get("tips", 0.0)), float(shift.get("performance_after", 0.0)),
+		]
+	else:
+		phone_status.text = str(result.get("errors", ["The shift could not be completed."])[0])
+	_render_jobs()
+
+
+func _process_job_review(job_id: String) -> void:
+	var result: Dictionary = EmploymentService.process_career_review(job_id)
+	if result.get("ok", false):
+		var review: Dictionary = result.get("data", {}).get("review", {})
+		var raise_text: String = "%d%% raise" % int(review.get("raise_percent", 0)) if int(review.get("raise_percent", 0)) > 0 else "no raise"
+		phone_status.text = "Career review complete: %s%s." % [raise_text, " and a promotion opening" if review.get("promotion_opening", false) else ""]
+	else:
+		phone_status.text = str(result.get("errors", ["The career review could not be completed."])[0])
+	_render_jobs()
+
+
+func _accept_job_promotion(job_id: String) -> void:
+	var result: Dictionary = EmploymentService.accept_promotion(job_id)
+	phone_status.text = "Promotion accepted: %s at $%.2f/hour." % [result.get("data", {}).get("title", "New role"), result.get("data", {}).get("hourly_pay", 0.0)] if result.get("ok", false) else str(result.get("errors", ["The promotion could not be accepted."])[0])
 	_render_jobs()
 
 
@@ -896,6 +977,21 @@ func _employment_application(job_id: String) -> Dictionary:
 	for application: Variant in GameState.current_state["player"]["employment"].get("applications", []):
 		if application is Dictionary and str(application.get("job_id", "")) == job_id and str(application.get("stage", "")) not in ["declined", "withdrawn"]:
 			return application
+	return {}
+
+
+func _active_employment_job(job_id: String) -> Dictionary:
+	for active_job: Variant in GameState.current_state["player"]["employment"].get("active_jobs", []):
+		if active_job is Dictionary and str(active_job.get("job_id", "")) == job_id and str(active_job.get("status", "active")) == "active":
+			return active_job
+	return {}
+
+
+func _latest_payroll_record(job_id: String) -> Dictionary:
+	var records: Array = GameState.current_state["player"]["employment"].get("payroll_history", [])
+	for index: int in range(records.size() - 1, -1, -1):
+		if records[index] is Dictionary and str(records[index].get("job_id", "")) == job_id:
+			return records[index]
 	return {}
 
 

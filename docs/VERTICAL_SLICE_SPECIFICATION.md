@@ -15,6 +15,8 @@ views use live runtime data. Authored opening texts, quick
 replies, calendar scheduling,
 NPC commitment rejection, optional double-booking warnings, weather/outfit checks,
 quest progress, relationships, map discovery, and initial settings controls work.
+The employment slice continues beyond hiring with playable shifts, attendance and
+performance, weekly payroll, overtime, tips, withholding, raises, and promotions.
 Map route confirmation and destination travel now work; save/load controls remain
 dependent on their later runtime phase.
 

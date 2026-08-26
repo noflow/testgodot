@@ -14,7 +14,7 @@ unnamed service NPCs lives here.
 - `systems/home_interactions.json` defines atomic bedroom, bathroom, kitchen, and laundry actions.
 - `systems/city_interactions.json` connects city rooms to conversations and atomic institutional, employment, and fitness activities.
 - `systems/phone.json` defines reusable phone apps—including Jobs—scheduling types, and relationship level labels.
-- `systems/employment.json` defines jobs, requirements, interviews, and promotions.
+- `systems/employment.json` defines jobs, requirements, interviews, work approaches, performance, raises, and promotions.
 - `systems/repeatable_activities.json` defines routine actions and simulation effects.
 - `systems/economy.json` defines accounts, budgets, recurring bills, debt, and income.
 - `systems/inventory.json` defines containers, item rules, and starting loadouts.

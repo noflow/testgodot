@@ -67,6 +67,24 @@ offer. Offers only expose schedules compatible with required classes and existin
 jobs. Accepting a contract creates the active-job record and six weeks of work
 events, then advances either the full-time or college/part-time employment quest.
 
+Each workday groups that date's Calendar blocks into one playable shift. The player
+chooses a steady, ambitious, careful, or team-focused approach. Punctuality, Energy,
+Focus, Reliability, relevant skill, task quality, and feedback update a persistent
+0–100 performance score. Clocking in late reduces paid hours; passing the sixty-minute
+window records an absence, lowers professional reputation, and removes eight
+performance points. Work consumes needs and grants experience in a relevant skill.
+
+Earnings accrue until the next Friday payday. The payroll engine combines regular
+hours, cross-job overtime above forty weekly hours, and applicable tips, then applies
+the authored weekly withholding bracket and deposits net pay into checking. Both the
+economy ledger and immutable payroll history retain the pay stub.
+
+Probation lasts thirty days. Every ninety days, the Jobs app exposes a career review.
+Performance of at least 60 earns a raise within the authored 2–8 percent range. A
+review also creates a promotion opening when the next job-specific path entry's
+performance, skill, and reputation requirements are met; accepting it changes the
+title, pay, and career level.
+
 ## Repeatable activities
 
 Twenty-seven activities currently cover hygiene, wardrobe, laundry, food, alcohol,
