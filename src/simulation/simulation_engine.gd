@@ -77,6 +77,8 @@ func _apply_to_working_state(state: Dictionary, operation: String, payload: Dict
 			return _record_conversation_choice(state, payload)
 		"conversation.end":
 			return _end_conversation(state, payload)
+		"travel.begin":
+			return _begin_travel(state, payload)
 		"calendar.schedule":
 			return _schedule_calendar_event(state, payload)
 		"calendar.cancel_or_reschedule":
@@ -603,6 +605,13 @@ func _create_memory(state: Dictionary, payload: Dictionary) -> String:
 func _complete_travel(state: Dictionary, payload: Dictionary) -> String:
 	var destination: String = str(payload.get("destination", ""))
 	var location_id: String = destination.get_slice(".", 0)
+	var pending_value: Variant = state["world_state"].get("pending_travel")
+	var pending: Dictionary = pending_value if pending_value is Dictionary else {}
+	if not pending.is_empty():
+		if str(pending.get("destination", "")) != location_id or str(pending.get("mode", "")) != str(payload.get("mode", "")):
+			return "Completed travel does not match the pending trip."
+		if int(pending.get("minutes", 0)) != int(payload.get("minutes", 0)) or not is_equal_approx(float(pending.get("cost", 0.0)), float(payload.get("cost", 0.0))):
+			return "Completed travel time or cost does not match the confirmed route."
 	var location: Variant = _registry.get_location(location_id)
 	if not location is Dictionary:
 		return "Unknown travel destination: %s" % destination
@@ -630,8 +639,51 @@ func _complete_travel(state: Dictionary, payload: Dictionary) -> String:
 	if not time_error.is_empty():
 		return time_error
 	state["world_state"]["current_location"] = destination
+	state["world_state"]["last_trip"] = {
+		"origin": payload.get("origin", pending.get("origin", "")),
+		"destination": destination,
+		"mode": payload.get("mode", pending.get("mode", "")),
+		"minutes": minutes,
+		"cost": cost,
+		"route_ids": Array(payload.get("route_ids", [])).duplicate(true),
+	}
+	state["world_state"]["pending_travel"] = null
 	if location_id not in state["world_state"]["discovered_locations"]:
 		state["world_state"]["discovered_locations"].append(location_id)
+	return ""
+
+
+func _begin_travel(state: Dictionary, payload: Dictionary) -> String:
+	if state["world_state"].get("pending_travel") is Dictionary:
+		return "Another trip is already in progress."
+	var origin: String = str(payload.get("origin", ""))
+	var destination: String = str(payload.get("destination", ""))
+	var mode: String = str(payload.get("mode", ""))
+	var current_root: String = str(state["world_state"].get("current_location", "")).get_slice(".", 0)
+	if origin != current_root:
+		return "Travel origin does not match the current location."
+	if _registry.get_location(destination) == null:
+		return "Unknown travel destination: %s" % destination
+	if destination not in state["world_state"].get("unlocked_locations", []):
+		return "Travel destination is still locked: %s" % destination
+	var transportation: Variant = _registry.get_package("port_alder_initial_transportation")
+	if not transportation is Dictionary or _find_by_id(transportation.get("modes", []), mode).is_empty():
+		return "Unknown transportation mode: %s" % mode
+	if mode == "car" and not bool(state["player"]["transportation"].get("license", false)):
+		return "A driver's license is required."
+	if mode == "car" and float(state["player"]["needs"].get("inebriation", 0.0)) >= 25.0:
+		return "Driving is blocked while impaired."
+	var route: Variant = payload.get("route")
+	if not route is Dictionary or int(route.get("minutes", 0)) <= 0 or float(route.get("cost", -1.0)) < 0.0:
+		return "Travel requires a valid planned route."
+	state["world_state"]["pending_travel"] = {
+		"origin": origin,
+		"destination": destination,
+		"mode": mode,
+		"minutes": route.get("minutes", 0),
+		"cost": route.get("cost", 0.0),
+		"route_ids": Array(route.get("route_ids", [])).duplicate(true),
+	}
 	return ""
 
 

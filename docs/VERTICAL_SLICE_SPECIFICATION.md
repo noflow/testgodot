@@ -14,7 +14,8 @@ app views are now implemented with live runtime data. Authored opening texts, qu
 replies, calendar scheduling,
 NPC commitment rejection, optional double-booking warnings, weather/outfit checks,
 quest progress, relationships, map discovery, and initial settings controls work.
-Map travel and save/load controls remain dependent on their later runtime phases.
+Map route confirmation and destination travel now work; save/load controls remain
+dependent on their later runtime phase.
 
 ## Purpose
 
@@ -112,8 +113,8 @@ kitchen, dining, laundry, garage, yard interactions, and a state-backed wardrobe
 Elena, Daniel, and Lily now appear in authored rooms according to work, school, and
 home routines stored in their character packages. Direct interaction offers active
 story conversations or short ambient dialogue; unavailable family members remain at
-their external schedule locations. Car travel and the city exit build on this scene
-in the following milestones.
+their external schedule locations. The front gate now opens route confirmation, and
+daily family-car permission can be requested from the garage.
 
 Private doors require knocking or permission. The player cannot enter an occupied
 bathroom or restricted bedroom by walking through a collision boundary.
@@ -144,8 +145,9 @@ reusable scene. Opening messages remain authored inside their owners' `.characte
 packages. Replies consume five minutes and apply declared relationship or quest
 effects atomically. The scheduler checks fixed NPC work and school commitments,
 stores confirmed plans, supports cancellation, and records optional overlap
-warnings. City-map travel, full route details, save/load, control remapping, and
-complete audio sliders activate with their corresponding later systems.
+warnings. The City Map compares live route time, cost, waits, closures, weather, and
+safety requirements before confirmation. Save/load, control remapping, and complete
+audio sliders activate with their corresponding later systems.
 
 ### City travel
 
@@ -159,6 +161,12 @@ car may use menu-driven travel but must still charge money and advance time.
 
 Closed destinations show their next opening time. Travel that would arrive too late
 warns the player before confirmation.
+
+Implementation note: the first nine destinations are connected through a
+bidirectional graph planner. Walking links can connect to bus, taxi, or car legs;
+bus waits vary by activity block. Confirmed trips use atomic begin/complete events,
+charge an available account, advance exact minutes, update travel and quest state,
+and enter a reusable destination scene whose rooms come from the city registry.
 
 ### Required quest proof
 

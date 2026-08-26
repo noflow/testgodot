@@ -269,6 +269,90 @@ custom_minimum_size = Vector2(150, 46)
 layout_mode = 2
 text = "Back"
 
+[node name="RoutePanel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 0.2
+anchor_top = 0.1
+anchor_right = 0.8
+anchor_bottom = 0.9
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_scheduler")
+
+[node name="Margin" type="MarginContainer" parent="RoutePanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 24
+
+[node name="Layout" type="VBoxContainer" parent="RoutePanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="RoutePanel/Margin/Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.914, 0.659, 0.424, 1)
+theme_override_font_sizes/font_size = 28
+text = "PLAN A ROUTE"
+
+[node name="RouteOrigin" type="Label" parent="RoutePanel/Margin/Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.404, 0.776, 0.765, 1)
+text = "From"
+
+[node name="RouteDestination" type="Label" parent="RoutePanel/Margin/Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.404, 0.776, 0.765, 1)
+text = "To"
+
+[node name="ModeLabel" type="Label" parent="RoutePanel/Margin/Layout"]
+layout_mode = 2
+text = "Choose transportation"
+
+[node name="RouteOption" type="OptionButton" parent="RoutePanel/Margin/Layout"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+
+[node name="RouteSummary" type="RichTextLabel" parent="RoutePanel/Margin/Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+bbcode_enabled = true
+scroll_active = true
+
+[node name="RouteStatus" type="Label" parent="RoutePanel/Margin/Layout"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.86, 0.86, 1)
+autowrap_mode = 2
+
+[node name="Buttons" type="HBoxContainer" parent="RoutePanel/Margin/Layout"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ConfirmTravelButton" type="Button" parent="RoutePanel/Margin/Layout/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Confirm Travel"
+
+[node name="CloseButton" type="Button" parent="RoutePanel/Margin/Layout/Buttons"]
+custom_minimum_size = Vector2(150, 48)
+layout_mode = 2
+text = "Back"
+
 [connection signal="pressed" from="OuterMargin/PhoneFrame/FrameMargin/Layout/Header/ClosePhoneButton" to="." method="_on_close_phone_pressed"]
 [connection signal="pressed" from="SchedulerPanel/Margin/Layout/Buttons/ConfirmButton" to="." method="_on_confirm_schedule_pressed"]
 [connection signal="pressed" from="SchedulerPanel/Margin/Layout/Buttons/CloseButton" to="." method="_on_close_scheduler_pressed"]
+[connection signal="item_selected" from="RoutePanel/Margin/Layout/RouteOption" to="." method="_on_route_option_selected"]
+[connection signal="pressed" from="RoutePanel/Margin/Layout/Buttons/ConfirmTravelButton" to="." method="_on_confirm_travel_pressed"]
+[connection signal="pressed" from="RoutePanel/Margin/Layout/Buttons/CloseButton" to="." method="_on_close_route_pressed"]

@@ -60,6 +60,15 @@ func _run_probe() -> void:
 			printerr("PROBE: phone app did not render: %s" % app_id)
 			get_tree().quit(1)
 			return
+	phone.call("_open_route_planner", "alder_bay_park")
+	await get_tree().process_frame
+	var route_panel: Control = phone.get_node("RoutePanel")
+	var route_option: OptionButton = phone.get_node("RoutePanel/Margin/Layout/RouteOption")
+	if not route_panel.visible or route_option.item_count != 4 or phone.get_node("RoutePanel/Margin/Layout/Buttons/ConfirmTravelButton").disabled:
+		printerr("PROBE: city map route confirmation did not populate four available modes")
+		get_tree().quit(1)
+		return
+	phone.call("_on_close_route_pressed")
 	phone.call("_open_scheduler", "emma_rowan")
 	await get_tree().process_frame
 	if not phone.get_node("SchedulerPanel").visible or phone.get_node("SchedulerPanel/Margin/Layout/DayOption").item_count != 7:

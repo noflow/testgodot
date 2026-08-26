@@ -514,11 +514,22 @@ ambient chat. Follow-up character quests activate automatically when prerequisit
 and earliest activity blocks are satisfied. Daniel's opening-night `a_quiet_check_in`
 quest and conversation complete the first playable family set.
 
+City travel is now playable across the nine connected opening destinations. The
+phone City Map compares graph-based walking, bus, taxi, and permitted car routes in
+both directions, including short walking connectors, bus waits, fares, arrival-time
+closures, weather warnings, vehicle permission, and impaired-driving blocks.
+Confirmation applies `travel.begin` and `travel.complete` atomically, advances the
+seven-block clock by exact minutes, charges an available account, records the trip,
+updates matching quest objectives, and enters the first accessible destination
+room. A reusable city scene lays out every accessible room directly from the
+location registry, so Westshore, Forge Fitness, the park, the cinema, the employment
+centre, the neighborhood, and later routed destinations do not need separate shell
+code. The Hale garage can grant daily family-car permission when required.
+
 ## Next milestones
 
-1. Implement city travel and connect phone map destinations to route confirmation
-2. Implement the required institutional and NPC activities
-3. Expand the phone with jobs, banking, housing, education, health, shopping, and transportation apps
-4. Implement saves, recovery, Sunday review, complete settings, and accessibility
-5. Stabilize the vertical slice against all acceptance tests
-6. Resume broader content expansion, alternative households, and the September calendar
+1. Implement the required institutional and NPC activities
+2. Expand the phone with jobs, banking, housing, education, health, shopping, and transportation apps
+3. Implement saves, recovery, Sunday review, complete settings, and accessibility
+4. Stabilize the vertical slice against all acceptance tests
+5. Resume broader content expansion, alternative households, and the September calendar

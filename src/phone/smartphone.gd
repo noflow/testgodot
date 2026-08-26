@@ -2,6 +2,7 @@ extends Control
 
 signal phone_opened
 signal phone_closed
+signal travel_completed(destination: String)
 
 const APP_ORDER: PackedStringArray = [
 	"character_profile", "contacts", "messages", "calendar", "quests",
@@ -30,9 +31,17 @@ const MONTH_NAMES: PackedStringArray = [
 @onready var day_option: OptionButton = %DayOption
 @onready var block_option: OptionButton = %BlockOption
 @onready var scheduler_status: Label = %SchedulerStatus
+@onready var route_panel: PanelContainer = %RoutePanel
+@onready var route_origin: Label = %RouteOrigin
+@onready var route_destination: Label = %RouteDestination
+@onready var route_option: OptionButton = %RouteOption
+@onready var route_summary: RichTextLabel = %RouteSummary
+@onready var route_status: Label = %RouteStatus
+@onready var confirm_travel_button: Button = %ConfirmTravelButton
 
 var _current_app: String = "character_profile"
 var _selected_contact: String = ""
+var _selected_route_destination: String = ""
 
 
 func _ready() -> void:
@@ -46,6 +55,7 @@ func open_phone(default_app: String = "character_profile") -> void:
 	PhoneService.sync_messages()
 	visible = true
 	scheduler_panel.visible = false
+	route_panel.visible = false
 	_show_app(default_app)
 	phone_opened.emit()
 	if app_buttons.get_child_count() > 0:
@@ -56,6 +66,7 @@ func close_phone() -> void:
 	if not visible:
 		return
 	scheduler_panel.visible = false
+	route_panel.visible = false
 	visible = false
 	phone_closed.emit()
 
@@ -270,8 +281,11 @@ func _render_relationships() -> void:
 
 
 func _render_map() -> void:
+	_clear_container(app_actions)
+	TravelService.record_map_viewed()
 	app_title.text = "CITY MAP"
 	var world: Dictionary = GameState.current_state["world_state"]
+	var current_root: String = str(world["current_location"]).get_slice(".", 0)
 	var lines: PackedStringArray = [
 		"Current location: [color=#e9a86c]%s[/color]" % _location_name(str(world["current_location"])),
 		"",
@@ -281,9 +295,101 @@ func _render_map() -> void:
 		var location_id: String = str(location_id_value)
 		var location: Variant = ContentRegistry.get_location(location_id)
 		if location is Dictionary:
-			lines.append("• %s — %s" % [location.get("name", location_id), str(location.get("district", "unknown")).replace("_", " ").capitalize()])
-	lines.append("\nTravel time, cost, closures, and route confirmation will activate when the front gate connects to Port Alder.")
+			var marker: String = "[color=#67c6c3]YOU ARE HERE[/color]" if location_id == current_root else str(location.get("district", "unknown")).replace("_", " ").capitalize()
+			lines.append("• %s — %s" % [location.get("name", location_id), marker])
+			if location_id != current_root:
+				_add_action_button("Plan route to %s" % location.get("name", location_id), _open_route_planner.bind(location_id))
+	lines.append("\nSelect a destination to compare walking, bus, taxi, and car routes. Closed destinations remain visible but cannot be confirmed.")
 	app_content.text = "\n".join(lines)
+
+
+func _open_route_planner(destination: String) -> void:
+	var plan: Dictionary = TravelService.plan_routes(destination)
+	if not plan.get("ok", false):
+		phone_status.text = str(plan.get("errors", ["No route is available."])[0])
+		return
+	_selected_route_destination = destination
+	route_origin.text = "From: %s" % _location_name(str(GameState.current_state["world_state"]["current_location"]))
+	route_destination.text = "To: %s" % plan.get("destination_name", _location_name(destination))
+	route_option.clear()
+	var first_available: int = -1
+	var viewed_modes: PackedStringArray = []
+	for option: Variant in plan.get("options", []):
+		if not option is Dictionary:
+			continue
+		var mode: String = str(option.get("mode", ""))
+		viewed_modes.append(mode)
+		var label: String = "%s • %d min • $%.2f" % [option.get("name", mode.capitalize()), option.get("minutes", 0), option.get("cost", 0.0)]
+		if int(option.get("wait_minutes", 0)) > 0:
+			label += " • includes %d min wait" % option["wait_minutes"]
+		if not bool(option.get("available", false)):
+			label += " • UNAVAILABLE"
+		route_option.add_item(label)
+		var index: int = route_option.item_count - 1
+		route_option.set_item_metadata(index, option.duplicate(true))
+		route_option.set_item_disabled(index, not bool(option.get("available", false)))
+		if first_available < 0 and bool(option.get("available", false)):
+			first_available = index
+	TravelService.record_routes_viewed(destination, viewed_modes)
+	confirm_travel_button.disabled = first_available < 0
+	if first_available >= 0:
+		route_option.select(first_available)
+	else:
+		route_option.select(0)
+	route_status.text = "" if first_available >= 0 else "No route can be used right now. Review the closure or requirement below."
+	_update_route_summary(route_option.selected)
+	scheduler_panel.visible = false
+	route_panel.visible = true
+
+
+func _update_route_summary(index: int) -> void:
+	if index < 0 or index >= route_option.item_count:
+		route_summary.text = "No route selected."
+		return
+	var option: Variant = route_option.get_item_metadata(index)
+	if not option is Dictionary:
+		route_summary.text = "No route selected."
+		return
+	var lines: PackedStringArray = [
+		"[font_size=22]%s[/font_size]" % option.get("name", "Route"),
+		"Total time: %d minutes" % option.get("minutes", 0),
+		"Arrival: %s • %s +%03d" % [str(option.get("arrival_weekday", "")).capitalize(), str(option.get("arrival_block", "")).replace("_", " ").capitalize(), option.get("arrival_minute_within_block", 0)],
+		"Cost: $%.2f" % option.get("cost", 0.0),
+	]
+	var segment_labels: PackedStringArray = []
+	for segment: Variant in option.get("segments", []):
+		if segment is Dictionary:
+			segment_labels.append("%s: %s → %s (%d min)" % [str(segment.get("mode", "")).capitalize(), _short_location_name(str(segment.get("from", ""))), _short_location_name(str(segment.get("to", ""))), segment.get("minutes", 0)])
+	if not segment_labels.is_empty():
+		lines.append("\nROUTE\n%s" % "\n".join(segment_labels))
+	for warning: Variant in option.get("warnings", []):
+		lines.append("[color=#e9a86c]Warning: %s[/color]" % warning)
+	if not bool(option.get("available", false)):
+		lines.append("[color=#ef7777]%s[/color]" % option.get("reason", "Unavailable"))
+	route_summary.text = "\n".join(lines)
+
+
+func _on_confirm_travel_pressed() -> void:
+	var selected: Variant = route_option.get_selected_metadata()
+	if not selected is Dictionary:
+		route_status.text = "Choose an available route first."
+		return
+	var result: Dictionary = TravelService.travel(_selected_route_destination, str(selected.get("mode", "")))
+	if not result.get("ok", false):
+		route_status.text = str(result.get("errors", ["Travel could not be completed."])[0])
+		return
+	route_panel.visible = false
+	visible = false
+	phone_closed.emit()
+	travel_completed.emit(str(result.get("destination", _selected_route_destination)))
+
+
+func _on_route_option_selected(index: int) -> void:
+	_update_route_summary(index)
+
+
+func _on_close_route_pressed() -> void:
+	route_panel.visible = false
 
 
 func _render_weather() -> void:
@@ -374,6 +480,7 @@ func _open_scheduler(preselected_contact: String = "") -> void:
 	_populate_scheduler(preselected_contact)
 	scheduler_status.text = "Required work, class, and NPC commitments block confirmation. Other overlaps create a warning."
 	scheduler_panel.visible = true
+	route_panel.visible = false
 
 
 func _populate_scheduler(preselected_contact: String) -> void:
@@ -594,6 +701,11 @@ func _location_name(destination: String) -> String:
 	var location: Variant = ContentRegistry.get_location(location_id)
 	var name: String = str(location.get("name", location_id)) if location is Dictionary else location_id
 	return "%s — %s" % [name, destination.get_slice(".", 1).replace("_", " ").capitalize()] if destination.contains(".") else name
+
+
+func _short_location_name(location_id: String) -> String:
+	var location: Variant = ContentRegistry.get_location(location_id)
+	return str(location.get("name", location_id)) if location is Dictionary else location_id.replace("_", " ").capitalize()
 
 
 func _date_after_days(clock: Dictionary, offset: int) -> Dictionary:

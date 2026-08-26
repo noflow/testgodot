@@ -52,6 +52,12 @@ school commitments. Required work/class/interview overlaps are rejected; optiona
 overlaps are preserved with explicit conflict records. Weather advances from the
 authored opening-week forecast whenever the game date changes.
 
+Travel is state-backed as an atomic begin/complete pair. Planning is read-only;
+confirmation records a pending trip only in the working transaction, then validates
+the arrival room, advances exact minutes, charges the selected account, discovers
+the destination, clears pending state, and stores a compact `last_trip` summary.
+If any completion step fails, neither event is committed by `TravelService`.
+
 ## Runtime state
 
 The root state contains:

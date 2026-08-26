@@ -75,6 +75,7 @@ func _ready() -> void:
 	player.interact_requested.connect(_on_interact_requested)
 	smartphone.phone_opened.connect(_on_phone_opened)
 	smartphone.phone_closed.connect(_on_phone_closed)
+	smartphone.travel_completed.connect(_on_travel_completed)
 	_restore_player_location()
 	_sync_household_schedule(true)
 	_refresh_hud()
@@ -105,6 +106,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("phone") and not _modal_open():
 		smartphone.open_phone()
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("city_map") and not _modal_open():
+		smartphone.open_phone("city_map")
 		get_viewport().set_input_as_handled()
 
 
@@ -313,11 +317,22 @@ func _handle_special(special: String) -> void:
 			status_label.text = "The living room is available for household conversations and relaxation."
 		"family_car":
 			var permission: String = str(GameState.current_state["player"]["transportation"]["family_car_permission"])
-			status_label.text = "Family car access: %s. City driving will unlock with travel." % permission.replace("_", " ")
+			if permission == "regular_shared_access":
+				status_label.text = "The family car is available under your regular shared-access agreement."
+			elif permission in ["", "none", "denied"]:
+				status_label.text = "You do not currently have permission to use the family car."
+			else:
+				var next_state: Dictionary = GameState.current_state.duplicate(true)
+				next_state["world_state"]["world_flags"]["family_car_permission_date"] = "Y%d-%02d-%02d" % [next_state["clock"]["year"], next_state["clock"]["month"], next_state["clock"]["day"]]
+				GameState.replace_state(next_state)
+				status_label.text = "You ask to use the family car. Permission is granted for today; return it with fuel and report any damage."
 		"backyard":
 			status_label.text = "The backyard can host exercise, relaxation, and small gatherings."
 		"leave_home":
-			status_label.text = "The front gate leads into Port Alder. City travel is the upcoming milestone."
+			_remember_player_position()
+			TravelService.start_transportation_tutorial("home.front_gate")
+			smartphone.open_phone("city_map")
+			status_label.text = "Choose an unlocked Port Alder destination and compare routes."
 
 
 func _open_npc_panel(character_id: String) -> void:
@@ -425,6 +440,8 @@ func _restore_player_location() -> void:
 	var saved_position: Array = world.get("home_player_position", [])
 	if saved_position.size() == 2:
 		player.position = Vector2(float(saved_position[0]), float(saved_position[1]))
+	else:
+		player.position = _rooms[room_id]["rect"].get_center()
 	_set_current_room(room_id)
 
 
@@ -548,3 +565,12 @@ func _on_phone_opened() -> void:
 
 func _on_phone_closed() -> void:
 	player.movement_enabled = true
+
+
+func _on_travel_completed(destination: String) -> void:
+	var location_id: String = destination.get_slice(".", 0)
+	if location_id != "hale_home":
+		var next_state: Dictionary = GameState.current_state.duplicate(true)
+		next_state["world_state"]["home_player_position"] = [player.position.x, player.position.y]
+		GameState.replace_state(next_state)
+	get_tree().change_scene_to_file(AppConstants.HALE_HOME_SCENE if location_id == "hale_home" else AppConstants.CITY_LOCATION_SCENE)

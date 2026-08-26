@@ -1,0 +1,119 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://src/world/city_location.gd" id="1_city"]
+[ext_resource type="Script" path="res://src/world/top_down_player.gd" id="2_player"]
+[ext_resource type="PackedScene" path="res://scenes/phone/smartphone.tscn" id="3_phone"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_player"]
+radius = 18.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_header"]
+bg_color = Color(0.035, 0.063, 0.086, 0.94)
+border_width_bottom = 2
+border_color = Color(0.404, 0.776, 0.765, 1)
+
+[node name="CityLocation" type="Node2D"]
+script = ExtResource("1_city")
+
+[node name="Player" type="CharacterBody2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(260, 260)
+collision_layer = 1
+collision_mask = 1
+script = ExtResource("2_player")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
+shape = SubResource("CircleShape2D_player")
+
+[node name="Camera2D" type="Camera2D" parent="Player"]
+enabled = true
+position_smoothing_enabled = true
+position_smoothing_speed = 8.0
+limit_left = 0
+limit_top = 0
+limit_right = 1600
+limit_bottom = 1000
+
+[node name="Interface" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="Smartphone" parent="Interface" instance=ExtResource("3_phone")]
+unique_name_in_owner = true
+
+[node name="Header" type="PanelContainer" parent="Interface"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 92.0
+grow_horizontal = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_header")
+
+[node name="Margin" type="MarginContainer" parent="Interface/Header"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 12
+
+[node name="Layout" type="VBoxContainer" parent="Interface/Header/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Top" type="HBoxContainer" parent="Interface/Header/Margin/Layout"]
+layout_mode = 2
+
+[node name="LocationLabel" type="Label" parent="Interface/Header/Margin/Layout/Top"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.404, 0.776, 0.765, 1)
+theme_override_font_sizes/font_size = 24
+text = "Port Alder Destination"
+
+[node name="ClockLabel" type="Label" parent="Interface/Header/Margin/Layout/Top"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.914, 0.659, 0.424, 1)
+theme_override_font_sizes/font_size = 17
+text = "Tuesday • Morning"
+
+[node name="RoomLabel" type="Label" parent="Interface/Header/Margin/Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.86, 0.86, 1)
+text = "Room"
+
+[node name="Footer" type="PanelContainer" parent="Interface"]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -86.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_header")
+
+[node name="Margin" type="MarginContainer" parent="Interface/Footer"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 9
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 9
+
+[node name="Layout" type="VBoxContainer" parent="Interface/Footer/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 3
+
+[node name="PromptLabel" type="Label" parent="Interface/Footer/Margin/Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.914, 0.659, 0.424, 1)
+theme_override_font_sizes/font_size = 17
+horizontal_alignment = 1
+
+[node name="StatusLabel" type="Label" parent="Interface/Footer/Margin/Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.86, 0.86, 1)
+text = "WASD / arrows to move • E to inspect • Tab for phone • M for City Map"
+horizontal_alignment = 1
+autowrap_mode = 2

@@ -19,6 +19,10 @@ map, quest progress, character statistics, and initial settings controls. Elena,
 Daniel, and Lily now follow their character-authored work, school, and home-room
 schedules, appear as reusable top-down actors, and expose available story or ambient
 conversations through direct exploration.
+The City Map now plans and confirms graph-based walking, bus, taxi, and permitted
+car travel across nine opening destinations. Trips charge fares, advance the live
+clock, respect closures and safety requirements, update quests, and arrive in a
+reusable data-driven destination scene with explorable rooms.
 
 ## Planned technology
 

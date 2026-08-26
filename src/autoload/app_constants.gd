@@ -9,6 +9,7 @@ const BOOT_SCENE: String = "res://scenes/boot/boot.tscn"
 const CHARACTER_CREATION_SCENE: String = "res://scenes/creation/character_creation.tscn"
 const VN_DIALOGUE_SCENE: String = "res://scenes/dialogue/vn_dialogue.tscn"
 const HALE_HOME_SCENE: String = "res://scenes/locations/hale_home.tscn"
+const CITY_LOCATION_SCENE: String = "res://scenes/locations/city_location.tscn"
 const SANDBOX_SCENE: String = HALE_HOME_SCENE
 
 const COLOR_BACKGROUND: Color = Color("#091016")

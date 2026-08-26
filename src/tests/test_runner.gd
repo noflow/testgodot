@@ -9,6 +9,7 @@ const CharacterCreationValidatorScript: GDScript = preload("res://src/creation/c
 const HomeActionEngineScript: GDScript = preload("res://src/world/home_action_engine.gd")
 const PhoneEngineScript: GDScript = preload("res://src/phone/phone_engine.gd")
 const HouseholdScheduleEngineScript: GDScript = preload("res://src/world/household_schedule_engine.gd")
+const TravelEngineScript: GDScript = preload("res://src/world/travel_engine.gd")
 
 var _failures: PackedStringArray = []
 var _tests_run: int = 0
@@ -35,6 +36,7 @@ func _run_all() -> void:
 	_test_clock_and_simulation_engine()
 	_test_home_actions_and_wardrobe()
 	_test_household_schedules_and_conversations()
+	_test_city_travel_and_routes()
 	_test_phone_messages_and_calendar()
 	_test_opening_dialogue_branches()
 
@@ -59,6 +61,7 @@ func _test_project_configuration() -> void:
 	_expect(InputMap.has_action("quest_tracker"), "Quest tracker input action exists.")
 	_expect(InputMap.has_action("city_map"), "City map input action exists.")
 	_expect(ProjectSettings.has_setting("autoload/PhoneService"), "Phone service is configured as an autoload.")
+	_expect(ProjectSettings.has_setting("autoload/TravelService"), "Travel service is configured as an autoload.")
 
 
 func _test_required_json_documents() -> void:
@@ -100,6 +103,7 @@ func _test_hale_home_scene() -> void:
 		var phone_instance: Node = phone_scene.instantiate()
 		_expect(phone_instance.get_node_or_null("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/Navigation/NavMargin/NavScroll/AppButtons") != null, "Phone scene contains its reusable app navigation.")
 		_expect(phone_instance.get_node_or_null("SchedulerPanel/Margin/Layout/ContactOption") != null, "Phone scene contains its calendar scheduler.")
+		_expect(phone_instance.get_node_or_null("RoutePanel/Margin/Layout/RouteOption") != null, "Phone scene contains its route confirmation panel.")
 		phone_instance.free()
 	var home_scene: PackedScene = load("res://scenes/locations/hale_home.tscn")
 	_expect(home_scene != null, "Playable Hale home scene loads.")
@@ -117,6 +121,13 @@ func _test_hale_home_scene() -> void:
 	instance.free()
 	var actor_scene: PackedScene = load("res://scenes/world/household_npc_actor.tscn")
 	_expect(actor_scene != null, "Reusable household NPC actor scene loads.")
+	var city_scene: PackedScene = load("res://scenes/locations/city_location.tscn")
+	_expect(city_scene != null, "Reusable city destination scene loads.")
+	if city_scene != null:
+		var city_instance: Node = city_scene.instantiate()
+		_expect(city_instance.get_node_or_null("Player") != null, "City destination scene contains the top-down player.")
+		_expect(city_instance.get_node_or_null("Interface/Smartphone") != null, "City destination scene contains the reusable smartphone.")
+		city_instance.free()
 
 
 func _test_household_schedules_and_conversations() -> void:
@@ -169,6 +180,62 @@ func _test_household_schedules_and_conversations() -> void:
 	_expect(result["changed"], "Schedule synchronization updates persistent NPC locations.")
 	state = result["state"]
 	_expect(_npc_location(state, "daniel_hale") == "hale_home.living_room", "Daniel's live NPC state records his current home room.")
+
+
+func _test_city_travel_and_routes() -> void:
+	var factory: RefCounted = NewGameStateFactoryScript.new(_registry)
+	var simulation: RefCounted = SimulationEngineScript.new(_registry)
+	var quests: RefCounted = QuestEngineScript.new(_registry, simulation)
+	var travel: RefCounted = TravelEngineScript.new(_registry, simulation, quests)
+	var state: Dictionary = factory.create_new_game({}, {"random_seed": 712})
+	_expect(state["world_state"]["unlocked_locations"].size() == 9, "New games unlock the nine connected opening destinations.")
+
+	var plan: Dictionary = travel.plan_routes(state, "westshore_administration_office")
+	_expect(plan.get("ok", false), "The route planner connects Hale Home to Westshore Administration.")
+	_expect(plan.get("options", []).size() == 4, "Westshore Administration offers walking, bus, taxi, and car comparisons.")
+	var bus_route: Dictionary = _route_option(plan, "bus")
+	_expect(bus_route["minutes"] == 32 and bus_route["cost"] == 3.0, "Bus planning includes the Morning wait and authored fare.")
+	_expect(_route_option(plan, "walking")["minutes"] == 48, "Walking uses its authored forty-eight-minute route.")
+
+	var closed_plan: Dictionary = travel.plan_routes(state, "harborlight_cinema")
+	_expect(closed_plan.get("ok", false), "Closed destinations still expose route comparisons.")
+	_expect(not _route_option(closed_plan, "walking")["available"], "Cinema travel is blocked while the destination is closed Tuesday Morning.")
+	_expect("Next opening:" in str(_route_option(closed_plan, "walking")["reason"]), "Closed route details identify the destination's next opening block.")
+
+	plan = travel.plan_routes(state, "alder_bay_park")
+	_expect(not _route_option(plan, "car")["available"], "Shared family-car travel requires permission for the current day.")
+	state["world_state"]["world_flags"]["family_car_permission_date"] = "Y1-08-20"
+	plan = travel.plan_routes(state, "alder_bay_park")
+	_expect(_route_option(plan, "car")["available"], "Daily family-car permission enables driving routes.")
+	state["player"]["needs"]["inebriation"] = 30
+	plan = travel.plan_routes(state, "alder_bay_park")
+	_expect(not _route_option(plan, "car")["available"] and "impaired" in str(_route_option(plan, "car")["reason"]), "Car travel is blocked while the player is impaired.")
+	state["player"]["needs"]["inebriation"] = 0
+
+	var result: Dictionary = quests.start_quest(state, "enroll_at_westshore", "test.travel_quest")
+	state = result["state"]
+	result = travel.execute_travel(state, "westshore_administration_office", "walking", "test.travel")
+	_expect(result.get("ok", false), "A confirmed walking route completes atomically.")
+	state = result["state"]
+	_expect(state["world_state"]["current_location"] == "westshore_administration_office.reception", "Travel arrives in the destination's first accessible room.")
+	_expect(state["world_state"]["pending_travel"] == null, "Completed travel clears the pending trip.")
+	_expect(state["world_state"]["last_trip"]["mode"] == "walking", "Travel records a durable last-trip summary.")
+	_expect(state["quest_state"]["objectives"]["enroll_at_westshore"]["travel_to_administration"], "Arriving at Administration completes its active quest objective.")
+	plan = travel.plan_routes(state, "hale_home")
+	_expect(plan.get("ok", false) and _route_option(plan, "walking")["minutes"] == 48, "Authored routes work in reverse back to Hale Home.")
+
+	state = factory.create_new_game({}, {"random_seed": 713})
+	result = travel.start_transportation_tutorial(state, "test.first_exit")
+	state = result["state"]
+	result = travel.record_map_viewed(state, "test.map")
+	state = result["state"]
+	result = travel.record_routes_viewed(state, "westshore_campus", ["walking", "bus", "taxi", "car"], "test.routes")
+	state = result["state"]
+	result = travel.execute_travel(state, "westshore_campus", "bus", "test.bus")
+	_expect(result.get("ok", false), "The transportation tutorial accepts a confirmed bus trip.")
+	state = result["state"]
+	_expect("getting_around_port_alder" in state["quest_state"]["completed"], "Viewing routes and taking the bus completes transportation onboarding.")
+	_expect("transportation" in state["player"]["phone"]["unlocked_apps"], "Transportation onboarding unlocks its future phone app.")
 
 
 func _test_character_creation_scene() -> void:
@@ -732,6 +799,13 @@ func _npc_location(state: Dictionary, character_id: String) -> String:
 		if npc_state is Dictionary and str(npc_state.get("character_id", "")) == character_id:
 			return str(npc_state.get("current_location", ""))
 	return ""
+
+
+func _route_option(plan: Dictionary, mode: String) -> Dictionary:
+	for option: Variant in plan.get("options", []):
+		if option is Dictionary and str(option.get("mode", "")) == mode:
+			return option
+	return {}
 
 
 func _parse_json(path: String) -> Variant:

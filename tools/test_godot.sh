@@ -14,3 +14,4 @@ fi
 
 "$PORT_ALDER_GODOT_BIN" --headless --path . --script res://src/tests/test_runner.gd
 "$PORT_ALDER_GODOT_BIN" --headless --path . res://scenes/tests/home_runtime_probe.tscn
+"$PORT_ALDER_GODOT_BIN" --headless --path . res://scenes/tests/city_runtime_probe.tscn
