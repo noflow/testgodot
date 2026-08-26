@@ -13,10 +13,10 @@ unnamed service NPCs lives here.
 - `systems/character_creation.json` defines appearance choices, traits, values, hobbies, archetypes, and validation rules.
 - `systems/home_interactions.json` defines atomic bedroom, bathroom, kitchen, and laundry actions.
 - `systems/city_interactions.json` connects city rooms to conversations and atomic institutional, employment, and fitness activities.
-- `systems/phone.json` defines reusable phone apps—including Jobs—scheduling types, and relationship level labels.
+- `systems/phone.json` defines reusable phone apps—including Jobs, Money, and Shopping—scheduling types, and relationship level labels.
 - `systems/employment.json` defines jobs, requirements, interviews, work approaches, performance, raises, and promotions.
 - `systems/repeatable_activities.json` defines routine actions and simulation effects.
-- `systems/economy.json` defines accounts, budgets, recurring bills, debt, and income.
+- `systems/economy.json` defines accounts, budgets, recurring bills, debt, payment priority, tax, and income.
 - `systems/inventory.json` defines containers, item rules, and starting loadouts.
 - `systems/clothing.json` defines wardrobe items and weather ratings.
 - `systems/food.json` defines food, drinks, alcohol, and inebriation thresholds.

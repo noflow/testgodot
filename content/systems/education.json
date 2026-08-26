@@ -8,7 +8,7 @@
     "operating_days": ["monday", "tuesday", "wednesday", "thursday", "friday"],
     "teaching_blocks": ["morning", "lunch", "afternoon"],
     "closed_blocks": ["evening", "late_evening", "night"],
-    "tuition": {"full_time_per_semester": 4000, "part_time_per_semester": 2200, "books_and_supplies_estimate": 450},
+    "tuition": {"full_time_per_semester": 4000, "part_time_per_semester": 2200, "books_and_supplies_estimate": 450, "aid_awards_by_background": {"limited_background": 2400, "standard_background": 1600, "comfortable_background": 800}},
     "course_load": {"full_time_courses": 4, "part_time_courses": 2, "maximum_courses": 5},
     "allowance_while_enrolled": {"limited_background": 60, "standard_background": 100, "comfortable_background": 150, "frequency": "weekly"}
   },

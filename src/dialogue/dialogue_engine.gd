@@ -269,7 +269,7 @@ func _apply_effect(state: Dictionary, effect: Dictionary, source: String) -> Dic
 				"tags": effect.get("tags", []),
 			}, source)
 		"spend_money":
-			return _spend_money(state, float(effect.get("value", 0)), source)
+			return _spend_money(state, float(effect.get("value", 0)), source, str(effect.get("category", "dialogue_purchase")))
 		"schedule_event":
 			return _schedule_dialogue_event(state, effect.get("value"), source)
 		"create_debt":
@@ -282,7 +282,7 @@ func _apply_effect(state: Dictionary, effect: Dictionary, source: String) -> Dic
 			return _failure("Unsupported dialogue effect: %s" % effect.get("operation", ""), state)
 
 
-func _spend_money(state: Dictionary, amount: float, source: String) -> Dictionary:
+func _spend_money(state: Dictionary, amount: float, source: String, category: String = "dialogue_purchase") -> Dictionary:
 	var remaining: float = amount
 	var working: Dictionary = state
 	for account_id: String in ["wallet_cash", "checking", "savings"]:
@@ -292,8 +292,8 @@ func _spend_money(state: Dictionary, amount: float, source: String) -> Dictionar
 			var result: Dictionary = _simulation.apply_operation(working, "economy.transaction", {
 				"account": account_id,
 				"amount": -debit,
-				"type": "debit",
-				"category": "dialogue_purchase",
+				"type": "tuition" if category == "tuition" else "purchase",
+				"category": category,
 				"description": source,
 			}, source)
 			if not result.get("ok", false):

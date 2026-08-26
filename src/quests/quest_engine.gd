@@ -227,6 +227,8 @@ func _apply_completion_effect(state: Dictionary, effect: Dictionary) -> void:
 			var key: String = str(effect.get("key", ""))
 			if key in ["education.enrolled", "employment.employed"]:
 				_set_state_value(state, "player.%s" % key, effect.get("value"))
+				if key == "education.enrolled" and bool(effect.get("value", false)):
+					state["player"]["education"]["enrollment_date"] = "Y%d-%02d-%02d" % [state["clock"]["year"], state["clock"]["month"], state["clock"]["day"]]
 			else:
 				state["player"]["flags"][key] = effect.get("value")
 		"add_attribute":

@@ -5,7 +5,7 @@ signal phone_closed
 signal travel_completed(destination: String)
 
 const APP_ORDER: PackedStringArray = [
-	"character_profile", "contacts", "messages", "calendar", "jobs", "quests",
+	"character_profile", "contacts", "messages", "calendar", "jobs", "money", "shopping", "quests",
 	"relationships", "city_map", "weather", "settings",
 ]
 const BLOCKS: PackedStringArray = [
@@ -47,6 +47,7 @@ var _selected_job_id: String = ""
 var _interview_job_id: String = ""
 var _interview_question_index: int = 0
 var _interview_answer_quality: int = 0
+var _selected_store_id: String = ""
 
 
 func _ready() -> void:
@@ -115,6 +116,10 @@ func _show_app(app_id: String) -> void:
 			_render_calendar()
 		"jobs":
 			_render_jobs()
+		"money":
+			_render_money()
+		"shopping":
+			_render_shopping()
 		"quests":
 			_render_quests()
 		"relationships":
@@ -562,6 +567,143 @@ func _interview_questions() -> Array:
 			{"text": "Wait and see whether it becomes a problem.", "score": 0},
 		]},
 	]
+
+
+func _render_money() -> void:
+	_clear_container(app_actions)
+	var sync_result: Dictionary = EconomyService.sync_economy()
+	if not sync_result.get("ok", false):
+		phone_status.text = str(sync_result.get("errors", ["The economy could not be synchronized."])[0])
+	elif not sync_result.get("data", {}).get("notices", []).is_empty():
+		phone_status.text = " • ".join(sync_result["data"]["notices"])
+	app_title.text = "MONEY"
+	var player: Dictionary = GameState.current_state["player"]
+	var economy: Dictionary = player["economy"]
+	var education: Dictionary = player["education"]
+	var housing: Dictionary = player["housing"]
+	var accounts: Dictionary = economy.get("accounts", {})
+	var card_debt: float = maxf(0.0, -float(accounts.get("credit_card", 0.0)))
+	var summary: Dictionary = EconomyService.current_budget_summary()
+	var lines: PackedStringArray = [
+		"[font_size=23]ACCOUNTS[/font_size]",
+		"Cash $%.2f • Checking $%.2f • Savings $%.2f" % [accounts.get("wallet_cash", 0.0), accounts.get("checking", 0.0), accounts.get("savings", 0.0)],
+		"Credit card balance $%.2f • Credit score %d" % [card_debt, economy.get("credit_score", 650)],
+		"",
+		"[font_size=23]CURRENT WEEK[/font_size]",
+		"%s through %s" % [summary.get("start_date", ""), summary.get("end_date", "")],
+		"Employment net $%.2f • Allowance $%.2f • Spending $%.2f" % [summary.get("net_income", 0.0), summary.get("allowance", 0.0), summary.get("total_spending", 0.0)],
+		"Net account balance $%.2f" % summary.get("ending_balance", 0.0),
+		"",
+		"[font_size=23]OBLIGATIONS[/font_size]",
+		"Tuition: %s • Charge $%.2f • Balance $%.2f" % [str(education.get("tuition_plan", "not arranged")).replace("_", " ").capitalize(), education.get("tuition_charge", 0.0), education.get("tuition_balance", 0.0)],
+		"Household rent: $%.2f/month • Outstanding $%.2f" % [housing.get("monthly_rent", 0.0), housing.get("rent_balance", 0.0)],
+		"Student debt: $%.2f" % education.get("student_debt", 0.0),
+		"",
+		"[font_size=23]RECENT LEDGER[/font_size]",
+	]
+	var ledger: Array = economy.get("ledger", [])
+	if ledger.is_empty():
+		lines.append("No transactions yet.")
+	else:
+		for index: int in range(ledger.size() - 1, maxi(-1, ledger.size() - 9), -1):
+			var entry: Dictionary = ledger[index]
+			lines.append("%s • %s\n%s$%.2f • %s" % [entry.get("date", ""), str(entry.get("account", "")).replace("_", " ").capitalize(), "+" if float(entry.get("amount", 0.0)) >= 0.0 else "", float(entry.get("amount", 0.0)), entry.get("description", "Transaction")])
+	if not economy.get("receipts", []).is_empty():
+		var receipt: Dictionary = economy["receipts"][-1]
+		lines.append("\nLatest receipt: %s • $%.2f • %s" % [receipt.get("store_name", "Store"), receipt.get("total", 0.0), receipt.get("date", "")])
+	app_content.text = "\n".join(lines)
+	var tuition_balance: float = float(education.get("tuition_balance", 0.0))
+	if tuition_balance > 0.0:
+		_add_action_button("Pay $100 Toward Tuition", _pay_tuition.bind(100.0))
+		_add_action_button("Pay Remaining Tuition — $%.2f" % tuition_balance, _pay_tuition.bind(tuition_balance))
+	var rent_balance: float = float(housing.get("rent_balance", 0.0))
+	if rent_balance > 0.0:
+		_add_action_button("Pay Outstanding Rent — $%.2f" % rent_balance, _pay_rent)
+	if card_debt > 0.0:
+		_add_action_button("Pay $25 Toward Credit Card", _pay_credit_card.bind(minf(25.0, card_debt)))
+		_add_action_button("Pay Credit Card in Full — $%.2f" % card_debt, _pay_credit_card.bind(card_debt))
+	if "shopping" in player["phone"].get("unlocked_apps", []):
+		_add_action_button("Open Shopping", _show_app.bind("shopping"))
+
+
+func _pay_tuition(amount: float) -> void:
+	var result: Dictionary = EconomyService.pay_tuition(amount)
+	phone_status.text = "Tuition payment of $%.2f completed. Remaining: $%.2f." % [result.get("data", {}).get("amount", 0.0), result.get("data", {}).get("balance", 0.0)] if result.get("ok", false) else str(result.get("errors", ["Tuition payment failed."])[0])
+	_render_money()
+
+
+func _pay_rent() -> void:
+	var result: Dictionary = EconomyService.pay_outstanding_rent()
+	phone_status.text = "Outstanding rent of $%.2f was paid." % result.get("data", {}).get("amount", 0.0) if result.get("ok", false) else str(result.get("errors", ["Rent payment failed."])[0])
+	_render_money()
+
+
+func _pay_credit_card(amount: float) -> void:
+	var result: Dictionary = EconomyService.pay_credit_card(amount)
+	phone_status.text = "Credit-card payment of $%.2f completed. Remaining: $%.2f." % [result.get("data", {}).get("amount", 0.0), result.get("data", {}).get("remaining", 0.0)] if result.get("ok", false) else str(result.get("errors", ["Credit-card payment failed."])[0])
+	_render_money()
+
+
+func _render_shopping() -> void:
+	_clear_container(app_actions)
+	app_title.text = "SHOPPING"
+	if not _selected_store_id.is_empty():
+		_render_store(_selected_store_id)
+		return
+	var lines: PackedStringArray = ["Browse Port Alder stores. Purchases are delivered to the appropriate home storage container."]
+	for entry: Variant in EconomyService.list_stores():
+		if not entry is Dictionary:
+			continue
+		var store: Dictionary = entry.get("store", {})
+		lines.append("[font_size=21]%s[/font_size]\n%s • %d items%s" % [
+			store.get("name", store.get("id", "Store")), "Open now" if entry.get("open", false) else "Closed now",
+			entry.get("item_count", 0), " • %d%% discount" % int(entry.get("discount_percent", 0)) if float(entry.get("discount_percent", 0.0)) > 0.0 else "",
+		])
+		_add_action_button("Browse %s" % store.get("name", "Store"), _open_store.bind(str(store.get("id", ""))))
+	app_content.text = "\n\n".join(lines)
+
+
+func _render_store(store_id: String) -> void:
+	var listing: Dictionary = EconomyService.store_listing(store_id)
+	if listing.is_empty():
+		_selected_store_id = ""
+		_render_shopping()
+		return
+	var store: Dictionary = listing.get("store", {})
+	app_title.text = str(store.get("name", store_id)).to_upper()
+	var lines: PackedStringArray = [
+		"%s • %s%s" % ["Open now" if listing.get("open", false) else "Closed now", _location_name(str(store.get("location", ""))), " • %d%% discount active" % int(listing.get("discount_percent", 0)) if float(listing.get("discount_percent", 0.0)) > 0.0 else ""],
+	]
+	for entry: Variant in listing.get("items", []):
+		if not entry is Dictionary:
+			continue
+		var item: Dictionary = entry.get("item", {})
+		var quote: Dictionary = entry.get("price", {})
+		lines.append("[font_size=20]%s[/font_size]\n%s • $%.2f total (tax $%.2f)" % [item.get("name", item.get("id", "Item")), str(item.get("category", "item")).replace("_", " ").capitalize(), quote.get("total", 0.0), quote.get("tax", 0.0)])
+		if listing.get("open", false):
+			_add_action_button("Buy %s — $%.2f" % [item.get("name", "Item"), quote.get("total", 0.0)], _purchase_store_item.bind(store_id, str(item.get("id", ""))))
+	app_content.text = "\n\n".join(lines)
+	_add_action_button("← All Stores", _close_store)
+
+
+func _open_store(store_id: String) -> void:
+	_selected_store_id = store_id
+	_render_shopping()
+
+
+func _close_store() -> void:
+	_selected_store_id = ""
+	_render_shopping()
+
+
+func _purchase_store_item(store_id: String, item_id: String) -> void:
+	var result: Dictionary = EconomyService.purchase(store_id, item_id, 1)
+	if result.get("ok", false):
+		var receipt: Dictionary = result.get("data", {}).get("receipt", {})
+		phone_status.text = "Purchased %s for $%.2f; receipt saved." % [result.get("data", {}).get("item", {}).get("name", item_id), receipt.get("total", 0.0)]
+	else:
+		phone_status.text = str(result.get("errors", ["Purchase failed."])[0])
+	_render_shopping()
 
 
 func _render_relationships() -> void:

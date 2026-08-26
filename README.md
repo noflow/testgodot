@@ -13,7 +13,7 @@ quest engines, complete data-driven character creation, Elena's playable
 three-branch opening scene, and the first connected Hale home sandbox. The home
 includes room collisions, private doors, needs-aware food and hygiene actions,
 sleep, laundry, household storage, and a working wardrobe. The reusable smartphone
-now provides the nine vertical-slice apps plus Jobs, authored character messages and replies,
+now provides the nine vertical-slice apps plus Jobs, Money, and Shopping, authored character messages and replies,
 NPC-aware calendar scheduling, live relationships, weather/outfit checks, the city
 map, quest progress, character statistics, and initial settings controls. Elena,
 Daniel, and Lily now follow their character-authored work, school, and home-room
@@ -38,6 +38,12 @@ shifts with four work approaches, earn regular wages, overtime, and tips, receiv
 weekly net pay after authored withholding, and build a performance record. Missed
 shifts carry consequences, while ninety-day reviews provide data-driven raises and
 open each job's authored promotion path when its requirements are met.
+The Money app now processes weekly family allowance, monthly rent, credit-card
+minimums, student-loan interest, financial aid, and tuition balances. Every payment
+is ledger-backed, missed rent affects the household relationship, and Monday closes
+an immutable weekly budget summary. The Shopping app exposes all seven authored
+stores with opening hours, sales tax, student and employee discounts, split payment
+priority, inventory delivery, declined-payment rollback, and saved receipts.
 
 ## Planned technology
 

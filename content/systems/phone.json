@@ -7,6 +7,8 @@
     {"id": "messages", "name": "Messages", "icon": "M", "description": "Authored message threads and replies."},
     {"id": "calendar", "name": "Calendar", "icon": "D", "description": "Plans, dates, classes, interviews, and shifts."},
     {"id": "jobs", "name": "Jobs", "icon": "J", "description": "Search listings, apply, interview, review offers, and manage employment."},
+    {"id": "money", "name": "Money", "icon": "$", "description": "Accounts, bills, tuition, receipts, and weekly budget summaries."},
+    {"id": "shopping", "name": "Shopping", "icon": "B", "description": "Browse Port Alder stores, compare prices, and purchase inventory."},
     {"id": "quests", "name": "Quests", "icon": "Q", "description": "Active, completed, deferred, and failed goals."},
     {"id": "relationships", "name": "Relationships", "icon": "R", "description": "Visible relationship meters and current agreements."},
     {"id": "city_map", "name": "City Map", "icon": "A", "description": "Unlocked Port Alder destinations and current location."},

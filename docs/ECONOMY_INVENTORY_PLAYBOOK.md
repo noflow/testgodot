@@ -15,6 +15,23 @@ Players who are not enrolled owe $250 rent beginning September 1. Enrolled playe
 receive the appropriate allowance each Monday. The phone ledger records purchases,
 income, tax, tuition, rent, healthcare, transportation, debt, and transfers.
 
+The Money app performs catch-up processing without duplicating a due transaction.
+Allowances retain their Monday ledger date even when the app is opened later. Rent
+uses Cash and Checking automatically; an unaffordable payment becomes arrears and
+applies Elena's authored Resentment and Trust effects. Arrears may later be paid
+through the normal payment priority, including available credit. Credit-card
+minimums run on the fifteenth, with on-time and missed results changing Credit Score.
+Student-loan interest capitalizes monthly at the authored 4.5 percent annual rate.
+
+Tuition is $4,000 full-time or $2,200 part-time. Paying during enrollment now uses
+the Tuition ledger category. Aid-pending plans retain an explicit balance; resolving
+the financial-aid quest applies the background-specific award, and the Money app can
+make partial or full payments against the remainder.
+
+Every Monday closes the prior week's immutable budget summary. It reports starting
+and ending net account balance, gross and net employment income, allowance,
+purchases, transportation, healthcare, tuition, rent, and debt payments.
+
 The system includes checking, savings, cash, a starter credit card, student loans,
 weekly payroll, provisional tax withholding, credit history, and child support.
 Child support applies to unmarried parents living separately and considers both
@@ -57,6 +74,15 @@ Seven initial shops cover groceries, everyday clothing, formalwear, pharmacy
 items, school supplies, gym goods, and cinema concessions. Stores have opening
 hours, price multipliers, seasonal stock, discounts, and sold-out states.
 
+The Shopping app now browses all seven catalogs and delivers successful purchases
+to Wardrobe, Kitchen, Bathroom, Garage, or Carried storage according to item type.
+Quotes apply store multipliers, combined eligible student/employee discounts, and
+the authored seven-percent sales tax with grocery exemptions. Payment splits across
+Cash, Checking, and the starter credit card in authored priority order. Inventory
+capacity and total purchasing power are validated before the transaction commits;
+declines leave both money and inventory unchanged. Each completed purchase saves an
+itemized receipt with subtotal, discount, tax, total, payment split, and return flag.
+
 ## Source data
 
 - `content/systems/economy.json`
@@ -65,4 +91,3 @@ hours, price multipliers, seasonal stock, discounts, and sold-out states.
 - `content/systems/food.json`
 - `content/systems/general_items.json`
 - `content/systems/stores.json`
-

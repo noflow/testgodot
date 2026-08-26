@@ -21,6 +21,15 @@ file. Save games store changing runtime state and never rewrite the source packa
 An empty section is valid. This lets a character ship before every later chapter is
 written while keeping the package forward-compatible.
 
+## Global economy authoring
+
+Economy rules remain declarative. Add stores and stock to `systems/stores.json`, and
+put account limits, payment priority, tax exemptions, recurring rules, withholding,
+and budget categories in `systems/economy.json`. Runtime code resolves item prices
+from the item package, so store content references item ids rather than repeating
+prices. Education tuition and background-specific aid awards live in
+`systems/education.json`.
+
 ## Quest structure
 
 Each quest has an ID unique within its package, a category, title, summary,

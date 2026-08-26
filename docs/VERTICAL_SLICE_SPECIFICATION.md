@@ -139,6 +139,12 @@ Required apps:
 - Weather: current conditions, forecast, and wardrobe warning
 - Settings: audio, display, accessibility, controls, save, load, and quit
 
+Implemented expansion apps:
+
+- Jobs: listings, applications, interviews, shifts, payroll, and career progress
+- Money: accounts, tuition, rent, debt, ledger, receipts, and weekly budgets
+- Shopping: seven store catalogs, live quotes, purchases, discounts, and tax
+
 Scheduling an NPC activity adds it to the calendar. Work or school conflicts prevent
 confirmation. Other conflicts create a visible double-booking warning but remain
 allowed.
@@ -151,6 +157,8 @@ stores confirmed plans, supports cancellation, and records optional overlap
 warnings. The City Map compares live route time, cost, waits, closures, weather, and
 safety requirements before confirmation. Save/load, control remapping, and complete
 audio sliders activate with their corresponding later systems.
+The Money app synchronizes recurring obligations exactly once per due date and the
+Shopping app commits payment and inventory delivery as one rollback-safe action.
 
 ### City travel
 

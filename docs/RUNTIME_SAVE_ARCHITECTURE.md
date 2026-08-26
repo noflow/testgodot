@@ -58,6 +58,12 @@ the arrival room, advances exact minutes, charges the selected account, discover
 the destination, clears pending state, and stores a compact `last_trip` summary.
 If any completion step fails, neither event is committed by `TravelService`.
 
+`EconomyService` catches up each elapsed due date through idempotent recurring
+records. It composes ledger transactions, relationship consequences, debt accrual,
+weekly summaries, store pricing, payment splits, receipts, and inventory delivery
+without mutating authored economy or store packages. A purchase is committed only
+after both storage capacity and complete purchasing power validate.
+
 ## Runtime state
 
 The root state contains:

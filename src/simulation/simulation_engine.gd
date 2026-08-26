@@ -51,6 +51,8 @@ func _apply_to_working_state(state: Dictionary, operation: String, payload: Dict
 			return _adjust_relationship(state, payload)
 		"economy.transaction":
 			return _apply_transaction(state, payload)
+		"economy.process_recurring":
+			return _record_recurring_transaction(state, payload)
 		"inventory.add":
 			return _adjust_inventory(state, payload, 1)
 		"inventory.remove":
@@ -230,8 +232,23 @@ func _apply_transaction(state: Dictionary, payload: Dictionary) -> String:
 	accounts[account_id] = new_balance
 	var ledger_entry: Dictionary = payload.duplicate(true)
 	ledger_entry["balance_after"] = new_balance
-	ledger_entry["date"] = _date_string(state["clock"])
+	ledger_entry["date"] = str(payload.get("date", _date_string(state["clock"])))
 	state["player"]["economy"]["ledger"].append(ledger_entry)
+	return ""
+
+
+func _record_recurring_transaction(state: Dictionary, payload: Dictionary) -> String:
+	var record_value: Variant = payload.get("record")
+	if not record_value is Dictionary:
+		return "Recurring processing requires a transaction record."
+	var record: Dictionary = record_value.duplicate(true)
+	var record_id: String = str(record.get("id", ""))
+	if record_id.is_empty() or str(record.get("rule_id", "")).is_empty():
+		return "Recurring transaction identity is invalid."
+	for existing: Variant in state["player"]["economy"].get("recurring_transactions", []):
+		if existing is Dictionary and str(existing.get("id", "")) == record_id:
+			return "Recurring transaction was already processed: %s" % record_id
+	state["player"]["economy"]["recurring_transactions"].append(record)
 	return ""
 
 
@@ -765,6 +782,7 @@ func _apply_employment_payday(state: Dictionary, payload: Dictionary) -> String:
 		"gross": pay_record.get("gross", 0.0),
 		"tips": pay_record.get("tips", 0.0),
 		"withholding": pay_record.get("withholding", 0.0),
+		"date": pay_record.get("pay_date", _date_string(state["clock"])),
 	})
 	if not transaction_error.is_empty():
 		return transaction_error

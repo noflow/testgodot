@@ -12,6 +12,7 @@ const HouseholdScheduleEngineScript: GDScript = preload("res://src/world/househo
 const TravelEngineScript: GDScript = preload("res://src/world/travel_engine.gd")
 const CityActionEngineScript: GDScript = preload("res://src/world/city_action_engine.gd")
 const EmploymentEngineScript: GDScript = preload("res://src/employment/employment_engine.gd")
+const EconomyEngineScript: GDScript = preload("res://src/economy/economy_engine.gd")
 
 var _failures: PackedStringArray = []
 var _tests_run: int = 0
@@ -41,6 +42,7 @@ func _run_all() -> void:
 	_test_city_travel_and_routes()
 	_test_city_institutions_and_fitness()
 	_test_employment_applications_interviews_and_offers()
+	_test_recurring_economy_and_shopping()
 	_test_phone_messages_and_calendar()
 	_test_opening_dialogue_branches()
 
@@ -68,6 +70,7 @@ func _test_project_configuration() -> void:
 	_expect(ProjectSettings.has_setting("autoload/TravelService"), "Travel service is configured as an autoload.")
 	_expect(ProjectSettings.has_setting("autoload/CityActionService"), "City action service is configured as an autoload.")
 	_expect(ProjectSettings.has_setting("autoload/EmploymentService"), "Employment service is configured as an autoload.")
+	_expect(ProjectSettings.has_setting("autoload/EconomyService"), "Economy service is configured as an autoload.")
 
 
 func _test_required_json_documents() -> void:
@@ -500,6 +503,95 @@ func _test_employment_applications_interviews_and_offers() -> void:
 	_expect(float(state["player"]["reputations"].get("professional", 0.0)) == -2.0, "A missed shift lowers professional reputation.")
 
 
+func _test_recurring_economy_and_shopping() -> void:
+	var factory: RefCounted = NewGameStateFactoryScript.new(_registry)
+	var simulation: RefCounted = SimulationEngineScript.new(_registry)
+	var economy: RefCounted = EconomyEngineScript.new(_registry, simulation)
+	var state: Dictionary = factory.create_new_game({}, {"random_seed": 1201})
+	var granola_before: int = _stack_quantity(state, "kitchen_storage", "food_granola_bar")
+	var wallet_before: float = float(state["player"]["economy"]["accounts"]["wallet_cash"])
+	var result: Dictionary = economy.purchase(state, "mariner_market", "food_granola_bar", 1)
+	_expect(result.get("ok", false), "An open data-driven store can sell an in-stock item.")
+	state = result["state"]
+	_expect(_stack_quantity(state, "kitchen_storage", "food_granola_bar") == granola_before + 1, "Purchased food is delivered to kitchen storage.")
+	_expect(is_equal_approx(float(state["player"]["economy"]["accounts"]["wallet_cash"]), wallet_before - 2.5), "Tax-exempt groceries use the authored base price and payment priority.")
+	_expect(state["player"]["economy"]["receipts"].size() == 1 and float(state["player"]["economy"]["receipts"][0]["tax"]) == 0.0, "Purchases save an itemized phone receipt with grocery tax exemption.")
+	_expect(float(economy.current_budget_summary(state).get("purchases", 0.0)) == 2.5, "The live weekly budget includes store spending.")
+	state["player"]["education"]["enrolled"] = true
+	var bookshop: Dictionary = economy.store_listing(state, "westshore_bookshop")
+	_expect(float(bookshop.get("discount_percent", 0.0)) == 10.0, "Active students receive the authored Westshore store discount.")
+	_expect(float(bookshop.get("items", [])[0].get("price", {}).get("total", 0.0)) == 3.85, "Store quotes apply student discount before the authored seven-percent sales tax.")
+	var failed_state: Dictionary = factory.create_new_game({}, {"random_seed": 1202})
+	failed_state["player"]["economy"]["accounts"].merge({"wallet_cash": 0.0, "checking": 0.0, "savings": 0.0, "credit_card": -1000.0}, true)
+	var failed_quantity: int = _stack_quantity(failed_state, "kitchen_storage", "food_granola_bar")
+	result = economy.purchase(failed_state, "mariner_market", "food_granola_bar", 1)
+	_expect(not result.get("ok", true) and _stack_quantity(failed_state, "kitchen_storage", "food_granola_bar") == failed_quantity, "A declined purchase does not mutate inventory or financial state.")
+
+	state = factory.create_new_game({}, {"random_seed": 1203})
+	state["player"]["education"]["enrolled"] = true
+	state["player"]["education"]["enrollment_date"] = "Y1-08-20"
+	_set_test_date(state, "Y1-08-27", "tuesday")
+	var checking_before_allowance: float = float(state["player"]["economy"]["accounts"]["checking"])
+	result = economy.sync_economy(state)
+	_expect(result.get("ok", false), "The economy synchronizes every elapsed due date.")
+	state = result["state"]
+	_expect(float(state["player"]["economy"]["accounts"]["checking"]) == checking_before_allowance + 100.0, "A standard-background student receives the authored weekly allowance.")
+	_expect(str(state["player"]["economy"]["ledger"][-1].get("date", "")) == "Y1-08-26", "Catch-up processing preserves the allowance's actual due date in the ledger.")
+	_expect(state["player"]["economy"]["weekly_summaries"].size() == 1, "Monday processing closes and stores the previous weekly budget summary.")
+	_expect(float(state["player"]["economy"]["weekly_summaries"][0].get("ending_balance", 0.0)) == 1500.0, "A catch-up weekly summary reconstructs its historical ending balance without later transactions.")
+	var recurring_count: int = state["player"]["economy"]["recurring_transactions"].size()
+	result = economy.sync_economy(state)
+	state = result["state"]
+	_expect(state["player"]["economy"]["recurring_transactions"].size() == recurring_count, "Repeated synchronization never duplicates a recurring transaction.")
+
+	state = factory.create_new_game({}, {"random_seed": 1204})
+	state["player"]["housing"]["monthly_rent"] = 250.0
+	state["player"]["economy"]["accounts"].merge({"wallet_cash": 0.0, "checking": 0.0, "savings": 0.0, "credit_card": 0.0}, true)
+	_set_test_date(state, "Y1-09-01", "sunday")
+	var trust_before_rent: float = float(state["relationships"]["elena_reyes_hale"]["trust"])
+	result = economy.sync_economy(state)
+	_expect(result.get("ok", false), "An unaffordable rent due date is processed as a missed obligation.")
+	state = result["state"]
+	_expect(float(state["player"]["housing"]["rent_balance"]) == 250.0, "Missed household rent becomes an outstanding balance.")
+	_expect(float(state["relationships"]["elena_reyes_hale"]["trust"]) == trust_before_rent - 2.0, "Missing rent applies Elena's authored trust consequence.")
+	result = economy.pay_outstanding_rent(state)
+	_expect(result.get("ok", false), "Outstanding rent can be paid later using the available payment priority.")
+	state = result["state"]
+	_expect(float(state["player"]["housing"]["rent_balance"]) == 0.0 and float(state["player"]["economy"]["accounts"]["credit_card"]) == -250.0, "A manual rent payment clears arrears and records credit-card debt when needed.")
+
+	state = factory.create_new_game({}, {"random_seed": 1205})
+	state["player"]["economy"]["accounts"]["credit_card"] = -100.0
+	state["player"]["economy"]["last_sync_date"] = "Y1-09-14"
+	_set_test_date(state, "Y1-09-15", "sunday")
+	var credit_before: int = int(state["player"]["economy"]["credit_score"])
+	result = economy.sync_economy(state)
+	state = result["state"]
+	_expect(float(state["player"]["economy"]["accounts"]["credit_card"]) == -75.0 and float(state["player"]["economy"]["accounts"]["checking"]) == 600.0, "The monthly credit-card minimum transfers from checking to the card.")
+	_expect(int(state["player"]["economy"]["credit_score"]) == credit_before + 3, "An on-time card minimum improves credit score.")
+
+	state = factory.create_new_game({}, {"random_seed": 1206})
+	state["player"]["economy"]["debts"].append({"id": "student-loan-test", "type": "student_loan", "principal": 4000.0, "balance": 4000.0})
+	state["player"]["education"]["student_debt"] = 4000.0
+	state["player"]["economy"]["last_sync_date"] = "Y1-08-31"
+	_set_test_date(state, "Y1-09-01", "sunday")
+	result = economy.sync_economy(state)
+	state = result["state"]
+	_expect(float(state["player"]["education"]["student_debt"]) == 4015.0, "Monthly student-loan interest accrues at the authored annual rate.")
+
+	state = factory.create_new_game({}, {"random_seed": 1207})
+	state["player"]["education"]["load"] = "full_time"
+	state["player"]["education"]["tuition_plan"] = "aid_pending"
+	state["player"]["flags"]["education.financial_aid_resolved"] = true
+	result = economy.sync_economy(state)
+	state = result["state"]
+	_expect(float(state["player"]["education"]["financial_aid_award"]) == 1600.0 and float(state["player"]["education"]["tuition_balance"]) == 2400.0, "Resolved aid applies the authored award for the player's financial background.")
+	result = economy.pay_tuition(state, 100.0)
+	_expect(result.get("ok", false), "An outstanding tuition balance accepts a partial payment.")
+	state = result["state"]
+	_expect(float(state["player"]["education"]["tuition_balance"]) == 2300.0, "Partial tuition payments reduce the balance without rewriting prior ledger entries.")
+	_expect(str(state["player"]["economy"]["ledger"][-1].get("category", "")) == "tuition", "Tuition payments use their dedicated immutable ledger category.")
+
+
 func _test_character_creation_scene() -> void:
 	var creation_scene: PackedScene = load("res://scenes/creation/character_creation.tscn")
 	_expect(creation_scene != null, "Character creation scene loads.")
@@ -568,7 +660,7 @@ func _test_content_registry() -> void:
 	_expect(_registry.get_all("operations").size() == 55, "Registry indexes all 55 simulation operations.")
 	_expect(_registry.get_all("actions").size() == 10, "Registry indexes all 10 initial home actions.")
 	_expect(_registry.get_all("city_interactions").size() == 9, "Registry indexes all nine opening city interactions.")
-	_expect(_registry.get_all("phone_apps").size() == 10, "Registry indexes the nine foundation apps plus Jobs.")
+	_expect(_registry.get_all("phone_apps").size() == 12, "Registry indexes the nine foundation apps plus Jobs, Money, and Shopping.")
 
 
 func _test_new_game_state_factory() -> void:
@@ -613,6 +705,8 @@ func _test_new_game_state_factory() -> void:
 	_expect(state["player"]["phone"]["message_threads"].size() == 5, "New-game phone state creates one thread per known contact.")
 	_expect("weather" in state["player"]["phone"]["unlocked_apps"], "The weather app is available from the start.")
 	_expect("jobs" in state["player"]["phone"]["unlocked_apps"], "The Jobs app is available from the start.")
+	_expect("money" in state["player"]["phone"]["unlocked_apps"], "The Money app is available from the start.")
+	_expect("shopping" not in state["player"]["phone"]["unlocked_apps"], "Shopping remains tied to the authored wardrobe tutorial unlock.")
 	_expect(state["relationships"].size() == 15, "Relationship defaults initialize for every opening character.")
 	_expect(state["world_state"]["weather"]["condition"] == "partly_cloudy", "Opening weather initializes from the calendar.")
 	_expect(state["content_state"]["loaded_packages"].size() == 22, "Runtime state records its loaded content manifest.")
@@ -1100,6 +1194,16 @@ func _active_job_for_test(state: Dictionary, job_id: String) -> Dictionary:
 
 func _test_clock_date(state: Dictionary) -> String:
 	return "Y%d-%02d-%02d" % [state["clock"]["year"], state["clock"]["month"], state["clock"]["day"]]
+
+
+func _set_test_date(state: Dictionary, date: String, weekday: String, block: String = "morning") -> void:
+	var parts: PackedStringArray = date.trim_prefix("Y").split("-")
+	state["clock"]["year"] = int(parts[0])
+	state["clock"]["month"] = int(parts[1])
+	state["clock"]["day"] = int(parts[2])
+	state["clock"]["weekday"] = weekday
+	state["clock"]["block"] = block
+	state["clock"]["minute_within_block"] = 0
 
 
 func _test_block_index(block: String) -> int:
