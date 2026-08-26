@@ -18,6 +18,7 @@ boot_splash/show_image=false
 AppConstants="*res://src/autoload/app_constants.gd"
 ContentRegistry="*res://src/autoload/content_registry.gd"
 GameState="*res://src/autoload/game_state.gd"
+SaveService="*res://src/autoload/save_service.gd"
 SimulationService="*res://src/autoload/simulation_service.gd"
 TimeService="*res://src/autoload/time_service.gd"
 QuestService="*res://src/autoload/quest_service.gd"
@@ -89,6 +90,14 @@ dialogue_history={
 pause={
 "deadzone": 0.5,
 "events": [Object(InputEventKey,"physical_keycode":4194305), Object(InputEventJoypadButton,"button_index":6)]
+}
+quicksave={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"keycode":4194336)]
+}
+quickload={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"keycode":4194340)]
 }
 
 [rendering]

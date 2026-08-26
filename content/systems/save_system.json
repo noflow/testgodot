@@ -3,12 +3,12 @@
   "package_id": "port_alder_save_system",
   "storage": {
     "root": "user://saves",
-    "slot_directory": "slot_{slot_id}",
+    "slot_directory": "{slot_id}",
     "state_file": "save.json",
     "temporary_file": "save.json.tmp",
     "backup_file": "save.json.bak",
-    "preview_file": "preview.png",
-    "manifest_file": "content_manifest.json",
+    "preview": "derived_from_validated_save_metadata",
+    "content_manifest": "embedded_in_content_state",
     "encoding": "UTF-8 JSON",
     "future_compression": "optional_after_profiling"
   },
@@ -28,10 +28,11 @@
     "after_quest_completion",
     "after_relationship_agreement_change",
     "after_employment_or_enrollment_change",
+    "after_travel_completion",
     "after_pregnancy_or_birth_state_change"
   ],
   "save_safety": {
-    "write_sequence": ["validate_in_memory_state", "write_temporary_file", "flush_and_close", "validate_temporary_file", "move_current_to_backup", "atomically_replace_current", "write_preview_and_manifest"],
+    "write_sequence": ["validate_in_memory_state", "write_temporary_file", "flush_and_close", "validate_temporary_file", "move_current_to_backup", "atomically_replace_current", "derive_preview_on_read"],
     "checksum": "SHA-256 excluding metadata.checksum field",
     "recovery_sequence": ["try_primary", "try_backup", "offer_other_autosave", "report_unrecoverable_without_deleting_files"],
     "never_modify_character_packages": true,
@@ -66,7 +67,7 @@
     "resume_pending_safe_state"
   ],
   "migrations": [
-    {"from": 0, "to": 1, "id": "create_initial_runtime_shape", "status": "baseline_only", "operations": ["establish_required_sections", "set_default_ranges", "record_content_manifest"]}
+    {"from": 0, "to": 1, "id": "create_initial_runtime_shape", "status": "implemented", "operations": ["establish_required_sections", "set_default_ranges", "record_content_manifest"]}
   ],
   "migration_rules": {
     "only_forward_one_version_at_a_time": true,

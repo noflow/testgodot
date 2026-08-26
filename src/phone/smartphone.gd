@@ -48,6 +48,7 @@ var _interview_job_id: String = ""
 var _interview_question_index: int = 0
 var _interview_answer_quality: int = 0
 var _selected_store_id: String = ""
+var _pending_manual_overwrite: String = ""
 
 
 func _ready() -> void:
@@ -972,15 +973,82 @@ func _render_weather() -> void:
 func _render_settings() -> void:
 	_clear_container(app_actions)
 	app_title.text = "SETTINGS"
-	app_content.text = "ACCESSIBILITY\nText size: %d%%\nReduce motion: %s\nHigh contrast: %s\n\nAUDIO\nMaster volume: %d%%\nMusic: %d%%\nAmbience: %d%%\nUI: %d%%\nVoice: %d%%\n\nSettings save locally and apply immediately." % [
+	var save_lines: PackedStringArray = ["\n\nSAVE GAME"]
+	var quick_summary: Dictionary = SaveService.summary_for_slot(SaveService.QUICKSAVE_SLOT)
+	save_lines.append("Quicksave: %s" % SaveService.format_summary(quick_summary, true).replace("\n", " • "))
+	for index: int in range(1, SaveService.MANUAL_SLOT_COUNT + 1):
+		var slot_id: String = "manual_%d" % index
+		var summary: Dictionary = SaveService.summary_for_slot(slot_id)
+		save_lines.append("%s: %s" % [SaveService.slot_label(slot_id), SaveService.format_summary(summary, true).replace("\n", " • ")])
+	var autosaves: Array = []
+	for summary_value: Variant in SaveService.list_saves():
+		if summary_value is Dictionary and str(summary_value.get("slot_id", "")).begins_with("autosave_"):
+			autosaves.append(summary_value)
+	if not autosaves.is_empty():
+		save_lines.append("Latest autosave: %s" % SaveService.format_summary(autosaves[0], true).replace("\n", " • "))
+	app_content.text = "ACCESSIBILITY\nText size: %d%%\nReduce motion: %s\nHigh contrast: %s\n\nAUDIO\nMaster volume: %d%%\nMusic: %d%%\nAmbience: %d%%\nUI: %d%%\nVoice: %d%%\n\nSettings and saves remain on this device unless you copy them yourself.%s" % [
 		int(SettingsService.text_scale * 100.0), _on_off(SettingsService.reduce_motion), _on_off(SettingsService.high_contrast),
 		int(SettingsService.master_volume * 100.0), int(SettingsService.music_volume * 100.0), int(SettingsService.ambience_volume * 100.0), int(SettingsService.ui_volume * 100.0), int(SettingsService.voice_volume * 100.0),
+		"\n".join(save_lines),
 	]
 	_add_action_button("Cycle Text Size", _cycle_text_size)
 	_add_action_button("Toggle Reduce Motion", _toggle_reduce_motion)
 	_add_action_button("Toggle High Contrast", _toggle_high_contrast)
 	_add_action_button("Master Volume −", _adjust_master_volume.bind(-0.1))
 	_add_action_button("Master Volume +", _adjust_master_volume.bind(0.1))
+	_add_action_button("Quicksave", _quicksave_game)
+	if SaveService.has_slot(SaveService.QUICKSAVE_SLOT):
+		_add_action_button("Quickload", _load_save_from_phone.bind(SaveService.QUICKSAVE_SLOT))
+	for index: int in range(1, SaveService.MANUAL_SLOT_COUNT + 1):
+		var slot_id: String = "manual_%d" % index
+		var save_label: String = "Save to %s" % SaveService.slot_label(slot_id)
+		if _pending_manual_overwrite == slot_id:
+			save_label = "Confirm Overwrite — %s" % SaveService.slot_label(slot_id)
+		_add_action_button(save_label, _save_manual_game.bind(index))
+		if SaveService.has_slot(slot_id):
+			_add_action_button("Load %s" % SaveService.slot_label(slot_id), _load_save_from_phone.bind(slot_id))
+	for autosave_id_value: Variant in SaveService.autosave_slot_ids():
+		var autosave_id: String = str(autosave_id_value)
+		if SaveService.has_slot(autosave_id):
+			_add_action_button("Load %s" % SaveService.slot_label(autosave_id), _load_save_from_phone.bind(autosave_id))
+
+
+func _quicksave_game() -> void:
+	_pending_manual_overwrite = ""
+	var result: Dictionary = SaveService.quicksave()
+	phone_status.text = "Quicksave complete." if result.get("ok", false) else _save_error(result)
+	_render_settings()
+
+
+func _save_manual_game(slot_number: int) -> void:
+	var slot_id: String = "manual_%d" % slot_number
+	if SaveService.has_slot(slot_id) and _pending_manual_overwrite != slot_id:
+		_pending_manual_overwrite = slot_id
+		phone_status.text = "%s already has a save. Press Confirm Overwrite to replace it." % SaveService.slot_label(slot_id)
+		_render_settings()
+		return
+	var allow_overwrite: bool = _pending_manual_overwrite == slot_id
+	var result: Dictionary = SaveService.save_manual(slot_number, allow_overwrite)
+	_pending_manual_overwrite = ""
+	phone_status.text = "%s saved." % SaveService.slot_label(slot_id) if result.get("ok", false) else _save_error(result)
+	_render_settings()
+
+
+func _load_save_from_phone(slot_id: String) -> void:
+	_pending_manual_overwrite = ""
+	var result: Dictionary = SaveService.load_slot(slot_id)
+	if not result.get("ok", false):
+		phone_status.text = _save_error(result)
+		return
+	close_phone()
+	get_tree().change_scene_to_file(SaveService.resume_scene_path())
+
+
+func _save_error(result: Dictionary) -> String:
+	var errors: Variant = result.get("errors", [])
+	if (errors is Array or errors is PackedStringArray) and not errors.is_empty():
+		return str(errors[0])
+	return "The save operation could not be completed."
 
 
 func _open_message_thread(character_id: String) -> void:

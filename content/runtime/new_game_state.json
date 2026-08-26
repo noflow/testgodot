@@ -71,6 +71,6 @@
     "household_state": {"household_id": "hale_household", "members": ["player", "elena_reyes_hale", "daniel_hale", "lily_hale"], "shared_inventory": {}, "rules": {"mutual_privacy": false, "guest_notice_required": true, "overnight_notice_required": true}, "contribution_score": 0},
     "family_state": {"pregnancies": [], "children": [], "custody_arrangements": [], "child_support_orders": []},
     "simulation": {"pending_events": [], "recent_event_log": [], "next_event_sequence": 1, "last_daily_tick": null, "last_weekly_tick": null, "last_monthly_tick": null},
-    "content_state": {"loaded_packages": "$resolved_content_manifest", "missing_optional_packages": [], "disabled_content_ids": []}
+    "content_state": {"loaded_packages": "$resolved_content_manifest", "package_manifest": [], "missing_optional_packages": [], "disabled_content_ids": []}
   }
 }

@@ -50,6 +50,12 @@ attendance resolves automatically, studying builds persistent preparation, and
 every course receives three assignments, a project, a midterm, and a final. Weighted
 grades, warnings, probation, registration holds, credits, academic reputation, and
 immutable semester history all progress from the same state-backed records.
+The save layer now provides eight manual slots, three rotating autosaves, quicksave
+and quickload, newest-valid Continue, phone and main-menu load controls, detailed
+slot summaries, playtime tracking, SHA-256 integrity checks, atomic temporary-file
+writes, backup recovery, corrupt-file preservation, content compatibility checks,
+and a forward migration pipeline. Important day, story, quest, relationship,
+education, employment, family, and travel changes trigger coalesced autosaves.
 
 ## Planned technology
 

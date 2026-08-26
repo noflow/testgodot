@@ -73,6 +73,15 @@ time, need, skill, attendance, and grade operations before committing a new stat
 The save retains course sections, preparation, attendance history, assessment
 results, credits, registration holds, and immutable semester summaries.
 
+SaveService now provides eight confirmed-overwrite manual slots, three
+oldest-first rotating autosaves, one quicksave, quickload, and Continue from the
+newest valid compatible snapshot. The main menu lists validated saves; the phone
+Settings app can create and load them without a separate pause scene. Slot summaries
+show the protagonist, game date and block, location, available money, education,
+employment, playtime, build, and recovery state. Loading resumes an active VN node
+or routes to the saved home/city scene. F5 and F9 provide scene-independent
+quicksave and quickload controls, including during VN conversations.
+
 ## Runtime state
 
 The root state contains:
@@ -130,19 +139,28 @@ trip state is recorded explicitly.
 
 ## Safe writing and recovery
 
-Godot will write to `user://saves`. A save is first written and validated as a
+Godot writes to `user://saves`. A save is first written and validated as a
 temporary file. The current save becomes a backup only after the temporary file is
 valid, and the temporary file then atomically replaces it.
 
 Each file carries a SHA-256 checksum. Loading tries the primary file, its backup,
-and then another autosave. Unrecoverable files are reported but never silently
-deleted.
+and then another save when Continue searches newest-first. An unreadable primary is
+preserved under a quarantine filename before a later replacement. Unrecoverable
+files are reported but never silently deleted.
 
 ## Versions and migrations
 
-The initial save format is version 1. Migrations move forward exactly one version at
-a time, are safe to run more than once, preserve unknown fields, log their work, and
-never replace the original if migration fails. Downgrading a save is unsupported.
+The initial save format is version 1. The implemented version-zero baseline
+migration establishes version-one metadata and content state, preserves the
+version-zero source as the slot backup, validates the migrated temporary file, and
+only then replaces the primary. Migrations move forward exactly one version at a
+time, preserve unknown fields, log their work, and never replace the original if
+migration fails. Downgrading a save is unsupported.
+
+Runtime validation covers required state sections, clock ranges, need and
+relationship ranges, the 0–250 skill scale, pending transactions, the 500-event
+limit, checksum integrity, and required loaded package IDs. Automated runtime probes
+disable autosave so validation runs cannot touch a player's real slots.
 
 Every save records the checksum, version, requirement status, and load order of each
 base-game and mod package. Missing required content blocks loading with a useful

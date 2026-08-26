@@ -127,6 +127,63 @@ horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 2
 
+[node name="LoadPanel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(720, 590)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -360.0
+offset_top = -295.0
+offset_right = 360.0
+offset_bottom = 295.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Margin" type="MarginContainer" parent="LoadPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 24
+
+[node name="Layout" type="VBoxContainer" parent="LoadPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="LoadPanel/Margin/Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.404, 0.776, 0.765, 1)
+theme_override_font_sizes/font_size = 30
+text = "LOAD GAME"
+
+[node name="LoadStatus" type="Label" parent="LoadPanel/Margin/Layout"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.706, 0.71, 1)
+autowrap_mode = 2
+
+[node name="Scroll" type="ScrollContainer" parent="LoadPanel/Margin/Layout"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="SaveList" type="VBoxContainer" parent="LoadPanel/Margin/Layout/Scroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="CloseLoadButton" type="Button" parent="LoadPanel/Margin/Layout"]
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+text = "Back"
+
 [connection signal="pressed" from="SafeArea/Layout/MenuPanel/Margin/Buttons/NewGameButton" to="." method="_on_new_game_pressed"]
 [connection signal="pressed" from="SafeArea/Layout/MenuPanel/Margin/Buttons/ContinueButton" to="." method="_on_continue_pressed"]
 [connection signal="pressed" from="SafeArea/Layout/MenuPanel/Margin/Buttons/LoadGameButton" to="." method="_on_load_game_pressed"]
@@ -134,4 +191,4 @@ autowrap_mode = 2
 [connection signal="pressed" from="SafeArea/Layout/MenuPanel/Margin/Buttons/ContentButton" to="." method="_on_content_pressed"]
 [connection signal="pressed" from="SafeArea/Layout/MenuPanel/Margin/Buttons/CreditsButton" to="." method="_on_credits_pressed"]
 [connection signal="pressed" from="SafeArea/Layout/MenuPanel/Margin/Buttons/QuitButton" to="." method="_on_quit_pressed"]
-
+[connection signal="pressed" from="LoadPanel/Margin/Layout/CloseLoadButton" to="." method="_on_close_load_pressed"]

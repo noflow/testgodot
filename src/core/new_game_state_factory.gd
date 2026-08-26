@@ -209,7 +209,22 @@ func _apply_relationship_defaults(state: Dictionary) -> void:
 
 
 func _apply_content_manifest(state: Dictionary) -> void:
-	state["content_state"]["loaded_packages"] = Array(_registry.get_loaded_package_ids())
+	var package_ids: Array = Array(_registry.get_loaded_package_ids())
+	var package_manifest: Array = []
+	for index: int in package_ids.size():
+		var package_id: String = str(package_ids[index])
+		var package: Variant = _registry.get_package(package_id)
+		if not package is Dictionary:
+			continue
+		package_manifest.append({
+			"content_id": package_id,
+			"version": str(package.get("version", package.get("format_version", 1))),
+			"checksum": JSON.stringify(package, "", true, true).sha256_text(),
+			"required": true,
+			"load_order": index,
+		})
+	state["content_state"]["loaded_packages"] = package_ids
+	state["content_state"]["package_manifest"] = package_manifest
 
 
 func _find_by_id(entries: Array, content_id: String) -> Dictionary:

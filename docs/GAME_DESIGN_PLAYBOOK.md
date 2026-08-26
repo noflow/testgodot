@@ -528,8 +528,8 @@ code. The Hale garage can grant daily family-car permission when required.
 
 ## Next milestones
 
-1. Implement the required institutional and NPC activities
-2. Expand the phone with jobs, banking, housing, education, health, shopping, and transportation apps
-3. Implement saves, recovery, Sunday review, complete settings, and accessibility
+1. Implement the relationship and dating loop, including invitations, agreements, witnessed conflicts, and character-specific reactions
+2. Add the Sunday review, complete settings, and accessibility baseline
+3. Add housing search, rent/purchase qualification, moving, and household transitions
 4. Stabilize the vertical slice against all acceptance tests
 5. Resume broader content expansion, alternative households, and the September calendar

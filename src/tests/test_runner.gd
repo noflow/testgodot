@@ -14,6 +14,7 @@ const CityActionEngineScript: GDScript = preload("res://src/world/city_action_en
 const EducationEngineScript: GDScript = preload("res://src/education/education_engine.gd")
 const EmploymentEngineScript: GDScript = preload("res://src/employment/employment_engine.gd")
 const EconomyEngineScript: GDScript = preload("res://src/economy/economy_engine.gd")
+const SaveEngineScript: GDScript = preload("res://src/save/save_engine.gd")
 
 var _failures: PackedStringArray = []
 var _tests_run: int = 0
@@ -45,6 +46,7 @@ func _run_all() -> void:
 	_test_playable_education_semester()
 	_test_employment_applications_interviews_and_offers()
 	_test_recurring_economy_and_shopping()
+	_test_save_round_trip_rotation_recovery_and_migration()
 	_test_phone_messages_and_calendar()
 	_test_opening_dialogue_branches()
 
@@ -68,12 +70,15 @@ func _test_project_configuration() -> void:
 	_expect(InputMap.has_action("phone"), "Phone input action exists.")
 	_expect(InputMap.has_action("quest_tracker"), "Quest tracker input action exists.")
 	_expect(InputMap.has_action("city_map"), "City map input action exists.")
+	_expect(InputMap.has_action("quicksave"), "Quicksave input action exists.")
+	_expect(InputMap.has_action("quickload"), "Quickload input action exists.")
 	_expect(ProjectSettings.has_setting("autoload/PhoneService"), "Phone service is configured as an autoload.")
 	_expect(ProjectSettings.has_setting("autoload/TravelService"), "Travel service is configured as an autoload.")
 	_expect(ProjectSettings.has_setting("autoload/CityActionService"), "City action service is configured as an autoload.")
 	_expect(ProjectSettings.has_setting("autoload/EducationService"), "Education service is configured as an autoload.")
 	_expect(ProjectSettings.has_setting("autoload/EmploymentService"), "Employment service is configured as an autoload.")
 	_expect(ProjectSettings.has_setting("autoload/EconomyService"), "Economy service is configured as an autoload.")
+	_expect(ProjectSettings.has_setting("autoload/SaveService"), "Save service is configured as an autoload.")
 
 
 func _test_required_json_documents() -> void:
@@ -107,6 +112,12 @@ func _test_dialogue_ui_scenes() -> void:
 		_expect(dialogue_instance.get_node_or_null("DialogueMargin/DialoguePanel/PanelMargin/DialogueContent/SpeakerLabel") != null, "VN scene contains a speaker label.")
 		_expect(dialogue_instance.get_node_or_null("DialogueMargin/DialoguePanel/PanelMargin/DialogueContent/ChoicesBox") != null, "VN scene contains dynamic dialogue choices.")
 		dialogue_instance.free()
+	var menu_scene: PackedScene = load("res://scenes/menus/main_menu.tscn")
+	_expect(menu_scene != null, "Main menu scene loads with save controls.")
+	if menu_scene != null:
+		var menu_instance: Node = menu_scene.instantiate()
+		_expect(menu_instance.get_node_or_null("LoadPanel/Margin/Layout/Scroll/SaveList") != null, "Main menu contains its dynamic load-slot list.")
+		menu_instance.free()
 
 
 func _test_hale_home_scene() -> void:
@@ -809,6 +820,8 @@ func _test_new_game_state_factory() -> void:
 	_expect(state["relationships"].size() == 15, "Relationship defaults initialize for every opening character.")
 	_expect(state["world_state"]["weather"]["condition"] == "partly_cloudy", "Opening weather initializes from the calendar.")
 	_expect(state["content_state"]["loaded_packages"].size() == 22, "Runtime state records its loaded content manifest.")
+	_expect(state["content_state"]["package_manifest"].size() == 22, "Runtime state records versioned manifest details for every loaded package.")
+	_expect(str(state["content_state"]["package_manifest"][0].get("checksum", "")).length() == 64, "Content manifest entries include SHA-256 package checksums.")
 	_expect(state["world_state"]["random_seed"] == 12345, "Runtime random seed can be reproduced.")
 	_expect(not _contains_placeholder(state), "Runtime state contains no unresolved template placeholders.")
 	for npc_state: Variant in state["npc_states"]:
@@ -1194,6 +1207,134 @@ func _test_opening_dialogue_branches() -> void:
 		_expect("conversation:opening_future_talk" in state["conversation_state"]["once_only_flags"], "Opening dialogue records its once-only flag.")
 		result = dialogue.begin(state, "opening_future_talk")
 		_expect(not result.get("ok", true), "Elena's opening conversation cannot run twice.")
+
+
+func _test_save_round_trip_rotation_recovery_and_migration() -> void:
+	var test_root: String = "user://port_alder_save_engine_tests"
+	var slot_ids: Array = ["manual_1", "autosave_0", "autosave_1", "autosave_2", "legacy"]
+	_cleanup_save_test_root(test_root, slot_ids)
+	var engine: RefCounted = SaveEngineScript.new(test_root)
+	var factory: RefCounted = NewGameStateFactoryScript.new(_registry)
+	var state: Dictionary = factory.create_new_game({"first_name": "Save", "last_name": "Tester"}, {"random_seed": 2026})
+	state["conversation_state"]["active"] = {
+		"conversation_id": "opening_future_talk",
+		"node_id": "future_choice",
+		"applied_nodes": ["elena_opening", "future_choice"],
+		"choice_history": [],
+		"participants": ["player", "elena_reyes_hale"],
+	}
+	state["world_state"]["pending_travel"] = {
+		"origin": "hale_home",
+		"destination": "alder_bay_park",
+		"mode": "walking",
+		"minutes": 16,
+		"remaining_minutes": 9,
+		"cost": 0,
+		"route_ids": ["hale_home_to_alder_bay_park"],
+	}
+
+	var result: Dictionary = engine.save_slot(state, "manual_1", {
+		"timestamp_utc": "2026-08-25T10:00:00",
+		"build_version": "test-build",
+		"playtime_seconds": 3661,
+	})
+	_expect(result.get("ok", false), "A complete runtime snapshot saves to a manual slot.")
+	_expect(FileAccess.file_exists("%s/manual_1/save.json" % test_root), "A validated save becomes the primary slot file.")
+	var loaded: Dictionary = engine.load_slot("manual_1")
+	_expect(loaded.get("ok", false), "A saved runtime snapshot loads successfully.")
+	_expect(loaded.get("state", {}).get("player", {}).get("identity", {}).get("first_name", "") == "Save", "Save/load round-trip preserves player identity.")
+	_expect(int(loaded.get("state", {}).get("metadata", {}).get("playtime_seconds", 0)) == 3661, "Save/load round-trip preserves accumulated playtime.")
+	_expect(str(loaded.get("state", {}).get("metadata", {}).get("checksum", "")).length() == 64, "Save snapshots carry a SHA-256 checksum.")
+	_expect(loaded.get("summary", {}).get("current_location", "") == "hale_home.player_bedroom", "Slot preview metadata reports the saved location.")
+	_expect(loaded.get("state", {}).get("conversation_state", {}).get("active", {}).get("node_id", "") == "future_choice", "Save/load round-trip preserves the exact waiting VN node.")
+	_expect(int(loaded.get("state", {}).get("world_state", {}).get("pending_travel", {}).get("remaining_minutes", 0)) == 9, "Save/load round-trip preserves an in-progress trip context.")
+
+	var original_checking: float = float(state["player"]["economy"]["accounts"]["checking"])
+	state["player"]["economy"]["accounts"]["checking"] = original_checking + 77.0
+	result = engine.save_slot(state, "manual_1", {
+		"timestamp_utc": "2026-08-25T10:05:00",
+		"build_version": "test-build",
+		"playtime_seconds": 3700,
+	})
+	_expect(result.get("ok", false), "Overwriting a slot safely writes a new snapshot.")
+	_expect(FileAccess.file_exists("%s/manual_1/save.json.bak" % test_root), "A prior valid save remains as the slot backup.")
+	var corrupt_file: FileAccess = FileAccess.open("%s/manual_1/save.json" % test_root, FileAccess.WRITE)
+	if corrupt_file != null:
+		corrupt_file.store_string("{corrupted")
+		corrupt_file.close()
+	loaded = engine.load_slot("manual_1")
+	_expect(loaded.get("ok", false) and loaded.get("recovered_from_backup", false), "A corrupt primary save recovers from its validated backup.")
+	_expect(is_equal_approx(float(loaded.get("state", {}).get("player", {}).get("economy", {}).get("accounts", {}).get("checking", -1.0)), original_checking), "Backup recovery returns the prior complete snapshot.")
+	result = engine.save_slot(state, "manual_1", {
+		"timestamp_utc": "2026-08-25T10:06:00",
+		"build_version": "test-build",
+	})
+	_expect(result.get("ok", false), "A new validated save can replace an unreadable primary.")
+	_expect(FileAccess.file_exists("%s/manual_1/save.json.corrupt" % test_root), "An unreadable primary is quarantined instead of silently deleted.")
+	loaded = engine.load_slot("manual_1")
+	_expect(loaded.get("ok", false) and not loaded.get("recovered_from_backup", true), "The replacement becomes the new valid primary while the prior backup remains available.")
+
+	for index: int in 3:
+		result = engine.save_slot(factory.create_new_game({}, {"random_seed": 300 + index}), "autosave_%d" % index, {
+			"timestamp_utc": "2026-08-25T10:0%d:00" % index,
+			"build_version": "test-build",
+		})
+		_expect(result.get("ok", false), "Autosave rotation slot %d accepts a snapshot." % (index + 1))
+	_expect(engine.choose_rotation_slot(["autosave_0", "autosave_1", "autosave_2"]) == "autosave_0", "Autosave rotation selects the oldest of three occupied slots.")
+	result = engine.save_slot(factory.create_new_game({}, {"random_seed": 400}), "autosave_0", {
+		"timestamp_utc": "2026-08-25T10:10:00",
+		"build_version": "test-build",
+	})
+	_expect(result.get("ok", false), "The oldest autosave can rotate to the newest snapshot.")
+	_expect(engine.choose_rotation_slot(["autosave_0", "autosave_1", "autosave_2"]) == "autosave_1", "Autosave rotation advances to the next-oldest slot.")
+
+	var invalid_state: Dictionary = state.duplicate(true)
+	invalid_state.erase("player")
+	_expect(not engine.save_slot(invalid_state, "invalid_slot").get("ok", true), "Invalid in-memory state is rejected before any save write.")
+
+	var legacy_state: Dictionary = factory.create_new_game({}, {"random_seed": 501})
+	legacy_state["save_format_version"] = 0
+	legacy_state["metadata"].erase("checksum")
+	legacy_state.erase("content_state")
+	var legacy_directory: String = ProjectSettings.globalize_path("%s/legacy" % test_root)
+	DirAccess.make_dir_recursive_absolute(legacy_directory)
+	var legacy_file: FileAccess = FileAccess.open("%s/legacy/save.json" % test_root, FileAccess.WRITE)
+	if legacy_file != null:
+		legacy_file.store_string(JSON.stringify(legacy_state, "  ", true, true))
+		legacy_file.close()
+	loaded = engine.load_slot("legacy")
+	_expect(loaded.get("ok", false), "A baseline version-zero save migrates forward after safely backing up its source file.")
+	_expect(int(loaded.get("state", {}).get("save_format_version", 0)) == 1, "Migration advances exactly to save format version one.")
+	_expect(not loaded.get("state", {}).get("metadata", {}).get("migration_log", []).is_empty(), "Migration records its applied step in loaded state.")
+	_expect(loaded.get("state", {}).has("content_state"), "Migration supplies the version-one content-state section.")
+	_expect(FileAccess.file_exists("%s/legacy/save.json.bak" % test_root), "Migration preserves the original version-zero file as the slot backup.")
+	var legacy_backup: Variant = _parse_json("%s/legacy/save.json.bak" % test_root)
+	_expect(legacy_backup is Dictionary and int(legacy_backup.get("save_format_version", -1)) == 0, "Migration backup remains in its original version-zero format.")
+	var reloaded_migration: Dictionary = engine.load_slot("legacy")
+	_expect(reloaded_migration.get("ok", false) and reloaded_migration.get("migrated_from_version") == null, "A persisted migration is not applied a second time.")
+	var save_service: Node = root.get_node_or_null("SaveService")
+	_expect(save_service != null and save_service.MANUAL_SLOT_COUNT == 8 and save_service.AUTOSAVE_SLOT_COUNT == 3, "Runtime save service exposes eight manual and three rotating autosave slots.")
+	var changed_state: Dictionary = state.duplicate(true)
+	changed_state["clock"]["day"] = int(changed_state["clock"]["day"]) + 1
+	changed_state["quest_state"]["completed"].append("save_trigger_test")
+	changed_state["world_state"]["current_location"] = "alder_bay_park.waterfront_path"
+	var trigger_reasons: PackedStringArray = save_service._autosave_reasons(state, changed_state) if save_service != null else PackedStringArray()
+	_expect("new_day" in trigger_reasons and "quest_completed" in trigger_reasons and "travel_completed" in trigger_reasons, "Autosave detection covers day boundaries, quest completion, and travel.")
+	_cleanup_save_test_root(test_root, slot_ids)
+
+
+func _cleanup_save_test_root(root_path: String, slot_ids: Array) -> void:
+	for slot_id_value: Variant in slot_ids:
+		var slot_path: String = ProjectSettings.globalize_path("%s/%s" % [root_path, slot_id_value])
+		for file_name: String in ["save.json.tmp", "save.json", "save.json.bak", "save.json.corrupt"]:
+			var file_path: String = "%s/%s" % [slot_path, file_name]
+			if FileAccess.file_exists(file_path):
+				DirAccess.remove_absolute(file_path)
+		if DirAccess.dir_exists_absolute(slot_path):
+			DirAccess.remove_absolute(slot_path)
+	var absolute_root: String = ProjectSettings.globalize_path(root_path)
+	if DirAccess.dir_exists_absolute(absolute_root):
+		DirAccess.remove_absolute(absolute_root)
 
 
 func _contains_placeholder(value: Variant) -> bool:

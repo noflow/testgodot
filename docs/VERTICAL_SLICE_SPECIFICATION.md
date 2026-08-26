@@ -441,9 +441,10 @@ relationship effects to survive scene changes.
 
 ### Phase 6 — Saves and weekly loop
 
-Implement save slots, autosaves, checksum, backup recovery, Sunday review, settings,
-and accessibility baseline. Completion requires a full new-game-to-Sunday save/load
-round trip.
+Save slots, rotating autosaves, quicksave, checksum validation, atomic writes,
+backup recovery, migration, Continue, and load controls are implemented. Sunday
+review, complete settings, and the accessibility baseline remain. Completion
+requires a full new-game-to-Sunday save/load round trip.
 
 ### Phase 7 — Stabilization
 
