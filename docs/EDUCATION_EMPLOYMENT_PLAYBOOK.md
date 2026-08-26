@@ -50,10 +50,22 @@ Employment begins with a thirty-day probation period. Attendance, punctuality,
 task quality, skills, Energy, Focus, and feedback affect performance. Raises are
 reviewed approximately every ninety days, while promotions also require an opening.
 
-Harbor Employment Centre currently provides a playable orientation, a thirty-minute
-job-board review that discovers four opening listings, and an hour-long interview
-practice activity. Applications, interviews, offers, and recurring shifts remain
-the next employment implementation layer.
+Harbor Employment Centre provides a playable orientation, a thirty-minute job-board
+review that discovers four opening listings, and an hour-long interview-practice
+activity. The phone's Jobs app exposes the complete thirteen-job catalog with All,
+Qualified, Part-Time, and Full-Time filters.
+
+Every listing calculates a live qualification report from the player's skills,
+developed traits, education, attributes, certifications, health requirements, and
+licenses. Applications consume twenty minutes, store resume and availability
+snapshots, and schedule non-conflicting video interviews on the Calendar. Required
+class, interview, and shift events cannot be cancelled as optional plans.
+
+The playable interview asks three questions and combines answer quality with the
+authored 100-point scoring model. A successful result creates a standard or strong
+offer. Offers only expose schedules compatible with required classes and existing
+jobs. Accepting a contract creates the active-job record and six weeks of work
+events, then advances either the full-time or college/part-time employment quest.
 
 ## Repeatable activities
 

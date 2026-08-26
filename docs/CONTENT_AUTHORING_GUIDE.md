@@ -65,7 +65,9 @@ Quest objectives now respond directly to their authored completion events. Curre
 city-facing events include `location_discovered`, `location_entered`,
 `npc_encounter_started`, `conversation_node_reached`, `conversation_completed`,
 `value_set`, `calendar_events_created`, `job_board_opened`,
-`job_listings_viewed`, and `activity_completed`. When the last objective completes,
+`job_listings_viewed`, `job_applications_submitted`, `job_interview_completed`,
+`employment_contract_accepted`, `compatible_employment_contract_accepted`, and
+`activity_completed`. When the last objective completes,
 the quest engine applies its branch and completion effects automatically.
 
 Room actions owned by an institution or location live in

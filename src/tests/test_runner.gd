@@ -11,6 +11,7 @@ const PhoneEngineScript: GDScript = preload("res://src/phone/phone_engine.gd")
 const HouseholdScheduleEngineScript: GDScript = preload("res://src/world/household_schedule_engine.gd")
 const TravelEngineScript: GDScript = preload("res://src/world/travel_engine.gd")
 const CityActionEngineScript: GDScript = preload("res://src/world/city_action_engine.gd")
+const EmploymentEngineScript: GDScript = preload("res://src/employment/employment_engine.gd")
 
 var _failures: PackedStringArray = []
 var _tests_run: int = 0
@@ -39,6 +40,7 @@ func _run_all() -> void:
 	_test_household_schedules_and_conversations()
 	_test_city_travel_and_routes()
 	_test_city_institutions_and_fitness()
+	_test_employment_applications_interviews_and_offers()
 	_test_phone_messages_and_calendar()
 	_test_opening_dialogue_branches()
 
@@ -65,6 +67,7 @@ func _test_project_configuration() -> void:
 	_expect(ProjectSettings.has_setting("autoload/PhoneService"), "Phone service is configured as an autoload.")
 	_expect(ProjectSettings.has_setting("autoload/TravelService"), "Travel service is configured as an autoload.")
 	_expect(ProjectSettings.has_setting("autoload/CityActionService"), "City action service is configured as an autoload.")
+	_expect(ProjectSettings.has_setting("autoload/EmploymentService"), "Employment service is configured as an autoload.")
 
 
 func _test_required_json_documents() -> void:
@@ -365,6 +368,79 @@ func _test_city_institutions_and_fitness() -> void:
 	_expect(int(state["relationships"]["rachel_morgan"].get("unlocked_chapter_level", 0)) == 2, "First Rep unlocks Rachel's second relationship chapter.")
 
 
+func _test_employment_applications_interviews_and_offers() -> void:
+	var factory: RefCounted = NewGameStateFactoryScript.new(_registry)
+	var simulation: RefCounted = SimulationEngineScript.new(_registry)
+	var quests: RefCounted = QuestEngineScript.new(_registry, simulation)
+	var employment: RefCounted = EmploymentEngineScript.new(_registry, simulation, quests)
+	var state: Dictionary = factory.create_new_game({}, {"random_seed": 918})
+	var result: Dictionary = quests.start_quest(state, "find_employment", "test.jobs.full_time")
+	state = result["state"]
+	result = employment.record_listings_viewed(state, "full_time")
+	_expect(result.get("ok", false), "Opening the Jobs app records the full-time listing search.")
+	state = result["state"]
+	_expect(state["quest_state"]["objectives"]["find_employment"]["open_jobs"], "The Jobs app completes employment onboarding without requiring Harbor Centre.")
+	_expect(state["quest_state"]["objectives"]["find_employment"]["review_requirements"], "Reviewing the full-time results completes the listing requirement.")
+	var grocery: Dictionary = _registry.get_content("jobs", "grocery_stock_clerk")
+	_expect(employment.qualification_report(state, grocery)["qualified"], "The starter grocery position is reachable with baseline reliability and stamina.")
+	var companion: Dictionary = _registry.get_content("jobs", "licensed_professional_companion")
+	_expect(not employment.qualification_report(state, companion)["qualified"], "Licensed adult self-employment stays locked behind licenses, health, and skill requirements.")
+
+	result = employment.apply_to_job(state, "grocery_stock_clerk", "full_time")
+	_expect(result.get("ok", false), "A qualified full-time grocery application can be submitted.")
+	state = result["state"]
+	result = employment.apply_to_job(state, "cinema_attendant", "part_time")
+	_expect(result.get("ok", false), "A second qualified application can be submitted to satisfy the search quest.")
+	state = result["state"]
+	_expect(state["quest_state"]["objectives"]["find_employment"]["submit_applications"], "Two submitted applications complete the authored application objective.")
+	_expect(state["player"]["employment"]["interviews"].size() == 2, "Qualified applications schedule separate calendar interviews.")
+	var grocery_application: Dictionary = _employment_application_for_job(state, "grocery_stock_clerk")
+	var grocery_interview: Dictionary = _employment_record(state["player"]["employment"]["interviews"], str(grocery_application["interview_id"]))
+	_set_clock_to_employment_event(state, grocery_interview)
+	result = employment.complete_interview(state, "grocery_stock_clerk", 20)
+	_expect(result.get("ok", false), "The interactive interview scoring path completes at its scheduled time.")
+	state = result["state"]
+	grocery_application = _employment_application_for_job(state, "grocery_stock_clerk")
+	_expect(str(grocery_application["stage"]) == "offer_received", "A strong interview produces a job offer.")
+	_expect(state["quest_state"]["objectives"]["find_employment"]["attend_interview"], "Completing an interview advances the employment quest.")
+	result = employment.accept_offer(state, "grocery_stock_clerk", "weekday_full_time")
+	_expect(result.get("ok", false), "A full-time offer can be accepted with its authored forty-hour schedule.")
+	state = result["state"]
+	_expect(state["player"]["employment"]["employed"], "Accepting an offer changes the player's employment state.")
+	_expect(state["player"]["employment"]["active_jobs"].size() == 1, "The accepted contract creates one active job record.")
+	_expect(_calendar_event_type_count(state, "work") > 100, "Accepting a full-time contract creates six weeks of work-block calendar events.")
+	_expect("find_employment" in state["quest_state"]["completed"], "A qualifying forty-hour contract completes the full-time employment quest.")
+	_expect(state["player"]["housing"]["monthly_rent"] == 250, "Completing the employment path activates the Hale household rent rule.")
+
+	state = factory.create_new_game({}, {"random_seed": 919})
+	state["player"]["education"]["enrolled"] = true
+	state["calendar_state"]["events"].append({
+		"id": "test-class", "title": "Test Class", "type": "class", "date": "Y1-09-03",
+		"weekday": "tuesday", "block": "afternoon", "status": "scheduled",
+	})
+	result = quests.start_quest(state, "find_part_time_employment", "test.jobs.part_time")
+	state = result["state"]
+	result = employment.record_listings_viewed(state, "part_time")
+	state = result["state"]
+	result = employment.save_availability(state)
+	_expect(result.get("ok", false), "The Jobs app saves work availability around required classes.")
+	state = result["state"]
+	_expect(state["quest_state"]["objectives"]["find_part_time_employment"]["review_calendar"], "Saving availability advances the part-time quest.")
+	result = employment.apply_to_job(state, "cinema_attendant", "part_time")
+	_expect(result.get("ok", false), "A class-compatible cinema application can be submitted.")
+	state = result["state"]
+	var cinema_application: Dictionary = _employment_application_for_job(state, "cinema_attendant")
+	var cinema_interview: Dictionary = _employment_record(state["player"]["employment"]["interviews"], str(cinema_application["interview_id"]))
+	_set_clock_to_employment_event(state, cinema_interview)
+	result = employment.complete_interview(state, "cinema_attendant", 20)
+	state = result["state"]
+	result = employment.accept_offer(state, "cinema_attendant", "weekday_evenings")
+	_expect(result.get("ok", false), "A fifteen-hour cinema schedule can be accepted around college classes.")
+	state = result["state"]
+	_expect("find_part_time_employment" in state["quest_state"]["completed"], "A compatible part-time contract completes the college employment quest.")
+	_expect(float(state["player"]["employment"]["active_jobs"][0]["weekly_hours"]) <= 24.0, "The accepted student job stays within the authored weekly-hour ceiling.")
+
+
 func _test_character_creation_scene() -> void:
 	var creation_scene: PackedScene = load("res://scenes/creation/character_creation.tscn")
 	_expect(creation_scene != null, "Character creation scene loads.")
@@ -433,7 +509,7 @@ func _test_content_registry() -> void:
 	_expect(_registry.get_all("operations").size() == 55, "Registry indexes all 55 simulation operations.")
 	_expect(_registry.get_all("actions").size() == 10, "Registry indexes all 10 initial home actions.")
 	_expect(_registry.get_all("city_interactions").size() == 9, "Registry indexes all nine opening city interactions.")
-	_expect(_registry.get_all("phone_apps").size() == 9, "Registry indexes all nine required phone apps.")
+	_expect(_registry.get_all("phone_apps").size() == 10, "Registry indexes the nine foundation apps plus Jobs.")
 
 
 func _test_new_game_state_factory() -> void:
@@ -477,6 +553,7 @@ func _test_new_game_state_factory() -> void:
 	_expect(state["player"]["inventory"]["equipped_outfit"].get("shirt") == "shirt_basic_white", "A playable default outfit is equipped at new-game creation.")
 	_expect(state["player"]["phone"]["message_threads"].size() == 5, "New-game phone state creates one thread per known contact.")
 	_expect("weather" in state["player"]["phone"]["unlocked_apps"], "The weather app is available from the start.")
+	_expect("jobs" in state["player"]["phone"]["unlocked_apps"], "The Jobs app is available from the start.")
 	_expect(state["relationships"].size() == 15, "Relationship defaults initialize for every opening character.")
 	_expect(state["world_state"]["weather"]["condition"] == "partly_cloudy", "Opening weather initializes from the calendar.")
 	_expect(state["content_state"]["loaded_packages"].size() == 22, "Runtime state records its loaded content manifest.")
@@ -927,6 +1004,38 @@ func _calendar_template_exists(state: Dictionary, template_id: String) -> bool:
 		if calendar_event is Dictionary and str(calendar_event.get("template_id", "")) == template_id:
 			return true
 	return false
+
+
+func _calendar_event_type_count(state: Dictionary, event_type: String) -> int:
+	var count: int = 0
+	for calendar_event: Variant in state["calendar_state"].get("events", []):
+		if calendar_event is Dictionary and str(calendar_event.get("type", "")) == event_type:
+			count += 1
+	return count
+
+
+func _employment_application_for_job(state: Dictionary, job_id: String) -> Dictionary:
+	for application: Variant in state["player"]["employment"].get("applications", []):
+		if application is Dictionary and str(application.get("job_id", "")) == job_id:
+			return application
+	return {}
+
+
+func _employment_record(records: Array, record_id: String) -> Dictionary:
+	for record: Variant in records:
+		if record is Dictionary and str(record.get("id", "")) == record_id:
+			return record
+	return {}
+
+
+func _set_clock_to_employment_event(state: Dictionary, event: Dictionary) -> void:
+	var parts: PackedStringArray = str(event.get("date", "Y1-08-20")).trim_prefix("Y").split("-")
+	state["clock"]["year"] = int(parts[0])
+	state["clock"]["month"] = int(parts[1])
+	state["clock"]["day"] = int(parts[2])
+	state["clock"]["weekday"] = str(event.get("weekday", "wednesday"))
+	state["clock"]["block"] = str(event.get("block", "morning"))
+	state["clock"]["minute_within_block"] = 0
 
 
 func _npc_location(state: Dictionary, character_id: String) -> String:

@@ -13,7 +13,7 @@ quest engines, complete data-driven character creation, Elena's playable
 three-branch opening scene, and the first connected Hale home sandbox. The home
 includes room collisions, private doors, needs-aware food and hygiene actions,
 sleep, laundry, household storage, and a working wardrobe. The reusable smartphone
-now provides all nine vertical-slice apps, authored character messages and replies,
+now provides the nine vertical-slice apps plus Jobs, authored character messages and replies,
 NPC-aware calendar scheduling, live relationships, weather/outfit checks, the city
 map, quest progress, character statistics, and initial settings controls. Elena,
 Daniel, and Lily now follow their character-authored work, school, and home-room
@@ -29,6 +29,11 @@ schedule and tuition state; Harbor provides employment orientation, listing revi
 and interview practice; and Rachel's assessment unlocks scheduled strength and
 cardio training. Authored quest events now advance objectives and complete branches
 without scene-specific quest code.
+The Jobs phone app now provides filters, live qualification reports, calendar-aware
+availability, applications, scheduled video interviews, scored interview choices,
+offers, compatible schedule selection, contract acceptance, and six weeks of work
+calendar events. Both the full-time and college/part-time employment quests are
+playable through contract acceptance.
 
 ## Planned technology
 

@@ -9,8 +9,9 @@ Implementation status: Phase 0 project foundation complete. Phase 1 content load
 new-game state creation, seven-block clock, core simulation, VN dialogue, quest
 branching, required character creation, and Elena's playable opening are
 implemented. The connected Hale home, room collisions, essential needs actions,
-household supplies, wardrobe equipment, reusable phone shell, and all nine required
-app views are now implemented with live runtime data. Authored opening texts, quick
+household supplies, wardrobe equipment, reusable phone shell, all nine required
+foundation apps, and the additional playable Jobs app are implemented. The app
+views use live runtime data. Authored opening texts, quick
 replies, calendar scheduling,
 NPC commitment rejection, optional double-booking warnings, weather/outfit checks,
 quest progress, relationships, map discovery, and initial settings controls work.

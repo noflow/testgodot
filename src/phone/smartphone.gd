@@ -5,7 +5,7 @@ signal phone_closed
 signal travel_completed(destination: String)
 
 const APP_ORDER: PackedStringArray = [
-	"character_profile", "contacts", "messages", "calendar", "quests",
+	"character_profile", "contacts", "messages", "calendar", "jobs", "quests",
 	"relationships", "city_map", "weather", "settings",
 ]
 const BLOCKS: PackedStringArray = [
@@ -42,6 +42,11 @@ const MONTH_NAMES: PackedStringArray = [
 var _current_app: String = "character_profile"
 var _selected_contact: String = ""
 var _selected_route_destination: String = ""
+var _job_filter: String = "all"
+var _selected_job_id: String = ""
+var _interview_job_id: String = ""
+var _interview_question_index: int = 0
+var _interview_answer_quality: int = 0
 
 
 func _ready() -> void:
@@ -108,6 +113,8 @@ func _show_app(app_id: String) -> void:
 			_render_messages()
 		"calendar":
 			_render_calendar()
+		"jobs":
+			_render_jobs()
 		"quests":
 			_render_quests()
 		"relationships":
@@ -233,7 +240,8 @@ func _render_calendar() -> void:
 			"With %s • " % ", ".join(participants) if not participants.is_empty() else "",
 			status.capitalize(),
 		])
-		if status == "scheduled" and str(calendar_event.get("source", "")) != "opening_future_talk":
+		var required_type: bool = str(calendar_event.get("type", "")) in ["class", "work", "interview"]
+		if status == "scheduled" and not required_type and str(calendar_event.get("source", "")) != "opening_future_talk":
 			_add_action_button("Cancel %s" % title, _cancel_calendar_event.bind(str(calendar_event.get("id", ""))))
 	var warning_count: int = 0
 	for conflict: Variant in calendar.get("conflicts", []):
@@ -261,6 +269,218 @@ func _render_quests() -> void:
 		var ids: Array = state["quest_state"].get(section, [])
 		lines.append(_quest_names(ids) if not ids.is_empty() else "None")
 	app_content.text = "\n".join(lines)
+
+
+func _render_jobs() -> void:
+	_clear_container(app_actions)
+	if not _interview_job_id.is_empty():
+		_render_interview_question()
+		return
+	app_title.text = "JOBS"
+	if not _selected_job_id.is_empty():
+		_render_job_detail(_selected_job_id)
+		return
+	EmploymentService.record_listings_viewed(_job_filter)
+	var listings: Array = EmploymentService.get_listings(_job_filter)
+	var employment: Dictionary = GameState.current_state["player"]["employment"]
+	var lines: PackedStringArray = [
+		"Search filter: [color=#e9a86c]%s[/color]" % _job_filter.replace("_", " ").capitalize(),
+		"Applications: %d • Active jobs: %d" % [employment.get("applications", []).size(), employment.get("active_jobs", []).size()],
+		"Qualified means every authored skill, trait, education, attribute, health, and licensing requirement is currently met.",
+	]
+	for entry: Variant in listings:
+		if not entry is Dictionary:
+			continue
+		var job: Dictionary = entry["job"]
+		var qualification: Dictionary = entry["qualification"]
+		var application: Dictionary = entry["application"]
+		var pay: String = "$%.2f/hour" % float(job.get("hourly_pay", 0.0))
+		if job.has("booking_pay_range"):
+			pay = "$%d–$%d/booking" % [job["booking_pay_range"][0], job["booking_pay_range"][1]]
+		var status: String = "Qualified" if bool(qualification["qualified"]) else "%d%% match" % qualification["match_percent"]
+		if not application.is_empty():
+			status = str(application.get("stage", "applied")).replace("_", " ").capitalize()
+		lines.append("[font_size=20]%s[/font_size]\n%s • %s\n%s • %s" % [
+			job.get("title", job.get("id", "Job")), job.get("employer", ""), pay,
+			_joined_labels(job.get("employment_types", [])), status,
+		])
+		_add_action_button("View %s" % job.get("title", job.get("id", "job")), _open_job_detail.bind(str(job.get("id", ""))))
+	app_content.text = "\n\n".join(lines) if not listings.is_empty() else "No listings match this filter."
+	for filter_id: String in ["all", "qualified", "part_time", "full_time"]:
+		_add_action_button("Filter: %s%s" % [filter_id.replace("_", " ").capitalize(), " ✓" if filter_id == _job_filter else ""], _set_job_filter.bind(filter_id))
+	_add_action_button("Save Availability Around Calendar", _save_job_availability)
+
+
+func _render_job_detail(job_id: String) -> void:
+	var job: Variant = ContentRegistry.get_content("jobs", job_id)
+	if not job is Dictionary:
+		_selected_job_id = ""
+		_render_jobs()
+		return
+	app_title.text = str(job.get("title", job_id)).to_upper()
+	var qualification: Dictionary = EmploymentService.qualification_report(job_id)
+	var application: Dictionary = _employment_application(job_id)
+	var lines: PackedStringArray = [
+		"[font_size=23]%s[/font_size]" % job.get("employer", ""),
+		"Location: %s" % _location_name(str(job.get("location", ""))),
+		"Type: %s" % _joined_labels(job.get("employment_types", [])),
+	]
+	if job.has("hourly_pay"):
+		lines.append("Pay: $%.2f per hour" % float(job.get("hourly_pay", 0.0)))
+	elif job.has("booking_pay_range"):
+		lines.append("Pay: $%d–$%d per booking" % [job["booking_pay_range"][0], job["booking_pay_range"][1]])
+	lines.append("\nREQUIREMENTS — %s" % ("[color=#67c6c3]MET[/color]" if qualification.get("qualified", false) else "[color=#ef7777]NOT MET[/color]"))
+	for requirement: Variant in qualification.get("met", []):
+		lines.append("✓ %s" % requirement)
+	for requirement: Variant in qualification.get("missing", []):
+		lines.append("[color=#ef7777]○ %s[/color]" % requirement)
+	lines.append("\nSCHEDULE OPTIONS")
+	for schedule: Variant in job.get("schedule_options", []):
+		if schedule is Dictionary:
+			lines.append("%s — %s hours\n%s • %s" % [
+				str(schedule.get("id", "schedule")).replace("_", " ").capitalize(),
+				schedule.get("weekly_hours", "Variable"),
+				_joined_labels(schedule.get("days", [])),
+				_joined_labels(schedule.get("blocks", [])),
+			])
+	if application.is_empty():
+		lines.append("\nAPPLICATION\nNo application submitted.")
+	else:
+		var stage: String = str(application.get("stage", "submitted"))
+		lines.append("\nAPPLICATION\nStatus: [color=#e9a86c]%s[/color]" % stage.replace("_", " ").capitalize())
+		if stage == "interview_scheduled":
+			var readiness: Dictionary = EmploymentService.interview_ready(job_id)
+			lines.append(str(readiness.get("reason", "Interview scheduled.")))
+		elif stage in ["offer_received", "rejected", "waitlisted"]:
+			lines.append("Interview score: %d • %s" % [int(application.get("interview_score", 0)), str(application.get("interview_outcome", stage)).replace("_", " ").capitalize()])
+	app_content.text = "\n".join(lines)
+	_add_action_button("← All Listings", _close_job_detail)
+	if application.is_empty() and bool(qualification.get("qualified", false)):
+		for employment_type: Variant in job.get("employment_types", []):
+			var type_id: String = str(employment_type)
+			if type_id not in ["part_time", "full_time"]:
+				continue
+			if EmploymentService.compatible_schedules(job_id, type_id).is_empty():
+				continue
+			_add_action_button("Apply — %s" % type_id.replace("_", " ").capitalize(), _apply_to_job.bind(job_id, type_id))
+	elif not application.is_empty() and str(application.get("stage", "")) == "interview_scheduled":
+		var readiness: Dictionary = EmploymentService.interview_ready(job_id)
+		if bool(readiness.get("ready", false)):
+			_add_action_button("Start Video Interview", _begin_job_interview.bind(job_id))
+	elif not application.is_empty() and str(application.get("stage", "")) == "offer_received":
+		for schedule: Variant in EmploymentService.compatible_schedules(job_id, str(application.get("requested_type", "all"))):
+			if not schedule is Dictionary or str(schedule.get("id", "")) not in application.get("offer", {}).get("eligible_schedule_ids", []):
+				continue
+			_add_action_button("Accept Offer — %s (%s hrs/week)" % [str(schedule.get("id", "")).replace("_", " ").capitalize(), schedule.get("weekly_hours", 0)], _accept_job_offer.bind(job_id, str(schedule.get("id", ""))))
+
+
+func _open_job_detail(job_id: String) -> void:
+	_selected_job_id = job_id
+	_render_jobs()
+
+
+func _close_job_detail() -> void:
+	_selected_job_id = ""
+	_render_jobs()
+
+
+func _set_job_filter(filter_id: String) -> void:
+	_job_filter = filter_id
+	_selected_job_id = ""
+	_render_jobs()
+
+
+func _save_job_availability() -> void:
+	var result: Dictionary = EmploymentService.save_availability()
+	phone_status.text = "Work availability saved around required classes and shifts." if result.get("ok", false) else str(result.get("errors", ["Availability could not be saved."])[0])
+	_render_jobs()
+
+
+func _apply_to_job(job_id: String, requested_type: String) -> void:
+	var result: Dictionary = EmploymentService.apply_to_job(job_id, requested_type)
+	if result.get("ok", false):
+		var application: Dictionary = result.get("data", {}).get("application", {})
+		var interview_id: String = str(application.get("interview_id", ""))
+		var interview: Dictionary = _employment_record_by_id(GameState.current_state["player"]["employment"].get("interviews", []), interview_id)
+		phone_status.text = "Application submitted. Video interview: %s • %s." % [interview.get("date", ""), str(interview.get("block", "")).replace("_", " ").capitalize()]
+	else:
+		phone_status.text = str(result.get("errors", ["Application could not be submitted."])[0])
+	_render_jobs()
+
+
+func _begin_job_interview(job_id: String) -> void:
+	var readiness: Dictionary = EmploymentService.interview_ready(job_id)
+	if not bool(readiness.get("ready", false)):
+		phone_status.text = str(readiness.get("reason", "The interview is not ready."))
+		return
+	_interview_job_id = job_id
+	_interview_question_index = 0
+	_interview_answer_quality = 0
+	_render_jobs()
+
+
+func _render_interview_question() -> void:
+	_clear_container(app_actions)
+	var job: Dictionary = ContentRegistry.get_content("jobs", _interview_job_id)
+	var questions: Array = _interview_questions()
+	if _interview_question_index >= questions.size():
+		_finish_job_interview()
+		return
+	var question: Dictionary = questions[_interview_question_index]
+	app_title.text = "INTERVIEW • %d/%d" % [_interview_question_index + 1, questions.size()]
+	app_content.text = "[font_size=23]%s[/font_size]\n%s\n\n%s" % [
+		job.get("title", _interview_job_id), job.get("employer", ""), question.get("prompt", ""),
+	]
+	for answer: Variant in question.get("answers", []):
+		if answer is Dictionary:
+			_add_action_button(str(answer.get("text", "Answer")), _answer_interview_question.bind(int(answer.get("score", 0))))
+
+
+func _answer_interview_question(score: int) -> void:
+	_interview_answer_quality += score
+	_interview_question_index += 1
+	_render_jobs()
+
+
+func _finish_job_interview() -> void:
+	var job_id: String = _interview_job_id
+	var result: Dictionary = EmploymentService.complete_interview(job_id, mini(_interview_answer_quality, 20))
+	_interview_job_id = ""
+	_interview_question_index = 0
+	_interview_answer_quality = 0
+	_selected_job_id = job_id
+	if result.get("ok", false):
+		var data: Dictionary = result.get("data", {})
+		phone_status.text = "Interview complete: %d/100 — %s." % [data.get("score", 0), str(data.get("outcome", "result")).replace("_", " ").capitalize()]
+	else:
+		phone_status.text = str(result.get("errors", ["Interview could not be completed."])[0])
+	_render_jobs()
+
+
+func _accept_job_offer(job_id: String, schedule_id: String) -> void:
+	var result: Dictionary = EmploymentService.accept_offer(job_id, schedule_id)
+	phone_status.text = "Offer accepted. Your first six weeks of shifts are on the Calendar." if result.get("ok", false) else str(result.get("errors", ["Offer could not be accepted."])[0])
+	_render_jobs()
+
+
+func _interview_questions() -> Array:
+	return [
+		{"prompt": "Why do you want this position?", "answers": [
+			{"text": "Connect the role to your strengths and the employer's needs.", "score": 7},
+			{"text": "Give an honest, general reason for needing work.", "score": 5},
+			{"text": "Say you mainly care about the pay.", "score": 2},
+		]},
+		{"prompt": "Tell us about a time you were reliable.", "answers": [
+			{"text": "Give a specific example, action, and result.", "score": 7},
+			{"text": "Describe your usual approach without an example.", "score": 5},
+			{"text": "Say people should simply trust you.", "score": 1},
+		]},
+		{"prompt": "How would you handle a schedule conflict?", "answers": [
+			{"text": "Raise it early, propose coverage, and confirm the solution.", "score": 6},
+			{"text": "Tell the manager as soon as you notice it.", "score": 4},
+			{"text": "Wait and see whether it becomes a problem.", "score": 0},
+		]},
+	]
 
 
 func _render_relationships() -> void:
@@ -670,6 +890,20 @@ func _meter_level(value: int) -> String:
 		if level is Dictionary and value >= int(level.get("minimum", 0)):
 			result = "Level %d: %s" % [level.get("level", 1), level.get("name", "New")]
 	return result
+
+
+func _employment_application(job_id: String) -> Dictionary:
+	for application: Variant in GameState.current_state["player"]["employment"].get("applications", []):
+		if application is Dictionary and str(application.get("job_id", "")) == job_id and str(application.get("stage", "")) not in ["declined", "withdrawn"]:
+			return application
+	return {}
+
+
+func _employment_record_by_id(records: Array, record_id: String) -> Dictionary:
+	for record: Variant in records:
+		if record is Dictionary and str(record.get("id", "")) == record_id:
+			return record
+	return {}
 
 
 func _message_definition(character_id: String, message_id: String) -> Dictionary:

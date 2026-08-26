@@ -87,6 +87,12 @@ func _apply_to_working_state(state: Dictionary, operation: String, payload: Dict
 			return _complete_calendar_arrival(state, payload)
 		"memory.create":
 			return _create_memory(state, payload)
+		"employment.apply":
+			return _apply_employment_application(state, payload)
+		"employment.interview":
+			return _apply_employment_interview(state, payload)
+		"employment.accept_offer":
+			return _accept_employment_offer(state, payload)
 		"travel.complete":
 			return _complete_travel(state, payload)
 		"world.unlock_location":
@@ -600,6 +606,89 @@ func _create_memory(state: Dictionary, payload: Dictionary) -> String:
 		"created_on": _date_string(state["clock"]),
 	})
 	return ""
+
+
+func _apply_employment_application(state: Dictionary, payload: Dictionary) -> String:
+	var job_id: String = str(payload.get("job_id", ""))
+	if _registry.get_content("jobs", job_id) == null:
+		return "Unknown job listing: %s" % job_id
+	for existing: Variant in state["player"]["employment"].get("applications", []):
+		if existing is Dictionary and str(existing.get("job_id", "")) == job_id and str(existing.get("stage", "")) not in ["rejected", "declined", "withdrawn"]:
+			return "An active application already exists for this job."
+	var application_value: Variant = payload.get("application")
+	if not application_value is Dictionary:
+		return "Employment applications require an application record."
+	var application: Dictionary = application_value.duplicate(true)
+	if str(application.get("id", "")).is_empty() or str(application.get("job_id", "")) != job_id:
+		return "Employment application identity is invalid."
+	state["player"]["employment"]["applications"].append(application)
+	var interview_value: Variant = payload.get("interview")
+	if interview_value is Dictionary:
+		state["player"]["employment"]["interviews"].append(interview_value.duplicate(true))
+	return ""
+
+
+func _apply_employment_interview(state: Dictionary, payload: Dictionary) -> String:
+	var application_id: String = str(payload.get("application_id", ""))
+	var application: Dictionary = _find_employment_record(state["player"]["employment"].get("applications", []), application_id)
+	if application.is_empty():
+		return "Unknown employment application: %s" % application_id
+	if str(application.get("stage", "")) != "interview_scheduled":
+		return "This application is not ready for an interview."
+	var interview_id: String = str(payload.get("interview_id", ""))
+	var interview: Dictionary = _find_employment_record(state["player"]["employment"].get("interviews", []), interview_id)
+	if interview.is_empty():
+		return "Unknown scheduled interview: %s" % interview_id
+	interview["status"] = "completed"
+	interview["completed_at"] = _clock.timestamp(state["clock"])
+	interview["score"] = float(payload.get("score", 0.0))
+	interview["score_breakdown"] = payload.get("score_breakdown", {}).duplicate(true)
+	interview["outcome"] = payload.get("outcome", "rejected")
+	application["interview_score"] = interview["score"]
+	application["interview_outcome"] = interview["outcome"]
+	var offer_value: Variant = payload.get("offer")
+	if offer_value is Dictionary:
+		application["stage"] = "offer_received"
+		application["offer"] = offer_value.duplicate(true)
+	elif str(payload.get("outcome", "")) == "waitlisted":
+		application["stage"] = "waitlisted"
+	else:
+		application["stage"] = "rejected"
+		application["rejected_on"] = _date_string(state["clock"])
+	return ""
+
+
+func _accept_employment_offer(state: Dictionary, payload: Dictionary) -> String:
+	var application_id: String = str(payload.get("application_id", ""))
+	var application: Dictionary = _find_employment_record(state["player"]["employment"].get("applications", []), application_id)
+	if application.is_empty() or str(application.get("stage", "")) != "offer_received":
+		return "This application has no active offer."
+	var offer: Dictionary = application.get("offer", {})
+	if str(offer.get("status", "offered")) != "offered":
+		return "This offer is no longer available."
+	var active_job_value: Variant = payload.get("active_job")
+	if not active_job_value is Dictionary:
+		return "Accepting an offer requires a job contract."
+	var active_job: Dictionary = active_job_value.duplicate(true)
+	if str(active_job.get("job_id", "")) != str(application.get("job_id", "")):
+		return "The job contract does not match the offer."
+	for existing_job: Variant in state["player"]["employment"].get("active_jobs", []):
+		if existing_job is Dictionary and str(existing_job.get("job_id", "")) == str(active_job.get("job_id", "")):
+			return "This job is already active."
+	offer["status"] = "accepted"
+	offer["accepted_at"] = _clock.timestamp(state["clock"])
+	application["stage"] = "accepted"
+	application["accepted_schedule_id"] = active_job.get("schedule_id")
+	state["player"]["employment"]["active_jobs"].append(active_job)
+	state["player"]["employment"]["employed"] = true
+	return ""
+
+
+func _find_employment_record(records: Array, record_id: String) -> Dictionary:
+	for record: Variant in records:
+		if record is Dictionary and str(record.get("id", "")) == record_id:
+			return record
+	return {}
 
 
 func _complete_travel(state: Dictionary, payload: Dictionary) -> String:

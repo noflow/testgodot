@@ -327,6 +327,10 @@ func _event_condition_matches(condition: Dictionary, event_name: String, payload
 		return false
 	if condition.has("minimum") and int(payload.get("count", 0)) < int(condition["minimum"]):
 		return false
+	if condition.has("hours_minimum") and float(payload.get("hours", 0.0)) < float(condition["hours_minimum"]):
+		return false
+	if condition.has("hours_maximum") and float(payload.get("hours", 0.0)) > float(condition["hours_maximum"]):
+		return false
 	if condition.has("filter"):
 		var expected_filter: String = str(condition["filter"])
 		if str(payload.get("filter", "")) != expected_filter and expected_filter not in payload.get("employment_types", []):

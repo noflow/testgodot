@@ -42,7 +42,7 @@
       "inventory": {"containers": "$initialize_from_inventory_system", "equipped_outfit": {}, "starting_loadout": "$from_financial_background"},
       "housing": {"residence": "hale_home", "room": "hale_home.player_bedroom", "household": "hale_household", "monthly_rent": 0, "rent_first_due": "Y1-09-01", "assigned_chores": [], "guest_permissions": "ask_household"},
       "transportation": {"license": true, "owned_vehicles": [], "family_car_permission": "$from_financial_background", "bus_pass_expires": null, "known_routes": ["home_to_westshore", "home_to_park"]},
-      "phone": {"unlocked_apps": ["contacts", "messages", "calendar", "character_profile", "relationships", "city_map", "weather", "settings"], "known_contacts": ["elena_reyes_hale", "daniel_hale", "lily_hale", "emma_rowan", "marcus_lee"], "message_threads": {}, "unread_threads": [], "notifications": []},
+      "phone": {"unlocked_apps": ["contacts", "messages", "calendar", "jobs", "character_profile", "relationships", "city_map", "weather", "settings"], "known_contacts": ["elena_reyes_hale", "daniel_hale", "lily_hale", "emma_rowan", "marcus_lee"], "message_threads": {}, "unread_threads": [], "notifications": []},
       "life_path": null,
       "flags": {}
     },
