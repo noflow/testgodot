@@ -7,9 +7,6 @@ const MONTH_NAMES: PackedStringArray = [
 	"January", "February", "March", "April", "May", "June",
 	"July", "August", "September", "October", "November", "December",
 ]
-const DEFAULT_BIRTH_MONTH: int = 3
-const DEFAULT_BIRTH_DAY: int = 17
-
 @onready var tabs: TabContainer = %CreationTabs
 @onready var first_name: LineEdit = %FirstName
 @onready var last_name: LineEdit = %LastName
@@ -31,6 +28,7 @@ const DEFAULT_BIRTH_DAY: int = 17
 @onready var core_count: Label = %CoreCount
 @onready var hobby_count: Label = %HobbyCount
 @onready var archetype_options: GridContainer = %ArchetypeOptions
+@onready var archetype_selection: Label = %ArchetypeSelection
 @onready var background_option: OptionButton = %BackgroundOption
 @onready var background_summary: RichTextLabel = %BackgroundSummary
 @onready var review_text: RichTextLabel = %ReviewText
@@ -99,10 +97,11 @@ func _configure_tabs() -> void:
 
 func _populate_birth_controls() -> void:
 	birth_month.clear()
+	birth_month.add_item("Select month…", 0)
 	for month_index: int in MONTH_NAMES.size():
 		birth_month.add_item(MONTH_NAMES[month_index], month_index + 1)
-	birth_month.select(DEFAULT_BIRTH_MONTH - 1)
-	_refresh_birth_days(DEFAULT_BIRTH_DAY)
+	birth_month.select(0)
+	_refresh_birth_days()
 
 
 func _refresh_birth_days(preferred_day: int = -1) -> void:
@@ -110,11 +109,18 @@ func _refresh_birth_days(preferred_day: int = -1) -> void:
 	if preferred_day < 1 and birth_day.item_count > 0:
 		preferred_day = birth_day.get_selected_id()
 	birth_day.clear()
+	birth_day.add_item("Select day…", 0)
+	if month < 1 or month > 12:
+		birth_day.select(0)
+		birth_day.disabled = true
+		_refresh_birth_date_summary()
+		return
+	birth_day.disabled = false
 	for day: int in _validator.valid_birth_days(month):
 		birth_day.add_item(str(day), day)
 	var selected_index: int = _item_index_for_id(birth_day, preferred_day)
 	if selected_index < 0:
-		selected_index = maxi(0, birth_day.item_count - 1)
+		selected_index = 0
 	birth_day.select(selected_index)
 	_refresh_birth_date_summary()
 
@@ -122,7 +128,7 @@ func _refresh_birth_days(preferred_day: int = -1) -> void:
 func _refresh_birth_date_summary() -> void:
 	var birth_date: String = _selected_birth_date()
 	if birth_date.is_empty():
-		birth_date_summary.text = "Choose a valid month and day."
+		birth_date_summary.text = "Choose a month and day. The birth year will be calculated so the protagonist is 18 at the opening."
 		return
 	var date_parts: PackedStringArray = birth_date.split("-")
 	var opening: Dictionary = _config.get("opening_reference_date", {})
@@ -145,12 +151,16 @@ func _populate_archetypes(definitions: Array) -> void:
 		if not definition is Dictionary:
 			continue
 		var button: Button = Button.new()
-		button.text = str(definition.get("name", definition.get("id", "Archetype")))
+		var archetype_id: String = str(definition.get("id", ""))
+		var archetype_name: String = str(definition.get("name", archetype_id))
+		button.text = archetype_name
 		button.tooltip_text = str(definition.get("description", "Choose this starting outlook."))
 		button.custom_minimum_size = Vector2(220, 44)
 		button.toggle_mode = true
 		button.button_group = group
-		button.pressed.connect(_on_archetype_pressed.bind(str(definition.get("id", ""))))
+		button.set_meta("archetype_id", archetype_id)
+		button.set_meta("archetype_name", archetype_name)
+		button.pressed.connect(_on_archetype_pressed.bind(archetype_id))
 		archetype_options.add_child(button)
 
 
@@ -260,7 +270,25 @@ func _on_birth_day_selected(_index: int) -> void:
 
 
 func _on_archetype_pressed(archetype_id: String) -> void:
+	if archetype_id.is_empty():
+		return
 	_selected_archetype = archetype_id
+	var selected_name: String = archetype_id.replace("_", " ").capitalize()
+	for child: Node in archetype_options.get_children():
+		if not child is Button:
+			continue
+		var button: Button = child
+		var is_selected: bool = str(button.get_meta("archetype_id", "")) == archetype_id
+		var base_name: String = str(button.get_meta("archetype_name", button.text))
+		button.set_pressed_no_signal(is_selected)
+		button.text = "%s%s" % ["✓ " if is_selected else "", base_name]
+		if is_selected:
+			selected_name = base_name
+			button.add_theme_color_override("font_color", Color("86d6c5"))
+		else:
+			button.remove_theme_color_override("font_color")
+	archetype_selection.text = "Selected archetype: %s" % selected_name
+	archetype_selection.add_theme_color_override("font_color", Color("86d6c5"))
 	status_label.text = ""
 	_refresh_review_if_visible()
 
@@ -361,6 +389,8 @@ func _build_choices() -> Dictionary:
 
 func _selected_birth_date() -> String:
 	if birth_month.item_count == 0 or birth_day.item_count == 0:
+		return ""
+	if birth_month.get_selected_id() < 1 or birth_day.get_selected_id() < 1:
 		return ""
 	return _validator.birth_date_for_birthday(
 		birth_month.get_selected_id(),

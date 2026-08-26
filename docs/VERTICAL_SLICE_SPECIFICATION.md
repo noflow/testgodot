@@ -77,11 +77,11 @@ warning state.
 The slice supports:
 
 - First and last name
-- Birthday resulting in age 18 on the opening date
+- Explicit birthday month and day dropdowns; every offered date calculates a birth year resulting in age 18 on the opening date
 - Face, eye color, skin tone, hairstyle, height, and body type
 - Three positive traits and three challenging traits
 - Three core values
-- One starting archetype
+- One starting archetype with a visible selected-state confirmation
 - Two hobbies
 - Limited, Standard, or Comfortable financial background
 

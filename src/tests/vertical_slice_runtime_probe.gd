@@ -63,8 +63,15 @@ func _create_character_through_ui() -> Dictionary:
 	last_name.text = "Tester"
 	var birth_month: OptionButton = creation.get_node("PageMargin/Page/CreationTabs/Identity/Fields/BirthFields/MonthField/BirthMonth")
 	var birth_day: OptionButton = creation.get_node("PageMargin/Page/CreationTabs/Identity/Fields/BirthFields/DayField/BirthDay")
-	birth_month.select(7)
-	birth_month.emit_signal("item_selected", 7)
+	if not _check(str(creation.call("_selected_birth_date")).is_empty(), "birthday was preselected before the player chose a month and day"):
+		creation.free()
+		return {}
+	var birth_month_index: int = _option_index_for_id(birth_month, 8)
+	if not _check(birth_month_index >= 0, "August was missing from the birthday month dropdown"):
+		creation.free()
+		return {}
+	birth_month.select(birth_month_index)
+	birth_month.emit_signal("item_selected", birth_month_index)
 	var birthday_index: int = _option_index_for_id(birth_day, 21)
 	if not _check(birthday_index >= 0, "August 21 was missing from the birthday day dropdown"):
 		creation.free()
@@ -88,9 +95,13 @@ func _create_character_through_ui() -> Dictionary:
 	_select_multi_buttons(creation.get_node("PageMargin/Page/CreationTabs/LifeDetails/Scroll/Fields/CoreOptions"), 3)
 	_select_multi_buttons(creation.get_node("PageMargin/Page/CreationTabs/LifeDetails/Scroll/Fields/HobbyOptions"), 2)
 	var archetype_grid: GridContainer = creation.get_node("PageMargin/Page/CreationTabs/LifeDetails/Scroll/Fields/ArchetypeOptions")
+	var archetype_status: Label = creation.get_node("PageMargin/Page/CreationTabs/LifeDetails/Scroll/Fields/ArchetypeSelection")
 	var archetype_button: Button = archetype_grid.get_child(0)
 	archetype_button.set_pressed_no_signal(true)
 	archetype_button.emit_signal("pressed")
+	if not _check(archetype_button.text.begins_with("✓ ") and "The Planner" in archetype_status.text, "archetype selection did not show a clear visual confirmation"):
+		creation.free()
+		return {}
 	var background_option: OptionButton = creation.get_node("PageMargin/Page/CreationTabs/BackgroundAndReview/Columns/BackgroundColumn/BackgroundOption")
 	var background_index: int = _option_index_for_metadata(background_option, "standard_background")
 	if not _check(background_index >= 0, "Standard financial background was missing"):

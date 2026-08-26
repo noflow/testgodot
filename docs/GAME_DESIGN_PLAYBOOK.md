@@ -24,7 +24,7 @@ The tone is dramatic and mature. Intimate adult scenes are suggestive and non-gr
 The protagonist is always male and begins at age 18. The player selects:
 
 - First and last name
-- Birthday
+- Birthday chosen from month and day dropdowns, with the birth year calculated to make the protagonist 18 at the opening
 - Face
 - Eye color
 - Skin tone
@@ -34,7 +34,7 @@ The protagonist is always male and begins at age 18. The player selects:
 - Three positive traits receiving an initial increase
 - Three challenging traits receiving an initial increase
 - Three core values
-- Starting archetype
+- Starting archetype with an unmistakable checked selection state
 - Two hobbies
 - Financial background
 - Family structure and siblings
