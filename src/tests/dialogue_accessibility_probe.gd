@@ -34,7 +34,12 @@ func _run_probe() -> void:
 	await get_tree().process_frame
 	await get_tree().process_frame
 	var line: Label = dialogue.get_node("DialogueMargin/DialoguePanel/PanelMargin/DialogueContent/LineLabel")
+	var background_image: TextureRect = dialogue.get_node("BackgroundImage")
+	var portrait_image: TextureRect = dialogue.get_node("PortraitArea/PortraitCard/PortraitMargin/PortraitLayout/PortraitImage")
 	var skip: Button = dialogue.get_node("DialogueMargin/DialoguePanel/PanelMargin/DialogueContent/Controls/SkipButton")
+	if background_image.texture == null or portrait_image.texture == null:
+		_fail("dialogue did not resolve its location background and Elena portrait")
+		return
 	if not is_equal_approx(ThemeDB.fallback_base_scale, 1.75) or line.visible_characters != -1:
 		_fail("175% text or reduced-motion instant line reveal did not apply")
 		return

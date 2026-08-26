@@ -86,6 +86,6 @@
     {"id": "marcus_movie_invitation", "trigger": {"quest_started": "one_last_summer_movie"}, "sender": "marcus_lee", "text": "One last bad summer movie before college ruins our schedules? I can sneak you into the late show Tue/Wed/Thu.", "quick_replies": [{"text": "Pick a night.", "tone": ["playful"], "effects": [{"operation": "open_calendar_scheduler", "participant": "marcus_lee", "valid_quest": "one_last_summer_movie"}]}, {"text": "Only if this counts as a date.", "tone": ["flirty"], "effects": [{"operation": "add_meter", "character": "marcus_lee", "meter": "attraction", "value": 1}, {"operation": "open_calendar_scheduler", "participant": "marcus_lee", "valid_quest": "one_last_summer_movie"}]}, {"text": "Can't this week.", "tone": ["honest"], "effects": [{"operation": "set_quest_state", "quest": "one_last_summer_movie", "value": "deferred"}]}]}
   ],
   "outcomes": ["lifelong_creative_partner", "romantic_partnership", "successful_filmmaker_friend", "friendship_lost_to_unreliability"],
-  "asset_refs": {"portraits": [], "sprites": [], "audio": []},
+  "asset_refs": {"portraits": [{"id": "default", "path": "res://assets/art/characters/_fallback_portrait.svg", "accent": "#8eabc4", "anchor": "center"}], "sprites": [], "audio": []},
   "entry_event": "quest_one_last_summer_movie"
 }

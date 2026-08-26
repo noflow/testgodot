@@ -64,6 +64,31 @@ def validate_file(path: Path, known_ids: set[str]) -> list[str]:
     if not data["home"].get("location_id"):
         fail(errors, path, "home requires a location_id from the canonical location registry")
 
+    asset_refs = data.get("asset_refs", {})
+    portraits = asset_refs.get("portraits", []) if isinstance(asset_refs, dict) else []
+    if not isinstance(portraits, list):
+        fail(errors, path, "asset_refs.portraits must be a list")
+    else:
+        portrait_ids: list[str] = []
+        for portrait in portraits:
+            if not isinstance(portrait, dict):
+                fail(errors, path, "each portrait reference must be an object")
+                continue
+            portrait_id = portrait.get("id")
+            asset_path = portrait.get("path")
+            if not isinstance(portrait_id, str) or not portrait_id:
+                fail(errors, path, "portrait reference requires a non-empty id")
+            elif portrait_id in portrait_ids:
+                fail(errors, path, f"duplicate portrait id: {portrait_id}")
+            else:
+                portrait_ids.append(portrait_id)
+            if not isinstance(asset_path, str) or not asset_path.startswith("res://"):
+                fail(errors, path, f"portrait {portrait_id or 'unknown'} requires a res:// path")
+            elif not (ROOT / asset_path.removeprefix("res://")).is_file():
+                fail(errors, path, f"portrait {portrait_id or 'unknown'} asset does not exist: {asset_path}")
+        if "default" not in portrait_ids:
+            fail(errors, path, "asset_refs.portraits requires a default portrait")
+
     meters = data["relationship_defaults"]
     missing_meters = sorted((PRIMARY_METERS | SUPPORT_METERS) - meters.keys())
     if missing_meters:

@@ -1,0 +1,25 @@
+{
+  "format_version": 1,
+  "package_id": "port_alder_vn_art",
+  "fallbacks": {
+    "background": "res://assets/art/backgrounds/_shared/coastal_city.svg",
+    "portrait": "res://assets/art/characters/_fallback_portrait.svg"
+  },
+  "vn_backgrounds": [
+    {"id": "hale_home.player_bedroom", "location": "hale_home", "room": "player_bedroom", "path": "res://assets/art/backgrounds/hale_home/player_bedroom.svg", "credit": "Original Port Alder placeholder"},
+    {"id": "hale_home.upstairs_hall", "location": "hale_home", "room": "upstairs_hall", "path": "res://assets/art/backgrounds/hale_home/living_room.svg", "credit": "Original Port Alder placeholder"},
+    {"id": "hale_home.family_bathroom", "location": "hale_home", "room": "family_bathroom", "path": "res://assets/art/backgrounds/hale_home/family_bathroom.svg", "credit": "Original Port Alder placeholder"},
+    {"id": "hale_home.lily_bedroom", "location": "hale_home", "room": "lily_bedroom", "path": "res://assets/art/backgrounds/hale_home/player_bedroom.svg", "credit": "Original Port Alder placeholder"},
+    {"id": "hale_home.parents_bedroom", "location": "hale_home", "room": "parents_bedroom", "path": "res://assets/art/backgrounds/hale_home/player_bedroom.svg", "credit": "Original Port Alder placeholder"},
+    {"id": "hale_home.living_room", "location": "hale_home", "room": "living_room", "path": "res://assets/art/backgrounds/hale_home/living_room.svg", "credit": "Original Port Alder placeholder"},
+    {"id": "hale_home.kitchen", "location": "hale_home", "room": "kitchen", "path": "res://assets/art/backgrounds/hale_home/living_room.svg", "credit": "Original Port Alder placeholder"},
+    {"id": "hale_home.dining_room", "location": "hale_home", "room": "dining_room", "path": "res://assets/art/backgrounds/hale_home/living_room.svg", "credit": "Original Port Alder placeholder"},
+    {"id": "hale_home.laundry_room", "location": "hale_home", "room": "laundry_room", "path": "res://assets/art/backgrounds/hale_home/family_bathroom.svg", "credit": "Original Port Alder placeholder"},
+    {"id": "hale_home.garage", "location": "hale_home", "room": "garage", "path": "res://assets/art/backgrounds/_shared/coastal_city.svg", "credit": "Original Port Alder placeholder"},
+    {"id": "hale_home.front_yard", "location": "hale_home", "room": "front_yard", "path": "res://assets/art/backgrounds/_shared/coastal_city.svg", "credit": "Original Port Alder placeholder"},
+    {"id": "hale_home.backyard", "location": "hale_home", "room": "backyard", "path": "res://assets/art/backgrounds/_shared/coastal_city.svg", "credit": "Original Port Alder placeholder"},
+    {"id": "westshore_administration_office.reception", "location": "westshore_administration_office", "room": "reception", "path": "res://assets/art/backgrounds/westshore_administration_office/advisor_office.svg", "credit": "Original Port Alder placeholder"},
+    {"id": "westshore_administration_office.advisor_office", "location": "westshore_administration_office", "room": "advisor_office", "path": "res://assets/art/backgrounds/westshore_administration_office/advisor_office.svg", "credit": "Original Port Alder placeholder"},
+    {"id": "alder_bay_park.waterfront_path", "location": "alder_bay_park", "room": "waterfront_path", "path": "res://assets/art/backgrounds/alder_bay_park/waterfront_path.svg", "credit": "Original Port Alder placeholder"}
+  ]
+}

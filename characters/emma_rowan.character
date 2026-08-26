@@ -87,6 +87,6 @@
     {"id": "emma_walk_invitation", "trigger": {"quest_started": "before_everything_changes"}, "sender": "emma_rowan", "text": "Before college swallows both of us, want to walk by Alder Bay? I can do Tuesday, Wednesday, Friday, or Sunday afternoon.", "quick_replies": [{"text": "Yes. Let's choose a time.", "tone": ["supportive"], "effects": [{"operation": "open_calendar_scheduler", "participant": "emma_rowan", "valid_quest": "before_everything_changes"}]}, {"text": "Is this a date?", "tone": ["flirty"], "effects": [{"operation": "add_meter", "character": "emma_rowan", "meter": "attraction", "value": 1}, {"operation": "open_calendar_scheduler", "participant": "emma_rowan", "valid_quest": "before_everything_changes"}]}, {"text": "Not this week.", "tone": ["honest"], "effects": [{"operation": "set_quest_state", "quest": "before_everything_changes", "value": "deferred"}]}]}
   ],
   "outcomes": ["lifelong_friendship", "romantic_partnership", "gradual_distance", "estrangement_after_broken_trust"],
-  "asset_refs": {"portraits": [], "sprites": [], "audio": []},
+  "asset_refs": {"portraits": [{"id": "default", "path": "res://assets/art/characters/_fallback_portrait.svg", "accent": "#b998c9", "anchor": "center"}], "sprites": [], "audio": []},
   "entry_event": "quest_before_everything_changes"
 }

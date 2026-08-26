@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <defs><linearGradient id="tile" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#8fb5b7"/><stop offset="1" stop-color="#3e6d75"/></linearGradient></defs>
+  <rect width="1280" height="720" fill="url(#tile)"/>
+  <g stroke="#bed2d0" stroke-opacity="0.3" stroke-width="3"><path d="M0 180h1280M0 360h1280M0 540h1280"/><path d="M210 0v540M420 0v540M630 0v540M840 0v540M1050 0v540"/></g>
+  <rect x="70" y="103" width="392" height="304" rx="18" fill="#c6dcda" stroke="#e3c993" stroke-width="16"/>
+  <ellipse cx="266" cy="252" rx="155" ry="112" fill="#6a9298" opacity="0.55"/>
+  <rect x="670" y="341" width="506" height="221" rx="72" fill="#e8eeee"/>
+  <path d="M699 392h448c-19 109-74 139-222 139-150 0-207-31-226-139z" fill="#b7d5d7"/>
+  <path d="M955 342v-86c0-37 53-37 53 0v43" fill="none" stroke="#d8c69e" stroke-width="22" stroke-linecap="round"/>
+  <rect x="95" y="482" width="388" height="34" fill="#223d45"/>
+  <rect x="133" y="516" width="26" height="111" fill="#223d45"/>
+  <rect x="419" y="516" width="26" height="111" fill="#223d45"/>
+  <rect y="627" width="1280" height="93" fill="#294c54"/>
+</svg>

@@ -19,10 +19,20 @@ file. Save games store changing runtime state and never rewrite the source packa
 - `conversations` contains complete dialogue graphs owned by the character.
 - `text_messages` contains authored phone-message threads and contextual replies.
 - `outcomes` lists durable character endings or state transitions.
-- `asset_refs` points to portraits, sprites, voices, and character-specific audio.
+- `asset_refs` owns portrait poses, voices, and character-specific audio. Walking
+  sprites are not used by the Godot VN presentation.
 
-An empty section is valid. This lets a character ship before every later chapter is
-written while keeping the package forward-compatible.
+Quest, conversation, message, outcome, sprite, and audio sections may be empty. This
+lets a character ship before every later chapter is written while keeping the
+package forward-compatible. The portrait list is the exception: every major
+character requires a `default` entry so all VN encounters have a safe visual.
+
+Every major character currently declares a `default` portrait object with a
+`res://` path. Add other expressions or poses as uniquely named portrait objects,
+then request one from a conversation node with `"portrait": "smile"`. A node may
+also request a room-art variant with `"background_variant": "night"`. Complete
+paths, sizing, fallbacks, and the no-code import workflow are documented in
+`docs/VN_ART_ASSET_PLAYBOOK.md`.
 
 ## Global economy authoring
 

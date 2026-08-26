@@ -14,6 +14,9 @@ else
   exit 127
 fi
 
+# Import source artwork before runtime probes so a fresh clone resolves SVG/PNG
+# textures exactly as the editor and exported game do.
+PORT_ALDER_DISABLE_AUTOSAVE=1 "$PORT_ALDER_GODOT_BIN" --headless --editor --path . --quit
 PORT_ALDER_DISABLE_AUTOSAVE=1 "$PORT_ALDER_GODOT_BIN" --headless --path . --script res://src/tests/test_runner.gd
 PORT_ALDER_DISABLE_AUTOSAVE=1 "$PORT_ALDER_GODOT_BIN" --headless --path . res://scenes/tests/home_runtime_probe.tscn
 PORT_ALDER_DISABLE_AUTOSAVE=1 "$PORT_ALDER_GODOT_BIN" --headless --path . res://scenes/tests/city_runtime_probe.tscn

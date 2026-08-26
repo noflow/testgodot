@@ -9,7 +9,7 @@ const INDEXED_COLLECTIONS: PackedStringArray = [
 	"locations", "districts", "quests", "conversations", "items",
 	"jobs", "courses", "programs", "activities", "actions", "city_interactions",
 	"phone_apps", "stores", "operations",
-	"date_activities",
+	"date_activities", "vn_backgrounds",
 ]
 
 var _documents: Dictionary = {}
@@ -39,6 +39,7 @@ func validate_foundation() -> PackedStringArray:
 	_validate_character_packages()
 	_validate_vertical_slice_manifest()
 	_validate_sandbox_quest_package()
+	_validate_vn_art_assets()
 	validation_completed.emit(_last_errors.duplicate())
 	content_loaded.emit(_documents.size(), _packages.size())
 	return _last_errors.duplicate()
@@ -291,3 +292,42 @@ func _validate_sandbox_quest_package() -> void:
 	var timed_maximum: int = int(package.get("deadline_rules", {}).get("recommended_timed_maximum_percent", 15))
 	if not all_quests.is_empty() and timed_quest_count * 100 > all_quests.size() * timed_maximum:
 		_last_errors.append("Timed quests exceed the sandbox authoring target of %d%%." % timed_maximum)
+
+
+func _validate_vn_art_assets() -> void:
+	var package: Variant = get_package("port_alder_vn_art")
+	if not package is Dictionary:
+		_last_errors.append("VN artwork package did not load.")
+		return
+	for fallback_type: String in ["background", "portrait"]:
+		var fallback_path: String = str(package.get("fallbacks", {}).get(fallback_type, ""))
+		if fallback_path.is_empty() or not FileAccess.file_exists(fallback_path):
+			_last_errors.append("VN artwork is missing its %s fallback: %s" % [fallback_type, fallback_path])
+	for background_value: Variant in get_all("vn_backgrounds"):
+		if not background_value is Dictionary:
+			continue
+		var background: Dictionary = background_value
+		var path: String = str(background.get("path", ""))
+		if path.is_empty() or not FileAccess.file_exists(path):
+			_last_errors.append("VN background %s has a missing asset: %s" % [background.get("id", "unknown"), path])
+		for variant_name: Variant in background.get("variants", {}):
+			var variant_path: String = str(background["variants"][variant_name])
+			if not FileAccess.file_exists(variant_path):
+				_last_errors.append("VN background %s variant %s is missing: %s" % [background.get("id", "unknown"), variant_name, variant_path])
+	for character_id_value: Variant in _characters:
+		var character_id: String = str(character_id_value)
+		var character: Dictionary = _characters[character_id]
+		var portrait_ids: PackedStringArray = []
+		for portrait_value: Variant in character.get("asset_refs", {}).get("portraits", []):
+			if not portrait_value is Dictionary:
+				_last_errors.append("Character %s portrait reference must be an object." % character_id)
+				continue
+			var portrait: Dictionary = portrait_value
+			var portrait_id: String = str(portrait.get("id", ""))
+			var portrait_path: String = str(portrait.get("path", ""))
+			if portrait_id.is_empty() or portrait_id in portrait_ids:
+				_last_errors.append("Character %s has a missing or duplicate portrait id." % character_id)
+			else:
+				portrait_ids.append(portrait_id)
+			if portrait_path.is_empty() or not FileAccess.file_exists(portrait_path):
+				_last_errors.append("Character %s portrait %s is missing: %s" % [character_id, portrait_id, portrait_path])

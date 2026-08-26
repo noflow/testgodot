@@ -16,6 +16,6 @@
   "quest_hooks": ["weather_wardrobe", "store_inventory_night", "college_return_application", "housing_search"],
   "conversation_topics": ["fashion", "money", "family", "college", "trust", "movies"],
   "text_style": {"tone": "dry_guarded", "emoji_rate": "low", "response_delay": "deliberately_slow_at_first"},
-  "quests": [], "conversations": [], "text_messages": [], "outcomes": [], "asset_refs": {"portraits": [], "sprites": [], "audio": []},
+  "quests": [], "conversations": [], "text_messages": [], "outcomes": [], "asset_refs": {"portraits": [{"id": "default", "path": "res://assets/art/characters/_fallback_portrait.svg", "accent": "#76b5d4", "anchor": "center"}], "sprites": [], "audio": []},
   "entry_event": "ready_for_port_alder_wardrobe_quest"
 }

@@ -26,8 +26,9 @@ func _run_probe() -> void:
 	await get_tree().process_frame
 	await get_tree().process_frame
 	var phone: Node = instance.get_node_or_null("Interface/Smartphone")
+	var background_image: TextureRect = instance.get_node_or_null("BackgroundImage")
 	var room_buttons: Container = instance.get_node_or_null("Interface/MainMargin/MainLayout/NavigationPanel/Margin/Layout/Scroll/RoomButtons")
-	if phone == null or instance.get_node_or_null("Player") != null or instance.get_node_or_null("Backdrop") == null or room_buttons == null:
+	if phone == null or instance.get_node_or_null("Player") != null or background_image == null or background_image.texture == null or room_buttons == null:
 		printerr("CITY PROBE: VN backdrop, area navigation, or smartphone is missing")
 		get_tree().quit(1)
 		return

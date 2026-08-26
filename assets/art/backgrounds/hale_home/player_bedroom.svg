@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <defs><linearGradient id="wall" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#4a6977"/><stop offset="1" stop-color="#253c49"/></linearGradient></defs>
+  <rect width="1280" height="720" fill="url(#wall)"/>
+  <rect x="760" y="58" width="380" height="298" rx="8" fill="#c9e5e5" stroke="#d8c398" stroke-width="18"/>
+  <path d="M778 75h344v190c-89-43-152-27-211 4-44 23-87 17-133-4z" fill="#6398aa"/>
+  <path d="M778 246c87-44 169-41 246-9 31 13 64 19 98 12v90H778z" fill="#315e70"/>
+  <path d="M950 75v264M778 207h344" stroke="#e5d4ae" stroke-width="12"/>
+  <rect x="82" y="409" width="610" height="198" rx="22" fill="#182a34"/>
+  <rect x="110" y="370" width="532" height="138" rx="20" fill="#759399"/>
+  <rect x="133" y="388" width="235" height="82" rx="14" fill="#d0b080"/>
+  <rect x="386" y="388" width="232" height="82" rx="14" fill="#adc5c5"/>
+  <rect x="850" y="444" width="342" height="28" fill="#172a33"/>
+  <rect x="888" y="472" width="22" height="154" fill="#172a33"/>
+  <rect x="1130" y="472" width="22" height="154" fill="#172a33"/>
+  <rect x="936" y="333" width="176" height="112" rx="8" fill="#10232d" stroke="#78bbb8" stroke-width="9"/>
+  <rect y="628" width="1280" height="92" fill="#152630"/>
+</svg>

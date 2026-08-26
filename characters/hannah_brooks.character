@@ -16,6 +16,6 @@
   "quest_hooks": ["hospital_orientation", "health_screening", "nurse_mentor_support", "burnout_intervention"],
   "conversation_topics": ["health", "work", "burnout", "family", "ethics", "city_life"],
   "text_style": {"tone": "warm_wry", "emoji_rate": "low", "response_delay": "unavailable_on_shift"},
-  "quests": [], "conversations": [], "text_messages": [], "outcomes": [], "asset_refs": {"portraits": [], "sprites": [], "audio": []},
+  "quests": [], "conversations": [], "text_messages": [], "outcomes": [], "asset_refs": {"portraits": [{"id": "default", "path": "res://assets/art/characters/_fallback_portrait.svg", "accent": "#82b9c7", "anchor": "center"}], "sprites": [], "audio": []},
   "entry_event": "st_maren_first_visit"
 }

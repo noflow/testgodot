@@ -19,6 +19,10 @@ map, quest progress, character statistics, and complete persistent settings. Ele
 Daniel, and Lily now follow their character-authored work, school, and home-room
 schedules, appear as scheduled character encounters on the VN stage, and expose
 available story or ambient conversations through contextual choices.
+Room backgrounds and character portraits now resolve through a cached data-driven
+artwork service. Location art is assigned by manifest or predictable file path,
+while each character owns portrait poses in its `.character` package. Home, city,
+and dialogue scenes share safe fallback artwork when a production asset is missing.
 The City Map now plans and confirms graph-based walking, bus, taxi, and permitted
 car travel across nine opening destinations. Trips charge fares, advance the live
 clock, respect closures and safety requirements, update quests, and arrive in a
@@ -112,6 +116,7 @@ Runtime state, simulation events, saves, and migrations are described in [docs/R
 Date authoring, agreements, conflicts, and relationship progression are described in [docs/RELATIONSHIP_DATING_PLAYBOOK.md](docs/RELATIONSHIP_DATING_PLAYBOOK.md).
 Sandbox discovery, gates, paths, deadlines, and player-controlled tracking are described in [docs/SANDBOX_QUEST_PLAYBOOK.md](docs/SANDBOX_QUEST_PLAYBOOK.md).
 The implemented settings and accessibility baseline are described in [docs/ACCESSIBILITY_PLAYBOOK.md](docs/ACCESSIBILITY_PLAYBOOK.md).
+The background, portrait, pose, fallback, and no-code art-import workflow is described in [docs/VN_ART_ASSET_PLAYBOOK.md](docs/VN_ART_ASSET_PLAYBOOK.md).
 The first playable build is defined in [docs/VERTICAL_SLICE_SPECIFICATION.md](docs/VERTICAL_SLICE_SPECIFICATION.md).
 The connected automated route and its matching manual checks are documented in [docs/VERTICAL_SLICE_PLAYTEST.md](docs/VERTICAL_SLICE_PLAYTEST.md).
 

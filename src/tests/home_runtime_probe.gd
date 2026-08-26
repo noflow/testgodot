@@ -25,9 +25,10 @@ func _run_probe() -> void:
 	await get_tree().process_frame
 	await get_tree().process_frame
 	var phone: Node = instance.get_node_or_null("Interface/Smartphone")
+	var background_image: TextureRect = instance.get_node_or_null("BackgroundImage")
 	var room_buttons: Container = instance.get_node_or_null("Interface/Screen/MainMargin/MainLayout/NavigationPanel/Margin/Layout/Scroll/RoomButtons")
 	var room_action_buttons: Container = instance.get_node_or_null("Interface/Screen/MainMargin/MainLayout/ActionPanel/Margin/Layout/Scroll/ActionButtons")
-	if instance.get_node_or_null("Player") != null or instance.get_node_or_null("Backdrop") == null or phone == null or room_buttons == null or room_action_buttons == null:
+	if instance.get_node_or_null("Player") != null or background_image == null or background_image.texture == null or phone == null or room_buttons == null or room_action_buttons == null:
 		printerr("PROBE: VN home backdrop, room navigation, choices, or phone were not created")
 		get_tree().quit(1)
 		return
@@ -38,7 +39,8 @@ func _run_probe() -> void:
 	instance.call("_set_current_room", "living_room")
 	await get_tree().process_frame
 	var character_text: RichTextLabel = instance.get_node("Interface/Screen/MainMargin/MainLayout/ScenePanel/Margin/Layout/CharacterText")
-	if "Lily Hale" not in character_text.text or not _container_has_button_text(room_action_buttons, "Talk to Lily"):
+	var portrait_stage: HBoxContainer = instance.get_node("Interface/Screen/MainMargin/MainLayout/ScenePanel/Margin/Layout/PortraitStage")
+	if "Lily Hale" not in character_text.text or portrait_stage.get_child_count() != 1 or not _portrait_card_has_texture(portrait_stage.get_child(0)) or not _container_has_button_text(room_action_buttons, "Talk to Lily"):
 		printerr("PROBE: Tuesday Morning schedule did not expose Lily on the living-room VN stage")
 		get_tree().quit(1)
 		return
@@ -209,4 +211,11 @@ func _container_has_button_text(container: Container, fragment: String) -> bool:
 	for child: Node in container.get_children():
 		if child is Button and fragment in child.text:
 			return true
+	return false
+
+
+func _portrait_card_has_texture(card: Node) -> bool:
+	for child: Node in card.get_children():
+		if child is TextureRect:
+			return child.texture != null
 	return false

@@ -3,6 +3,9 @@ extends Control
 const CHARACTERS_PER_SECOND: float = 55.0
 
 @onready var scene_title: Label = %SceneTitle
+@onready var background_image: TextureRect = %BackgroundImage
+@onready var portrait_image: TextureRect = %PortraitImage
+@onready var portrait_placeholder: Label = %PortraitPlaceholder
 @onready var speaker_label: Label = %SpeakerLabel
 @onready var line_label: Label = %LineLabel
 @onready var choices_box: VBoxContainer = %ChoicesBox
@@ -74,6 +77,7 @@ func _unhandled_input(event: InputEvent) -> void:
 func _render_view(view: Dictionary) -> void:
 	error_label.text = ""
 	scene_title.text = _scene_heading()
+	_render_artwork(view)
 	var stage_direction: String = str(view.get("stage_direction", ""))
 	var line: String = str(view.get("line", ""))
 	if not stage_direction.is_empty():
@@ -103,6 +107,29 @@ func _render_view(view: Dictionary) -> void:
 		choices_box.get_child(0).grab_focus()
 	elif continue_button.visible:
 		continue_button.grab_focus()
+
+
+func _render_artwork(view: Dictionary) -> void:
+	var location_path: String = str(GameState.current_state.get("world_state", {}).get("current_location", "hale_home.player_bedroom"))
+	var location_id: String = location_path.get_slice(".", 0)
+	var room_id: String = location_path.get_slice(".", 1)
+	VNAssetService.apply_background(background_image, location_id, room_id, str(view.get("background_variant", "")))
+	var character_id: String = str(view.get("speaker_id", ""))
+	if character_id.is_empty() or character_id == "player":
+		for participant_value: Variant in view.get("participants", []):
+			var participant: String = str(participant_value)
+			if participant != "player":
+				character_id = participant
+				break
+	var portrait_card: Control = $PortraitArea/PortraitCard
+	if character_id.is_empty() or character_id == "player":
+		portrait_card.visible = false
+		return
+	var character: Variant = ContentRegistry.get_character(character_id)
+	var display_name: String = str(character.get("display_name", character_id)) if character is Dictionary else str(view.get("speaker_name", character_id.replace("_", " ").capitalize()))
+	VNAssetService.apply_portrait(portrait_image, character_id, str(view.get("portrait_id", "default")))
+	portrait_placeholder.text = display_name.to_upper()
+	portrait_card.visible = portrait_image.texture != null
 
 
 func _scene_heading() -> String:

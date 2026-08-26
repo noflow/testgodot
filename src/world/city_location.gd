@@ -6,12 +6,14 @@ const MONTH_NAMES: PackedStringArray = [
 ]
 
 @onready var backdrop: ColorRect = %Backdrop
+@onready var background_image: TextureRect = %BackgroundImage
 @onready var smartphone: Control = %Smartphone
 @onready var location_label: Label = %LocationLabel
 @onready var room_label: Label = %RoomLabel
 @onready var clock_label: Label = %ClockLabel
 @onready var scene_title: Label = %SceneTitle
 @onready var scene_description: Label = %SceneDescription
+@onready var portrait_stage: HBoxContainer = %PortraitStage
 @onready var encounter_text: RichTextLabel = %EncounterText
 @onready var status_label: Label = %StatusLabel
 @onready var room_buttons: VBoxContainer = %RoomButtons
@@ -118,6 +120,7 @@ func _render_location() -> void:
 	scene_title.text = _room_name(_current_room_id).to_upper()
 	scene_description.text = _room_description(_current_room_id)
 	backdrop.color = _location_color(str(_location.get("type", "city_location")))
+	VNAssetService.apply_background(background_image, _location_id, _current_room_id, str(GameState.current_state["clock"].get("block", "")))
 	_rebuild_room_buttons()
 	_rebuild_encounter_stage()
 	_render_room_actions()
@@ -139,15 +142,44 @@ func _rebuild_room_buttons() -> void:
 
 
 func _rebuild_encounter_stage() -> void:
+	_clear_container(portrait_stage)
 	var interactions: Array = CityActionService.interactions_for_room(_location_id, _current_room_id)
 	var encounter_names: PackedStringArray = []
+	var portrait_count: int = 0
 	for interaction: Variant in interactions:
 		if interaction is Dictionary and str(interaction.get("type", "activity")) == "conversation":
 			encounter_names.append(str(interaction.get("name", "Conversation")))
+			var character_id: String = str(interaction.get("character_id", ""))
+			if not character_id.is_empty():
+				var character: Variant = ContentRegistry.get_character(character_id)
+				var display_name: String = str(character.get("display_name", character_id)) if character is Dictionary else character_id.replace("_", " ").capitalize()
+				_add_portrait_card(character_id, display_name)
+				portrait_count += 1
 	if encounter_names.is_empty():
 		encounter_text.text = "[center][font_size=24][color=#b8c7c7]The location is open for sandbox activities. Scheduled characters and future encounters can appear on this stage.[/color][/font_size][/center]"
 	else:
 		encounter_text.text = "[center][font_size=25][color=#e9a86c]STORY ENCOUNTER AVAILABLE[/color][/font_size]\n\n[font_size=24]%s[/font_size][/center]" % "\n".join(encounter_names)
+	portrait_stage.visible = portrait_count > 0
+	encounter_text.visible = portrait_count == 0
+
+
+func _add_portrait_card(character_id: String, display_name: String) -> void:
+	var card: VBoxContainer = VBoxContainer.new()
+	card.custom_minimum_size = Vector2(180, 0)
+	card.add_theme_constant_override("separation", 4)
+	var portrait: TextureRect = TextureRect.new()
+	portrait.custom_minimum_size = Vector2(180, 250)
+	portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	VNAssetService.apply_portrait(portrait, character_id)
+	card.add_child(portrait)
+	var name_label: Label = Label.new()
+	name_label.text = display_name
+	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	name_label.add_theme_font_size_override("font_size", 18)
+	name_label.add_theme_color_override("font_color", Color("eef6f5"))
+	card.add_child(name_label)
+	portrait_stage.add_child(card)
 
 
 func _render_room_actions() -> void:

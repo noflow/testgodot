@@ -16,6 +16,6 @@
   "quest_hooks": ["campus_lab_partner", "scholarship_pressure", "hospital_volunteer_shift", "exam_crisis"],
   "conversation_topics": ["science", "college", "family_expectations", "healthcare", "study_habits", "future_plans"],
   "text_style": {"tone": "precise_polite", "emoji_rate": "very_low", "response_delay": "scheduled"},
-  "quests": [], "conversations": [], "text_messages": [], "outcomes": [], "asset_refs": {"portraits": [], "sprites": [], "audio": []},
+  "quests": [], "conversations": [], "text_messages": [], "outcomes": [], "asset_refs": {"portraits": [{"id": "default", "path": "res://assets/art/characters/_fallback_portrait.svg", "accent": "#98c9ad", "anchor": "center"}], "sprites": [], "audio": []},
   "entry_event": "westshore_science_orientation"
 }

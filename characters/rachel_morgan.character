@@ -77,6 +77,6 @@
     {"id": "rachel_workout_reminder", "trigger": {"hours_before_calendar_event": ["beginner_forge_workout", 2]}, "sender": "rachel_morgan", "text": "Reminder: first workout in two hours. Eat something light, bring water, and wear training shoes.", "quick_replies": [{"text": "I'll be there.", "tone": ["responsible"], "effects": [{"operation": "add_meter", "character": "rachel_morgan", "meter": "respect", "value": 1}]}, {"text": "Need to reschedule.", "tone": ["honest"], "effects": [{"operation": "open_calendar_rescheduler", "event": "beginner_forge_workout"}]}, {"text": "I don't need the reminders.", "tone": ["blunt"]}]}
   ],
   "outcomes": ["trusted_long_term_trainer", "fitness_business_partner", "romantic_partnership", "professional_distance"],
-  "asset_refs": {"portraits": [], "sprites": [], "audio": []},
+  "asset_refs": {"portraits": [{"id": "default", "path": "res://assets/art/characters/_fallback_portrait.svg", "accent": "#d18f6f", "anchor": "center"}], "sprites": [], "audio": []},
   "entry_event": "quest_first_rep"
 }

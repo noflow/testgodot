@@ -514,6 +514,12 @@ ambient chat. Follow-up character quests activate automatically when prerequisit
 and earliest activity blocks are satisfied. Daniel's opening-night `a_quiet_check_in`
 quest and conversation complete the first playable family set.
 
+VN artwork is data-driven. Rooms resolve static backgrounds from a global manifest
+or a stable location/room file convention, while each character owns default and
+optional pose portraits inside its `.character` package. The same cached resolver
+serves home, city, and dialogue screens and substitutes validated fallback artwork
+when a source image is not yet available.
+
 City travel is now playable across the nine connected opening destinations. The
 phone City Map compares graph-based walking, bus, taxi, and permitted car routes in
 both directions, including short walking connectors, bus waits, fares, arrival-time

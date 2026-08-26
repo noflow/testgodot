@@ -126,6 +126,6 @@
     {"id": "opening_followup", "trigger": {"hours_after_quest": ["opening_future_choice", 3]}, "sender": "elena_reyes_hale", "text": "How is the plan going? No pressure to finish everything today—just take the first real step.", "quick_replies": [{"text": "Working on it.", "tone": ["honest"], "effects": [{"operation": "add_meter", "character": "elena_reyes_hale", "meter": "trust", "value": 1}]}, {"text": "Already handled.", "tone": ["confident"]}, {"text": "Please stop checking in.", "tone": ["blunt"], "effects": [{"operation": "add_meter", "character": "elena_reyes_hale", "meter": "comfort", "value": -1}]}]}
   ],
   "outcomes": ["close_adult_family_bond", "respectful_independence", "strained_household_relationship"],
-  "asset_refs": {"portraits": [], "sprites": [], "audio": []},
+  "asset_refs": {"portraits": [{"id": "default", "path": "res://assets/art/characters/_fallback_portrait.svg", "accent": "#d08c77", "anchor": "center"}], "sprites": [], "audio": []},
   "entry_event": "opening_scene"
 }

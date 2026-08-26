@@ -91,6 +91,6 @@
     {"id": "lily_program_followup", "trigger": {"objective_completed": ["one_year_ahead", "review_programs"]}, "sender": "lily_hale", "text": "I read both program pages. One of them actually made me want to go back to campus. That's probably a sign, right?", "quick_replies": [{"text": "A pretty strong one.", "tone": ["supportive"], "effects": [{"operation": "add_meter", "character": "lily_hale", "meter": "trust", "value": 1}]}, {"text": "Talk to the advisor before deciding.", "tone": ["responsible"]}, {"text": "You owe me for the research.", "tone": ["playful"], "effects": [{"operation": "add_meter", "character": "lily_hale", "meter": "comfort", "value": 1}]}]}
   ],
   "outcomes": ["changes_program_with_family_support", "stays_in_program_after_review", "changes_program_without_player_support"],
-  "asset_refs": {"portraits": [], "sprites": [], "audio": []},
+  "asset_refs": {"portraits": [{"id": "default", "path": "res://assets/art/characters/_fallback_portrait.svg", "accent": "#c79ab4", "anchor": "center"}], "sprites": [], "audio": []},
   "entry_event": "opening_day_lunch"
 }
