@@ -39,6 +39,8 @@
     {"id": "economy.transaction", "payload": ["account", "amount", "type", "category", "description"], "checks": ["account_exists", "funds_or_credit_available"], "effects": ["ledger_append", "balance"]},
     {"id": "economy.process_recurring", "payload": ["recurring_id", "due_date"], "effects": ["payment_or_missed_payment", "next_due_date"]},
     {"id": "economy.payday", "payload": ["job_id", "gross", "tips", "withholding", "net"], "effects": ["ledger_append", "account_balance", "income_history"]},
+    {"id": "housing.acquire", "payload": ["listing_id", "contract"], "checks": ["listing_exists", "not_already_acquired", "qualification_verified"], "effects": ["lease_or_ownership_record", "recurring_housing_obligation"]},
+    {"id": "housing.move", "payload": ["listing_id", "residence", "room", "household", "storage_access", "move_record"], "checks": ["property_acquired_or_family_home"], "effects": ["residence", "household", "inventory_access", "world_location", "move_history"]},
     {"id": "inventory.add", "payload": ["container_id", "item_id", "quantity", "item_state"], "checks": ["item_exists", "capacity", "stack_limit"]},
     {"id": "inventory.remove", "payload": ["container_id", "item_id", "quantity"], "checks": ["quantity_owned"]},
     {"id": "inventory.transfer", "payload": ["from_container", "to_container", "item_id", "quantity"], "checks": ["access", "capacity"]},

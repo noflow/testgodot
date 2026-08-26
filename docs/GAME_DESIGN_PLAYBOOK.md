@@ -278,7 +278,27 @@ Rentable and purchasable housing includes:
 - Luxury homes
 - Penthouses
 
-Homes are walkable and contain functional rooms. Household members follow schedules and negotiate bills, chores, guests, privacy, children, and shared finances.
+Homes contain functional VN rooms connected by on-scene directional arrows. Left
+and right arrows move between accessible rooms, while the outside arrow moves to
+the building exit and then opens the city map. A full room list remains available
+as an accessibility-friendly navigation alternative. The player's room, Lily's
+doorway, the parents' doorway, family bathroom, living room, dining room, kitchen,
+utility rooms, garage, and yards all belong to the arrow path. Private family
+bedrooms use knock-first doorway scenes until access is granted. Their doors can be
+locked or unlocked according to the date and activity block, with reliable locks
+during authored sleeping periods and story-controlled overrides for special scenes.
+The shared bathroom likewise becomes occupied and locked during household routines
+and stable time-based busy periods. While it is blocked, hygiene choices are replaced
+by options to knock or wait twenty minutes; story scenes can explicitly force it
+available, occupied, or locked.
+Household members follow
+schedules and negotiate bills, chores, guests, privacy, children, and shared finances.
+
+Implemented foundation: the phone market currently includes Cypress Hall student
+housing, a Greyport studio, and a Harbor View starter condo. Qualification,
+upfront payment, leases, ownership, mortgages, moving, VN room access, storage
+relocation, arrears, credit consequences, and persistent payment history are live.
+See `HOUSING_PLAYBOOK.md` for the implementation contract and extension points.
 
 ## Food and cooking
 
@@ -548,7 +568,7 @@ player controls which discovered quests are pinned in the phone tracker.
 
 ## Next milestones
 
-1. Add housing search, rent/purchase qualification, moving, and household transitions
-2. Complete the full new-game-through-opening-calendar save/load acceptance run
-3. Stabilize and package the vertical slice against all acceptance tests
+1. Complete the full new-game-through-opening-calendar save/load acceptance run
+2. Stabilize and package the vertical slice against all acceptance tests
+3. Expand housing with roommates, partners, contract endings, furnishing, and larger homes
 4. Resume broader content expansion, alternative households, and the September calendar

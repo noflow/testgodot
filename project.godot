@@ -31,6 +31,7 @@ CityActionService="*res://src/autoload/city_action_service.gd"
 EducationService="*res://src/autoload/education_service.gd"
 EmploymentService="*res://src/autoload/employment_service.gd"
 EconomyService="*res://src/autoload/economy_service.gd"
+HousingService="*res://src/autoload/housing_service.gd"
 VNAssetService="*res://src/autoload/vn_asset_service.gd"
 SettingsService="*res://src/autoload/settings_service.gd"
 

@@ -41,6 +41,12 @@ func sync_economy(state: Dictionary) -> Dictionary:
 		working = rent_result["state"]
 		if not str(rent_result.get("data", {}).get("notice", "")).is_empty():
 			notices.append(str(rent_result["data"]["notice"]))
+		var housing_result: Dictionary = _process_housing_contracts(working, date_string)
+		if not housing_result.get("ok", false):
+			return housing_result
+		working = housing_result["state"]
+		for housing_notice: Variant in housing_result.get("data", {}).get("notices", []):
+			notices.append(str(housing_notice))
 		var card_result: Dictionary = _process_credit_card_minimum(working, date_string)
 		if not card_result.get("ok", false):
 			return card_result
@@ -178,12 +184,18 @@ func pay_outstanding_rent(state: Dictionary) -> Dictionary:
 	var balance: float = float(working["player"]["housing"].get("rent_balance", 0.0))
 	if balance <= 0.0:
 		return _failure("There is no outstanding rent balance.")
-	var payment_id: String = "rent-payment-%05d" % (working["player"]["economy"]["ledger"].size() + 1)
-	var result: Dictionary = _spend_from_accounts(working, balance, ["wallet_cash", "checking", "credit_card"], "money.rent", "rent", "rent", "Hale household rent payment", payment_id)
+	var payment_id: String = "housing-balance-payment-%05d" % (working["player"]["economy"]["ledger"].size() + 1)
+	var result: Dictionary = _spend_from_accounts(working, balance, ["wallet_cash", "checking", "savings", "credit_card"], "money.rent", "rent", "housing", "Outstanding housing payment", payment_id)
 	if not result.get("ok", false):
 		return result
 	working = result["state"]
 	working["player"]["housing"]["rent_balance"] = 0.0
+	for contract_value: Variant in working["player"]["housing"].get("contracts", []):
+		if contract_value is Dictionary:
+			contract_value["outstanding_balance"] = 0.0
+	working["player"]["housing"]["payment_history"].append({
+		"id": payment_id, "date": _date_string(working["clock"]), "amount": balance, "status": "arrears_paid",
+	})
 	return _success(working, {"amount": balance})
 
 
@@ -241,6 +253,8 @@ func _process_allowance(state: Dictionary, due_date: String) -> Dictionary:
 
 
 func _process_rent(state: Dictionary, due_date: String) -> Dictionary:
+	if str(state["player"]["housing"].get("tenure", "family_home")) != "family_home":
+		return _success(state)
 	var first_due: String = str(state["player"]["housing"].get("rent_first_due", "Y1-09-01"))
 	if _date_serial_from_string(due_date) < _date_serial_from_string(first_due) or int(_date_parts(due_date)["day"]) != int(_date_parts(first_due)["day"]):
 		return _success(state)
@@ -271,6 +285,76 @@ func _process_rent(state: Dictionary, due_date: String) -> Dictionary:
 	if not result.get("ok", false):
 		return result
 	return _success(result["state"], {"notice": "Rent was missed. $%.2f is outstanding and Elena's trust fell." % amount})
+
+
+func _process_housing_contracts(state: Dictionary, due_date: String) -> Dictionary:
+	var working: Dictionary = state
+	var notices: PackedStringArray = []
+	for contract_index: int in working["player"]["housing"].get("contracts", []).size():
+		var contract_value: Variant = working["player"]["housing"]["contracts"][contract_index]
+		if not contract_value is Dictionary:
+			continue
+		var contract: Dictionary = contract_value
+		if not contract.get("payment_history") is Array:
+			contract["payment_history"] = []
+		if str(contract.get("status", "active")) != "active" or str(contract.get("next_due_date", "")) != due_date:
+			continue
+		var contract_id: String = str(contract.get("id", "housing-contract"))
+		var rule_id: String = "housing_contract:%s" % contract_id
+		if _recurring_record_exists(working, rule_id, due_date):
+			continue
+		var amount: float = _round_money(float(contract.get("monthly_charge", 0.0)))
+		if amount <= 0.0:
+			contract["next_due_date"] = _next_month_date(due_date)
+			continue
+		var payment: Dictionary = _spend_from_accounts(
+			working, amount, ["checking", "savings", "wallet_cash"],
+			"economy.recurring:%s" % rule_id, "housing_payment", "housing",
+			"Monthly housing — %s" % contract.get("property_name", "Residence"),
+			"housing-%s-%s" % [contract_id, due_date.replace("-", "")], due_date
+		)
+		var history_entry: Dictionary = {
+			"id": "payment-%s-%s" % [contract_id, due_date.replace("-", "")],
+			"contract_id": contract_id, "listing_id": contract.get("listing_id", ""),
+			"due_date": due_date, "processed_at": _timestamp(working), "amount": amount,
+		}
+		if payment.get("ok", false):
+			working = payment["state"]
+			contract = working["player"]["housing"]["contracts"][contract_index]
+			history_entry["status"] = "paid"
+			contract["outstanding_balance"] = maxf(float(contract.get("outstanding_balance", 0.0)), 0.0)
+			if str(contract.get("tenure", "rental")) == "purchase":
+				var balance: float = float(contract.get("mortgage_balance", 0.0))
+				var interest: float = _round_money(balance * float(contract.get("mortgage_interest_percent", 0.0)) / 1200.0)
+				var principal: float = minf(balance, maxf(0.0, float(contract.get("mortgage_payment", 0.0)) - interest))
+				contract["mortgage_balance"] = _round_money(balance - principal)
+				history_entry["mortgage_interest"] = interest
+				history_entry["mortgage_principal"] = principal
+				_sync_owned_property_balance(working, contract_id, float(contract["mortgage_balance"]))
+			notices.append("%s housing payment of $%.2f was paid." % [contract.get("property_name", "Monthly"), amount])
+		else:
+			working = working.duplicate(true)
+			contract = working["player"]["housing"]["contracts"][contract_index]
+			history_entry["status"] = "missed"
+			contract["outstanding_balance"] = _round_money(float(contract.get("outstanding_balance", 0.0)) + amount)
+			working["player"]["housing"]["rent_balance"] = _round_money(float(working["player"]["housing"].get("rent_balance", 0.0)) + amount)
+			working["player"]["economy"]["credit_score"] = maxi(300, int(working["player"]["economy"].get("credit_score", 650)) - int(_housing_rules().get("missed_payment_credit_penalty", 8)))
+			notices.append("%s housing payment was missed; $%.2f is outstanding." % [contract.get("property_name", "Monthly"), amount])
+		contract["next_due_date"] = _next_month_date(due_date)
+		contract["payment_history"].append(history_entry.duplicate(true))
+		working["player"]["housing"]["payment_history"].append(history_entry)
+		var recurring: Dictionary = _record_recurring(working, rule_id, due_date, amount, str(history_entry["status"]))
+		if not recurring.get("ok", false):
+			return recurring
+		working = recurring["state"]
+	return _success(working, {"notices": notices})
+
+
+func _sync_owned_property_balance(state: Dictionary, contract_id: String, balance: float) -> void:
+	for property_value: Variant in state["player"]["housing"].get("owned_properties", []):
+		if property_value is Dictionary and str(property_value.get("contract_id", "")) == contract_id:
+			property_value["mortgage_balance"] = balance
+			return
 
 
 func _process_credit_card_minimum(state: Dictionary, due_date: String) -> Dictionary:
@@ -437,6 +521,9 @@ func _ensure_runtime_shape(state: Dictionary) -> void:
 		economy["last_sync_date"] = _date_string(state["clock"])
 	if not state["player"]["housing"].has("rent_balance"):
 		state["player"]["housing"]["rent_balance"] = 0.0
+	for array_key: String in ["contracts", "leases", "owned_properties", "move_history", "payment_history"]:
+		if not state["player"]["housing"].get(array_key) is Array:
+			state["player"]["housing"][array_key] = []
 	if bool(state["player"]["education"].get("enrolled", false)) and str(state["player"]["education"].get("enrollment_date", "")).is_empty():
 		state["player"]["education"]["enrollment_date"] = _date_string(state["clock"])
 
@@ -553,6 +640,11 @@ func _economy_rules() -> Dictionary:
 	return _registry.get_package("port_alder_economy_system")
 
 
+func _housing_rules() -> Dictionary:
+	var package: Variant = _registry.get_package("port_alder_housing_system")
+	return package.get("market_rules", {}) if package is Dictionary else {}
+
+
 func _find_by_id(entries: Array, content_id: String) -> Dictionary:
 	for entry: Variant in entries:
 		if entry is Dictionary and str(entry.get("id", "")) == content_id:
@@ -585,6 +677,16 @@ func _date_serial_from_string(date: String) -> int:
 
 func _date_parts(date: String) -> Dictionary:
 	return _parts_from_date_serial(_date_serial_from_string(date))
+
+
+func _next_month_date(date: String) -> String:
+	var parts: Dictionary = _date_parts(date)
+	var month: int = int(parts["month"]) + 1
+	var year: int = int(parts["year"])
+	if month > 12:
+		month = 1
+		year += 1
+	return "Y%d-%02d-01" % [year, month]
 
 
 func _date_serial_days(year: int, month: int, day: int) -> int:

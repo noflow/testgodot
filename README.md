@@ -11,7 +11,7 @@ slice is complete. Phase 1 includes full content indexing, resolved new-game sta
 the seven-block calendar clock, atomic simulation operations, the VN dialogue and
 quest engines, complete data-driven character creation, Elena's playable
 three-branch opening scene, and the first connected Hale home sandbox. The home
-uses Ren'Py-style room menus, static scene stages, private doors, needs-aware food and hygiene actions,
+uses Ren'Py-style on-scene navigation arrows and room menus, static scene stages, private doors, needs-aware food and hygiene actions,
 sleep, laundry, household storage, and a working wardrobe. The reusable smartphone
 now provides the nine vertical-slice apps plus Education, Jobs, Money, and Shopping, authored character messages and replies,
 NPC-aware calendar scheduling, live relationships, weather/outfit checks, the city
@@ -42,6 +42,13 @@ shifts with four work approaches, earn regular wages, overtime, and tips, receiv
 weekly net pay after authored withholding, and build a performance record. Missed
 shifts carry consequences, while ninety-day reviews provide data-driven raises and
 open each job's authored promotion path when its requirements are met.
+The Housing app now offers a student dorm, an income-qualified affordable studio,
+and a starter condo purchase. Applications check enrollment, credit, documented
+job income, and liquid funds. Signed leases and mortgages are persistent contracts;
+moving changes the active household, exact VN room, and storage access, while
+returning home restores the Hale household and any existing family rent agreement.
+Monthly charges can become arrears, missed payments lower credit, and mortgage
+payments divide into interest and principal.
 The Money app now processes weekly family allowance, monthly rent, credit-card
 minimums, student-loan interest, financial aid, and tuition balances. Every payment
 is ledger-backed, missed rent affects the household relationship, and Monday closes
@@ -59,7 +66,7 @@ and quickload, newest-valid Continue, phone and main-menu load controls, detaile
 slot summaries, playtime tracking, SHA-256 integrity checks, atomic temporary-file
 writes, backup recovery, corrupt-file preservation, content compatibility checks,
 and a forward migration pipeline. Important day, story, quest, relationship,
-education, employment, family, and travel changes trigger coalesced autosaves.
+education, employment, housing, family, and travel changes trigger coalesced autosaves.
 The Relationships app now supports schedule-aware date invitations, calendar plans,
 route planning to the exact meeting room, three date approaches, date expenses,
 missed and cancelled plans, five relationship chapters, and casual, exclusive, or
@@ -95,7 +102,7 @@ correct current appointment, and phone-created hangouts advance their owning que
 - Godot 4.7.2 stable
 - GDScript
 - Ren'Py-style visual-novel presentation built in Godot
-- Static location stages, character portraits, and menu-driven room navigation
+- Static location stages, character portraits, on-scene directional room navigation, and schedule-aware locked bedroom and bathroom doors
 - PC first: Windows, macOS, and Linux
 - Data-driven quests, schedules, and character packages
 - One importable `.character` file per major character
@@ -116,6 +123,7 @@ Opening-week pacing and world scope are summarized in [docs/OPENING_WEEK_PLAYBOO
 The canonical city, room, housing, service, and travel-destination registry is [content/world/all_locations.json](content/world/all_locations.json).
 Education, jobs, interviews, and repeatable actions are summarized in [docs/EDUCATION_EMPLOYMENT_PLAYBOOK.md](docs/EDUCATION_EMPLOYMENT_PLAYBOOK.md).
 Economy, inventory, clothing, food, and stores are summarized in [docs/ECONOMY_INVENTORY_PLAYBOOK.md](docs/ECONOMY_INVENTORY_PLAYBOOK.md).
+Housing listings, qualification, contracts, moving, and recurring costs are described in [docs/HOUSING_PLAYBOOK.md](docs/HOUSING_PLAYBOOK.md).
 Runtime state, simulation events, saves, and migrations are described in [docs/RUNTIME_SAVE_ARCHITECTURE.md](docs/RUNTIME_SAVE_ARCHITECTURE.md).
 Date authoring, agreements, conflicts, and relationship progression are described in [docs/RELATIONSHIP_DATING_PLAYBOOK.md](docs/RELATIONSHIP_DATING_PLAYBOOK.md).
 Sandbox discovery, gates, paths, deadlines, and player-controlled tracking are described in [docs/SANDBOX_QUEST_PLAYBOOK.md](docs/SANDBOX_QUEST_PLAYBOOK.md).

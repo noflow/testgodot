@@ -40,9 +40,9 @@
       "employment": {"employed": false, "active_jobs": [], "applications": [], "interviews": [], "work_history": [], "payroll_history": [], "certifications": [], "availability_profile": {}},
       "economy": {"financial_background": "$player_choice", "accounts": "$from_starting_budget", "credit_score": 650, "debts": [], "recurring_transactions": [], "ledger": [], "receipts": [], "weekly_summaries": [], "last_sync_date": "Y1-08-20"},
       "inventory": {"containers": "$initialize_from_inventory_system", "equipped_outfit": {}, "starting_loadout": "$from_financial_background"},
-      "housing": {"residence": "hale_home", "room": "hale_home.player_bedroom", "household": "hale_household", "monthly_rent": 0, "rent_first_due": "Y1-09-01", "rent_balance": 0, "assigned_chores": [], "guest_permissions": "ask_household"},
+      "housing": {"residence": "hale_home", "room": "hale_home.player_bedroom", "household": "hale_household", "tenure": "family_home", "active_listing_id": null, "monthly_rent": 0, "monthly_housing_cost": 0, "monthly_utilities": 0, "rent_first_due": "Y1-09-01", "rent_balance": 0, "contracts": [], "leases": [], "owned_properties": [], "move_history": [], "payment_history": [], "family_household_snapshot": null, "family_housing_snapshot": null, "assigned_chores": [], "guest_permissions": "ask_household"},
       "transportation": {"license": true, "owned_vehicles": [], "family_car_permission": "$from_financial_background", "bus_pass_expires": null, "known_routes": ["home_to_westshore", "home_to_park"]},
-      "phone": {"unlocked_apps": ["contacts", "messages", "calendar", "jobs", "money", "character_profile", "relationships", "city_map", "weather", "settings"], "known_contacts": ["elena_reyes_hale", "daniel_hale", "lily_hale", "emma_rowan", "marcus_lee"], "message_threads": {}, "unread_threads": [], "notifications": []},
+      "phone": {"unlocked_apps": ["contacts", "messages", "calendar", "jobs", "money", "housing", "character_profile", "relationships", "city_map", "weather", "settings"], "known_contacts": ["elena_reyes_hale", "daniel_hale", "lily_hale", "emma_rowan", "marcus_lee"], "message_threads": {}, "unread_threads": [], "notifications": []},
       "life_path": null,
       "flags": {}
     },

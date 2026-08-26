@@ -231,7 +231,7 @@ func validate_state(state: Dictionary) -> PackedStringArray:
 	if int(metadata.get("playtime_seconds", -1)) < 0:
 		errors.append("playtime cannot be negative")
 	var player: Dictionary = state["player"]
-	for section: String in ["identity", "needs", "attributes", "skills", "education", "employment", "economy", "inventory", "phone"]:
+	for section: String in ["identity", "needs", "attributes", "skills", "education", "employment", "economy", "housing", "inventory", "phone"]:
 		if not player.get(section) is Dictionary:
 			errors.append("player section is missing or invalid: %s" % section)
 	if player.get("needs") is Dictionary:
@@ -244,6 +244,22 @@ func validate_state(state: Dictionary) -> PackedStringArray:
 			var skill_value: Variant = player["skills"][skill_id]
 			if (not skill_value is int and not skill_value is float) or float(skill_value) < 0.0 or float(skill_value) > 250.0:
 				errors.append("player skill is outside 0-250: %s" % skill_id)
+	if player.get("housing") is Dictionary:
+		var housing: Dictionary = player["housing"]
+		for list_name: String in ["contracts", "leases", "owned_properties", "move_history", "payment_history"]:
+			if housing.has(list_name) and not housing.get(list_name) is Array:
+				errors.append("housing list must be an array: %s" % list_name)
+		var contract_ids: Dictionary = {}
+		for contract_value: Variant in housing.get("contracts", []):
+			if not contract_value is Dictionary:
+				errors.append("housing contract must be an object")
+				continue
+			var contract_id: String = str(contract_value.get("id", ""))
+			if contract_id.is_empty() or contract_ids.has(contract_id):
+				errors.append("housing contract id is missing or duplicated: %s" % contract_id)
+			contract_ids[contract_id] = true
+			if float(contract_value.get("outstanding_balance", 0.0)) < 0.0 or float(contract_value.get("mortgage_balance", 0.0)) < 0.0:
+				errors.append("housing contract balance cannot be negative: %s" % contract_id)
 	for character_id: Variant in state["relationships"]:
 		if not state["relationships"][character_id] is Dictionary:
 			errors.append("relationship state is invalid: %s" % character_id)

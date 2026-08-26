@@ -5,7 +5,7 @@ signal phone_closed
 signal travel_completed(destination: String)
 
 const APP_ORDER: PackedStringArray = [
-	"character_profile", "contacts", "messages", "calendar", "education", "jobs", "money", "shopping", "quests",
+	"character_profile", "contacts", "messages", "calendar", "education", "jobs", "money", "housing", "shopping", "quests",
 	"relationships", "city_map", "weather", "settings",
 ]
 const BLOCKS: PackedStringArray = [
@@ -49,6 +49,7 @@ var _interview_job_id: String = ""
 var _interview_question_index: int = 0
 var _interview_answer_quality: int = 0
 var _selected_store_id: String = ""
+var _selected_housing_id: String = ""
 var _pending_manual_overwrite: String = ""
 var _pending_remap_action: String = ""
 
@@ -86,6 +87,7 @@ func open_phone(default_app: String = "character_profile") -> void:
 	if not GameState.has_active_game():
 		return
 	PhoneService.sync_messages()
+	HousingService.sync_housing()
 	RelationshipService.sync_dates()
 	visible = true
 	scheduler_panel.visible = false
@@ -149,6 +151,8 @@ func _show_app(app_id: String) -> void:
 			_render_jobs()
 		"money":
 			_render_money()
+		"housing":
+			_render_housing()
 		"shopping":
 			_render_shopping()
 		"quests":
@@ -871,6 +875,126 @@ func _pay_credit_card(amount: float) -> void:
 	var result: Dictionary = EconomyService.pay_credit_card(amount)
 	phone_status.text = "Credit-card payment of $%.2f completed. Remaining: $%.2f." % [result.get("data", {}).get("amount", 0.0), result.get("data", {}).get("remaining", 0.0)] if result.get("ok", false) else str(result.get("errors", ["Credit-card payment failed."])[0])
 	_render_money()
+
+
+func _render_housing() -> void:
+	_clear_container(app_actions)
+	var sync_result: Dictionary = HousingService.sync_housing()
+	if not sync_result.get("ok", false):
+		phone_status.text = str(sync_result.get("errors", ["Housing records could not be synchronized."])[0])
+		return
+	if not _selected_housing_id.is_empty():
+		_render_housing_detail(_selected_housing_id)
+		return
+	app_title.text = "HOUSING"
+	var housing: Dictionary = GameState.current_state["player"]["housing"]
+	var current_location: Variant = ContentRegistry.get_location(str(housing.get("residence", "hale_home")))
+	var current_name: String = str(current_location.get("name", housing.get("residence", "Home"))) if current_location is Dictionary else str(housing.get("residence", "Home"))
+	var lines: PackedStringArray = [
+		"[font_size=23]CURRENT HOME[/font_size]",
+		"%s • %s" % [current_name, str(housing.get("tenure", "family_home")).replace("_", " ").capitalize()],
+		"Monthly housing cost $%.2f • Outstanding $%.2f" % [housing.get("monthly_housing_cost", 0.0), housing.get("rent_balance", 0.0)],
+		"Active contracts: %d" % housing.get("contracts", []).size(),
+		"",
+		"[font_size=23]PORT ALDER LISTINGS[/font_size]",
+	]
+	for entry_value: Variant in HousingService.list_listings():
+		if not entry_value is Dictionary:
+			continue
+		var entry: Dictionary = entry_value
+		var listing: Dictionary = entry.get("listing", {})
+		var report: Dictionary = entry.get("qualification", {})
+		var status: String = "CURRENT HOME" if bool(entry.get("current_residence", false)) else ("ACQUIRED" if bool(entry.get("acquired", false)) else ("QUALIFIED" if bool(report.get("qualified", false)) else "REQUIREMENTS NOT MET"))
+		lines.append("• %s — %s\n  %s • $%.2f/month • Upfront $%.2f" % [listing.get("name", "Residence"), status, str(listing.get("property_type", "home")).replace("_", " ").capitalize(), report.get("monthly_cost", 0.0), report.get("upfront_cost", 0.0)])
+		_add_action_button("View %s" % listing.get("name", "Residence"), _open_housing_detail.bind(str(listing.get("id", ""))))
+	if str(housing.get("residence", "hale_home")) != "hale_home":
+		_add_action_button("Move Back to the Hale Family Home", _return_to_family_home)
+	app_content.text = "\n".join(lines)
+
+
+func _open_housing_detail(listing_id: String) -> void:
+	_selected_housing_id = listing_id
+	_render_housing()
+
+
+func _render_housing_detail(listing_id: String) -> void:
+	_clear_container(app_actions)
+	var listing_value: Variant = ContentRegistry.get_content("housing_listings", listing_id)
+	if not listing_value is Dictionary:
+		_selected_housing_id = ""
+		_render_housing()
+		return
+	var listing: Dictionary = listing_value
+	var report: Dictionary = HousingService.qualification_report(listing_id)
+	var contract: Dictionary = {}
+	for contract_value: Variant in GameState.current_state["player"]["housing"].get("contracts", []):
+		if contract_value is Dictionary and str(contract_value.get("listing_id", "")) == listing_id and str(contract_value.get("status", "active")) == "active":
+			contract = contract_value
+			break
+	var location: Dictionary = ContentRegistry.get_location(str(listing.get("location_id", "")))
+	app_title.text = "HOUSING • DETAILS"
+	var lines: PackedStringArray = [
+		"[font_size=24]%s[/font_size]" % listing.get("name", "Residence"),
+		str(listing.get("description", "")),
+		"",
+		"%s • %d bedroom • %d bathroom" % [str(listing.get("property_type", "home")).replace("_", " ").capitalize(), listing.get("bedrooms", 0), listing.get("bathrooms", 0)],
+		"Location: %s" % location.get("name", listing.get("location_id", "Unknown")),
+		"Monthly total: $%.2f • Upfront: $%.2f" % [report.get("monthly_cost", 0.0), report.get("upfront_cost", 0.0)],
+		"Your income: $%.2f/month • Credit: %d • Liquid funds: $%.2f" % [report.get("monthly_income", 0.0), report.get("credit_score", 0), report.get("liquid_funds", 0.0)],
+		"",
+	]
+	if contract.is_empty():
+		if bool(report.get("qualified", false)):
+			lines.append("[color=#67c6c3]You meet the current application requirements.[/color]")
+		else:
+			lines.append("[color=#ef7777]REQUIREMENTS[/color]")
+			for failure: Variant in report.get("failures", []):
+				lines.append("• %s" % failure)
+	else:
+		lines.append("[color=#67c6c3]ACTIVE CONTRACT[/color]")
+		lines.append("Next payment: %s • $%.2f" % [contract.get("next_due_date", ""), contract.get("monthly_charge", 0.0)])
+		if str(contract.get("tenure", "")) == "purchase":
+			lines.append("Mortgage balance: $%.2f" % contract.get("mortgage_balance", 0.0))
+	app_content.text = "\n".join(lines)
+	if contract.is_empty() and bool(report.get("qualified", false)):
+		_add_action_button("Acquire — Pay $%.2f" % report.get("upfront_cost", 0.0), _acquire_housing.bind(listing_id))
+	elif not contract.is_empty() and str(GameState.current_state["player"]["housing"].get("active_listing_id", "")) != listing_id:
+		_add_action_button("Move In", _move_to_housing.bind(listing_id))
+	_add_action_button("Plan Route to View Property", _open_route_planner.bind(str(listing.get("location_id", ""))))
+	_add_action_button("Back to Listings", _close_housing_detail)
+
+
+func _close_housing_detail() -> void:
+	_selected_housing_id = ""
+	_render_housing()
+
+
+func _acquire_housing(listing_id: String) -> void:
+	var result: Dictionary = HousingService.acquire(listing_id)
+	phone_status.text = "Housing contract signed; $%.2f paid upfront." % result.get("data", {}).get("upfront_cost", 0.0) if result.get("ok", false) else str(result.get("errors", ["The property could not be acquired."])[0])
+	_render_housing()
+
+
+func _move_to_housing(listing_id: String) -> void:
+	var result: Dictionary = HousingService.move_to(listing_id)
+	if not result.get("ok", false):
+		phone_status.text = str(result.get("errors", ["The move could not be completed."])[0])
+		_render_housing()
+		return
+	var destination: String = str(result.get("data", {}).get("destination", ""))
+	close_phone()
+	travel_completed.emit(destination)
+
+
+func _return_to_family_home() -> void:
+	var result: Dictionary = HousingService.return_to_family_home()
+	if not result.get("ok", false):
+		phone_status.text = str(result.get("errors", ["The move home could not be completed."])[0])
+		_render_housing()
+		return
+	var destination: String = str(result.get("data", {}).get("destination", "hale_home.player_bedroom"))
+	close_phone()
+	travel_completed.emit(destination)
 
 
 func _render_shopping() -> void:

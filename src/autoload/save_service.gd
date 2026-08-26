@@ -257,6 +257,8 @@ func _autosave_reasons(previous: Dictionary, current: Dictionary) -> PackedStrin
 		reasons.append("education_changed")
 	if _employment_signature(previous) != _employment_signature(current):
 		reasons.append("employment_changed")
+	if _housing_signature(previous) != _housing_signature(current):
+		reasons.append("housing_changed")
 	if _family_signature(previous) != _family_signature(current):
 		reasons.append("family_changed")
 	if _agreement_signature(previous) != _agreement_signature(current):
@@ -285,6 +287,17 @@ func _employment_signature(state: Dictionary) -> String:
 		"employed": employment.get("employed", false),
 		"active_jobs": employment.get("active_jobs", []),
 		"application_count": employment.get("applications", []).size(),
+	}, "", true)
+
+
+func _housing_signature(state: Dictionary) -> String:
+	var housing: Dictionary = state.get("player", {}).get("housing", {})
+	return JSON.stringify({
+		"residence": housing.get("residence", "hale_home"),
+		"active_listing_id": housing.get("active_listing_id"),
+		"contracts": housing.get("contracts", []),
+		"rent_balance": housing.get("rent_balance", 0.0),
+		"move_count": housing.get("move_history", []).size(),
 	}, "", true)
 
 

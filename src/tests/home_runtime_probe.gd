@@ -28,7 +28,8 @@ func _run_probe() -> void:
 	var background_image: TextureRect = instance.get_node_or_null("BackgroundImage")
 	var room_buttons: Container = instance.get_node_or_null("Interface/Screen/MainMargin/MainLayout/NavigationPanel/Margin/Layout/Scroll/RoomButtons")
 	var room_action_buttons: Container = instance.get_node_or_null("Interface/Screen/MainMargin/MainLayout/ActionPanel/Margin/Layout/Scroll/ActionButtons")
-	if instance.get_node_or_null("Player") != null or background_image == null or background_image.texture == null or phone == null or room_buttons == null or room_action_buttons == null:
+	var character_text: RichTextLabel = instance.get_node_or_null("Interface/Screen/MainMargin/MainLayout/ScenePanel/Margin/Layout/CharacterText")
+	if instance.get_node_or_null("Player") != null or background_image == null or background_image.texture == null or phone == null or room_buttons == null or room_action_buttons == null or character_text == null:
 		printerr("PROBE: VN home backdrop, room navigation, choices, or phone were not created")
 		get_tree().quit(1)
 		return
@@ -36,9 +37,91 @@ func _run_probe() -> void:
 		printerr("PROBE: VN home did not expose all twelve authored rooms")
 		get_tree().quit(1)
 		return
+	var previous_arrow: Button = instance.get_node_or_null("Interface/Screen/MainMargin/MainLayout/ScenePanel/Margin/Layout/DirectionalNavigation/PrevRoomArrow")
+	var outside_arrow: Button = instance.get_node_or_null("Interface/Screen/MainMargin/MainLayout/ScenePanel/Margin/Layout/DirectionalNavigation/OutsideArrow")
+	var next_arrow: Button = instance.get_node_or_null("Interface/Screen/MainMargin/MainLayout/ScenePanel/Margin/Layout/DirectionalNavigation/NextRoomArrow")
+	if previous_arrow == null or outside_arrow == null or next_arrow == null or not previous_arrow.disabled or "Upstairs Hall" not in next_arrow.text:
+		printerr("PROBE: on-scene Ren'Py directional arrows were not initialized for the bedroom")
+		get_tree().quit(1)
+		return
+	for expected_room: String in ["upstairs_hall", "lily_bedroom", "family_bathroom", "parents_bedroom", "living_room", "dining_room", "kitchen"]:
+		next_arrow.pressed.emit()
+		await get_tree().process_frame
+		if str(GameState.current_state["world_state"]["current_location"]) != "hale_home.%s" % expected_room:
+			printerr("PROBE: Hale arrows could not traverse the requested room: %s" % expected_room)
+			get_tree().quit(1)
+			return
+		if expected_room in ["lily_bedroom", "parents_bedroom"] and not _container_has_button_text(room_action_buttons, "Knock"):
+			printerr("PROBE: private bedroom doorway did not preserve its knock-first boundary: %s" % expected_room)
+			get_tree().quit(1)
+			return
+	var daytime_state: Dictionary = GameState.current_state.duplicate(true)
+	var night_state: Dictionary = daytime_state.duplicate(true)
+	night_state["clock"]["block"] = "night"
+	night_state["world_state"]["current_location"] = "hale_home.lily_bedroom"
+	GameState.replace_state(night_state)
+	instance.call("_sync_household_schedule", true)
+	instance.call("_set_current_room", "lily_bedroom")
+	await get_tree().process_frame
+	if not _container_has_button_text(room_action_buttons, "Locked") or "locked" not in str(character_text.text).to_lower():
+		printerr("PROBE: Lily's door did not become locked during its authored night block")
+		get_tree().quit(1)
+		return
+	instance.call("_set_current_room", "parents_bedroom")
+	await get_tree().process_frame
+	if not _container_has_button_text(room_action_buttons, "Locked"):
+		printerr("PROBE: parents' door did not become locked during its authored night block")
+		get_tree().quit(1)
+		return
+	var override_state: Dictionary = GameState.current_state.duplicate(true)
+	override_state["world_state"]["world_flags"]["hale_door_lock_overrides"] = {"parents_bedroom": false}
+	GameState.replace_state(override_state)
+	instance.call("_sync_household_schedule", true)
+	instance.call("_set_current_room", "parents_bedroom")
+	await get_tree().process_frame
+	if _container_has_button_text(room_action_buttons, "Locked") or not _container_has_button_text(room_action_buttons, "Knock Before"):
+		printerr("PROBE: story override could not unlock the parents' door for an authored scene")
+		get_tree().quit(1)
+		return
+	var occupied_bathroom_state: Dictionary = GameState.current_state.duplicate(true)
+	occupied_bathroom_state["world_state"]["world_flags"]["hale_bathroom_door_override"] = {"status": "occupied_locked", "occupant_id": "lily_hale"}
+	GameState.replace_state(occupied_bathroom_state)
+	instance.call("_sync_household_schedule", true)
+	instance.call("_set_current_room", "family_bathroom")
+	await get_tree().process_frame
+	if not _container_has_button_text(room_action_buttons, "Occupied Bathroom Door") or not _container_has_button_text(room_action_buttons, "Wait 20 Minutes") or _container_has_button_text(room_action_buttons, "Take a Shower") or "locked" not in str(character_text.text).to_lower():
+		printerr("PROBE: occupied family bathroom did not lock its door and block hygiene actions")
+		get_tree().quit(1)
+		return
+	var available_bathroom_state: Dictionary = GameState.current_state.duplicate(true)
+	available_bathroom_state["world_state"]["world_flags"]["hale_bathroom_door_override"] = {"status": "available"}
+	GameState.replace_state(available_bathroom_state)
+	instance.call("_sync_household_schedule", true)
+	instance.call("_set_current_room", "family_bathroom")
+	await get_tree().process_frame
+	if not _container_has_button_text(room_action_buttons, "Take a Shower") or _container_has_button_text(room_action_buttons, "Bathroom Door"):
+		printerr("PROBE: bathroom story override could not make hygiene actions available")
+		get_tree().quit(1)
+		return
+	GameState.replace_state(daytime_state)
+	instance.call("_sync_household_schedule", true)
+	instance.call("_set_current_room", "kitchen")
+	outside_arrow.pressed.emit()
+	await get_tree().process_frame
+	if str(GameState.current_state["world_state"]["current_location"]) != "hale_home.front_yard" or "City Map" not in outside_arrow.text:
+		printerr("PROBE: outside arrow did not move to the Hale front yard")
+		get_tree().quit(1)
+		return
+	outside_arrow.pressed.emit()
+	await get_tree().process_frame
+	if not phone.visible or str(phone.get_node("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/ContentPanel/ContentMargin/ContentLayout/AppTitle").text) != "CITY MAP":
+		printerr("PROBE: front-yard outside arrow did not open the city map")
+		get_tree().quit(1)
+		return
+	phone.close_phone()
+	instance.call("_set_current_room", "player_bedroom")
 	instance.call("_set_current_room", "living_room")
 	await get_tree().process_frame
-	var character_text: RichTextLabel = instance.get_node("Interface/Screen/MainMargin/MainLayout/ScenePanel/Margin/Layout/CharacterText")
 	var portrait_stage: HBoxContainer = instance.get_node("Interface/Screen/MainMargin/MainLayout/ScenePanel/Margin/Layout/PortraitStage")
 	if "Lily Hale" not in character_text.text or portrait_stage.get_child_count() != 1 or not _portrait_card_has_texture(portrait_stage.get_child(0)) or not _container_has_button_text(room_action_buttons, "Talk to Lily"):
 		printerr("PROBE: Tuesday Morning schedule did not expose Lily on the living-room VN stage")
@@ -53,8 +136,8 @@ func _run_probe() -> void:
 	instance.call("_render_room")
 	phone.open_phone()
 	await get_tree().process_frame
-	if not phone.visible or phone.get_node("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/Navigation/NavMargin/NavScroll/AppButtons").get_child_count() != 13:
-		printerr("PROBE: phone did not open with all thirteen apps")
+	if not phone.visible or phone.get_node("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/Navigation/NavMargin/NavScroll/AppButtons").get_child_count() != 14:
+		printerr("PROBE: phone did not open with all fourteen apps")
 		get_tree().quit(1)
 		return
 	phone.call("_show_app", "jobs")
@@ -67,6 +150,12 @@ func _run_probe() -> void:
 	await get_tree().process_frame
 	if str(phone.get_node("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/ContentPanel/ContentMargin/ContentLayout/AppTitle").text) != "MONEY":
 		printerr("PROBE: Money app did not render the live budget")
+		get_tree().quit(1)
+		return
+	phone.call("_show_app", "housing")
+	await get_tree().process_frame
+	if str(phone.get_node("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/ContentPanel/ContentMargin/ContentLayout/AppTitle").text) != "HOUSING" or "PORT ALDER LISTINGS" not in str(phone.get_node("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/ContentPanel/ContentMargin/ContentLayout/AppContent").text):
+		printerr("PROBE: Housing app did not render the property market")
 		get_tree().quit(1)
 		return
 	phone.call("_show_app", "education")

@@ -77,6 +77,25 @@ const ROOM_ORDER: PackedStringArray = [
 	"living_room", "dining_room", "kitchen", "parents_bedroom",
 	"backyard", "laundry_room", "garage", "front_yard",
 ]
+const NAVIGABLE_ROOM_ORDER: PackedStringArray = [
+	"player_bedroom", "upstairs_hall", "lily_bedroom", "family_bathroom", "parents_bedroom", "living_room",
+	"dining_room", "kitchen", "backyard", "laundry_room", "garage", "front_yard",
+]
+const PRIVATE_DOOR_RULES: Dictionary = {
+	"lily_bedroom": {"always_locked_blocks": ["early_morning", "night"], "chance_percent": 45, "salt": 17},
+	"parents_bedroom": {"always_locked_blocks": ["night"], "chance_percent": 35, "salt": 43},
+}
+const BATHROOM_BUSY_CHANCES: Dictionary = {
+	"early_morning": 75,
+	"evening": 30,
+	"late_evening": 60,
+	"night": 20,
+}
+const BATHROOM_OCCUPANT_IDS: PackedStringArray = ["elena_reyes_hale", "daniel_hale", "lily_hale"]
+const BATHROOM_SLOT_MINUTES: int = 20
+const ACTIVITY_BLOCKS: PackedStringArray = [
+	"early_morning", "morning", "lunch", "afternoon", "evening", "late_evening", "night",
+]
 
 const INTERACTIONS: Array = [
 	{"room": "player_bedroom", "label": "Bed", "actions": ["nap", "sleep"]},
@@ -86,6 +105,8 @@ const INTERACTIONS: Array = [
 	{"room": "family_bathroom", "label": "Bathroom Sink", "actions": ["brush_teeth", "groom"]},
 	{"room": "upstairs_hall", "label": "Knock on Lily's Door", "special": "lily_door"},
 	{"room": "upstairs_hall", "label": "Knock on Parents' Door", "special": "parents_door"},
+	{"room": "lily_bedroom", "label": "Knock on Lily's Door", "special": "lily_door"},
+	{"room": "parents_bedroom", "label": "Knock on Parents' Door", "special": "parents_door"},
 	{"room": "living_room", "label": "Relax on the Sofa", "special": "sofa"},
 	{"room": "dining_room", "label": "Have a Snack", "actions": ["eat_snack"]},
 	{"room": "kitchen", "label": "Kitchen Counter", "actions": ["drink_water", "eat_snack", "cook_basic_meal"]},
@@ -108,6 +129,9 @@ const INTERACTIONS: Array = [
 @onready var room_buttons: VBoxContainer = %RoomButtons
 @onready var action_title: Label = %ActionTitle
 @onready var action_buttons: VBoxContainer = %ActionButtons
+@onready var previous_room_arrow: Button = %PrevRoomArrow
+@onready var outside_arrow: Button = %OutsideArrow
+@onready var next_room_arrow: Button = %NextRoomArrow
 @onready var wardrobe_panel: PanelContainer = %WardrobePanel
 @onready var wardrobe_list: VBoxContainer = %WardrobeList
 @onready var outfit_text: RichTextLabel = %OutfitText
@@ -166,20 +190,26 @@ func _unhandled_input(event: InputEvent) -> void:
 func _restore_room() -> void:
 	var location: String = str(GameState.current_state["world_state"].get("current_location", "hale_home.player_bedroom"))
 	var room_id: String = location.trim_prefix("hale_home.") if location.begins_with("hale_home.") else "player_bedroom"
-	_current_room = room_id if ROOMS.has(room_id) and not bool(ROOMS[room_id].get("private", false)) else "player_bedroom"
+	_current_room = room_id if ROOMS.has(room_id) else "player_bedroom"
 	_update_world_location(false)
 
 
 func _select_room(room_id: String) -> void:
 	if not ROOMS.has(room_id):
 		return
-	if bool(ROOMS[room_id].get("private", false)):
-		status_label.text = "%s is private. Knock and wait for permission." % ROOMS[room_id]["name"]
-		return
 	var changed: bool = room_id != _current_room
 	_current_room = room_id
 	_update_world_location(changed)
 	_render_room()
+	if bool(ROOMS[room_id].get("private", false)):
+		var doorway_name: String = "Lily's doorway" if room_id == "lily_bedroom" else "your parents' doorway"
+		status_label.text = "You stop at %s. Knock before entering the private room." % doorway_name
+	elif room_id == "family_bathroom":
+		var bathroom_state: Dictionary = _bathroom_door_state()
+		if str(bathroom_state.get("status", "available")) == "occupied_locked":
+			status_label.text = "The bathroom door is locked because someone is using it. You can knock or wait."
+		elif str(bathroom_state.get("status", "available")) == "locked":
+			status_label.text = "The bathroom door is locked. You can knock or wait."
 
 
 func _set_current_room(room_id: String) -> void:
@@ -206,6 +236,7 @@ func _render_room() -> void:
 	scene_title.text = str(room["name"]).to_upper()
 	scene_description.text = str(room["description"])
 	_rebuild_room_buttons()
+	_refresh_directional_navigation()
 	_rebuild_character_stage()
 	_rebuild_room_actions()
 
@@ -216,17 +247,74 @@ func _rebuild_room_buttons() -> void:
 		var room: Dictionary = ROOMS[room_id]
 		var button: Button = Button.new()
 		var current_prefix: String = "● " if room_id == _current_room else ""
-		var private_suffix: String = "  • Private" if bool(room.get("private", false)) else ""
+		var private_suffix: String = ""
+		if bool(room.get("private", false)):
+			private_suffix = "  • Locked" if _private_door_locked(room_id) else "  • Knock First"
+		elif room_id == "family_bathroom":
+			var bathroom_status: String = str(_bathroom_door_state().get("status", "available"))
+			if bathroom_status == "occupied_locked":
+				private_suffix = "  • Occupied"
+			elif bathroom_status == "locked":
+				private_suffix = "  • Locked"
 		button.text = "%s%s%s" % [current_prefix, room["name"], private_suffix]
 		button.custom_minimum_size = Vector2(0, 43)
 		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		button.disabled = bool(room.get("private", false))
 		button.pressed.connect(_select_room.bind(room_id))
 		room_buttons.add_child(button)
 
 
+func _refresh_directional_navigation() -> void:
+	var current_index: int = NAVIGABLE_ROOM_ORDER.find(_current_room)
+	var previous_id: String = NAVIGABLE_ROOM_ORDER[current_index - 1] if current_index > 0 else ""
+	var next_id: String = NAVIGABLE_ROOM_ORDER[current_index + 1] if current_index >= 0 and current_index + 1 < NAVIGABLE_ROOM_ORDER.size() else ""
+	previous_room_arrow.disabled = previous_id.is_empty()
+	previous_room_arrow.text = "◀ %s" % (ROOMS[previous_id]["name"] if not previous_id.is_empty() else "No Previous Room")
+	next_room_arrow.disabled = next_id.is_empty()
+	next_room_arrow.text = "%s ▶" % (ROOMS[next_id]["name"] if not next_id.is_empty() else "No Next Room")
+	outside_arrow.text = "▲ Leave Home / City Map" if _current_room == "front_yard" else "▲ Outside • Front Yard"
+	SettingsService.apply_accessibility(previous_room_arrow)
+	SettingsService.apply_accessibility(outside_arrow)
+	SettingsService.apply_accessibility(next_room_arrow)
+
+
+func _on_previous_room_pressed() -> void:
+	var current_index: int = NAVIGABLE_ROOM_ORDER.find(_current_room)
+	if current_index > 0:
+		_select_room(NAVIGABLE_ROOM_ORDER[current_index - 1])
+
+
+func _on_next_room_pressed() -> void:
+	var current_index: int = NAVIGABLE_ROOM_ORDER.find(_current_room)
+	if current_index >= 0 and current_index + 1 < NAVIGABLE_ROOM_ORDER.size():
+		_select_room(NAVIGABLE_ROOM_ORDER[current_index + 1])
+
+
+func _on_outside_pressed() -> void:
+	if _current_room != "front_yard":
+		_select_room("front_yard")
+		status_label.text = "You head outside to the front yard. Use the up arrow again to open Port Alder."
+		return
+	TravelService.start_transportation_tutorial("home.directional_exit")
+	smartphone.open_phone("city_map")
+	status_label.text = "Choose an unlocked Port Alder destination and confirm a route."
+
+
 func _rebuild_character_stage() -> void:
 	_clear_container(portrait_stage)
+	if _current_room == "family_bathroom":
+		var bathroom_status: String = str(_bathroom_door_state().get("status", "available"))
+		if bathroom_status != "available":
+			var door_message: String = "Someone is using the bathroom, and the door is locked for privacy." if bathroom_status == "occupied_locked" else "The bathroom door is locked. No one answers from inside."
+			character_text.text = "[center][font_size=25][color=#b8c7c7]%s You remain in the hallway outside.[/color][/font_size][/center]" % door_message
+			portrait_stage.visible = false
+			character_text.visible = true
+			return
+	if bool(ROOMS[_current_room].get("private", false)):
+		var door_state: String = "locked" if _private_door_locked(_current_room) else "closed"
+		character_text.text = "[center][font_size=25][color=#b8c7c7]The private bedroom door is %s. You are at the doorway and should knock before entering.[/color][/font_size][/center]" % door_state
+		portrait_stage.visible = false
+		character_text.visible = true
+		return
 	var lines: PackedStringArray = []
 	for character_id_value: Variant in _npc_resolutions:
 		var character_id: String = str(character_id_value)
@@ -265,6 +353,20 @@ func _add_portrait_card(container: HBoxContainer, character_id: String, display_
 func _rebuild_room_actions() -> void:
 	_clear_container(action_buttons)
 	action_title.text = "CHOICES • %s" % ROOMS[_current_room]["name"]
+	if _current_room == "family_bathroom":
+		var bathroom_status: String = str(_bathroom_door_state().get("status", "available"))
+		if bathroom_status != "available":
+			var knock_label: String = "Knock on the Occupied Bathroom Door" if bathroom_status == "occupied_locked" else "Knock on the Locked Bathroom Door"
+			_add_choice_button(knock_label, _handle_special.bind("bathroom_door"))
+			_add_choice_button("Wait 20 Minutes", _wait_for_bathroom)
+			SettingsService.apply_accessibility(action_buttons)
+			return
+	if bool(ROOMS[_current_room].get("private", false)):
+		var special: String = "lily_door" if _current_room == "lily_bedroom" else "parents_door"
+		var label: String = "Knock on the Locked Door" if _private_door_locked(_current_room) else "Knock Before Entering"
+		_add_choice_button(label, _handle_special.bind(special))
+		SettingsService.apply_accessibility(action_buttons)
+		return
 	for interaction: Dictionary in INTERACTIONS:
 		if str(interaction.get("room", "")) != _current_room:
 			continue
@@ -321,8 +423,18 @@ func _handle_special(special: String) -> void:
 	match special:
 		"wardrobe": _open_wardrobe()
 		"phone": smartphone.open_phone()
-		"lily_door": status_label.text = "You knock. Lily asks for privacy right now, so the door remains closed."
-		"parents_door": status_label.text = "You knock. Your parents' room remains private until they invite you in."
+		"lily_door":
+			status_label.text = "Lily's door is locked. You knock, but no one answers." if _private_door_locked("lily_bedroom") else "You knock. Lily asks for privacy right now, so the unlocked door remains closed."
+		"parents_door":
+			status_label.text = "Your parents' door is locked. You knock, but no one answers." if _private_door_locked("parents_bedroom") else "You knock. The door is unlocked, but their room remains private until they invite you in."
+		"bathroom_door":
+			var bathroom_status: String = str(_bathroom_door_state().get("status", "available"))
+			if bathroom_status == "occupied_locked":
+				status_label.text = "You knock. Someone answers that they will be out when they are finished."
+			elif bathroom_status == "locked":
+				status_label.text = "You knock on the locked bathroom door, but no one answers."
+			else:
+				status_label.text = "The bathroom is available now."
 		"sofa": status_label.text = "You settle near the sofa. This is a natural place for family conversations and quiet downtime."
 		"family_car":
 			var permission: String = str(GameState.current_state["player"]["transportation"]["family_car_permission"])
@@ -340,6 +452,19 @@ func _handle_special(special: String) -> void:
 			TravelService.start_transportation_tutorial("home.front_gate")
 			smartphone.open_phone("city_map")
 			status_label.text = "Choose an unlocked Port Alder destination and confirm a route."
+
+
+func _wait_for_bathroom() -> void:
+	var result: Dictionary = TimeService.advance_minutes(BATHROOM_SLOT_MINUTES, "home.wait_for_bathroom")
+	_sync_household_schedule(true)
+	_render_room()
+	if not result.get("ok", false):
+		status_label.text = str(result.get("errors", ["You could not wait right now."])[0])
+	elif str(_bathroom_door_state().get("status", "available")) == "available":
+		status_label.text = "After waiting twenty minutes, the bathroom is available."
+	else:
+		status_label.text = "Twenty minutes pass, but the bathroom door is still locked."
+	_refresh_hud()
 
 
 func _open_npc_panel(character_id: String) -> void:
@@ -395,7 +520,8 @@ func _sync_household_schedule(force: bool = false) -> void:
 	if _schedule_engine == null or not GameState.has_active_game():
 		return
 	var clock: Dictionary = GameState.current_state["clock"]
-	var signature: String = "%s:%s:%s:%s" % [clock.get("year", 1), clock.get("month", 1), clock.get("day", 1), clock.get("block", "")]
+	var bathroom_slot: int = floori(float(clock.get("minute_within_block", 0)) / float(BATHROOM_SLOT_MINUTES))
+	var signature: String = "%s:%s:%s:%s:%s" % [clock.get("year", 1), clock.get("month", 1), clock.get("day", 1), clock.get("block", ""), bathroom_slot]
 	if not force and signature == _schedule_signature:
 		return
 	_schedule_signature = signature
@@ -405,8 +531,79 @@ func _sync_household_schedule(force: bool = false) -> void:
 	if sync_result.get("changed", false):
 		GameState.replace_state(sync_result["state"])
 	if is_node_ready():
+		_rebuild_room_buttons()
+		_refresh_directional_navigation()
 		_rebuild_character_stage()
 		_rebuild_room_actions()
+
+
+func _private_door_locked(room_id: String) -> bool:
+	if not PRIVATE_DOOR_RULES.has(room_id) or not GameState.has_active_game():
+		return false
+	var overrides: Variant = GameState.current_state["world_state"].get("world_flags", {}).get("hale_door_lock_overrides", {})
+	if overrides is Dictionary and overrides.get(room_id) is bool:
+		return bool(overrides[room_id])
+	var rule: Dictionary = PRIVATE_DOOR_RULES[room_id]
+	var clock: Dictionary = GameState.current_state["clock"]
+	var block: String = str(clock.get("block", "morning"))
+	if block in rule.get("always_locked_blocks", []):
+		return true
+	var stable_roll: int = (
+		int(GameState.current_state["world_state"].get("random_seed", 0))
+		+ int(clock.get("year", 1)) * 7919
+		+ int(clock.get("month", 1)) * 811
+		+ int(clock.get("day", 1)) * 97
+		+ maxi(ACTIVITY_BLOCKS.find(block), 0) * 29
+		+ int(rule.get("salt", 0))
+	)
+	return posmod(stable_roll, 100) < int(rule.get("chance_percent", 0))
+
+
+func _bathroom_door_state() -> Dictionary:
+	var available: Dictionary = {"status": "available", "occupant_id": "", "source": "none"}
+	if not GameState.has_active_game():
+		return available
+	var world_flags: Dictionary = GameState.current_state["world_state"].get("world_flags", {})
+	var override: Variant = world_flags.get("hale_bathroom_door_override", null)
+	if override is bool:
+		return {"status": "locked" if override else "available", "occupant_id": "", "source": "story_override"}
+	if override is String and str(override) in ["available", "locked", "occupied_locked"]:
+		return {"status": str(override), "occupant_id": "", "source": "story_override"}
+	if override is Dictionary:
+		var override_status: String = str(override.get("status", ""))
+		if override_status in ["available", "locked", "occupied_locked"]:
+			return {"status": override_status, "occupant_id": str(override.get("occupant_id", "")), "source": "story_override"}
+
+	var at_home_ids: PackedStringArray = []
+	for character_id: String in BATHROOM_OCCUPANT_IDS:
+		var resolution: Dictionary = _npc_resolutions.get(character_id, {})
+		if not bool(resolution.get("at_home", false)):
+			continue
+		at_home_ids.append(character_id)
+		if str(resolution.get("room", "")) == "family_bathroom":
+			return {"status": "occupied_locked", "occupant_id": character_id, "source": "household_schedule"}
+	if at_home_ids.is_empty():
+		return available
+
+	var clock: Dictionary = GameState.current_state["clock"]
+	var block: String = str(clock.get("block", "morning"))
+	var busy_chance: int = int(BATHROOM_BUSY_CHANCES.get(block, 0))
+	if busy_chance <= 0:
+		return available
+	var minute_slot: int = floori(float(clock.get("minute_within_block", 0)) / float(BATHROOM_SLOT_MINUTES))
+	var stable_roll: int = (
+		int(GameState.current_state["world_state"].get("random_seed", 0))
+		+ int(clock.get("year", 1)) * 6151
+		+ int(clock.get("month", 1)) * 647
+		+ int(clock.get("day", 1)) * 83
+		+ maxi(ACTIVITY_BLOCKS.find(block), 0) * 31
+		+ minute_slot * 101
+		+ 71
+	)
+	if posmod(stable_roll, 100) >= busy_chance:
+		return available
+	var occupant_index: int = posmod(floori(float(stable_roll) / 100.0), at_home_ids.size())
+	return {"status": "occupied_locked", "occupant_id": at_home_ids[occupant_index], "source": "time_variation"}
 
 
 func _first_name(character_id: String) -> String:

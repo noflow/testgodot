@@ -14,6 +14,7 @@ const CityActionEngineScript: GDScript = preload("res://src/world/city_action_en
 const EducationEngineScript: GDScript = preload("res://src/education/education_engine.gd")
 const EmploymentEngineScript: GDScript = preload("res://src/employment/employment_engine.gd")
 const EconomyEngineScript: GDScript = preload("res://src/economy/economy_engine.gd")
+const HousingEngineScript: GDScript = preload("res://src/housing/housing_engine.gd")
 const SaveEngineScript: GDScript = preload("res://src/save/save_engine.gd")
 const RelationshipEngineScript: GDScript = preload("res://src/relationships/relationship_engine.gd")
 
@@ -48,6 +49,7 @@ func _run_all() -> void:
 	_test_playable_education_semester()
 	_test_employment_applications_interviews_and_offers()
 	_test_recurring_economy_and_shopping()
+	_test_housing_qualification_contracts_and_moving()
 	_test_save_round_trip_rotation_recovery_and_migration()
 	_test_phone_messages_and_calendar()
 	_test_relationship_dating_agreements_and_conflicts()
@@ -86,6 +88,7 @@ func _test_project_configuration() -> void:
 	_expect(ProjectSettings.has_setting("autoload/EducationService"), "Education service is configured as an autoload.")
 	_expect(ProjectSettings.has_setting("autoload/EmploymentService"), "Employment service is configured as an autoload.")
 	_expect(ProjectSettings.has_setting("autoload/EconomyService"), "Economy service is configured as an autoload.")
+	_expect(ProjectSettings.has_setting("autoload/HousingService"), "Housing service is configured as an autoload.")
 	_expect(ProjectSettings.has_setting("autoload/VNAssetService"), "Data-driven VN artwork service is configured as an autoload.")
 	_expect(ProjectSettings.has_setting("autoload/SaveService"), "Save service is configured as an autoload.")
 
@@ -807,6 +810,67 @@ func _test_recurring_economy_and_shopping() -> void:
 	_expect(str(state["player"]["economy"]["ledger"][-1].get("category", "")) == "tuition", "Tuition payments use their dedicated immutable ledger category.")
 
 
+func _test_housing_qualification_contracts_and_moving() -> void:
+	var factory: RefCounted = NewGameStateFactoryScript.new(_registry)
+	var simulation: RefCounted = SimulationEngineScript.new(_registry)
+	var housing: RefCounted = HousingEngineScript.new(_registry, simulation)
+	var economy: RefCounted = EconomyEngineScript.new(_registry, simulation)
+	var state: Dictionary = factory.create_new_game({}, {"random_seed": 1401})
+	state["player"]["phone"]["unlocked_apps"].erase("housing")
+	var sync_result: Dictionary = housing.sync_housing(state)
+	state = sync_result["state"]
+	_expect("housing" in state["player"]["phone"]["unlocked_apps"] and state["player"]["housing"].get("contracts", []) is Array, "Opening the phone upgrades an older runtime state with Housing access and contract storage.")
+	var report: Dictionary = housing.qualification_report(state, "cypress_student_room")
+	_expect(not bool(report.get("qualified", true)) and "enrollment" in str(report.get("failures", [])).to_lower(), "The student dorm clearly rejects a player who is not enrolled.")
+	state["player"]["education"]["enrolled"] = true
+	state["player"]["education"]["enrollment_date"] = "Y1-08-20"
+	state["player"]["housing"]["monthly_rent"] = 250.0
+	state["player"]["housing"]["monthly_housing_cost"] = 250.0
+	report = housing.qualification_report(state, "cypress_student_room")
+	_expect(bool(report.get("qualified", false)) and float(report.get("upfront_cost", 0.0)) == 1450.0, "Enrollment, credit, and liquid funds qualify the player for the authored dorm upfront cost.")
+	var result: Dictionary = housing.acquire(state, "cypress_student_room")
+	_expect(result.get("ok", false), "A qualified player can sign the Cypress Hall lease.")
+	state = result["state"]
+	_expect(state["player"]["housing"]["contracts"].size() == 1 and state["player"]["housing"]["leases"].size() == 1, "Dorm acquisition creates one durable contract and lease.")
+	_expect(is_equal_approx(float(state["player"]["economy"]["accounts"]["wallet_cash"]) + float(state["player"]["economy"]["accounts"]["checking"]) + float(state["player"]["economy"]["accounts"]["savings"]), 50.0), "Housing acquisition splits the upfront cost across the authored cash-account priority.")
+	result = housing.move_to(state, "cypress_student_room")
+	_expect(result.get("ok", false), "The player can move into an acquired dorm room.")
+	state = result["state"]
+	_expect(state["player"]["housing"]["residence"] == "cypress_hall_dorm" and state["world_state"]["current_location"] == "cypress_hall_dorm.available_room", "Moving changes the active residence and exact VN room.")
+	_expect(state["household_state"]["members"] == ["player"] and state["player"]["housing"]["move_history"].size() == 1, "Moving creates an independent household and durable move history.")
+	_expect(_inventory_container_for_test(state, "wardrobe_storage").get("access", "") == "cypress_hall_dorm.available_room", "Moving redirects wardrobe access to the new residence.")
+	result = housing.return_to_family_home(state)
+	_expect(result.get("ok", false), "The player can move back to the family home without cancelling the lease.")
+	state = result["state"]
+	_expect(state["player"]["housing"]["residence"] == "hale_home" and state["household_state"]["members"].size() == 4, "Returning home restores the Hale household snapshot.")
+	_expect(float(state["player"]["housing"]["monthly_rent"]) == 250.0, "Returning home restores the existing family rent agreement (actual $%.2f)." % float(state["player"]["housing"]["monthly_rent"]))
+	_expect(state["player"]["housing"]["contracts"].size() == 1 and _inventory_container_for_test(state, "wardrobe_storage").get("access", "") == "hale_home.player_bedroom", "Returning home preserves the lease and restores family-home storage access.")
+
+	state = factory.create_new_game({}, {"random_seed": 1402})
+	state["player"]["economy"]["accounts"].merge({"wallet_cash": 0.0, "checking": 50000.0, "savings": 0.0}, true)
+	state["player"]["economy"]["credit_score"] = 700
+	state["player"]["employment"]["active_jobs"].append({"id": "housing-income", "status": "active", "hourly_pay": 30.0, "weekly_hours": 40.0})
+	report = housing.qualification_report(state, "harbor_view_starter_condo")
+	_expect(bool(report.get("qualified", false)) and float(report.get("monthly_income", 0.0)) == 5200.0, "Documented job income, credit, and savings qualify the player for the starter condo.")
+	result = housing.acquire(state, "harbor_view_starter_condo")
+	_expect(result.get("ok", false), "A qualified player can purchase the starter condo.")
+	state = result["state"]
+	_expect(state["player"]["housing"]["owned_properties"].size() == 1 and float(state["player"]["housing"]["contracts"][0]["mortgage_balance"]) == 256500.0, "Condo purchase records ownership and the financed mortgage balance.")
+	result = housing.move_to(state, "harbor_view_starter_condo")
+	state = result["state"]
+	_expect(result.get("ok", false) and state["world_state"]["current_location"] == "harbor_view_condos.bedroom", "The owned condo exposes its authored rooms through the VN location scene.")
+	var principal_before: float = float(state["player"]["housing"]["contracts"][0]["mortgage_balance"])
+	_set_test_date(state, "Y1-09-01", "sunday")
+	result = economy.sync_economy(state)
+	_expect(result.get("ok", false), "The economy processes an acquired property's first monthly payment.")
+	state = result["state"]
+	_expect(float(state["player"]["housing"]["contracts"][0]["mortgage_balance"]) < principal_before, "An on-time mortgage payment reduces principal after interest.")
+	_expect(state["player"]["housing"]["payment_history"].size() == 1 and str(state["player"]["housing"]["payment_history"][0]["status"]) == "paid", "Housing payment history records the monthly result exactly once.")
+	var recurring_count: int = state["player"]["economy"]["recurring_transactions"].size()
+	result = economy.sync_economy(state)
+	_expect(result["state"]["player"]["economy"]["recurring_transactions"].size() == recurring_count, "Repeated economy synchronization never duplicates a housing payment.")
+
+
 func _test_character_creation_scene() -> void:
 	var creation_scene: PackedScene = load("res://scenes/creation/character_creation.tscn")
 	_expect(creation_scene != null, "Character creation scene loads.")
@@ -866,7 +930,7 @@ func _test_vertical_slice_acceptance_suite() -> void:
 		return
 
 	var tests: Array = suite.get("tests", [])
-	_expect(tests.size() == 59, "Acceptance suite contains 59 cases.")
+	_expect(tests.size() == 65, "Acceptance suite contains 65 cases.")
 	var ids: Dictionary = {}
 	for test_case: Variant in tests:
 		if test_case is Dictionary:
@@ -879,14 +943,14 @@ func _test_vertical_slice_acceptance_suite() -> void:
 func _test_content_registry() -> void:
 	var errors: PackedStringArray = _registry.validate_foundation()
 	_expect(errors.is_empty(), "Complete content registry validates without errors.")
-	_expect(_registry.get_document_count() == 42, "Registry loads all 42 source documents.")
-	_expect(_registry.get_package_count() == 25, "Registry indexes all 25 global packages.")
-	_expect(_registry.get_all("locations").size() == 61, "Registry indexes all 61 locations.")
+	_expect(_registry.get_document_count() == 43, "Registry loads all 43 source documents.")
+	_expect(_registry.get_package_count() == 26, "Registry indexes all 26 global packages.")
+	_expect(_registry.get_all("locations").size() == 62, "Registry indexes all 62 locations.")
 	_expect(_registry.get_all("districts").size() == 10, "Registry indexes all 10 districts.")
 	_expect(_registry.get_character("elena_reyes_hale") is Dictionary, "Characters can be retrieved by id.")
 	_expect(_registry.get_location("hale_home") is Dictionary, "Locations can be retrieved by id.")
 	_expect(_registry.get_content("quests", "opening_future_choice") is Dictionary, "Quests can be retrieved by id.")
-	_expect(_registry.get_all("operations").size() == 63, "Registry indexes all 63 simulation operations.")
+	_expect(_registry.get_all("operations").size() == 65, "Registry indexes all 65 simulation operations.")
 	_expect(_registry.get_all("date_activities").size() == 3, "Registry indexes all three opening date activities.")
 	_expect(_registry.get_all("vn_backgrounds").size() == 15, "Registry indexes the initial fifteen VN background assignments.")
 	var emma_assets: Dictionary = _registry.get_character("emma_rowan").get("asset_refs", {})
@@ -898,7 +962,8 @@ func _test_content_registry() -> void:
 	_expect(_registry.get_content("quests", "build_a_training_rhythm") is Dictionary and _registry.get_content("quests", "consistency_under_pressure") is Dictionary, "Registry indexes both counted stages of Rachel's repeatable training chain.")
 	_expect(_registry.get_all("actions").size() == 10, "Registry indexes all 10 initial home actions.")
 	_expect(_registry.get_all("city_interactions").size() == 9, "Registry indexes all nine opening city interactions.")
-	_expect(_registry.get_all("phone_apps").size() == 13, "Registry indexes the foundation apps plus Education, Jobs, Money, and Shopping.")
+	_expect(_registry.get_all("phone_apps").size() == 14, "Registry indexes the foundation apps plus Education, Jobs, Money, Housing, and Shopping.")
+	_expect(_registry.get_all("housing_listings").size() == 3, "Registry indexes the dorm, affordable studio, and starter condo listings.")
 
 
 func _test_new_game_state_factory() -> void:
@@ -944,13 +1009,14 @@ func _test_new_game_state_factory() -> void:
 	_expect("weather" in state["player"]["phone"]["unlocked_apps"], "The weather app is available from the start.")
 	_expect("jobs" in state["player"]["phone"]["unlocked_apps"], "The Jobs app is available from the start.")
 	_expect("money" in state["player"]["phone"]["unlocked_apps"], "The Money app is available from the start.")
+	_expect("housing" in state["player"]["phone"]["unlocked_apps"], "The Housing app is available from the start.")
 	_expect("shopping" not in state["player"]["phone"]["unlocked_apps"], "Shopping remains tied to the authored wardrobe tutorial unlock.")
 	_expect(state["relationships"].size() == 15, "Relationship defaults initialize for every opening character.")
 	_expect(state["relationships"]["emma_rowan"].get("dating_history", []) is Array, "Relationship runtime state initializes date history.")
 	_expect(state["relationships"]["emma_rowan"].get("dating_agreement", {}).get("status", "") == "none", "Relationships begin without an assumed dating agreement.")
 	_expect(state["world_state"]["weather"]["condition"] == "partly_cloudy", "Opening weather initializes from the calendar.")
-	_expect(state["content_state"]["loaded_packages"].size() == 25, "Runtime state records its loaded content manifest.")
-	_expect(state["content_state"]["package_manifest"].size() == 25, "Runtime state records versioned manifest details for every loaded package.")
+	_expect(state["content_state"]["loaded_packages"].size() == 26, "Runtime state records its loaded content manifest.")
+	_expect(state["content_state"]["package_manifest"].size() == 26, "Runtime state records versioned manifest details for every loaded package.")
 	_expect(str(state["content_state"]["package_manifest"][0].get("checksum", "")).length() == 64, "Content manifest entries include SHA-256 package checksums.")
 	_expect(state["world_state"]["random_seed"] == 12345, "Runtime random seed can be reproduced.")
 	_expect(state["quest_state"].get("discovered", []) == ["opening_future_choice"], "Only the opening quest is discovered in a fresh game.")
@@ -1596,6 +1662,11 @@ func _test_save_round_trip_rotation_recovery_and_migration() -> void:
 			{"completion": 2, "completed_at": "Y1-08-20:afternoon+000", "branch_id": null},
 		],
 	}
+	state["player"]["housing"]["contracts"].append({
+		"id": "housing-save-test", "listing_id": "greyport_affordable_studio", "tenure": "rental", "status": "active",
+		"outstanding_balance": 125.0, "mortgage_balance": 0.0, "payment_history": [{"status": "missed", "amount": 125.0}],
+	})
+	state["player"]["housing"]["move_history"].append({"id": "move-save-test", "from": "hale_home", "to": "greyport_studios"})
 
 	var result: Dictionary = engine.save_slot(state, "manual_1", {
 		"timestamp_utc": "2026-08-25T10:00:00",
@@ -1617,6 +1688,8 @@ func _test_save_round_trip_rotation_recovery_and_migration() -> void:
 	_expect(loaded.get("state", {}).get("quest_state", {}).get("decision_history", []).back().get("decision", "") == "postponed", "Save/load round-trip preserves quest decision history.")
 	_expect(int(loaded.get("state", {}).get("quest_state", {}).get("repeatable_progress", {}).get("build_a_training_rhythm", {}).get("completions", 0)) == 2, "Save/load round-trip preserves independent repeatable quest counters.")
 	_expect(loaded.get("state", {}).get("quest_state", {}).get("repeatable_progress", {}).get("build_a_training_rhythm", {}).get("completion_history", []).size() == 2, "Save/load round-trip preserves repeatable quest completion history.")
+	_expect(loaded.get("state", {}).get("player", {}).get("housing", {}).get("contracts", []).size() == 1 and float(loaded.get("state", {}).get("player", {}).get("housing", {}).get("contracts", [])[0].get("outstanding_balance", 0.0)) == 125.0, "Save/load round-trip preserves housing contracts and arrears.")
+	_expect(loaded.get("state", {}).get("player", {}).get("housing", {}).get("move_history", []).size() == 1, "Save/load round-trip preserves housing move history.")
 
 	var original_checking: float = float(state["player"]["economy"]["accounts"]["checking"])
 	state["player"]["economy"]["accounts"]["checking"] = original_checking + 77.0
@@ -1731,6 +1804,13 @@ func _stack_quantity(state: Dictionary, container_id: String, item_id: String) -
 			if stack is Dictionary and str(stack.get("item_id", "")) == item_id:
 				return int(stack.get("quantity", 0))
 	return 0
+
+
+func _inventory_container_for_test(state: Dictionary, container_id: String) -> Dictionary:
+	for container_value: Variant in state["player"]["inventory"].get("containers", []):
+		if container_value is Dictionary and str(container_value.get("id", "")) == container_id:
+			return container_value
+	return {}
 
 
 func _set_stack_cleanliness(state: Dictionary, container_id: String, item_id: String, cleanliness: int) -> void:

@@ -50,7 +50,7 @@ The slice is complete when a fresh installation can:
 1. Start a new game and create a valid protagonist.
 2. Play Elena's opening scene and select college, employment, or both.
 3. Enter the sandbox with the correct quests, rent, and allowance rules.
-4. Navigate the Hale home by room menu and use its essential rooms.
+4. Navigate the Hale home with on-scene directional arrows or the accessible room list and use its essential rooms.
 5. Satisfy Hygiene, Hunger, Hydration, Energy, and wardrobe requirements.
 6. Use every required phone app without opening developer tools.
 7. Leave home and travel to at least three city destinations.
@@ -125,8 +125,10 @@ Essential interactions:
 - Exit through the front yard
 
 Implementation note: the current playable home exposes all twelve required spaces
-through a room menu, keeps private bedrooms disabled until permission is granted,
-and provides bedroom, bathroom, kitchen, dining, laundry, garage, yard interactions,
+through directional arrows and an accessible room list, exposes private bedrooms as knock-first doorway scenes with changing locked or unlocked states until permission is granted,
+and gives the shared bathroom schedule-aware available, occupied, and locked states.
+An occupied or locked bathroom replaces hygiene actions with knock and twenty-minute
+wait choices. The home also provides bedroom, bathroom, kitchen, dining, laundry, garage, yard interactions,
 and a state-backed wardrobe. Selecting another room does not consume time; confirmed
 activities, conversations, and travel do. Elena, Daniel, and Lily appear on the VN
 character stage according to work, school, and home routines stored in their character packages. Contextual choices offer active
@@ -134,8 +136,8 @@ story conversations or short ambient dialogue; unavailable family members remain
 their external schedule locations. The front gate now opens route confirmation, and
 daily family-car permission can be requested from the garage.
 
-Private doors require knocking or permission. The player cannot enter an occupied
-bathroom or restricted bedroom by selecting a disabled room entry.
+Private doors require knocking or permission. Selecting an occupied bathroom or
+restricted bedroom moves the player to its doorway, never through the closed door.
 
 ### Phone
 

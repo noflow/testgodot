@@ -35,6 +35,7 @@ const REQUIRED_FOUNDATION_FILES: PackedStringArray = [
 	"res://content/systems/save_system.json",
 	"res://content/systems/relationships.json",
 	"res://content/systems/quest_progression.json",
+	"res://content/systems/housing.json",
 	"res://schemas/save_game.schema.json",
 	"res://tests/acceptance/vertical_slice.json",
 ]

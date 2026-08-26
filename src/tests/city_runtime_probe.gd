@@ -45,6 +45,32 @@ func _run_probe() -> void:
 		get_tree().quit(1)
 		return
 	instance.call("_close_action_panel")
+	var previous_arrow: Button = instance.get_node_or_null("Interface/MainMargin/MainLayout/ScenePanel/Margin/Layout/DirectionalNavigation/PrevRoomArrow")
+	var outside_arrow: Button = instance.get_node_or_null("Interface/MainMargin/MainLayout/ScenePanel/Margin/Layout/DirectionalNavigation/OutsideArrow")
+	var next_arrow: Button = instance.get_node_or_null("Interface/MainMargin/MainLayout/ScenePanel/Margin/Layout/DirectionalNavigation/NextRoomArrow")
+	if previous_arrow == null or outside_arrow == null or next_arrow == null or "Reception" not in previous_arrow.text or "Financial Aid" not in next_arrow.text:
+		printerr("CITY PROBE: data-driven directional area arrows were not initialized")
+		get_tree().quit(1)
+		return
+	next_arrow.pressed.emit()
+	await get_tree().process_frame
+	if str(GameState.current_state["world_state"]["current_location"]) != "westshore_administration_office.financial_aid":
+		printerr("CITY PROBE: right arrow did not move to the next data-driven area")
+		get_tree().quit(1)
+		return
+	outside_arrow.pressed.emit()
+	await get_tree().process_frame
+	if str(GameState.current_state["world_state"]["current_location"]) != "westshore_administration_office.reception" or "City Map" not in outside_arrow.text:
+		printerr("CITY PROBE: outside arrow did not return to the building exit")
+		get_tree().quit(1)
+		return
+	outside_arrow.pressed.emit()
+	await get_tree().process_frame
+	if not phone.visible or str(phone.get_node("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/ContentPanel/ContentMargin/ContentLayout/AppTitle").text) != "CITY MAP":
+		printerr("CITY PROBE: exit arrow did not open the city map")
+		get_tree().quit(1)
+		return
+	phone.close_phone()
 	phone.open_phone("city_map")
 	await get_tree().process_frame
 	phone.call("_open_route_planner", "hale_home")
@@ -53,5 +79,5 @@ func _run_probe() -> void:
 		printerr("CITY PROBE: reverse route planner did not populate")
 		get_tree().quit(1)
 		return
-	print("PASS: City destination rendered data-driven VN areas, institutional choices, and reverse travel routes.")
+	print("PASS: City destination rendered data-driven VN arrows, institutional choices, outside exits, and reverse travel routes.")
 	get_tree().quit(0)

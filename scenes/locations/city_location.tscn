@@ -235,6 +235,32 @@ theme_override_font_sizes/font_size = 14
 text = "Port Alder • Coastal City"
 horizontal_alignment = 1
 
+[node name="DirectionalNavigation" type="HBoxContainer" parent="Interface/MainMargin/MainLayout/ScenePanel/Margin/Layout"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 12
+
+[node name="PrevRoomArrow" type="Button" parent="Interface/MainMargin/MainLayout/ScenePanel/Margin/Layout/DirectionalNavigation"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 48)
+layout_mode = 2
+text = "◀ Previous Area"
+autowrap_mode = 2
+
+[node name="OutsideArrow" type="Button" parent="Interface/MainMargin/MainLayout/ScenePanel/Margin/Layout/DirectionalNavigation"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 48)
+layout_mode = 2
+text = "▲ Outside"
+autowrap_mode = 2
+
+[node name="NextRoomArrow" type="Button" parent="Interface/MainMargin/MainLayout/ScenePanel/Margin/Layout/DirectionalNavigation"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 48)
+layout_mode = 2
+text = "Next Area ▶"
+autowrap_mode = 2
+
 [node name="ActionPanel" type="PanelContainer" parent="Interface/MainMargin/MainLayout"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(390, 0)
@@ -319,3 +345,6 @@ unique_name_in_owner = true
 
 [connection signal="pressed" from="Interface/Footer/Margin/Layout/Buttons/PhoneButton" to="." method="_on_phone_button_pressed"]
 [connection signal="pressed" from="Interface/Footer/Margin/Layout/Buttons/MapButton" to="." method="_on_map_button_pressed"]
+[connection signal="pressed" from="Interface/MainMargin/MainLayout/ScenePanel/Margin/Layout/DirectionalNavigation/PrevRoomArrow" to="." method="_on_previous_room_pressed"]
+[connection signal="pressed" from="Interface/MainMargin/MainLayout/ScenePanel/Margin/Layout/DirectionalNavigation/OutsideArrow" to="." method="_on_outside_pressed"]
+[connection signal="pressed" from="Interface/MainMargin/MainLayout/ScenePanel/Margin/Layout/DirectionalNavigation/NextRoomArrow" to="." method="_on_next_room_pressed"]

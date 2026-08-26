@@ -19,6 +19,9 @@ const MONTH_NAMES: PackedStringArray = [
 @onready var room_buttons: VBoxContainer = %RoomButtons
 @onready var action_title: Label = %ActionTitle
 @onready var action_buttons: VBoxContainer = %ActionButtons
+@onready var previous_room_arrow: Button = %PrevRoomArrow
+@onready var outside_arrow: Button = %OutsideArrow
+@onready var next_room_arrow: Button = %NextRoomArrow
 
 var _location_id: String = ""
 var _location: Dictionary = {}
@@ -122,6 +125,7 @@ func _render_location() -> void:
 	backdrop.color = _location_color(str(_location.get("type", "city_location")))
 	VNAssetService.apply_background(background_image, _location_id, _current_room_id, str(GameState.current_state["clock"].get("block", "")))
 	_rebuild_room_buttons()
+	_refresh_directional_navigation()
 	_rebuild_encounter_stage()
 	_render_room_actions()
 
@@ -139,6 +143,67 @@ func _rebuild_room_buttons() -> void:
 		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		button.pressed.connect(_select_room.bind(room_id))
 		room_buttons.add_child(button)
+
+
+func _refresh_directional_navigation() -> void:
+	var current_index: int = _room_index(_current_room_id)
+	var previous_id: String = _directional_target("left", current_index - 1)
+	var next_id: String = _directional_target("right", current_index + 1)
+	previous_room_arrow.disabled = previous_id.is_empty()
+	previous_room_arrow.text = "◀ %s" % (_room_name(previous_id) if not previous_id.is_empty() else "No Previous Area")
+	next_room_arrow.disabled = next_id.is_empty()
+	next_room_arrow.text = "%s ▶" % (_room_name(next_id) if not next_id.is_empty() else "No Next Area")
+	var exit_room: String = _outside_room_id()
+	outside_arrow.text = "▲ Outside / City Map" if _current_room_id == exit_room else "▲ Exit via %s" % _room_name(exit_room)
+	SettingsService.apply_accessibility(previous_room_arrow)
+	SettingsService.apply_accessibility(outside_arrow)
+	SettingsService.apply_accessibility(next_room_arrow)
+
+
+func _directional_target(direction: String, fallback_index: int) -> String:
+	var room: Dictionary = _room_definition(_current_room_id)
+	var authored_id: String = str(room.get("navigation", {}).get(direction, ""))
+	if not authored_id.is_empty() and not _room_definition(authored_id).is_empty():
+		return authored_id
+	if fallback_index >= 0 and fallback_index < _rooms.size():
+		return str(_rooms[fallback_index].get("id", ""))
+	return ""
+
+
+func _room_index(room_id: String) -> int:
+	for index: int in _rooms.size():
+		if str(_rooms[index].get("id", "")) == room_id:
+			return index
+	return -1
+
+
+func _outside_room_id() -> String:
+	var authored_id: String = str(_location.get("outside_room", ""))
+	if not authored_id.is_empty() and not _room_definition(authored_id).is_empty():
+		return authored_id
+	return str(_rooms[0].get("id", "main_area")) if not _rooms.is_empty() else "main_area"
+
+
+func _on_previous_room_pressed() -> void:
+	var target: String = _directional_target("left", _room_index(_current_room_id) - 1)
+	if not target.is_empty():
+		_select_room(target)
+
+
+func _on_next_room_pressed() -> void:
+	var target: String = _directional_target("right", _room_index(_current_room_id) + 1)
+	if not target.is_empty():
+		_select_room(target)
+
+
+func _on_outside_pressed() -> void:
+	var exit_room: String = _outside_room_id()
+	if _current_room_id != exit_room:
+		_select_room(exit_room)
+		status_label.text = "You move toward the exit. Use the up arrow again to open Port Alder."
+		return
+	smartphone.open_phone("city_map")
+	status_label.text = "Choose an unlocked destination and confirm a route."
 
 
 func _rebuild_encounter_stage() -> void:

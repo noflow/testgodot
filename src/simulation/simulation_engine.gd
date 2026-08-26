@@ -123,6 +123,10 @@ func _apply_to_working_state(state: Dictionary, operation: String, payload: Dict
 			return _apply_employment_shift(state, payload)
 		"economy.payday":
 			return _apply_employment_payday(state, payload)
+		"housing.acquire":
+			return _acquire_housing(state, payload)
+		"housing.move":
+			return _move_housing(state, payload)
 		"employment.promote_or_raise":
 			return _apply_employment_career_change(state, payload)
 		"travel.complete":
@@ -1278,6 +1282,113 @@ func _unlock_location(state: Dictionary, payload: Dictionary) -> String:
 		return "Unknown location: %s" % location_id
 	if location_id not in state["world_state"]["unlocked_locations"]:
 		state["world_state"]["unlocked_locations"].append(location_id)
+	return ""
+
+
+func _acquire_housing(state: Dictionary, payload: Dictionary) -> String:
+	var listing_id: String = str(payload.get("listing_id", ""))
+	var listing: Variant = _registry.get_content("housing_listings", listing_id)
+	var contract_value: Variant = payload.get("contract")
+	if not listing is Dictionary:
+		return "Unknown housing listing: %s" % listing_id
+	if not contract_value is Dictionary:
+		return "Housing acquisition requires a contract."
+	var housing: Dictionary = state["player"]["housing"]
+	for key: String in ["contracts", "leases", "owned_properties", "move_history", "payment_history"]:
+		if not housing.get(key) is Array:
+			housing[key] = []
+	for existing_value: Variant in housing["contracts"]:
+		if existing_value is Dictionary and str(existing_value.get("listing_id", "")) == listing_id and str(existing_value.get("status", "active")) == "active":
+			return "This residence is already in your housing portfolio."
+	var contract: Dictionary = contract_value.duplicate(true)
+	var contract_id: String = str(contract.get("id", ""))
+	if contract_id.is_empty():
+		return "Housing contract requires an id."
+	housing["contracts"].append(contract)
+	if str(contract.get("tenure", "rental")) == "purchase":
+		housing["owned_properties"].append({
+			"listing_id": listing_id,
+			"contract_id": contract_id,
+			"location_id": contract.get("location_id", ""),
+			"acquired_on": contract.get("acquired_on", ""),
+			"purchase_price": contract.get("purchase_price", 0.0),
+			"mortgage_balance": contract.get("mortgage_balance", 0.0),
+		})
+	else:
+		housing["leases"].append({
+			"listing_id": listing_id,
+			"contract_id": contract_id,
+			"location_id": contract.get("location_id", ""),
+			"status": "active",
+			"started_on": contract.get("acquired_on", ""),
+			"monthly_rent": contract.get("base_rent", 0.0),
+		})
+	var location_id: String = str(contract.get("location_id", ""))
+	if not location_id.is_empty() and location_id not in state["world_state"]["unlocked_locations"]:
+		state["world_state"]["unlocked_locations"].append(location_id)
+	return ""
+
+
+func _move_housing(state: Dictionary, payload: Dictionary) -> String:
+	var listing_id: String = str(payload.get("listing_id", ""))
+	var residence: String = str(payload.get("residence", ""))
+	var room: String = str(payload.get("room", ""))
+	var household_value: Variant = payload.get("household")
+	var location: Variant = _registry.get_location(residence)
+	if not location is Dictionary or not household_value is Dictionary:
+		return "Housing move requires a valid residence and household."
+	if room.get_slice(".", 0) != residence or not _room_exists(location, room.get_slice(".", 1)):
+		return "Housing move has an invalid destination room."
+	var housing: Dictionary = state["player"]["housing"]
+	if listing_id != "family_home":
+		var owns_access: bool = false
+		for contract_value: Variant in housing.get("contracts", []):
+			if contract_value is Dictionary and str(contract_value.get("listing_id", "")) == listing_id and str(contract_value.get("status", "active")) == "active":
+				owns_access = true
+				break
+		if not owns_access:
+			return "Acquire this residence before moving into it."
+	if str(housing.get("residence", "hale_home")) == "hale_home" and residence != "hale_home" and housing.get("family_household_snapshot") == null:
+		housing["family_household_snapshot"] = state["household_state"].duplicate(true)
+	if str(housing.get("residence", "hale_home")) == "hale_home" and residence != "hale_home" and housing.get("family_housing_snapshot") == null:
+		housing["family_housing_snapshot"] = {
+			"monthly_rent": housing.get("monthly_rent", 0.0),
+			"monthly_housing_cost": housing.get("monthly_housing_cost", housing.get("monthly_rent", 0.0)),
+			"monthly_utilities": housing.get("monthly_utilities", 0.0),
+			"rent_first_due": housing.get("rent_first_due", "Y1-09-01"),
+			"guest_permissions": housing.get("guest_permissions", "ask_household"),
+			"assigned_chores": Array(housing.get("assigned_chores", [])).duplicate(true),
+		}
+	if not housing.get("move_history") is Array:
+		housing["move_history"] = []
+	var move_record: Variant = payload.get("move_record")
+	if move_record is Dictionary:
+		housing["move_history"].append(move_record.duplicate(true))
+	state["household_state"] = household_value.duplicate(true)
+	housing["residence"] = residence
+	housing["room"] = room
+	housing["household"] = state["household_state"].get("household_id", "")
+	housing["tenure"] = payload.get("tenure", "family_home")
+	housing["active_listing_id"] = null if listing_id == "family_home" else listing_id
+	housing["monthly_rent"] = maxf(float(payload.get("monthly_rent", 0.0)), 0.0)
+	housing["monthly_housing_cost"] = maxf(float(payload.get("monthly_housing_cost", 0.0)), 0.0)
+	housing["monthly_utilities"] = maxf(float(payload.get("monthly_utilities", 0.0)), 0.0)
+	housing["guest_permissions"] = payload.get("guest_permissions", "player_controls")
+	housing["assigned_chores"] = Array(payload.get("assigned_chores", [])).duplicate(true)
+	if payload.has("rent_first_due"):
+		housing["rent_first_due"] = payload["rent_first_due"]
+	var storage_access: Variant = payload.get("storage_access")
+	if storage_access is Dictionary:
+		for container_value: Variant in state["player"]["inventory"].get("containers", []):
+			if not container_value is Dictionary:
+				continue
+			var container_id: String = str(container_value.get("id", ""))
+			if storage_access.has(container_id):
+				container_value["access"] = storage_access[container_id]
+	state["world_state"]["current_location"] = room
+	for world_key: String in ["unlocked_locations", "discovered_locations"]:
+		if residence not in state["world_state"][world_key]:
+			state["world_state"][world_key].append(residence)
 	return ""
 
 

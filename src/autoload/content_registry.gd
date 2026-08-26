@@ -9,7 +9,7 @@ const INDEXED_COLLECTIONS: PackedStringArray = [
 	"locations", "districts", "quests", "conversations", "items",
 	"jobs", "courses", "programs", "activities", "actions", "city_interactions",
 	"phone_apps", "stores", "operations",
-	"date_activities", "vn_backgrounds",
+	"date_activities", "housing_listings", "vn_backgrounds",
 ]
 
 var _documents: Dictionary = {}
@@ -39,6 +39,7 @@ func validate_foundation() -> PackedStringArray:
 	_validate_character_packages()
 	_validate_vertical_slice_manifest()
 	_validate_sandbox_quest_package()
+	_validate_housing_package()
 	_validate_vn_art_assets()
 	validation_completed.emit(_last_errors.duplicate())
 	content_loaded.emit(_documents.size(), _packages.size())
@@ -305,6 +306,47 @@ func _validate_sandbox_quest_package() -> void:
 	var timed_maximum: int = int(package.get("deadline_rules", {}).get("recommended_timed_maximum_percent", 15))
 	if not all_quests.is_empty() and timed_quest_count * 100 > all_quests.size() * timed_maximum:
 		_last_errors.append("Timed quests exceed the sandbox authoring target of %d%%." % timed_maximum)
+
+
+func _validate_housing_package() -> void:
+	var package: Variant = get_package("port_alder_housing_system")
+	if not package is Dictionary:
+		_last_errors.append("Housing system package did not load.")
+		return
+	var listings: Array = get_all("housing_listings")
+	if listings.size() < 3:
+		_last_errors.append("Housing system requires at least three starter listings.")
+	for listing_value: Variant in listings:
+		if not listing_value is Dictionary:
+			continue
+		var listing: Dictionary = listing_value
+		var listing_id: String = str(listing.get("id", "unknown"))
+		var tenure: String = str(listing.get("tenure", ""))
+		if tenure not in ["rental", "purchase"]:
+			_last_errors.append("Housing listing has invalid tenure: %s" % listing_id)
+		var location_id: String = str(listing.get("location_id", ""))
+		var location: Variant = get_location(location_id)
+		if not location is Dictionary:
+			_last_errors.append("Housing listing has unknown location: %s" % listing_id)
+			continue
+		var room_ids: PackedStringArray = []
+		for room_value: Variant in location.get("rooms", []):
+			if room_value is Dictionary:
+				room_ids.append(str(room_value.get("id", "")))
+		for room_field: String in ["residence_room", "arrival_room"]:
+			if str(listing.get(room_field, "")) not in room_ids:
+				_last_errors.append("Housing listing %s has unknown %s." % [listing_id, room_field])
+		if tenure == "rental" and float(listing.get("monthly_rent", 0.0)) <= 0.0:
+			_last_errors.append("Rental listing has no monthly rent: %s" % listing_id)
+		if tenure == "purchase" and (float(listing.get("purchase_price", 0.0)) <= 0.0 or float(listing.get("monthly_mortgage", 0.0)) <= 0.0):
+			_last_errors.append("Purchase listing has invalid price or mortgage: %s" % listing_id)
+		if not listing.get("storage_access") is Dictionary:
+			_last_errors.append("Housing listing has no storage-access mapping: %s" % listing_id)
+		else:
+			for container_id: Variant in listing["storage_access"]:
+				var storage_room: String = str(listing["storage_access"][container_id])
+				if storage_room not in room_ids:
+					_last_errors.append("Housing listing %s maps %s to unknown room %s." % [listing_id, container_id, storage_room])
 
 
 func _validate_vn_art_assets() -> void:
