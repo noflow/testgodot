@@ -15,8 +15,10 @@ func _run_probe() -> void:
 		return
 	var factory: RefCounted = NewGameStateFactoryScript.new(ContentRegistry)
 	var state: Dictionary = factory.create_new_game({}, {"random_seed": 991})
-	state["world_state"]["current_location"] = "westshore_campus.courtyard"
-	state["world_state"]["discovered_locations"].append("westshore_campus")
+	state["world_state"]["current_location"] = "westshore_administration_office.advisor_office"
+	state["world_state"]["discovered_locations"].append("westshore_administration_office")
+	state["quest_state"]["active"].append("enroll_at_westshore")
+	state["quest_state"]["objectives"]["enroll_at_westshore"] = {"travel_to_administration": true}
 	GameState.replace_state(state)
 	var scene: PackedScene = load("res://scenes/locations/city_location.tscn")
 	var instance: Node = scene.instantiate()
@@ -28,10 +30,19 @@ func _run_probe() -> void:
 		printerr("CITY PROBE: player or smartphone is missing")
 		get_tree().quit(1)
 		return
-	if str(instance.get_node("Interface/Header/Margin/Layout/Top/LocationLabel").text) != "Westshore College Campus":
+	if str(instance.get_node("Interface/Header/Margin/Layout/Top/LocationLabel").text) != "Westshore Administration Office":
 		printerr("CITY PROBE: destination data did not render")
 		get_tree().quit(1)
 		return
+	instance.call("_on_interact_requested", Vector2.ZERO)
+	await get_tree().process_frame
+	var action_panel: Control = instance.get_node("Interface/ActionPanel")
+	var action_buttons: VBoxContainer = instance.get_node("Interface/ActionPanel/Margin/Layout/Scroll/ActionButtons")
+	if not action_panel.visible or action_buttons.get_child_count() != 1 or action_buttons.get_child(0).disabled:
+		printerr("CITY PROBE: enrollment activity did not populate")
+		get_tree().quit(1)
+		return
+	instance.call("_close_action_panel")
 	phone.open_phone("city_map")
 	await get_tree().process_frame
 	phone.call("_open_route_planner", "hale_home")
@@ -40,5 +51,5 @@ func _run_probe() -> void:
 		printerr("CITY PROBE: reverse route planner did not populate")
 		get_tree().quit(1)
 		return
-	print("PASS: City destination rendered data-driven rooms and reverse travel routes.")
+	print("PASS: City destination rendered data-driven rooms, institutional actions, and reverse travel routes.")
 	get_tree().quit(0)

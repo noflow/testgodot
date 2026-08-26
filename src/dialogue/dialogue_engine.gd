@@ -33,7 +33,19 @@ func begin(state: Dictionary, conversation_id: String) -> Dictionary:
 	)
 	if not result.get("ok", false):
 		return result
-	return _enter_node(result["state"], conversation, str(conversation["start_node"]))
+	var working: Dictionary = result["state"]
+	for participant: Variant in _conversation_participants(conversation):
+		var character_id: String = str(participant)
+		if character_id == "player" or _registry.get_character(character_id) == null:
+			continue
+		var encounter_result: Dictionary = _quests.record_event(working, "npc_encounter_started", {
+			"character": character_id,
+			"location": str(working["world_state"].get("current_location", "")),
+		}, "dialogue.begin:%s" % conversation_id)
+		if not encounter_result.get("ok", false):
+			return encounter_result
+		working = encounter_result["state"]
+	return _enter_node(working, conversation, str(conversation["start_node"]))
 
 
 func can_begin(state: Dictionary, conversation_id: String) -> Dictionary:
@@ -149,6 +161,13 @@ func _enter_node(state: Dictionary, conversation: Dictionary, node_id: String) -
 	if node_id not in seen_nodes[conversation["id"]]:
 		seen_nodes[conversation["id"]].append(node_id)
 	_append_history(working, conversation, node_id, node)
+	var quest_result: Dictionary = _quests.record_event(working, "conversation_node_reached", {
+		"conversation": conversation["id"],
+		"node": node_id,
+	}, "dialogue.node:%s:%s" % [conversation["id"], node_id])
+	if not quest_result.get("ok", false):
+		return quest_result
+	working = quest_result["state"]
 	return _success(working, _make_view(working, conversation))
 
 
@@ -162,6 +181,12 @@ func _finish(state: Dictionary, conversation: Dictionary) -> Dictionary:
 	if not result.get("ok", false):
 		return result
 	var working: Dictionary = result["state"]
+	var quest_result: Dictionary = _quests.record_event(working, "conversation_completed", {
+		"conversation": conversation["id"],
+	}, "dialogue.end:%s" % conversation["id"])
+	if not quest_result.get("ok", false):
+		return quest_result
+	working = quest_result["state"]
 	for calendar_event: Variant in working["calendar_state"].get("events", []):
 		if not calendar_event is Dictionary or str(calendar_event.get("source", "")) != str(conversation["id"]):
 			continue
@@ -204,6 +229,8 @@ func _apply_effect(state: Dictionary, effect: Dictionary, source: String) -> Dic
 		"start_quest":
 			return _quests.start_quest(state, str(effect.get("value", "")), source)
 		"complete_objective", "complete_objective_if_active":
+			if str(effect.get("quest", "")).is_empty():
+				return _complete_named_objective_if_active(state, str(effect.get("objective", "")), source)
 			return _quests.complete_objective(
 				state,
 				str(effect.get("quest", "")),
@@ -219,7 +246,11 @@ func _apply_effect(state: Dictionary, effect: Dictionary, source: String) -> Dic
 			_set_state_value(changed, value_path, effect.get("value"))
 			if value_path == "player.life_path":
 				return _quests.apply_matching_branch(changed, "opening_future_choice", source)
-			return _success(changed)
+			var value_result: Dictionary = _quests.record_event(changed, "value_set", {
+				"key": value_path,
+				"value": effect.get("value"),
+			}, source)
+			return value_result if not value_result.get("ok", false) else _success(value_result["state"])
 		"set_flag":
 			var flagged: Dictionary = state.duplicate(true)
 			flagged["player"]["flags"][str(effect.get("key", ""))] = effect.get("value", true)
@@ -240,10 +271,12 @@ func _apply_effect(state: Dictionary, effect: Dictionary, source: String) -> Dic
 		"spend_money":
 			return _spend_money(state, float(effect.get("value", 0)), source)
 		"schedule_event":
-			var scheduled: Dictionary = state.duplicate(true)
-			scheduled["calendar_state"]["events"].append(effect.get("value", {}).duplicate(true))
-			return _success(scheduled)
-		"complete_conversation", "create_calendar_from_class_schedule":
+			return _schedule_dialogue_event(state, effect.get("value"), source)
+		"create_debt":
+			return _create_debt(state, effect, source)
+		"create_calendar_from_class_schedule":
+			return _create_class_schedule(state, source)
+		"complete_conversation":
 			return _success(state)
 		_:
 			return _failure("Unsupported dialogue effect: %s" % effect.get("operation", ""), state)
@@ -272,10 +305,218 @@ func _spend_money(state: Dictionary, amount: float, source: String) -> Dictionar
 	return _success(working)
 
 
+func _complete_named_objective_if_active(state: Dictionary, objective_id: String, source: String) -> Dictionary:
+	if objective_id.is_empty():
+		return _success(state)
+	var working: Dictionary = state
+	for quest_id_value: Variant in working["quest_state"].get("active", []).duplicate():
+		var quest_id: String = str(quest_id_value)
+		var quest: Variant = _registry.get_content("quests", quest_id)
+		if not quest is Dictionary:
+			continue
+		var found: bool = false
+		for objective: Variant in quest.get("objectives", []):
+			if objective is Dictionary and str(objective.get("id", "")) == objective_id:
+				found = true
+				break
+		if not found or bool(working["quest_state"].get("objectives", {}).get(quest_id, {}).get(objective_id, false)):
+			continue
+		var result: Dictionary = _quests.complete_objective(working, quest_id, objective_id, source, true)
+		if not result.get("ok", false):
+			return result
+		working = result["state"]
+	return _success(working)
+
+
+func _create_debt(state: Dictionary, effect: Dictionary, source: String) -> Dictionary:
+	var principal: float = float(effect.get("principal", 0.0))
+	if principal <= 0.0:
+		return _failure("Debt principal must be positive.", state)
+	var changed: Dictionary = state.duplicate(true)
+	var debt_type: String = str(effect.get("type", "student_loan"))
+	changed["player"]["economy"]["debts"].append({
+		"id": "%s-%d" % [debt_type, changed["player"]["economy"]["debts"].size() + 1],
+		"type": debt_type,
+		"principal": principal,
+		"balance": principal,
+		"source": source,
+	})
+	if debt_type == "student_loan":
+		changed["player"]["education"]["student_debt"] = float(changed["player"]["education"].get("student_debt", 0.0)) + principal
+	return _success(changed)
+
+
+func _schedule_dialogue_event(state: Dictionary, value: Variant, source: String) -> Dictionary:
+	if value is Dictionary:
+		var direct_result: Dictionary = _simulation.apply_operation(state, "calendar.schedule", {
+			"calendar_event": value,
+		}, source)
+		return direct_result if not direct_result.get("ok", false) else _success(direct_result["state"])
+	var event_name: String = str(value)
+	if event_name.is_empty():
+		return _success(state)
+	for existing: Variant in state["calendar_state"].get("events", []):
+		if existing is Dictionary and str(existing.get("template_id", "")) == event_name and str(existing.get("status", "scheduled")) == "scheduled":
+			return _success(state)
+	var next_day: Dictionary = _date_after_days(state["clock"], 1)
+	var event: Dictionary = {
+		"id": "%s-y%d-%02d-%02d" % [event_name, next_day["year"], next_day["month"], next_day["day"]],
+		"template_id": event_name,
+		"title": event_name.replace("_", " ").capitalize(),
+		"type": "activity",
+		"source": "fitness_plan" if event_name == "beginner_forge_workout" else source,
+		"date": "Y%d-%02d-%02d" % [next_day["year"], next_day["month"], next_day["day"]],
+		"weekday": next_day["weekday"],
+		"block": "afternoon",
+		"location": "forge_fitness.strength_floor" if event_name == "beginner_forge_workout" else str(state["world_state"].get("current_location", "")),
+		"participants": [],
+	}
+	var result: Dictionary = _simulation.apply_operation(state, "calendar.schedule", {"calendar_event": event}, source)
+	return result if not result.get("ok", false) else _success(result["state"])
+
+
+func _create_class_schedule(state: Dictionary, source: String) -> Dictionary:
+	var program_id: String = str(state["player"]["education"].get("program", ""))
+	var load_id: String = str(state["player"]["education"].get("load", state["player"]["education"].get("course_load", "")))
+	var program: Variant = _registry.get_content("programs", program_id)
+	if not program is Dictionary:
+		return _failure("Choose a valid Westshore program before confirming the schedule.", state)
+	if load_id not in ["full_time", "part_time"]:
+		return _failure("Choose a full-time or part-time course load.", state)
+	var course_limit: int = 4 if load_id == "full_time" else 2
+	var course_ids: Array = Array(program.get("first_semester_courses", [])).slice(0, course_limit)
+	var selected_sections: Array = []
+	var occupied_slots: Dictionary = {}
+	for course_id_value: Variant in course_ids:
+		var course: Variant = _registry.get_content("courses", str(course_id_value))
+		if not course is Dictionary:
+			continue
+		var selected: Dictionary = {}
+		for section: Variant in course.get("sections", []):
+			if not section is Dictionary:
+				continue
+			var conflict: bool = false
+			for weekday: Variant in section.get("days", []):
+				if occupied_slots.has("%s:%s" % [weekday, section.get("block", "")]):
+					conflict = true
+					break
+			if not conflict:
+				selected = section
+				break
+		if selected.is_empty() and not course.get("sections", []).is_empty():
+			selected = course["sections"][0]
+		if selected.is_empty():
+			continue
+		for weekday: Variant in selected.get("days", []):
+			occupied_slots["%s:%s" % [weekday, selected.get("block", "")]] = true
+		selected_sections.append({"course": course, "section": selected})
+
+	var changed: Dictionary = state.duplicate(true)
+	var education: Dictionary = changed["player"]["education"]
+	education["institution"] = "westshore_college"
+	education["course_load"] = load_id
+	education["enrolled"] = true
+	education["courses"] = course_ids.duplicate(true)
+	for course_id_value: Variant in course_ids:
+		education["grades"][str(course_id_value)] = {"current_percent": 0.0, "status": "not_started"}
+		education["attendance"][str(course_id_value)] = {"attended": 0, "late": 0, "absent": 0}
+
+	var created_count: int = 0
+	var cursor: Dictionary = {"year": 1, "month": 9, "day": 3, "weekday": "tuesday"}
+	while _calendar_value(cursor) <= _calendar_value({"year": 1, "month": 12, "day": 13}):
+		for selection: Variant in selected_sections:
+			if not selection is Dictionary:
+				continue
+			var course: Dictionary = selection["course"]
+			var section: Dictionary = selection["section"]
+			if cursor["weekday"] in section.get("days", []):
+				changed["calendar_state"]["events"].append(_class_event(course, section, cursor, false))
+				created_count += 1
+			var lab: Dictionary = course.get("lab", {})
+			if not lab.is_empty() and str(lab.get("day", "")) == str(cursor["weekday"]):
+				changed["calendar_state"]["events"].append(_class_event(course, lab, cursor, true))
+				created_count += 1
+		cursor = _advance_date(cursor)
+	if created_count == 0:
+		return _failure("Westshore could not build a class schedule for that program.", state)
+	var quest_result: Dictionary = _quests.record_event(changed, "calendar_events_created", {
+		"tag": "westshore_class",
+		"count": created_count,
+	}, source)
+	return quest_result if not quest_result.get("ok", false) else _success(quest_result["state"])
+
+
+func _class_event(course: Dictionary, section: Dictionary, date: Dictionary, is_lab: bool) -> Dictionary:
+	var suffix: String = "lab" if is_lab else str(section.get("id", "A"))
+	return {
+		"id": "class-%s-%s-y%d-%02d-%02d" % [course.get("id", "course"), suffix, date["year"], date["month"], date["day"]],
+		"title": "%s%s" % [course.get("name", course.get("id", "Class")), " Lab" if is_lab else ""],
+		"course_id": course.get("id"),
+		"section_id": suffix,
+		"type": "class",
+		"source": "westshore_enrollment",
+		"tags": ["westshore_class"],
+		"date": "Y%d-%02d-%02d" % [date["year"], date["month"], date["day"]],
+		"weekday": date["weekday"],
+		"block": section.get("block", "morning"),
+		"location": "westshore_campus.science_labs" if is_lab else "westshore_campus.classrooms",
+		"participants": [],
+		"status": "scheduled",
+	}
+
+
+func _date_after_days(clock: Dictionary, days: int) -> Dictionary:
+	var date: Dictionary = {
+		"year": int(clock.get("year", 1)),
+		"month": int(clock.get("month", 1)),
+		"day": int(clock.get("day", 1)),
+		"weekday": str(clock.get("weekday", "monday")),
+	}
+	for _index: int in days:
+		date = _advance_date(date)
+	return date
+
+
+func _advance_date(date: Dictionary) -> Dictionary:
+	const WEEKDAYS: PackedStringArray = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+	var next: Dictionary = date.duplicate(true)
+	next["day"] = int(next["day"]) + 1
+	var month_days: int = _days_in_month(int(next["month"]), int(next["year"]))
+	if int(next["day"]) > month_days:
+		next["day"] = 1
+		next["month"] = int(next["month"]) + 1
+		if int(next["month"]) > 12:
+			next["month"] = 1
+			next["year"] = int(next["year"]) + 1
+	var weekday_index: int = WEEKDAYS.find(str(date.get("weekday", "monday")))
+	next["weekday"] = WEEKDAYS[(weekday_index + 1) % WEEKDAYS.size()]
+	return next
+
+
+func _days_in_month(month: int, year: int) -> int:
+	if month in [4, 6, 9, 11]:
+		return 30
+	if month == 2:
+		return 29 if year % 4 == 0 else 28
+	return 31
+
+
+func _calendar_value(date: Dictionary) -> int:
+	return int(date.get("year", 1)) * 372 + int(date.get("month", 1)) * 31 + int(date.get("day", 1))
+
+
 func _activation_error(state: Dictionary, conversation: Dictionary) -> String:
 	var activation: Dictionary = conversation.get("activation", {})
 	if activation.has("quest_active") and str(activation["quest_active"]) not in state["quest_state"]["active"]:
 		return "Required quest is not active."
+	if activation.has("quest_any_active"):
+		var any_quest_active: bool = false
+		for quest_id: Variant in activation["quest_any_active"]:
+			if str(quest_id) in state["quest_state"]["active"]:
+				any_quest_active = true
+				break
+		if not any_quest_active:
+			return "A related quest must be active."
 	if activation.has("location"):
 		var expected_location: String = str(activation["location"])
 		var current_location: String = str(state["world_state"]["current_location"])
@@ -285,6 +526,18 @@ func _activation_error(state: Dictionary, conversation: Dictionary) -> String:
 		return "Conversation is unavailable during this activity block."
 	if activation.has("blocks") and str(state["clock"]["block"]) not in activation["blocks"]:
 		return "Conversation is unavailable during this activity block."
+	if activation.has("npc_available"):
+		var character: Variant = _registry.get_character(str(activation["npc_available"]))
+		if not character is Dictionary:
+			return "The required character is unavailable."
+		for commitment: Variant in character.get("schedule", {}).get("fixed_commitments", []):
+			if not commitment is Dictionary or not bool(commitment.get("unavailable", false)):
+				continue
+			if str(state["clock"]["weekday"]) in commitment.get("days", []) and str(state["clock"]["block"]) in commitment.get("blocks", []):
+				return "%s is busy with %s right now." % [
+					character.get("display_name", activation["npc_available"]),
+					str(commitment.get("activity", "work")).replace("_", " "),
+				]
 	return ""
 
 

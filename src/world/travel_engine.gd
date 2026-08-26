@@ -94,6 +94,7 @@ func execute_travel(state: Dictionary, destination: String, mode: String, source
 		return _failure(str(selected.get("reason", "That route is unavailable.")))
 
 	var working: Dictionary = state
+	var destination_was_discovered: bool = str(selected["destination"]) in state["world_state"].get("discovered_locations", [])
 	var events: Array = []
 	if str(selected["origin"]) == "hale_home" and TUTORIAL_QUEST not in working["quest_state"]["active"] and TUTORIAL_QUEST not in working["quest_state"]["completed"]:
 		var tutorial_result: Dictionary = start_transportation_tutorial(working, "%s.tutorial" % source)
@@ -146,6 +147,23 @@ func execute_travel(state: Dictionary, destination: String, mode: String, source
 		return result
 	working = result["state"]
 	events.append(result["event"])
+	if not destination_was_discovered:
+		result = _quests.record_event(working, "location_discovered", {
+			"location": selected["destination"],
+		}, "%s.discovery" % source)
+		if not result.get("ok", false):
+			return result
+		working = result["state"]
+	for quest_event: Dictionary in [
+		{"event": "location_entered", "location": selected["destination"]},
+		{"event": "trip_completed", "mode": mode, "location": selected["destination"]},
+	]:
+		var event_name: String = str(quest_event["event"])
+		quest_event.erase("event")
+		result = _quests.record_event(working, event_name, quest_event, "%s.%s" % [source, event_name])
+		if not result.get("ok", false):
+			return result
+		working = result["state"]
 	result = _complete_matching_objectives(working, selected["destination"], mode, source, events)
 	if not result.get("ok", false):
 		return result

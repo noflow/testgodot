@@ -23,6 +23,12 @@ The City Map now plans and confirms graph-based walking, bus, taxi, and permitte
 car travel across nine opening destinations. Trips charge fares, advance the live
 clock, respect closures and safety requirements, update quests, and arrive in a
 reusable data-driven destination scene with explorable rooms.
+Westshore Administration, Harbor Employment Centre, and Forge Fitness now expose
+room-specific activity panels. The Westshore advisor creates an actual semester
+schedule and tuition state; Harbor provides employment orientation, listing review,
+and interview practice; and Rachel's assessment unlocks scheduled strength and
+cardio training. Authored quest events now advance objectives and complete branches
+without scene-specific quest code.
 
 ## Planned technology
 

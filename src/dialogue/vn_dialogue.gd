@@ -118,7 +118,10 @@ func _handle_result(result: Dictionary) -> void:
 		_show_error(str(result.get("errors", ["Dialogue could not continue."])[0]))
 		return
 	if result.get("ended", false):
-		get_tree().change_scene_to_file(AppConstants.SANDBOX_SCENE)
+		var location_id: String = str(GameState.current_state.get("world_state", {}).get("current_location", "hale_home")).get_slice(".", 0)
+		get_tree().change_scene_to_file(
+			AppConstants.HALE_HOME_SCENE if location_id == "hale_home" else AppConstants.CITY_LOCATION_SCENE
+		)
 		return
 	_render_view(result["view"])
 

@@ -10,6 +10,7 @@ const HomeActionEngineScript: GDScript = preload("res://src/world/home_action_en
 const PhoneEngineScript: GDScript = preload("res://src/phone/phone_engine.gd")
 const HouseholdScheduleEngineScript: GDScript = preload("res://src/world/household_schedule_engine.gd")
 const TravelEngineScript: GDScript = preload("res://src/world/travel_engine.gd")
+const CityActionEngineScript: GDScript = preload("res://src/world/city_action_engine.gd")
 
 var _failures: PackedStringArray = []
 var _tests_run: int = 0
@@ -37,6 +38,7 @@ func _run_all() -> void:
 	_test_home_actions_and_wardrobe()
 	_test_household_schedules_and_conversations()
 	_test_city_travel_and_routes()
+	_test_city_institutions_and_fitness()
 	_test_phone_messages_and_calendar()
 	_test_opening_dialogue_branches()
 
@@ -62,6 +64,7 @@ func _test_project_configuration() -> void:
 	_expect(InputMap.has_action("city_map"), "City map input action exists.")
 	_expect(ProjectSettings.has_setting("autoload/PhoneService"), "Phone service is configured as an autoload.")
 	_expect(ProjectSettings.has_setting("autoload/TravelService"), "Travel service is configured as an autoload.")
+	_expect(ProjectSettings.has_setting("autoload/CityActionService"), "City action service is configured as an autoload.")
 
 
 func _test_required_json_documents() -> void:
@@ -70,6 +73,7 @@ func _test_required_json_documents() -> void:
 		"res://content/runtime/new_game_state.json",
 		"res://content/systems/character_creation.json",
 		"res://content/systems/home_interactions.json",
+		"res://content/systems/city_interactions.json",
 		"res://content/systems/phone.json",
 		"res://content/opening/opening_week.json",
 		"res://content/world/all_locations.json",
@@ -127,6 +131,7 @@ func _test_hale_home_scene() -> void:
 		var city_instance: Node = city_scene.instantiate()
 		_expect(city_instance.get_node_or_null("Player") != null, "City destination scene contains the top-down player.")
 		_expect(city_instance.get_node_or_null("Interface/Smartphone") != null, "City destination scene contains the reusable smartphone.")
+		_expect(city_instance.get_node_or_null("Interface/ActionPanel") != null, "City destination scene contains its room activity panel.")
 		city_instance.free()
 
 
@@ -238,6 +243,128 @@ func _test_city_travel_and_routes() -> void:
 	_expect("transportation" in state["player"]["phone"]["unlocked_apps"], "Transportation onboarding unlocks its future phone app.")
 
 
+func _test_city_institutions_and_fitness() -> void:
+	var factory: RefCounted = NewGameStateFactoryScript.new(_registry)
+	var simulation: RefCounted = SimulationEngineScript.new(_registry)
+	var quests: RefCounted = QuestEngineScript.new(_registry, simulation)
+	var dialogue: RefCounted = DialogueEngineScript.new(_registry, simulation, quests)
+	var city_actions: RefCounted = CityActionEngineScript.new(_registry, simulation, quests)
+	var state: Dictionary = factory.create_new_game({}, {"random_seed": 814})
+
+	var result: Dictionary = quests.start_quest(state, "enroll_at_westshore", "test.enrollment")
+	state = result["state"]
+	state["world_state"]["current_location"] = "westshore_administration_office.advisor_office"
+	result = quests.record_event(state, "location_entered", {"location": "westshore_administration_office"}, "test.enrollment")
+	state = result["state"]
+	result = dialogue.begin(state, "westshore_enrollment_advisor")
+	state = result["state"]
+	result = dialogue.advance(state)
+	state = result["state"]
+	result = dialogue.choose(state, "ready")
+	state = result["state"]
+	result = dialogue.choose(state, "computers")
+	state = result["state"]
+	result = dialogue.advance(state)
+	state = result["state"]
+	result = dialogue.choose(state, "full_time")
+	state = result["state"]
+	result = dialogue.advance(state)
+	state = result["state"]
+	result = dialogue.choose(state, "loan")
+	_expect(result.get("ok", false), "Westshore's full enrollment conversation reaches schedule confirmation.")
+	state = result["state"]
+	_expect(state["player"]["education"]["enrolled"], "Enrollment records Westshore as the active institution.")
+	_expect(state["player"]["education"]["courses"].size() == 4, "Full-time enrollment selects four first-semester courses.")
+	_expect(state["calendar_state"]["events"].size() > 50, "Enrollment creates the semester's recurring class calendar events.")
+	_expect("enroll_at_westshore" in state["quest_state"]["completed"], "Authored enrollment events complete every enrollment objective.")
+	_expect(state["player"]["education"]["student_debt"] == 4000.0, "The student-loan tuition choice records education debt.")
+	_expect("education" in state["player"]["phone"]["unlocked_apps"], "Completing enrollment unlocks the Education phone app.")
+	result = dialogue.advance(state)
+	_expect(result.get("ok", false) and result.get("ended", false), "The enrollment VN scene closes normally after state changes.")
+
+	state = factory.create_new_game({}, {"random_seed": 817})
+	result = quests.start_quest(state, "enroll_at_westshore", "test.part_time_enrollment")
+	state = result["state"]
+	state["world_state"]["current_location"] = "westshore_administration_office.advisor_office"
+	result = quests.record_event(state, "location_entered", {"location": "westshore_administration_office"}, "test.part_time_enrollment")
+	state = result["state"]
+	result = dialogue.begin(state, "westshore_enrollment_advisor")
+	state = result["state"]
+	result = dialogue.advance(state)
+	state = result["state"]
+	result = dialogue.choose(state, "ready")
+	state = result["state"]
+	result = dialogue.choose(state, "arts")
+	state = result["state"]
+	result = dialogue.advance(state)
+	state = result["state"]
+	result = dialogue.choose(state, "part_time")
+	state = result["state"]
+	result = dialogue.advance(state)
+	state = result["state"]
+	result = dialogue.choose(state, "loan_part_time")
+	_expect(result.get("ok", false), "The advisor provides the separate part-time tuition path.")
+	state = result["state"]
+	_expect(state["player"]["education"]["courses"].size() == 2 and state["player"]["education"]["student_debt"] == 2200.0, "Part-time enrollment selects two courses and records the lower tuition amount.")
+
+	state = factory.create_new_game({}, {"random_seed": 815})
+	result = quests.start_quest(state, "find_employment", "test.employment")
+	state = result["state"]
+	state["world_state"]["current_location"] = "harbor_employment_centre.counselor_desk"
+	result = dialogue.begin(state, "harbor_employment_orientation")
+	state = result["state"]
+	result = dialogue.advance(state)
+	state = result["state"]
+	result = dialogue.choose(state, "full_time")
+	state = result["state"]
+	_expect(state["quest_state"]["objectives"]["find_employment"]["open_jobs"], "Employment orientation completes the job-board onboarding objective.")
+	result = dialogue.advance(state)
+	state = result["state"]
+	_expect(result.get("ended", false), "Employment orientation closes before returning to the job floor.")
+	state["world_state"]["current_location"] = "harbor_employment_centre.job_floor"
+	result = city_actions.perform_activity(state, "browse_harbor_job_board")
+	_expect(result.get("ok", false), "The Harbor job board is a playable timed activity.")
+	state = result["state"]
+	_expect(state["player"]["employment"]["discovered_jobs"].size() == 4, "Browsing stores four discovered entry-level jobs.")
+	_expect(state["quest_state"]["objectives"]["find_employment"]["review_requirements"], "Reviewing four jobs advances the full-time employment quest.")
+
+	state = factory.create_new_game({}, {"random_seed": 816})
+	state["world_state"]["current_location"] = "forge_fitness.front_desk"
+	result = quests.record_event(state, "location_discovered", {"location": "forge_fitness"}, "test.forge")
+	state = result["state"]
+	_expect("first_rep" in state["quest_state"]["active"], "Discovering Forge Fitness activates Rachel's First Rep quest.")
+	result = dialogue.begin(state, "rachel_fitness_assessment")
+	state = result["state"]
+	_expect(state["quest_state"]["objectives"]["first_rep"]["visit_gym"], "Beginning Rachel's scene records the first NPC encounter.")
+	result = dialogue.advance(state)
+	state = result["state"]
+	result = dialogue.advance(state)
+	state = result["state"]
+	result = dialogue.choose(state, "honest")
+	state = result["state"]
+	result = dialogue.advance(state)
+	state = result["state"]
+	result = dialogue.choose(state, "disclose")
+	state = result["state"]
+	result = dialogue.advance(state)
+	state = result["state"]
+	result = dialogue.choose(state, "balanced")
+	_expect(result.get("ok", false), "Rachel's fitness assessment accepts a balanced training goal.")
+	state = result["state"]
+	_expect(bool(state["player"]["flags"].get("fitness.gym_access", false)), "Rachel's completed assessment grants gym access.")
+	_expect(_calendar_template_exists(state, "beginner_forge_workout"), "Rachel adds a usable beginner workout to the calendar.")
+	result = dialogue.advance(state)
+	state = result["state"]
+	state["world_state"]["current_location"] = "forge_fitness.strength_floor"
+	var strength_before: float = state["player"]["attributes"]["strength"]
+	result = city_actions.perform_activity(state, "beginner_forge_workout")
+	_expect(result.get("ok", false), "Rachel's beginner workout can be completed on the gym floor.")
+	state = result["state"]
+	_expect(state["player"]["attributes"]["strength"] > strength_before, "The beginner workout increases physical attributes.")
+	_expect("first_rep" in state["quest_state"]["completed"], "Completing the workout finishes Rachel's First Rep quest.")
+	_expect(int(state["relationships"]["rachel_morgan"].get("unlocked_chapter_level", 0)) == 2, "First Rep unlocks Rachel's second relationship chapter.")
+
+
 func _test_character_creation_scene() -> void:
 	var creation_scene: PackedScene = load("res://scenes/creation/character_creation.tscn")
 	_expect(creation_scene != null, "Character creation scene loads.")
@@ -296,8 +423,8 @@ func _test_vertical_slice_acceptance_suite() -> void:
 func _test_content_registry() -> void:
 	var errors: PackedStringArray = _registry.validate_foundation()
 	_expect(errors.is_empty(), "Complete content registry validates without errors.")
-	_expect(_registry.get_document_count() == 38, "Registry loads all 38 source documents.")
-	_expect(_registry.get_package_count() == 21, "Registry indexes all 21 global packages.")
+	_expect(_registry.get_document_count() == 39, "Registry loads all 39 source documents.")
+	_expect(_registry.get_package_count() == 22, "Registry indexes all 22 global packages.")
 	_expect(_registry.get_all("locations").size() == 61, "Registry indexes all 61 locations.")
 	_expect(_registry.get_all("districts").size() == 10, "Registry indexes all 10 districts.")
 	_expect(_registry.get_character("elena_reyes_hale") is Dictionary, "Characters can be retrieved by id.")
@@ -305,6 +432,7 @@ func _test_content_registry() -> void:
 	_expect(_registry.get_content("quests", "opening_future_choice") is Dictionary, "Quests can be retrieved by id.")
 	_expect(_registry.get_all("operations").size() == 55, "Registry indexes all 55 simulation operations.")
 	_expect(_registry.get_all("actions").size() == 10, "Registry indexes all 10 initial home actions.")
+	_expect(_registry.get_all("city_interactions").size() == 9, "Registry indexes all nine opening city interactions.")
 	_expect(_registry.get_all("phone_apps").size() == 9, "Registry indexes all nine required phone apps.")
 
 
@@ -351,7 +479,7 @@ func _test_new_game_state_factory() -> void:
 	_expect("weather" in state["player"]["phone"]["unlocked_apps"], "The weather app is available from the start.")
 	_expect(state["relationships"].size() == 15, "Relationship defaults initialize for every opening character.")
 	_expect(state["world_state"]["weather"]["condition"] == "partly_cloudy", "Opening weather initializes from the calendar.")
-	_expect(state["content_state"]["loaded_packages"].size() == 21, "Runtime state records its loaded content manifest.")
+	_expect(state["content_state"]["loaded_packages"].size() == 22, "Runtime state records its loaded content manifest.")
 	_expect(state["world_state"]["random_seed"] == 12345, "Runtime random seed can be reproduced.")
 	_expect(not _contains_placeholder(state), "Runtime state contains no unresolved template placeholders.")
 	for npc_state: Variant in state["npc_states"]:
@@ -792,6 +920,13 @@ func _calendar_event_status(state: Dictionary, event_id: String) -> String:
 		if calendar_event is Dictionary and str(calendar_event.get("id", "")) == event_id:
 			return str(calendar_event.get("status", ""))
 	return ""
+
+
+func _calendar_template_exists(state: Dictionary, template_id: String) -> bool:
+	for calendar_event: Variant in state["calendar_state"].get("events", []):
+		if calendar_event is Dictionary and str(calendar_event.get("template_id", "")) == template_id:
+			return true
+	return false
 
 
 func _npc_location(state: Dictionary, character_id: String) -> String:

@@ -1,0 +1,151 @@
+{
+  "format_version": 1,
+  "package_id": "port_alder_city_interactions",
+  "city_interactions": [
+    {
+      "id": "westshore_enrollment_meeting",
+      "name": "Meet the Enrollment Advisor",
+      "description": "Choose a program, course load, and tuition plan.",
+      "type": "conversation",
+      "conversation_id": "westshore_enrollment_advisor",
+      "location": "westshore_administration_office",
+      "rooms": ["reception", "advisor_office"],
+      "requirements": {"quest_active": "enroll_at_westshore"}
+    },
+    {
+      "id": "harbor_employment_orientation",
+      "name": "Employment Centre Orientation",
+      "description": "Set your work search preferences and unlock job services.",
+      "type": "conversation",
+      "conversation_id": "harbor_employment_orientation",
+      "location": "harbor_employment_centre",
+      "rooms": ["counselor_desk"],
+      "requirements": {"quest_any_active": ["find_employment", "find_part_time_employment"]}
+    },
+    {
+      "id": "browse_harbor_job_board",
+      "name": "Browse the Job Board",
+      "description": "Review four entry-level listings and their schedules.",
+      "type": "activity",
+      "location": "harbor_employment_centre",
+      "rooms": ["job_floor", "computer_area"],
+      "operations": [
+        {"operation": "time.advance", "payload": {"minutes": 30}},
+        {"operation": "skill.add_experience", "payload": {"skill": "administration", "experience": 45, "activity_difficulty": 10}},
+        {"operation": "need.adjust", "payload": {"need": "stress", "amount": 1}}
+      ],
+      "state_updates": [
+        {"path": "player.employment.discovered_jobs", "value": ["grocery_stock_clerk", "clothing_sales_associate", "forge_front_desk", "junior_office_assistant"]}
+      ],
+      "quest_events": [
+        {"event": "job_board_opened"},
+        {"event": "job_listings_viewed", "count": 4, "employment_types": ["part_time", "full_time"]}
+      ]
+    },
+    {
+      "id": "practice_harbor_interview",
+      "name": "Practice an Interview",
+      "description": "Rehearse professional answers in the practice room.",
+      "type": "activity",
+      "location": "harbor_employment_centre",
+      "rooms": ["interview_room"],
+      "operations": [
+        {"operation": "time.advance", "payload": {"minutes": 60}},
+        {"operation": "skill.add_experience", "payload": {"skill": "public_speaking", "experience": 85, "activity_difficulty": 15}},
+        {"operation": "attribute.adjust", "payload": {"attribute": "confidence", "amount": 1}},
+        {"operation": "need.adjust", "payload": {"need": "stress", "amount": -2}}
+      ]
+    },
+    {
+      "id": "rachel_fitness_assessment",
+      "name": "Talk to Rachel",
+      "description": "Complete a safe introductory fitness assessment.",
+      "type": "conversation",
+      "conversation_id": "rachel_fitness_assessment",
+      "character_id": "rachel_morgan",
+      "location": "forge_fitness",
+      "rooms": ["front_desk", "trainer_office"],
+      "requirements": {"quest_active": "first_rep"}
+    },
+    {
+      "id": "beginner_forge_workout",
+      "name": "Beginner Forge Workout",
+      "description": "Follow Rachel's balanced introductory session.",
+      "type": "activity",
+      "activity_id": "beginner_forge_workout",
+      "location": "forge_fitness",
+      "rooms": ["strength_floor", "cardio_floor"],
+      "requirements": {
+        "quest_active": "first_rep",
+        "quest_objective_complete": ["first_rep", "complete_assessment"],
+        "quest_objective_incomplete": ["first_rep", "finish_first_workout"],
+        "flag": "fitness.gym_access",
+        "appropriate_shoes": true,
+        "maximum_inebriation": 24
+      },
+      "operations": [
+        {"operation": "time.advance", "payload": {"minutes": 90}},
+        {"operation": "attribute.adjust", "payload": {"attribute": "strength", "amount": 2}},
+        {"operation": "attribute.adjust", "payload": {"attribute": "stamina", "amount": 2}},
+        {"operation": "attribute.adjust", "payload": {"attribute": "fitness", "amount": 1}},
+        {"operation": "skill.add_experience", "payload": {"skill": "fitness_training", "experience": 120, "activity_difficulty": 20}},
+        {"operation": "need.adjust", "payload": {"need": "energy", "amount": -16}},
+        {"operation": "need.adjust", "payload": {"need": "hydration", "amount": 15}},
+        {"operation": "need.adjust", "payload": {"need": "hygiene", "amount": -16}}
+      ],
+      "quest_events": [{"event": "activity_completed", "activity": "beginner_forge_workout"}],
+      "once_only": true
+    },
+    {
+      "id": "forge_strength_workout",
+      "name": "Strength Workout",
+      "description": "Train strength for ninety minutes.",
+      "type": "activity",
+      "activity_id": "strength_workout",
+      "location": "forge_fitness",
+      "rooms": ["strength_floor"],
+      "requirements": {"flag": "fitness.gym_access", "appropriate_shoes": true, "maximum_inebriation": 24, "minimum_energy": 20},
+      "operations": [
+        {"operation": "time.advance", "payload": {"minutes": 90}},
+        {"operation": "attribute.adjust", "payload": {"attribute": "strength", "amount": 2}},
+        {"operation": "attribute.adjust", "payload": {"attribute": "stamina", "amount": 1}},
+        {"operation": "skill.add_experience", "payload": {"skill": "fitness_training", "experience": 90, "activity_difficulty": 24}},
+        {"operation": "need.adjust", "payload": {"need": "energy", "amount": -18}},
+        {"operation": "need.adjust", "payload": {"need": "hydration", "amount": 15}},
+        {"operation": "need.adjust", "payload": {"need": "hygiene", "amount": -18}}
+      ]
+    },
+    {
+      "id": "forge_cardio_workout",
+      "name": "Cardio Workout",
+      "description": "Train stamina and fitness for ninety minutes.",
+      "type": "activity",
+      "activity_id": "stamina_workout",
+      "location": "forge_fitness",
+      "rooms": ["cardio_floor"],
+      "requirements": {"flag": "fitness.gym_access", "appropriate_shoes": true, "maximum_inebriation": 24, "minimum_energy": 20},
+      "operations": [
+        {"operation": "time.advance", "payload": {"minutes": 90}},
+        {"operation": "attribute.adjust", "payload": {"attribute": "stamina", "amount": 2}},
+        {"operation": "attribute.adjust", "payload": {"attribute": "fitness", "amount": 2}},
+        {"operation": "skill.add_experience", "payload": {"skill": "running", "experience": 90, "activity_difficulty": 24}},
+        {"operation": "need.adjust", "payload": {"need": "energy", "amount": -20}},
+        {"operation": "need.adjust", "payload": {"need": "hydration", "amount": 18}},
+        {"operation": "need.adjust", "payload": {"need": "hygiene", "amount": -20}}
+      ]
+    },
+    {
+      "id": "forge_shower",
+      "name": "Take a Shower",
+      "description": "Use the locker-room showers after training.",
+      "type": "activity",
+      "location": "forge_fitness",
+      "rooms": ["locker_room"],
+      "operations": [
+        {"operation": "time.advance", "payload": {"minutes": 30}},
+        {"operation": "need.adjust", "payload": {"need": "hygiene", "amount": 35}},
+        {"operation": "need.adjust", "payload": {"need": "mood", "amount": 2}}
+      ]
+    }
+  ]
+}

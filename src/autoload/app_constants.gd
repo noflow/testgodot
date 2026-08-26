@@ -25,6 +25,7 @@ const REQUIRED_FOUNDATION_FILES: PackedStringArray = [
 	"res://content/runtime/new_game_state.json",
 	"res://content/systems/character_creation.json",
 	"res://content/systems/home_interactions.json",
+	"res://content/systems/city_interactions.json",
 	"res://content/systems/phone.json",
 	"res://content/opening/opening_week.json",
 	"res://content/world/all_locations.json",

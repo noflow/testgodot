@@ -16,6 +16,12 @@ Grades combine attendance, assignments, projects, and examinations. Energy, Focu
 Stress, Study skill, relevant subject skills, and preparation affect performance.
 Classes and jobs may be double-booked, but the player cannot attend both.
 
+The Westshore enrollment-advisor conversation is playable at the Administration
+Office. It records the chosen program and load, handles payment, aid, or student
+debt, selects conflict-free first-semester sections, and creates dated class and lab
+events through December 13. Completing these authored events closes the enrollment
+quest, activates the family allowance rule, and unlocks the Education phone app.
+
 ## Employment
 
 The opening catalog contains thirteen jobs covering retail, food service, cinema,
@@ -44,6 +50,11 @@ Employment begins with a thirty-day probation period. Attendance, punctuality,
 task quality, skills, Energy, Focus, and feedback affect performance. Raises are
 reviewed approximately every ninety days, while promotions also require an opening.
 
+Harbor Employment Centre currently provides a playable orientation, a thirty-minute
+job-board review that discovers four opening listings, and an hour-long interview
+practice activity. Applications, interviews, offers, and recurring shifts remain
+the next employment implementation layer.
+
 ## Repeatable activities
 
 Twenty-seven activities currently cover hygiene, wardrobe, laundry, food, alcohol,
@@ -55,9 +66,15 @@ full block. Repeating activities far below the player's skill eventually stops
 providing useful experience. Health, fatigue, injury, weather, and intoxication
 checks can restrict unsafe activities.
 
+Forge Fitness currently provides Rachel's First Rep assessment, a scheduled
+beginner workout, repeatable strength and cardio sessions, and locker-room showers.
+Training requires gym access, suitable shoes, sufficient energy, and safe
+inebriation. Workouts advance time, raise attributes and skills, and change Energy,
+Hydration, and Hygiene.
+
 ## Source data
 
 - `content/systems/education.json`
 - `content/systems/employment.json`
 - `content/systems/repeatable_activities.json`
-
+- `content/systems/city_interactions.json`

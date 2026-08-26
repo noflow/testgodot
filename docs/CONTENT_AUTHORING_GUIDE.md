@@ -61,6 +61,20 @@ values, applies branch-specific household rules, starts linked quests, and expos
 active quest definitions and progress to the phone UI. Elena's opening scene is the
 first complete production path through both engines.
 
+Quest objectives now respond directly to their authored completion events. Current
+city-facing events include `location_discovered`, `location_entered`,
+`npc_encounter_started`, `conversation_node_reached`, `conversation_completed`,
+`value_set`, `calendar_events_created`, `job_board_opened`,
+`job_listings_viewed`, and `activity_completed`. When the last objective completes,
+the quest engine applies its branch and completion effects automatically.
+
+Room actions owned by an institution or location live in
+`content/systems/city_interactions.json`. A city interaction names its location and
+rooms, declares whether it starts an authored conversation or an atomic activity,
+and may provide requirements, simulation operations, state updates, and quest
+events. This keeps the city scene generic and makes additional locations importable
+without adding location-specific UI code.
+
 Character quests using `activation.event: quest_completed` are synchronized after
 their prerequisite quest finishes. An optional `earliest_block` delays activation
 until the authored point in the day. The household schedule resolver checks fixed

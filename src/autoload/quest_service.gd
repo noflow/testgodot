@@ -50,6 +50,19 @@ func sync_automatic_activations(source: String = "gameplay.quest_sync") -> Dicti
 	return result
 
 
+func record_event(event_name: String, payload: Dictionary = {}, source: String = "gameplay.event") -> Dictionary:
+	if not GameState.has_active_game():
+		return {"ok": false, "errors": PackedStringArray(["No active game."])}
+	var result: Dictionary = _engine.record_event(GameState.current_state, event_name, payload, source)
+	if not result.get("ok", false):
+		quest_error.emit(result.get("errors", PackedStringArray()))
+		return result
+	GameState.replace_state(result["state"])
+	for quest_id: Variant in GameState.current_state["quest_state"].get("active", []):
+		quest_state_changed.emit(str(quest_id))
+	return result
+
+
 func _commit(result: Dictionary, quest_id: String) -> Dictionary:
 	if not result.get("ok", false):
 		quest_error.emit(result.get("errors", PackedStringArray()))

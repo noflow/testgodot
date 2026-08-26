@@ -29,13 +29,19 @@
         "load_choice": {"speaker": "westshore_enrollment_advisor", "line": "Would you like a full-time schedule or a lighter part-time load? Classes only run during Morning, Lunch, and Afternoon blocks.", "next": "load_response"},
         "load_response": {"speaker": "player", "choices": [
           {"id": "full_time", "text": "Full-time.", "effects": [{"operation": "set_value", "key": "education.load", "value": "full_time"}], "next": "tuition"},
-          {"id": "part_time", "text": "Part-time.", "effects": [{"operation": "set_value", "key": "education.load", "value": "part_time"}], "next": "tuition"}
+          {"id": "part_time", "text": "Part-time.", "effects": [{"operation": "set_value", "key": "education.load", "value": "part_time"}], "next": "tuition_part_time"}
         ]},
         "tuition": {"speaker": "westshore_enrollment_advisor", "line": "Tuition is four thousand dollars for the semester. You can pay now, combine savings and family help, apply for aid, or arrange a student loan.", "next": "tuition_choice"},
         "tuition_choice": {"speaker": "player", "choices": [
           {"id": "pay", "text": "Pay from available funds.", "conditions": [{"money_at_least": 4000}], "effects": [{"operation": "spend_money", "value": 4000}, {"operation": "set_value", "key": "education.tuition_plan", "value": "paid"}], "next": "enrolled"},
           {"id": "aid", "text": "Apply for scholarships and financial aid.", "effects": [{"operation": "set_value", "key": "education.tuition_plan", "value": "aid_pending"}, {"operation": "start_quest", "value": "westshore_financial_aid"}], "next": "enrolled"},
           {"id": "loan", "text": "Arrange a student loan.", "effects": [{"operation": "set_value", "key": "education.tuition_plan", "value": "student_loan"}, {"operation": "create_debt", "principal": 4000, "type": "student_loan"}], "next": "enrolled"}
+        ]},
+        "tuition_part_time": {"speaker": "westshore_enrollment_advisor", "line": "Part-time tuition is two thousand two hundred dollars for the semester. You can pay now, apply for aid, or arrange a student loan.", "next": "tuition_part_time_choice"},
+        "tuition_part_time_choice": {"speaker": "player", "choices": [
+          {"id": "pay_part_time", "text": "Pay from available funds.", "conditions": [{"money_at_least": 2200}], "effects": [{"operation": "spend_money", "value": 2200}, {"operation": "set_value", "key": "education.tuition_plan", "value": "paid"}], "next": "enrolled"},
+          {"id": "aid_part_time", "text": "Apply for scholarships and financial aid.", "effects": [{"operation": "set_value", "key": "education.tuition_plan", "value": "aid_pending"}, {"operation": "start_quest", "value": "westshore_financial_aid"}], "next": "enrolled"},
+          {"id": "loan_part_time", "text": "Arrange a student loan.", "effects": [{"operation": "set_value", "key": "education.tuition_plan", "value": "student_loan"}, {"operation": "create_debt", "principal": 2200, "type": "student_loan"}], "next": "enrolled"}
         ]},
         "enrolled": {"speaker": "westshore_enrollment_advisor", "line": "You're provisionally enrolled. Your classes and orientation will appear on your calendar as soon as the schedule is confirmed.", "effects": [{"operation": "create_calendar_from_class_schedule"}, {"operation": "complete_conversation"}], "next": null}
       }

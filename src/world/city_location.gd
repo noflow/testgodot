@@ -10,6 +10,9 @@ const COLUMNS: int = 3
 @onready var clock_label: Label = %ClockLabel
 @onready var prompt_label: Label = %PromptLabel
 @onready var status_label: Label = %StatusLabel
+@onready var action_panel: PanelContainer = %ActionPanel
+@onready var action_title: Label = %ActionTitle
+@onready var action_buttons: VBoxContainer = %ActionButtons
 
 var _location_id: String = ""
 var _location: Dictionary = {}
@@ -52,11 +55,22 @@ func _process(_delta: float) -> void:
 			_set_current_room(str(room_id))
 			break
 	var room_rect: Rect2 = _room_rects.get(_current_room_id, Rect2())
-	prompt_label.text = "E / A — Look around %s" % _room_name(_current_room_id) if player.position.distance_to(room_rect.get_center()) < 115.0 else ""
+	if action_panel.visible:
+		prompt_label.text = ""
+	elif player.position.distance_to(room_rect.get_center()) < 115.0:
+		var interactions: Array = CityActionService.interactions_for_room(_location_id, _current_room_id)
+		prompt_label.text = "E / A — %s" % ("Open activities" if not interactions.is_empty() else "Look around %s" % _room_name(_current_room_id))
+	else:
+		prompt_label.text = ""
 	_refresh_hud()
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if action_panel.visible:
+		if event.is_action_pressed("cancel"):
+			_close_action_panel()
+			get_viewport().set_input_as_handled()
+		return
 	if smartphone.is_open():
 		if event.is_action_pressed("cancel") or event.is_action_pressed("phone"):
 			smartphone.close_phone()
@@ -120,7 +134,9 @@ func _restore_arrival_room() -> void:
 	if not _room_rects.has(room_id):
 		room_id = str(_rooms[0].get("id", "main_area"))
 	_current_room_id = room_id
-	player.position = _room_rects[room_id].get_center()
+	var saved_positions: Dictionary = GameState.current_state["world_state"].get("city_player_positions", {})
+	var saved_position: Array = saved_positions.get(_location_id, [])
+	player.position = Vector2(float(saved_position[0]), float(saved_position[1])) if saved_position.size() == 2 else _room_rects[room_id].get_center()
 	room_label.text = _room_name(room_id)
 
 
@@ -132,18 +148,104 @@ func _set_current_room(room_id: String) -> void:
 	var next_state: Dictionary = GameState.current_state.duplicate(true)
 	next_state["world_state"]["current_location"] = "%s.%s" % [_location_id, room_id]
 	GameState.replace_state(next_state)
+	QuestService.record_event("location_entered", {
+		"location": "%s.%s" % [_location_id, room_id],
+	}, "city.room_entered")
 	queue_redraw()
 
 
 func _on_interact_requested(_world_position: Vector2) -> void:
+	if action_panel.visible:
+		return
+	var interactions: Array = CityActionService.interactions_for_room(_location_id, _current_room_id)
+	if not interactions.is_empty():
+		_open_action_panel(interactions)
+		return
 	var room: Dictionary = _room_definition(_current_room_id)
 	var actions: Array = room.get("actions", [])
 	var services: Array = _location.get("services", [])
 	var available: Array = actions if not actions.is_empty() else services
-	status_label.text = "%s • Available here: %s. Full destination activities arrive in the next milestone." % [
+	status_label.text = "%s • Available here: %s." % [
 		_room_name(_current_room_id),
 		_join_labels(available),
 	]
+
+
+func _open_action_panel(interactions: Array) -> void:
+	_clear_action_buttons()
+	action_title.text = _room_name(_current_room_id)
+	for interaction: Variant in interactions:
+		if not interaction is Dictionary:
+			continue
+		var button: Button = Button.new()
+		button.custom_minimum_size = Vector2(0, 54)
+		button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		var available: bool = bool(interaction.get("available", false))
+		var reason: String = str(interaction.get("unavailable_reason", ""))
+		if str(interaction.get("type", "activity")) == "conversation" and available:
+			var dialogue_availability: Dictionary = DialogueService.can_begin(str(interaction.get("conversation_id", "")))
+			available = bool(dialogue_availability.get("ok", false))
+			reason = str(dialogue_availability.get("reason", "")) if not available else ""
+		button.text = "%s — %s" % [interaction.get("name", interaction.get("id", "Activity")), interaction.get("description", "")]
+		if not available:
+			button.text += "\nUnavailable: %s" % reason
+		button.disabled = not available
+		if available:
+			if str(interaction.get("type", "activity")) == "conversation":
+				button.pressed.connect(_on_conversation_selected.bind(str(interaction.get("conversation_id", ""))))
+			else:
+				button.pressed.connect(_on_activity_selected.bind(str(interaction.get("id", ""))))
+		action_buttons.add_child(button)
+	action_panel.visible = true
+	player.movement_enabled = false
+	for child: Node in action_buttons.get_children():
+		if child is Button and not child.disabled:
+			child.grab_focus()
+			break
+
+
+func _on_conversation_selected(conversation_id: String) -> void:
+	_remember_city_position()
+	var result: Dictionary = DialogueService.begin(conversation_id)
+	if not result.get("ok", false):
+		status_label.text = str(result.get("errors", ["That conversation is unavailable."])[0])
+		_close_action_panel()
+		return
+	get_tree().change_scene_to_file(AppConstants.VN_DIALOGUE_SCENE)
+
+
+func _on_activity_selected(interaction_id: String) -> void:
+	var result: Dictionary = CityActionService.perform(interaction_id)
+	if result.get("ok", false):
+		status_label.text = "%s completed. Time, stats, and quest progress were updated." % result["interaction"].get("name", interaction_id)
+	else:
+		status_label.text = str(result.get("errors", ["That activity could not be completed."])[0])
+	_close_action_panel()
+	_refresh_hud()
+
+
+func _on_close_action_panel_pressed() -> void:
+	_close_action_panel()
+
+
+func _close_action_panel() -> void:
+	action_panel.visible = false
+	player.movement_enabled = not smartphone.is_open()
+
+
+func _clear_action_buttons() -> void:
+	for child: Node in action_buttons.get_children():
+		action_buttons.remove_child(child)
+		child.queue_free()
+
+
+func _remember_city_position() -> void:
+	var next_state: Dictionary = GameState.current_state.duplicate(true)
+	if not next_state["world_state"].has("city_player_positions"):
+		next_state["world_state"]["city_player_positions"] = {}
+	next_state["world_state"]["current_location"] = "%s.%s" % [_location_id, _current_room_id]
+	next_state["world_state"]["city_player_positions"][_location_id] = [player.position.x, player.position.y]
+	GameState.replace_state(next_state)
 
 
 func _refresh_hud() -> void:
@@ -178,6 +280,7 @@ func _join_labels(values: Array) -> String:
 
 
 func _on_phone_opened() -> void:
+	action_panel.visible = false
 	player.movement_enabled = false
 
 
