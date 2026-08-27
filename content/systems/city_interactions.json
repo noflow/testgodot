@@ -149,6 +149,59 @@
         {"operation": "need.adjust", "payload": {"need": "hygiene", "amount": 35}},
         {"operation": "need.adjust", "payload": {"need": "mood", "amount": 2}}
       ]
+    },
+    {
+      "id": "browse_galleria_directory",
+      "name": "Browse the Mall Directory",
+      "description": "Review open stores, coming-soon units, and available storefronts.",
+      "type": "mall_directory",
+      "location": "port_alder_galleria",
+      "rooms": ["main_atrium", "lower_court", "upper_atrium"]
+    },
+    {
+      "id": "shop_coastline_casuals",
+      "name": "Shop at Coastline Casuals",
+      "description": "Browse affordable everyday clothing and shoes.",
+      "type": "store",
+      "store_id": "coastline_casuals",
+      "location": "port_alder_galleria",
+      "rooms": ["fashion_wing"]
+    },
+    {
+      "id": "shop_alder_department_store",
+      "name": "Shop at Alder Department Store",
+      "description": "Browse clothing, outerwear, household goods, and personal care items.",
+      "type": "store",
+      "store_id": "alder_department_store",
+      "location": "port_alder_galleria",
+      "rooms": ["department_store"]
+    },
+    {
+      "id": "shop_summit_sport_galleria",
+      "name": "Shop at Summit Sport",
+      "description": "Browse athletic clothing, shoes, and workout supplies.",
+      "type": "store",
+      "store_id": "summit_sport_galleria",
+      "location": "port_alder_galleria",
+      "rooms": ["lifestyle_wing"]
+    },
+    {
+      "id": "shop_galleria_essentials",
+      "name": "Shop at Galleria Essentials",
+      "description": "Browse personal care, health, household, and convenience items.",
+      "type": "store",
+      "store_id": "galleria_essentials",
+      "location": "port_alder_galleria",
+      "rooms": ["services_wing"]
+    },
+    {
+      "id": "shop_harbor_food_hall",
+      "name": "Order at Harbor Food Hall",
+      "description": "Choose basic meals, snacks, and drinks from the food hall counters.",
+      "type": "store",
+      "store_id": "harbor_food_hall",
+      "location": "port_alder_galleria",
+      "rooms": ["food_court"]
     }
   ]
 }

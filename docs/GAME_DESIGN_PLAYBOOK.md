@@ -404,6 +404,19 @@ Major NPCs have:
 
 NPCs may work weekdays, weekends, nights, rotating shifts, or flexible schedules. A free calendar block does not guarantee willingness to meet.
 
+Every fixed commitment and public-presence window resolves to an exact location and
+room. Visiting that VN scene displays the scheduled character portrait over the
+background. Work, class, sleep, and other unavailable commitments keep the NPC busy
+even when the player can see them; public-presence windows permit conversation.
+Four-on, three-off rotations advance from the opening date, while a shared calendar
+event overrides the normal routine at its authored meeting room.
+
+An undiscovered NPC is presented as someone new until an introduction records the
+first meeting and advances the relationship from stranger to acquaintance. Phone
+contact is a separate interaction: exchanging numbers adds the character to both
+Contacts and Messages. Meeting someone never reveals their home address, private
+profile, health information, or adult preferences.
+
 ## Opening cast
 
 Initial major characters:
@@ -491,11 +504,19 @@ transportation onboarding, the Westshore enrollment advisor, and the Harbor
 Employment Centre orientation.
 
 The opening Tuesday-through-Sunday calendar is mapped across all seven daily
-blocks as a simulation fixture, not a prescribed week. The canonical city registry defines ten Port Alder districts, sixty-one
+blocks as a simulation fixture, not a prescribed week. The canonical city registry defines ten Port Alder districts, sixty-four
 destinations, and more than three hundred rooms, including every opening NPC home,
 rentable and purchasable housing, education, work, shopping, entertainment, health,
 family, and outdoor spaces. Transportation data supplies walking, bus, taxi, and car
 time and cost.
+
+Harbor Centre now uses a six-block pedestrian hub connecting employment, finance,
+residential towers, civic services, transit, and Port Alder Galleria. The Galleria
+has fourteen connected VN areas across two levels and sixteen stable storefront
+units: five opening stores, two coming-soon stores, one rotating event unit, and
+eight vacant units reserved for future packages or mods. Public downtown locations
+are learned by following street arrows; undiscovered private residences remain
+hidden behind invitations or quest discovery.
 
 The initial playable systems catalog defines seven Westshore programs, fifteen
 first-semester courses, thirteen jobs with requirements and promotions, a scored
@@ -503,7 +524,7 @@ interview model, and twenty-seven repeatable life activities.
 
 The economy and ownership milestone defines three starting financial backgrounds,
 four account types, recurring bills and income, inventory containers, starting
-loadouts, thirty clothing items, food and alcohol, general supplies, and seven
+loadouts, thirty clothing items, food and alcohol, general supplies, and twelve
 initial stores. All prices remain provisional until simulation balancing.
 
 The technical architecture milestone defines the complete new-game runtime state,

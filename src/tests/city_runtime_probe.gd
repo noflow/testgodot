@@ -108,6 +108,110 @@ func _run_probe() -> void:
 	phone.close_phone()
 	instance.queue_free()
 	await get_tree().process_frame
+	var employment_state: Dictionary = factory.create_new_game({}, {"random_seed": 993})
+	employment_state["world_state"]["current_location"] = "harbor_employment_centre.job_floor"
+	GameState.replace_state(employment_state)
+	var employment_instance: Node = scene.instantiate()
+	get_tree().root.add_child(employment_instance)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var downtown_arrow: Button = employment_instance.get_node("%DownRoomArrow")
+	if not downtown_arrow.visible or "Employment Block" not in downtown_arrow.text:
+		printerr("CITY PROBE: an adjacent public Harbor Centre block was not offered for organic walking discovery")
+		get_tree().quit(1)
+		return
+	employment_instance.queue_free()
+	await get_tree().process_frame
+	var mall_state: Dictionary = factory.create_new_game({}, {"random_seed": 994})
+	for public_location_id: String in ["harbor_centre_downtown", "port_alder_galleria"]:
+		mall_state["world_state"]["unlocked_locations"].append(public_location_id)
+		mall_state["world_state"]["discovered_locations"].append(public_location_id)
+	mall_state["world_state"]["current_location"] = "port_alder_galleria.main_atrium"
+	GameState.replace_state(mall_state)
+	var mall_instance: Node = scene.instantiate()
+	get_tree().root.add_child(mall_instance)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var mall_left: Button = mall_instance.get_node("%PrevRoomArrow")
+	var mall_up: Button = mall_instance.get_node("%OutsideArrow")
+	var mall_down: Button = mall_instance.get_node("%DownRoomArrow")
+	var mall_right: Button = mall_instance.get_node("%NextRoomArrow")
+	if not mall_left.visible or "Street Entrance" not in mall_left.text or not mall_up.visible or "Upper Atrium" not in mall_up.text or not mall_down.visible or "Lower Court" not in mall_down.text or not mall_right.visible or "Fashion Wing" not in mall_right.text:
+		printerr("CITY PROBE: the Galleria atrium did not render its four authored navigation directions")
+		get_tree().quit(1)
+		return
+	var mall_action_buttons: VBoxContainer = mall_instance.get_node("Interface/MainMargin/MainLayout/ActionPanel/Margin/Layout/Scroll/ActionButtons")
+	if mall_action_buttons.get_child_count() != 1 or mall_action_buttons.get_child(0).disabled:
+		printerr("CITY PROBE: the Galleria directory interaction was unavailable in the main atrium")
+		get_tree().quit(1)
+		return
+	mall_action_buttons.get_child(0).pressed.emit()
+	await get_tree().process_frame
+	if mall_action_buttons.get_child_count() != 16 or str(mall_instance.get_node("%ActionTitle").text) != "PORT ALDER GALLERIA DIRECTORY":
+		printerr("CITY PROBE: the Galleria directory did not list all sixteen storefront slots")
+		get_tree().quit(1)
+		return
+	mall_instance.call("_set_current_room", "fashion_wing")
+	await get_tree().process_frame
+	if mall_action_buttons.get_child_count() != 1 or "Coastline Casuals" not in str(mall_action_buttons.get_child(0).text) or mall_action_buttons.get_child(0).disabled:
+		printerr("CITY PROBE: the fashion wing did not expose its physical storefront interaction")
+		get_tree().quit(1)
+		return
+	mall_action_buttons.get_child(0).pressed.emit()
+	await get_tree().process_frame
+	var mall_phone: Node = mall_instance.get_node("Interface/Smartphone")
+	if not mall_phone.visible or str(mall_phone.get_node("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/ContentPanel/ContentMargin/ContentLayout/AppTitle").text) != "COASTLINE CASUALS":
+		printerr("CITY PROBE: the physical Galleria storefront did not open its in-person catalog")
+		get_tree().quit(1)
+		return
+	mall_phone.close_phone()
+	mall_instance.queue_free()
+	await get_tree().process_frame
+	var social_state: Dictionary = factory.create_new_game({}, {"random_seed": 995})
+	social_state["clock"]["block"] = "evening"
+	social_state["world_state"]["current_location"] = "westshore_campus.art_studios"
+	GameState.replace_state(social_state)
+	var social_instance: Node = scene.instantiate()
+	get_tree().root.add_child(social_instance)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var social_portraits: HBoxContainer = social_instance.get_node("%PortraitStage")
+	var social_actions: VBoxContainer = social_instance.get_node("Interface/MainMargin/MainLayout/ActionPanel/Margin/Layout/Scroll/ActionButtons")
+	if social_portraits.get_child_count() != 1 or social_actions.get_child_count() != 1 or "Someone New" not in str(social_actions.get_child(0).text) or social_actions.get_child(0).disabled:
+		printerr("CITY PROBE: Chloe's scheduled open-studio presence did not render as an available VN encounter")
+		get_tree().quit(1)
+		return
+	social_actions.get_child(0).pressed.emit()
+	await get_tree().process_frame
+	if social_actions.get_child_count() < 2 or "Introduce Yourself" not in str(social_actions.get_child(0).text):
+		printerr("CITY PROBE: an undiscovered scheduled NPC did not offer an organic introduction")
+		get_tree().quit(1)
+		return
+	social_actions.get_child(0).pressed.emit()
+	await get_tree().process_frame
+	var chloe_discovered: bool = false
+	for npc_state_value: Variant in GameState.current_state.get("npc_states", []):
+		if npc_state_value is Dictionary and str(npc_state_value.get("character_id", "")) == "chloe_bennett":
+			chloe_discovered = bool(npc_state_value.get("discovered", false))
+			break
+	if not chloe_discovered or "chloe_bennett" in GameState.current_state["player"]["phone"]["known_contacts"]:
+		printerr("CITY PROBE: introduction did not create an acquaintance separately from phone contact")
+		get_tree().quit(1)
+		return
+	social_actions.get_child(0).pressed.emit()
+	await get_tree().process_frame
+	if "Ask to Exchange Numbers" not in str(social_actions.get_child(0).text):
+		printerr("CITY PROBE: a discovered acquaintance did not offer contact exchange")
+		get_tree().quit(1)
+		return
+	social_actions.get_child(0).pressed.emit()
+	await get_tree().process_frame
+	if "chloe_bennett" not in GameState.current_state["player"]["phone"]["known_contacts"] or not GameState.current_state["player"]["phone"]["message_threads"].has("chloe_bennett"):
+		printerr("CITY PROBE: contact exchange did not update Contacts and Messages")
+		get_tree().quit(1)
+		return
+	social_instance.queue_free()
+	await get_tree().process_frame
 	var hidden_state: Dictionary = factory.create_new_game({}, {"random_seed": 992})
 	hidden_state["world_state"]["current_location"] = "alder_heights_residential_street.hale_block"
 	GameState.replace_state(hidden_state)
@@ -146,5 +250,5 @@ func _run_probe() -> void:
 		printerr("CITY PROBE: revealed residence arrow did not arrive at the authored porch")
 		scene_tree.quit(1)
 		return
-	print("PASS: City destination rendered immersive arrows, blocked shortcuts, hid undiscovered NPC homes, and revealed invited residences.")
+	print("PASS: City destinations rendered immersive arrows, dynamic scheduled NPCs and organic contacts, Harbor Centre discovery, the Galleria storefront, blocked shortcuts, and protected private homes.")
 	scene_tree.quit(0)

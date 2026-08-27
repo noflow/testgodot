@@ -11,6 +11,7 @@ const PhoneEngineScript: GDScript = preload("res://src/phone/phone_engine.gd")
 const HouseholdScheduleEngineScript: GDScript = preload("res://src/world/household_schedule_engine.gd")
 const TravelEngineScript: GDScript = preload("res://src/world/travel_engine.gd")
 const NavigationAccessScript: GDScript = preload("res://src/world/navigation_access.gd")
+const NpcPresenceEngineScript: GDScript = preload("res://src/world/npc_presence_engine.gd")
 const CityActionEngineScript: GDScript = preload("res://src/world/city_action_engine.gd")
 const EducationEngineScript: GDScript = preload("res://src/education/education_engine.gd")
 const EmploymentEngineScript: GDScript = preload("res://src/employment/employment_engine.gd")
@@ -46,6 +47,7 @@ func _run_all() -> void:
 	_test_home_actions_and_wardrobe()
 	_test_household_schedules_and_conversations()
 	_test_city_travel_and_routes()
+	_test_city_npc_presence_and_acquaintances()
 	_test_city_institutions_and_fitness()
 	_test_playable_education_semester()
 	_test_employment_applications_interviews_and_offers()
@@ -260,8 +262,8 @@ func _test_household_schedules_and_conversations() -> void:
 	var elena: Dictionary = schedules.resolve_character(state, "elena_reyes_hale")
 	var daniel: Dictionary = schedules.resolve_character(state, "daniel_hale")
 	var lily: Dictionary = schedules.resolve_character(state, "lily_hale")
-	_expect(not elena["present"] and elena["location"] == "st_maren_community_clinic", "Elena is at her clinic during Tuesday Morning.")
-	_expect(not daniel["present"] and daniel["location"] == "port_alder_transit_depot", "Daniel is at the transit depot during Tuesday Morning.")
+	_expect(not elena["present"] and elena["location"] == "st_maren_community_clinic.administrator_office", "Elena is at her clinic during Tuesday Morning.")
+	_expect(not daniel["present"] and daniel["location"] == "port_alder_transit_depot.repair_bays", "Daniel is at the transit depot during Tuesday Morning.")
 	_expect(lily["present"] and lily["room"] == "living_room", "Lily is physically present in the living room Tuesday Morning.")
 
 	var result: Dictionary = quests.complete_quest(state, "opening_future_choice", "test.household_opening_complete")
@@ -299,7 +301,7 @@ func _test_household_schedules_and_conversations() -> void:
 	lily = schedules.resolve_character(state, "lily_hale")
 	_expect(elena["present"] and elena["room"] == "kitchen", "Elena returns home to the kitchen Tuesday Evening.")
 	_expect(daniel["present"] and daniel["room"] == "living_room", "Daniel returns home to the living room Tuesday Evening.")
-	_expect(not lily["present"] and lily["location"] == "westshore_campus", "Lily is unavailable during her Tuesday Evening library shift.")
+	_expect(not lily["present"] and lily["location"] == "westshore_campus.library", "Lily is unavailable during her Tuesday Evening library shift.")
 	state["world_state"]["current_location"] = "hale_home.living_room"
 	_expect(dialogue.can_begin(state, "daniel_quiet_check_in")["ok"], "Daniel's quiet check-in is available in the living room.")
 	state["world_state"]["current_location"] = "hale_home.kitchen"
@@ -322,6 +324,22 @@ func _test_city_travel_and_routes() -> void:
 	var navigation: RefCounted = NavigationAccessScript.new(_registry)
 	_expect(not bool(navigation.location_visibility_report(state, "rowan_family_home").get("allowed", false)), "Emma's home is invisible before a quest or invitation reveals it.")
 	_expect(not bool(navigation.target_access_report(state, "alder_heights_residential_street", "rowan_family_home.porch").get("allowed", false)), "A hidden residence does not expose its street arrow.")
+	_expect("harbor_centre_downtown" not in state["world_state"]["unlocked_locations"] and "port_alder_galleria" not in state["world_state"]["unlocked_locations"], "Harbor Centre and the Galleria begin as organic walking discoveries instead of phone-map shortcuts.")
+	var downtown_access: Dictionary = navigation.target_access_report(state, "harbor_employment_centre", "harbor_centre_downtown.employment_block")
+	_expect(downtown_access.get("allowed", false) and downtown_access.get("discover_on_entry", false), "The Employment Centre exit exposes adjacent public Harbor Centre space for discovery on entry.")
+	var exploration_state: Dictionary = state.duplicate(true)
+	exploration_state["world_state"]["current_location"] = "harbor_employment_centre.job_floor"
+	var exploration_result: Dictionary = simulation.apply_operation(exploration_state, "world.discover_location", {"location_id": "harbor_centre_downtown", "discovery_source": "exploration"}, "test.harbor_exploration")
+	exploration_state = exploration_result.get("state", exploration_state)
+	var downtown_plan: Dictionary = travel.plan_routes(exploration_state, "harbor_centre_downtown")
+	_expect(exploration_result.get("ok", false) and downtown_plan.get("ok", false) and _route_option(downtown_plan, "walking").get("minutes", 0) == 2, "Walking into Harbor Centre discovers it and connects its two-minute local route.")
+	exploration_state["world_state"]["current_location"] = "harbor_centre_downtown.galleria_entrance"
+	var galleria_access: Dictionary = navigation.target_access_report(exploration_state, "harbor_centre_downtown", "port_alder_galleria.street_entrance")
+	_expect(galleria_access.get("allowed", false) and galleria_access.get("discover_on_entry", false), "The downtown street exposes the public Galleria only when the player reaches its entrance.")
+	exploration_result = simulation.apply_operation(exploration_state, "world.discover_location", {"location_id": "port_alder_galleria", "discovery_source": "exploration"}, "test.galleria_exploration")
+	exploration_state = exploration_result.get("state", exploration_state)
+	var galleria_plan: Dictionary = travel.plan_routes(exploration_state, "port_alder_galleria")
+	_expect(exploration_result.get("ok", false) and galleria_plan.get("ok", false) and _route_option(galleria_plan, "walking").get("minutes", 0) == 4, "Discovering the Galleria adds its four-minute downtown walking route to later trip planning.")
 	var locked_private_plan: Dictionary = travel.plan_routes(state, "rowan_family_home")
 	_expect(not locked_private_plan.get("ok", false), "A hidden residence cannot be reached through a direct route request.")
 	var private_state: Dictionary = state.duplicate(true)
@@ -406,6 +424,54 @@ func _test_city_travel_and_routes() -> void:
 	state = result["state"]
 	_expect("getting_around_port_alder" in state["quest_state"]["completed"], "Viewing routes and taking the bus completes transportation onboarding.")
 	_expect("transportation" in state["player"]["phone"]["unlocked_apps"], "Transportation onboarding unlocks its future phone app.")
+
+
+func _test_city_npc_presence_and_acquaintances() -> void:
+	var factory: RefCounted = NewGameStateFactoryScript.new(_registry)
+	var simulation: RefCounted = SimulationEngineScript.new(_registry)
+	var presence: RefCounted = NpcPresenceEngineScript.new(_registry)
+	var state: Dictionary = factory.create_new_game({}, {"random_seed": 790})
+	var emma: Dictionary = presence.resolve_character(state, "emma_rowan")
+	var chloe: Dictionary = presence.resolve_character(state, "chloe_bennett")
+	var rachel: Dictionary = presence.resolve_character(state, "rachel_morgan")
+	var hannah: Dictionary = presence.resolve_character(state, "hannah_brooks")
+	_expect(str(emma.get("location", "")) == "westshore_campus.classrooms" and not emma.get("available_to_talk", true), "Emma's Tuesday class schedule places her in the authored campus room but keeps her busy.")
+	_expect(str(chloe.get("location", "")) == "westshore_campus.art_studios" and not chloe.get("available_to_talk", true), "Chloe's studio commitment resolves to the art studios instead of a generic campus marker.")
+	_expect(str(rachel.get("location", "")) == "forge_fitness.front_desk" and rachel.get("available_to_talk", false), "Rachel's public-presence schedule makes her available at the front desk between client sessions.")
+	_expect(str(hannah.get("location", "")) == "st_maren_medical_center.staff_station" and not hannah.get("available_to_talk", true), "Hannah's four-on, three-off rotation starts with an authored nursing shift.")
+	_expect(presence.present_in_room(state, "westshore_campus", "art_studios").size() == 1, "Room-level presence returns only NPCs scheduled in that exact VN scene.")
+	var calendar_state: Dictionary = state.duplicate(true)
+	calendar_state["calendar_state"]["events"].append({"id": "test-emma-meetup", "date": "Y1-08-20", "block": "morning", "status": "scheduled", "participants": ["emma_rowan"], "location": "alder_bay_park.lookout", "title": "Morning Meetup"})
+	var calendar_emma: Dictionary = presence.resolve_character(calendar_state, "emma_rowan")
+	_expect(str(calendar_emma.get("location", "")) == "alder_bay_park.lookout" and calendar_emma.get("available_to_talk", false), "A shared calendar event overrides Emma's ordinary class location for its scheduled meeting block.")
+	var rotation_schedule_state: Dictionary = state.duplicate(true)
+	rotation_schedule_state["player"]["phone"]["known_contacts"].append("hannah_brooks")
+	rotation_schedule_state["player"]["phone"]["message_threads"]["hannah_brooks"] = {"character_id": "hannah_brooks", "messages": [], "last_read_sequence": 0}
+	var rotation_result: Dictionary = simulation.apply_operation(rotation_schedule_state, "calendar.schedule", {"calendar_event": {"id": "test-hannah-date", "date": "Y1-08-20", "weekday": "tuesday", "block": "morning", "participants": ["hannah_brooks"], "location": "alder_bay_park.lookout"}}, "test.rotation_calendar")
+	_expect(not rotation_result.get("ok", true) and "unavailable" in str(rotation_result.get("errors", [""])[0]), "Hannah's rotating nursing shift blocks conflicting calendar plans on rotation workdays.")
+	_expect(str(state["relationships"]["rachel_morgan"].get("relationship_stage", "")) == "stranger", "An undiscovered NPC begins as a stranger rather than a preexisting acquaintance.")
+	state["world_state"]["current_location"] = "forge_fitness.front_desk"
+	var premature_contact: Dictionary = simulation.apply_operation(state, "npc.meet", {
+		"character_id": "rachel_morgan", "interaction": "exchange_contact", "location": "forge_fitness.front_desk",
+	}, "test.premature_npc_contact")
+	_expect(not premature_contact.get("ok", true), "Phone contact cannot be obtained before the player introduces himself.")
+	var result: Dictionary = simulation.apply_operation(state, "npc.meet", {
+		"character_id": "rachel_morgan", "interaction": "introduction", "location": "forge_fitness.front_desk",
+	}, "test.npc_introduction")
+	_expect(result.get("ok", false), "A public introduction is stored through the atomic NPC meeting operation.")
+	state = result.get("state", state)
+	var rachel_state: Dictionary = _npc_state_for_test(state, "rachel_morgan")
+	_expect(rachel_state.get("discovered", false) and "rachel_morgan" not in state["player"]["phone"]["known_contacts"], "Introducing yourself discovers the acquaintance without automatically granting a phone number.")
+	_expect(str(state["relationships"]["rachel_morgan"].get("relationship_stage", "")) == "acquaintance", "The first meeting advances the relationship from stranger to acquaintance.")
+	result = simulation.apply_operation(state, "npc.meet", {
+		"character_id": "rachel_morgan", "interaction": "exchange_contact", "location": "forge_fitness.front_desk",
+	}, "test.npc_contact")
+	_expect(result.get("ok", false), "A discovered acquaintance can exchange contact information.")
+	state = result.get("state", state)
+	rachel_state = _npc_state_for_test(state, "rachel_morgan")
+	_expect("rachel_morgan" in state["player"]["phone"]["known_contacts"] and state["player"]["phone"]["message_threads"].has("rachel_morgan") and rachel_state.get("phone_contact", false), "Contact exchange updates the NPC record, Contacts app, and empty message thread together.")
+	var sync_result: Dictionary = presence.synchronize_npc_states(state)
+	_expect(str(_npc_state_for_test(sync_result.get("state", state), "chloe_bennett").get("current_location", "")) == "westshore_campus.art_studios", "Presence synchronization saves the exact scheduled NPC room.")
 
 
 func _test_city_institutions_and_fitness() -> void:
@@ -781,6 +847,8 @@ func _test_recurring_economy_and_shopping() -> void:
 	var bookshop: Dictionary = economy.store_listing(state, "westshore_bookshop")
 	_expect(float(bookshop.get("discount_percent", 0.0)) == 10.0, "Active students receive the authored Westshore store discount.")
 	_expect(float(bookshop.get("items", [])[0].get("price", {}).get("total", 0.0)) == 3.85, "Store quotes apply student discount before the authored seven-percent sales tax.")
+	var mall_store: Dictionary = economy.store_listing(state, "coastline_casuals")
+	_expect(str(mall_store.get("store", {}).get("location", "")) == "port_alder_galleria.fashion_wing" and mall_store.get("items", []).size() == 12, "The physical Galleria storefront exposes its twelve-item data-driven catalog.")
 	var failed_state: Dictionary = factory.create_new_game({}, {"random_seed": 1202})
 	failed_state["player"]["economy"]["accounts"].merge({"wallet_cash": 0.0, "checking": 0.0, "savings": 0.0, "credit_card": -1000.0}, true)
 	var failed_quantity: int = _stack_quantity(failed_state, "kitchen_storage", "food_granola_bar")
@@ -981,7 +1049,7 @@ func _test_vertical_slice_acceptance_suite() -> void:
 		return
 
 	var tests: Array = suite.get("tests", [])
-	_expect(tests.size() == 70, "Acceptance suite contains 70 cases.")
+	_expect(tests.size() == 78, "Acceptance suite contains 78 cases.")
 	var ids: Dictionary = {}
 	for test_case: Variant in tests:
 		if test_case is Dictionary:
@@ -996,7 +1064,7 @@ func _test_content_registry() -> void:
 	_expect(errors.is_empty(), "Complete content registry validates without errors.")
 	_expect(_registry.get_document_count() == 43, "Registry loads all 43 source documents.")
 	_expect(_registry.get_package_count() == 26, "Registry indexes all 26 global packages.")
-	_expect(_registry.get_all("locations").size() == 62, "Registry indexes all 62 locations.")
+	_expect(_registry.get_all("locations").size() == 64, "Registry indexes all 64 locations.")
 	_expect(_registry.get_all("districts").size() == 10, "Registry indexes all 10 districts.")
 	_expect(_registry.get_character("elena_reyes_hale") is Dictionary, "Characters can be retrieved by id.")
 	_expect(_registry.get_location("hale_home") is Dictionary, "Locations can be retrieved by id.")
@@ -1009,7 +1077,7 @@ func _test_content_registry() -> void:
 	_expect(str(westshore_rooms.get("courtyard", {}).get("navigation", {}).get("left", "")) == "westshore_administration_office.reception" and str(westshore_rooms.get("courtyard", {}).get("navigation", {}).get("right", "")) == "cafeteria", "The campus courtyard connects Administration and the Cafeteria through directional paths.")
 	_expect(str(westshore_rooms.get("cafeteria", {}).get("navigation", {}).get("right", "")) == "westshore_bookshop.sales_floor" and str(westshore_rooms.get("transit_loop", {}).get("navigation", {}).get("left", "")) == "cypress_hall_dorm.lobby", "Westshore arrows reach the Bookshop and Cypress Hall lobby.")
 	_expect(_registry.get_content("quests", "opening_future_choice") is Dictionary, "Quests can be retrieved by id.")
-	_expect(_registry.get_all("operations").size() == 66, "Registry indexes all 66 simulation operations.")
+	_expect(_registry.get_all("operations").size() == 67, "Registry indexes all 67 simulation operations.")
 	_expect(_registry.get_all("date_activities").size() == 3, "Registry indexes all three opening date activities.")
 	_expect(_registry.get_all("vn_backgrounds").size() == 17, "Registry indexes the initial seventeen VN background assignments, including the Hale landing and entryway.")
 	var emma_assets: Dictionary = _registry.get_character("emma_rowan").get("asset_refs", {})
@@ -1020,7 +1088,21 @@ func _test_content_registry() -> void:
 	_expect(bool(quest_rules.get("repeatable_quest_rules", {}).get("authored_requirements_rechecked_before_every_run", false)), "Repeatable quest runs recheck all authored requirements.")
 	_expect(_registry.get_content("quests", "build_a_training_rhythm") is Dictionary and _registry.get_content("quests", "consistency_under_pressure") is Dictionary, "Registry indexes both counted stages of Rachel's repeatable training chain.")
 	_expect(_registry.get_all("actions").size() == 10, "Registry indexes all 10 initial home actions.")
-	_expect(_registry.get_all("city_interactions").size() == 9, "Registry indexes all nine opening city interactions.")
+	_expect(_registry.get_all("city_interactions").size() == 15, "Registry indexes all fifteen opening city interactions.")
+	_expect(_registry.get_all("stores").size() == 12, "Registry indexes seven city shops plus five opening Galleria storefronts.")
+	var harbor_centre: Dictionary = _registry.get_location("harbor_centre_downtown")
+	var harbor_rooms: Dictionary = {}
+	for room_value: Variant in harbor_centre.get("rooms", []):
+		if room_value is Dictionary:
+			harbor_rooms[str(room_value.get("id", ""))] = room_value
+	_expect(harbor_rooms.size() == 6 and str(harbor_rooms.get("employment_block", {}).get("navigation", {}).get("up", "")) == "harbor_employment_centre.job_floor", "Harbor Centre provides six walkable public blocks connected to the Employment Centre.")
+	_expect(str(harbor_rooms.get("galleria_entrance", {}).get("navigation", {}).get("right", "")) == "port_alder_galleria.street_entrance", "Harbor Centre's authored street graph reaches the Galleria entrance.")
+	var galleria: Dictionary = _registry.get_location("port_alder_galleria")
+	var storefront_slots: Array = galleria.get("mall", {}).get("storefront_slots", [])
+	var occupied_slots: int = storefront_slots.filter(func(slot: Variant) -> bool: return slot is Dictionary and str(slot.get("status", "")) == "occupied").size()
+	var vacant_slots: int = storefront_slots.filter(func(slot: Variant) -> bool: return slot is Dictionary and str(slot.get("status", "")) == "vacant").size()
+	_expect(galleria.get("rooms", []).size() == 14 and storefront_slots.size() == 16, "Port Alder Galleria has fourteen navigable areas and sixteen storefront slots.")
+	_expect(occupied_slots == 5 and vacant_slots == 8, "The Galleria opens with five stores and reserves eight vacant expansion units.")
 	_expect(_registry.get_all("phone_apps").size() == 14, "Registry indexes the foundation apps plus Education, Jobs, Money, Housing, and Shopping.")
 	_expect(_registry.get_all("housing_listings").size() == 3, "Registry indexes the dorm, affordable studio, and starter condo listings.")
 
@@ -2019,6 +2101,13 @@ func _npc_location(state: Dictionary, character_id: String) -> String:
 		if npc_state is Dictionary and str(npc_state.get("character_id", "")) == character_id:
 			return str(npc_state.get("current_location", ""))
 	return ""
+
+
+func _npc_state_for_test(state: Dictionary, character_id: String) -> Dictionary:
+	for npc_state: Variant in state.get("npc_states", []):
+		if npc_state is Dictionary and str(npc_state.get("character_id", "")) == character_id:
+			return npc_state
+	return {}
 
 
 func _route_option(plan: Dictionary, mode: String) -> Dictionary:

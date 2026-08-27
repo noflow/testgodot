@@ -64,6 +64,51 @@
       "open_blocks": ["afternoon", "evening", "late_evening"],
       "price_multiplier": 1.45,
       "stock": ["cinema_ticket", "food_chips", "food_candy_bar", "drink_water_bottle", "drink_soda"]
+    },
+    {
+      "id": "coastline_casuals",
+      "name": "Coastline Casuals",
+      "location": "port_alder_galleria.fashion_wing",
+      "open_days": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
+      "open_blocks": ["morning", "lunch", "afternoon", "evening", "late_evening"],
+      "price_multiplier": 1.0,
+      "stock": ["underwear_boxers_basic", "underwear_panties_basic", "bra_basic", "shirt_basic_white", "shirt_basic_navy", "shirt_hoodie_grey", "pants_jeans_basic", "pants_chinos_basic", "socks_crew_basic", "shoes_sneakers_basic", "jacket_rain_shell_basic", "hat_baseball_cap"]
+    },
+    {
+      "id": "alder_department_store",
+      "name": "Alder Department Store",
+      "location": "port_alder_galleria.department_store",
+      "open_days": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
+      "open_blocks": ["morning", "lunch", "afternoon", "evening"],
+      "price_multiplier": 1.05,
+      "stock": ["underwear_boxers_premium", "underwear_panties_premium", "bra_sports", "shirt_oxford_blue", "shirt_dress_white", "shirt_hoodie_grey", "pants_jeans_basic", "pants_dress_black", "socks_wool_winter", "shoes_dress_black", "shoes_rain_boots", "jacket_rain_shell_premium", "jacket_winter_parka", "hat_beanie_wool", "gloves_winter_basic", "scarf_wool_basic", "hygiene_toothbrush", "hygiene_toothpaste", "hygiene_soap", "household_detergent"]
+    },
+    {
+      "id": "summit_sport_galleria",
+      "name": "Summit Sport",
+      "location": "port_alder_galleria.lifestyle_wing",
+      "open_days": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
+      "open_blocks": ["morning", "lunch", "afternoon", "evening"],
+      "price_multiplier": 1.08,
+      "stock": ["bra_sports", "shirt_work_polo", "pants_athletic", "socks_crew_basic", "shoes_sneakers_basic", "shoes_sneakers_premium", "hat_baseball_cap", "gym_day_pass", "drink_water_bottle", "food_granola_bar"]
+    },
+    {
+      "id": "galleria_essentials",
+      "name": "Galleria Essentials",
+      "location": "port_alder_galleria.services_wing",
+      "open_days": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
+      "open_blocks": ["morning", "lunch", "afternoon", "evening", "late_evening"],
+      "price_multiplier": 1.02,
+      "stock": ["hygiene_toothbrush", "hygiene_toothpaste", "hygiene_soap", "health_condoms_3", "health_home_test", "health_pain_reliever", "household_detergent", "drink_water_bottle", "drink_juice_apple", "food_granola_bar", "food_chips"]
+    },
+    {
+      "id": "harbor_food_hall",
+      "name": "Harbor Food Hall",
+      "location": "port_alder_galleria.food_court",
+      "open_days": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
+      "open_blocks": ["morning", "lunch", "afternoon", "evening", "late_evening"],
+      "price_multiplier": 1.18,
+      "stock": ["food_fruit_cup", "food_chips", "food_candy_bar", "food_sandwich", "food_salad", "drink_water_bottle", "drink_juice_apple", "drink_soda", "drink_beer_can", "drink_wine_bottle"]
     }
   ],
   "stock_rules": {"daily_restock": true, "staples_always_available": true, "weather_items_more_visible_before_storms": true, "seasonal_stock_changes": true, "sold_out_state_allowed": true},

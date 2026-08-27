@@ -198,6 +198,57 @@ unknown residences and denies invitation, relationship, lease, employee, and
 restricted rooms unless their specific saved permission is present. The content
 validator rejects missing home entrances and invalid arrow targets.
 
+## City NPC presence authoring
+
+Every `schedule.fixed_commitments` entry requires `days`, `blocks`, `activity`, an
+exact `location` path, and `unavailable`. Use a room path such as
+`westshore_campus.art_studios`, not only the district or building. A character at
+work or school can still appear on the VN stage, but `unavailable: true` prevents
+social interaction. Four-on, three-off schedules may use `rotation_day_1` through
+`rotation_day_4`, followed by `first_day_off`, `second_day_off`, and
+`third_day_off`.
+
+Use `schedule.public_presence` for the places and blocks where an NPC may be met
+organically. These entries use the same room-level fields and default to available.
+Shared calendar events take priority, followed by fixed commitments and public
+presence; outside those entries the NPC returns to their authored home without
+being exposed in a private room.
+
+Characters with public presence need an `encounter` object. `intro_line` is the
+first-meeting voice, `contact_line` responds to exchanging numbers, `busy_line`
+explains why a visible NPC cannot talk, and `contact_policy` is
+`after_introduction` or `never`. Routine lines remain in `ambient_dialogue` and may
+filter by `blocks` and optional location IDs. Introduction and contact exchange are
+separate saved events; neither one reveals a home address or private profile.
+
+Public locations can be discovered through adjacent arrows without being listed on
+the new-game phone map. Give the location a visible `discovery` object whose sources
+include `exploration`, connect a public entrance room from an already reachable
+room, and add a transportation `local_link`. Entering the arrow target reveals and
+unlocks that location; hidden residences never use this shortcut.
+
+## Mall and storefront authoring
+
+A shopping mall remains an ordinary location with authored rooms and directional
+navigation. Its `mall.storefront_slots` array describes the directory and reserves
+stable space for later content. Each slot requires a unique `unit`, a valid `room`,
+a `level`, a display `name`, and one of four statuses: `occupied`, `coming_soon`,
+`rotating`, or `vacant`.
+
+An occupied slot also requires a unique `store_id` found in
+`content/systems/stores.json`. That store's `location` must point back to the mall
+and room, for example `port_alder_galleria.fashion_wing`. Add a `type: "store"`
+entry to `content/systems/city_interactions.json` in the same room so the in-scene
+choice opens its catalog. A `type: "mall_directory"` interaction may be placed in
+one or more atriums. Coming-soon, rotating, and vacant slots need no store record or
+interaction until they become playable.
+
+Mods can fill a reserved unit by changing its status to `occupied`, assigning a
+new store ID, supplying that store catalog, and adding its room interaction. New
+units may be appended without changing the generic mall scene. Validation rejects
+duplicate units, unknown rooms or stores, unsupported statuses, and occupied stores
+whose location points outside the mall.
+
 Character quests using `activation.event: quest_completed` are synchronized after
 their prerequisite quest finishes. An optional `earliest_block` delays activation
 until the authored point in the day. The household schedule resolver checks fixed

@@ -213,6 +213,38 @@ func _validate_character_packages() -> void:
 		var home_location: String = str(character.get("home", {}).get("location_id", ""))
 		if get_location(home_location) == null:
 			_last_errors.append("Character %s has unknown home location %s." % [character_id, home_location])
+		var schedule: Dictionary = character.get("schedule", {})
+		for collection_name: String in ["fixed_commitments", "public_presence"]:
+			for entry_value: Variant in schedule.get(collection_name, []):
+				if not entry_value is Dictionary:
+					_last_errors.append("Character %s has a non-object %s schedule entry." % [character_id, collection_name])
+					continue
+				_validate_character_schedule_location(str(character_id), collection_name, entry_value)
+		if not schedule.get("public_presence", []).is_empty():
+			var encounter: Variant = character.get("encounter")
+			if not encounter is Dictionary:
+				_last_errors.append("Character %s has public presence but no encounter authoring." % character_id)
+			elif str(encounter.get("contact_policy", "after_introduction")) not in ["after_introduction", "never"]:
+				_last_errors.append("Character %s has an unsupported contact policy." % character_id)
+
+
+func _validate_character_schedule_location(character_id: String, collection_name: String, entry: Dictionary) -> void:
+	var location_path: String = str(entry.get("location", ""))
+	if location_path.is_empty():
+		_last_errors.append("Character %s %s entry %s has no location." % [character_id, collection_name, entry.get("activity", "unknown")])
+		return
+	var location_id: String = location_path.get_slice(".", 0)
+	var location: Variant = get_location(location_id)
+	if not location is Dictionary:
+		_last_errors.append("Character %s schedule references unknown location %s." % [character_id, location_path])
+		return
+	if not location_path.contains(".") and not entry.get("home_placement") is Dictionary:
+		_last_errors.append("Character %s %s entry %s requires an exact room path." % [character_id, collection_name, entry.get("activity", "unknown")])
+	if location_path.contains(".") and not _location_has_room(location, location_path.get_slice(".", 1)):
+		_last_errors.append("Character %s schedule references unknown room %s." % [character_id, location_path])
+	var home_placement: Variant = entry.get("home_placement")
+	if home_placement is Dictionary and not str(home_placement.get("room", "")).is_empty() and not _location_has_room(location, str(home_placement.get("room", ""))):
+		_last_errors.append("Character %s schedule has an unknown home-placement room in %s." % [character_id, location_id])
 
 
 func _validate_navigation_package() -> void:
@@ -244,6 +276,8 @@ func _validate_navigation_package() -> void:
 				var target_location: Variant = locations_by_id.get(target_location_id)
 				if not target_location is Dictionary or not _location_has_room(target_location, target_room_id):
 					_last_errors.append("Room %s.%s points to an unknown navigation target: %s." % [location_id, room_id, target])
+		if location.get("mall") is Dictionary:
+			_validate_mall_location(location_id, location, room_ids)
 	for character_id_value: Variant in _characters:
 		var character_id: String = str(character_id_value)
 		var character: Dictionary = _characters[character_id]
@@ -260,6 +294,63 @@ func _validate_navigation_package() -> void:
 			_last_errors.append("NPC home %s must explicitly define discoverable visibility." % home_location_id)
 		if str(home.get("outside_room", "")).is_empty():
 			_last_errors.append("NPC home %s requires an authored entrance room." % home_location_id)
+
+
+func _validate_mall_location(location_id: String, location: Dictionary, room_ids: PackedStringArray) -> void:
+	var mall: Dictionary = location.get("mall", {})
+	var slots_value: Variant = mall.get("storefront_slots", [])
+	if not slots_value is Array or slots_value.is_empty():
+		_last_errors.append("Mall %s requires at least one storefront slot." % location_id)
+		return
+	var units: Dictionary = {}
+	var occupied_store_ids: Dictionary = {}
+	for slot_value: Variant in slots_value:
+		if not slot_value is Dictionary:
+			_last_errors.append("Mall %s has a storefront slot that is not an object." % location_id)
+			continue
+		var unit: String = str(slot_value.get("unit", ""))
+		if unit.is_empty():
+			_last_errors.append("Mall %s has a storefront slot without a unit id." % location_id)
+		elif units.has(unit):
+			_last_errors.append("Mall %s has duplicate storefront unit %s." % [location_id, unit])
+		else:
+			units[unit] = true
+		var room_id: String = str(slot_value.get("room", ""))
+		if room_id not in room_ids:
+			_last_errors.append("Mall %s unit %s references unknown room %s." % [location_id, unit, room_id])
+		var status: String = str(slot_value.get("status", ""))
+		if status not in ["occupied", "coming_soon", "rotating", "vacant"]:
+			_last_errors.append("Mall %s unit %s has unsupported status %s." % [location_id, unit, status])
+		if status != "occupied":
+			continue
+		var store_id: String = str(slot_value.get("store_id", ""))
+		var store: Variant = get_content("stores", store_id)
+		if store_id.is_empty() or not store is Dictionary:
+			_last_errors.append("Mall %s occupied unit %s references unknown store %s." % [location_id, unit, store_id])
+			continue
+		if occupied_store_ids.has(store_id):
+			_last_errors.append("Mall %s assigns store %s to more than one occupied unit." % [location_id, store_id])
+		occupied_store_ids[store_id] = true
+		var store_location: String = str(store.get("location", ""))
+		var expected_store_location: String = "%s.%s" % [location_id, room_id]
+		if store_location != expected_store_location:
+			_last_errors.append("Mall %s unit %s store %s is assigned to %s instead of %s." % [location_id, unit, store_id, store_location, expected_store_location])
+		var interaction_found: bool = false
+		for interaction_value: Variant in get_all("city_interactions"):
+			if not interaction_value is Dictionary:
+				continue
+			if str(interaction_value.get("type", "")) == "store" and str(interaction_value.get("store_id", "")) == store_id and str(interaction_value.get("location", "")) == location_id and room_id in interaction_value.get("rooms", []):
+				interaction_found = true
+				break
+		if not interaction_found:
+			_last_errors.append("Mall %s occupied unit %s has no matching room storefront interaction." % [location_id, unit])
+	var directory_found: bool = false
+	for interaction_value: Variant in get_all("city_interactions"):
+		if interaction_value is Dictionary and str(interaction_value.get("type", "")) == "mall_directory" and str(interaction_value.get("location", "")) == location_id:
+			directory_found = true
+			break
+	if not directory_found:
+		_last_errors.append("Mall %s requires at least one mall-directory interaction." % location_id)
 
 
 func _location_has_room(location: Dictionary, room_id: String) -> bool:

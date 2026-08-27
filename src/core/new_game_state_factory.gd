@@ -207,7 +207,7 @@ func _apply_relationship_defaults(state: Dictionary) -> void:
 			var relationship: Dictionary = character.get("relationship_defaults", {}).duplicate(true)
 			var profile: Dictionary = character.get("profile", {})
 			var role: String = str(profile.get("role", ""))
-			var initial_stage: String = "acquaintance"
+			var initial_stage: String = "stranger"
 			if role in ["mother", "father", "older_sister"]:
 				initial_stage = "family"
 			elif int(relationship.get("friendship", 0)) >= 35:

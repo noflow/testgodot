@@ -101,7 +101,7 @@ func invitation_options(state: Dictionary, character_id: String, activity_id: St
 			var block: String = str(block_value)
 			if offset == 0 and BLOCKS.find(block) <= BLOCKS.find(str(state["clock"]["block"])):
 				continue
-			if _npc_busy(character, str(date_parts["weekday"]), block):
+			if _npc_busy(character, _date_string_from_parts(date_parts), str(date_parts["weekday"]), block):
 				continue
 			if not _location_open(activity, str(date_parts["weekday"]), block):
 				continue
@@ -157,7 +157,7 @@ func ask_out(
 		return _failure("The selected date and weekday do not match.")
 	if _date_moment_value(date, block) <= _clock_moment_value(state["clock"]):
 		return _failure("Choose a future date and activity block.")
-	if _npc_busy(character, weekday, block):
+	if _npc_busy(character, date, weekday, block):
 		return _failure("%s is working, studying, or otherwise unavailable then." % character.get("display_name", character_id))
 	if not _location_open(activity, weekday, block):
 		return _failure("The date location is closed at that time.")
@@ -951,11 +951,29 @@ func _calendar_slot_available(state: Dictionary, character_id: String, option: D
 	return true
 
 
-func _npc_busy(character: Dictionary, weekday: String, block: String) -> bool:
+func _npc_busy(character: Dictionary, date: String, weekday: String, block: String) -> bool:
 	for commitment: Variant in character.get("schedule", {}).get("fixed_commitments", []):
-		if commitment is Dictionary and bool(commitment.get("unavailable", false)) and weekday in commitment.get("days", []) and block in commitment.get("blocks", []):
+		if commitment is Dictionary and bool(commitment.get("unavailable", false)) and _schedule_day_matches(commitment.get("days", []), date, weekday) and block in commitment.get("blocks", []):
 			return true
 	return false
+
+
+func _schedule_day_matches(days: Array, date: String, weekday: String) -> bool:
+	if weekday in days or "all" in days:
+		return true
+	var parts: PackedStringArray = date.trim_prefix("Y").split("-")
+	if parts.size() != 3:
+		return false
+	var serial: int = _date_serial_days(int(parts[0]), int(parts[1]), int(parts[2]))
+	var opening_serial: int = _date_serial_days(1, 8, 20)
+	var rotation_day: int = posmod(serial - opening_serial, 7) + 1
+	if "rotation_day_%d" % rotation_day in days:
+		return true
+	if rotation_day == 5 and "first_day_off" in days:
+		return true
+	if rotation_day == 6 and "second_day_off" in days:
+		return true
+	return rotation_day == 7 and "third_day_off" in days
 
 
 func _location_open(activity: Dictionary, weekday: String, block: String) -> bool:

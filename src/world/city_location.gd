@@ -1,6 +1,7 @@
 extends Control
 
 const NavigationAccessScript: GDScript = preload("res://src/world/navigation_access.gd")
+const NpcPresenceEngineScript: GDScript = preload("res://src/world/npc_presence_engine.gd")
 const MONTH_NAMES: PackedStringArray = [
 	"January", "February", "March", "April", "May", "June",
 	"July", "August", "September", "October", "November", "December",
@@ -30,6 +31,7 @@ var _location: Dictionary = {}
 var _rooms: Array = []
 var _current_room_id: String = ""
 var _navigation_access: RefCounted
+var _presence_engine: RefCounted
 
 
 func _ready() -> void:
@@ -48,6 +50,8 @@ func _ready() -> void:
 		return
 	_location = definition
 	_navigation_access = NavigationAccessScript.new(ContentRegistry)
+	_presence_engine = NpcPresenceEngineScript.new(ContentRegistry)
+	_sync_city_presence()
 	_collect_accessible_rooms()
 	_restore_arrival_room()
 	smartphone.phone_opened.connect(_on_phone_opened)
@@ -223,6 +227,14 @@ func _move_to_navigation_target(target: String) -> void:
 	if not bool(access.get("allowed", false)):
 		status_label.text = str(access.get("reason", "That path is unavailable right now."))
 		return
+	if bool(access.get("discover_on_entry", false)) and target.contains("."):
+		var discovery_result: Dictionary = SimulationService.apply_operation("world.discover_location", {
+			"location_id": target.get_slice(".", 0),
+			"discovery_source": "exploration",
+		}, "world.directional_discovery")
+		if not discovery_result.get("ok", false):
+			status_label.text = str(discovery_result.get("errors", ["That destination could not be discovered."])[0])
+			return
 	if not target.contains("."):
 		_select_room(target)
 		return
@@ -291,16 +303,24 @@ func _rebuild_encounter_stage() -> void:
 	_clear_container(portrait_stage)
 	var interactions: Array = CityActionService.interactions_for_room(_location_id, _current_room_id)
 	var encounter_names: PackedStringArray = []
-	var portrait_count: int = 0
+	var portrait_ids: Dictionary = {}
 	for interaction: Variant in interactions:
 		if interaction is Dictionary and str(interaction.get("type", "activity")) == "conversation":
 			encounter_names.append(str(interaction.get("name", "Conversation")))
 			var character_id: String = str(interaction.get("character_id", ""))
-			if not character_id.is_empty():
+			if not character_id.is_empty() and not portrait_ids.has(character_id):
 				var character: Variant = ContentRegistry.get_character(character_id)
 				var display_name: String = str(character.get("display_name", character_id)) if character is Dictionary else character_id.replace("_", " ").capitalize()
 				_add_portrait_card(character_id, display_name)
-				portrait_count += 1
+				portrait_ids[character_id] = true
+	for presence_value: Variant in _presence_engine.present_in_room(GameState.current_state, _location_id, _current_room_id):
+		if not presence_value is Dictionary:
+			continue
+		var character_id: String = str(presence_value.get("character_id", ""))
+		if character_id.is_empty() or portrait_ids.has(character_id):
+			continue
+		_add_portrait_card(character_id, str(presence_value.get("display_name", character_id)))
+		portrait_ids[character_id] = true
 	if encounter_names.is_empty():
 		encounter_text.text = "[center][font_size=24][color=#b8c7c7]The location is open for sandbox activities. Scheduled characters and future encounters can appear on this stage.[/color][/font_size][/center]"
 	else:
@@ -322,7 +342,9 @@ func _add_portrait_card(character_id: String, _display_name: String) -> void:
 
 
 func _render_room_actions() -> void:
-	_open_action_panel(CityActionService.interactions_for_room(_location_id, _current_room_id))
+	var interactions: Array = CityActionService.interactions_for_room(_location_id, _current_room_id)
+	interactions.append_array(_presence_engine.interactions_for_room(GameState.current_state, _location_id, _current_room_id))
+	_open_action_panel(interactions)
 
 
 func _on_interact_requested(_world_position: Vector2 = Vector2.ZERO) -> void:
@@ -344,7 +366,18 @@ func _open_action_panel(interactions: Array) -> void:
 		var label: String = "%s\n%s" % [interaction.get("name", interaction.get("id", "Activity")), interaction.get("description", "")]
 		if not available:
 			label += "\nUnavailable: %s" % (reason if not reason.is_empty() else "Requirements not met")
-		var callback: Callable = _on_conversation_selected.bind(str(interaction.get("conversation_id", ""))) if str(interaction.get("type", "activity")) == "conversation" else _on_activity_selected.bind(str(interaction.get("id", "")))
+		var callback: Callable
+		match str(interaction.get("type", "activity")):
+			"conversation":
+				callback = _on_conversation_selected.bind(str(interaction.get("conversation_id", "")))
+			"store":
+				callback = _on_store_selected.bind(str(interaction.get("store_id", "")))
+			"mall_directory":
+				callback = _on_mall_directory_selected
+			"npc_presence":
+				callback = _on_npc_presence_selected.bind(str(interaction.get("character_id", "")))
+			_:
+				callback = _on_activity_selected.bind(str(interaction.get("id", "")))
 		_add_choice_button(label, callback, available)
 	if action_buttons.get_child_count() == 0:
 		var room: Dictionary = _room_definition(_current_room_id)
@@ -370,6 +403,15 @@ func _add_choice_button(label: String, callback: Callable, enabled: bool = true)
 
 func _on_conversation_selected(conversation_id: String) -> void:
 	_update_world_location(false)
+	var owner_character_id: String = _conversation_character_id(conversation_id)
+	if not owner_character_id.is_empty():
+		var owner_presence: Dictionary = _presence_engine.resolve_character(GameState.current_state, owner_character_id)
+		if owner_presence.get("present", false) and not owner_presence.get("discovered", false) and str(owner_presence.get("location", "")) == "%s.%s" % [_location_id, _current_room_id]:
+			SimulationService.apply_operation("npc.meet", {
+				"character_id": owner_character_id,
+				"interaction": "introduction",
+				"location": "%s.%s" % [_location_id, _current_room_id],
+			}, "city.story_introduction")
 	var result: Dictionary = DialogueService.begin(conversation_id)
 	if not result.get("ok", false):
 		status_label.text = str(result.get("errors", ["That conversation is unavailable."])[0])
@@ -384,8 +426,108 @@ func _on_activity_selected(interaction_id: String) -> void:
 		status_label.text = "%s completed. Time, stats, and quest progress were updated." % result["interaction"].get("name", interaction_id)
 	else:
 		status_label.text = str(result.get("errors", ["That activity could not be completed."])[0])
+	_sync_city_presence()
 	_render_location()
 	_refresh_hud()
+
+
+func _on_store_selected(store_id: String) -> void:
+	if store_id.is_empty():
+		status_label.text = "This storefront has not opened yet."
+		return
+	smartphone.open_storefront(store_id)
+
+
+func _on_mall_directory_selected() -> void:
+	_clear_container(action_buttons)
+	action_title.text = "PORT ALDER GALLERIA DIRECTORY"
+	var mall: Dictionary = _location.get("mall", {})
+	for slot_value: Variant in mall.get("storefront_slots", []):
+		if not slot_value is Dictionary:
+			continue
+		var slot: Dictionary = slot_value
+		var status: String = str(slot.get("status", "vacant"))
+		var name: String = str(slot.get("name", "Available Storefront"))
+		var label: String = "%s • %s\n%s — %s" % [
+			slot.get("unit", "Unit"), str(slot.get("level", "Mall")).replace("_", " ").capitalize(),
+			name, status.replace("_", " ").capitalize(),
+		]
+		_add_choice_button(label, Callable(), false)
+	SettingsService.apply_accessibility(action_buttons)
+
+
+func _on_npc_presence_selected(character_id: String) -> void:
+	var character: Variant = ContentRegistry.get_character(character_id)
+	var presence: Dictionary = _presence_engine.resolve_character(GameState.current_state, character_id)
+	if not character is Dictionary or not presence.get("present", false):
+		status_label.text = "That person is no longer here."
+		_render_location()
+		return
+	_clear_container(action_buttons)
+	action_title.text = str(character.get("display_name", character_id)).to_upper() if bool(presence.get("discovered", false)) else "SOMEONE NEW"
+	for conversation_value: Variant in _presence_engine.available_conversations(character_id):
+		if not conversation_value is Dictionary:
+			continue
+		var conversation_id: String = str(conversation_value.get("id", ""))
+		if DialogueService.can_begin(conversation_id).get("ok", false):
+			_add_choice_button("Story Conversation • %s" % conversation_value.get("title", conversation_id.replace("_", " ").capitalize()), _on_conversation_selected.bind(conversation_id))
+	if not bool(presence.get("discovered", false)):
+		_add_choice_button("Introduce Yourself\nBegin an acquaintance naturally.", _on_npc_introduction_selected.bind(character_id))
+	else:
+		if not bool(presence.get("phone_contact", false)) and _presence_engine.contact_exchange_allowed(character_id):
+			_add_choice_button("Ask to Exchange Numbers\nAdd each other to phone contacts.", _on_npc_contact_selected.bind(character_id))
+		_add_choice_button("Chat for a Few Minutes\n%s" % presence.get("activity_label", "Spend a little time together"), _on_npc_ambient_chat_selected.bind(character_id))
+	_add_choice_button("Back to Room Choices", _render_room_actions)
+	SettingsService.apply_accessibility(action_buttons)
+
+
+func _on_npc_introduction_selected(character_id: String) -> void:
+	var line: String = _presence_engine.introduction_line(GameState.current_state, character_id)
+	var result: Dictionary = SimulationService.apply_operation("npc.meet", {
+		"character_id": character_id,
+		"interaction": "introduction",
+		"location": "%s.%s" % [_location_id, _current_room_id],
+	}, "city.npc_introduction")
+	if not result.get("ok", false):
+		status_label.text = str(result.get("errors", ["The introduction could not begin."])[0])
+		return
+	QuestService.record_event("npc_encounter_started", {"character": character_id, "location": _location_id}, "city.npc_introduction")
+	TimeService.advance_minutes(5, "city.npc_introduction:%s" % character_id)
+	_sync_city_presence()
+	status_label.text = "%s: “%s”" % [_character_first_name(character_id), line]
+	_render_location()
+
+
+func _on_npc_contact_selected(character_id: String) -> void:
+	var line: String = _presence_engine.contact_line(GameState.current_state, character_id)
+	var result: Dictionary = SimulationService.apply_operation("npc.meet", {
+		"character_id": character_id,
+		"interaction": "exchange_contact",
+		"location": "%s.%s" % [_location_id, _current_room_id],
+	}, "city.npc_contact_exchange")
+	if not result.get("ok", false):
+		status_label.text = str(result.get("errors", ["Contact information could not be exchanged."])[0])
+		return
+	TimeService.advance_minutes(5, "city.npc_contact_exchange:%s" % character_id)
+	_sync_city_presence()
+	status_label.text = "%s: “%s”" % [_character_first_name(character_id), line]
+	_render_location()
+
+
+func _on_npc_ambient_chat_selected(character_id: String) -> void:
+	var line: String = _presence_engine.ambient_line(GameState.current_state, character_id, _location_id)
+	var result: Dictionary = SimulationService.apply_operation("npc.meet", {
+		"character_id": character_id,
+		"interaction": "ambient_chat",
+		"location": "%s.%s" % [_location_id, _current_room_id],
+	}, "city.npc_ambient_chat")
+	if not result.get("ok", false):
+		status_label.text = str(result.get("errors", ["The conversation could not begin."])[0])
+		return
+	TimeService.advance_minutes(10, "city.npc_ambient_chat:%s" % character_id)
+	_sync_city_presence()
+	status_label.text = "%s: “%s”" % [_character_first_name(character_id), line]
+	_render_location()
 
 
 func _on_close_action_panel_pressed() -> void:
@@ -398,6 +540,33 @@ func _close_action_panel() -> void:
 
 func _remember_city_position() -> void:
 	_update_world_location(false)
+
+
+func _sync_city_presence() -> void:
+	if _presence_engine == null or not GameState.has_active_game():
+		return
+	var result: Dictionary = _presence_engine.synchronize_npc_states(GameState.current_state)
+	if result.get("changed", false):
+		GameState.replace_state(result["state"])
+
+
+func _character_first_name(character_id: String) -> String:
+	var character: Variant = ContentRegistry.get_character(character_id)
+	return str(character.get("display_name", character_id)).get_slice(" ", 0) if character is Dictionary else character_id.replace("_", " ").capitalize()
+
+
+func _conversation_character_id(conversation_id: String) -> String:
+	for npc_state_value: Variant in GameState.current_state.get("npc_states", []):
+		if not npc_state_value is Dictionary:
+			continue
+		var character_id: String = str(npc_state_value.get("character_id", ""))
+		var character: Variant = ContentRegistry.get_character(character_id)
+		if not character is Dictionary:
+			continue
+		for conversation_value: Variant in character.get("conversations", []):
+			if conversation_value is Dictionary and str(conversation_value.get("id", "")) == conversation_id:
+				return character_id
+	return ""
 
 
 func _refresh_hud() -> void:

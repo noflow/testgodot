@@ -71,6 +71,8 @@ func _apply_to_working_state(state: Dictionary, operation: String, payload: Dict
 			return _append_phone_message(state, payload)
 		"phone.mark_thread_read":
 			return _mark_phone_thread_read(state, payload)
+		"npc.meet":
+			return _meet_npc(state, payload)
 		"quest.discover":
 			return _discover_quest(state, payload)
 		"quest.set_available":
@@ -481,6 +483,53 @@ func _mark_phone_thread_read(state: Dictionary, payload: Dictionary) -> String:
 	return ""
 
 
+func _meet_npc(state: Dictionary, payload: Dictionary) -> String:
+	var character_id: String = str(payload.get("character_id", ""))
+	if not _registry.get_character(character_id) is Dictionary:
+		return "Unknown character: %s" % character_id
+	var interaction: String = str(payload.get("interaction", "introduction"))
+	if interaction not in ["introduction", "exchange_contact", "ambient_chat"]:
+		return "Unsupported NPC meeting interaction: %s" % interaction
+	var npc_state: Dictionary = {}
+	for candidate_value: Variant in state.get("npc_states", []):
+		if candidate_value is Dictionary and str(candidate_value.get("character_id", "")) == character_id:
+			npc_state = candidate_value
+			break
+	if npc_state.is_empty():
+		return "Missing runtime NPC state: %s" % character_id
+	var current_location: String = str(state.get("world_state", {}).get("current_location", ""))
+	var meeting_location: String = str(payload.get("location", current_location))
+	if meeting_location != current_location:
+		return "The character is not at the player's current location."
+	if interaction == "exchange_contact" and not bool(npc_state.get("discovered", false)):
+		return "Introduce yourself before exchanging contact information."
+	if interaction in ["introduction", "ambient_chat"]:
+		npc_state["discovered"] = true
+		if not npc_state.has("first_met_on"):
+			npc_state["first_met_on"] = _clock.timestamp(state["clock"])
+			npc_state["first_met_location"] = meeting_location
+		var relationship: Variant = state.get("relationships", {}).get(character_id)
+		if relationship is Dictionary and str(relationship.get("relationship_stage", "stranger")) == "stranger":
+			relationship["relationship_stage"] = "acquaintance"
+	if interaction == "exchange_contact":
+		var phone: Dictionary = state["player"]["phone"]
+		if character_id not in phone.get("known_contacts", []):
+			phone["known_contacts"].append(character_id)
+		if not phone.get("message_threads", {}).has(character_id):
+			phone["message_threads"][character_id] = {"character_id": character_id, "messages": [], "last_read_sequence": 0}
+		npc_state["phone_contact"] = true
+	if not npc_state.has("meeting_history"):
+		npc_state["meeting_history"] = []
+	npc_state["meeting_history"].append({
+		"interaction": interaction,
+		"location": meeting_location,
+		"timestamp": _clock.timestamp(state["clock"]),
+	})
+	while npc_state["meeting_history"].size() > 50:
+		npc_state["meeting_history"].pop_front()
+	return ""
+
+
 func _schedule_calendar_event(state: Dictionary, payload: Dictionary) -> String:
 	var event_value: Variant = payload.get("calendar_event")
 	if not event_value is Dictionary:
@@ -502,7 +551,7 @@ func _schedule_calendar_event(state: Dictionary, payload: Dictionary) -> String:
 		if character_id not in state["player"]["phone"].get("known_contacts", []):
 			return "Calendar participant is not a known contact: %s" % character_id
 		var availability_error: String = _npc_commitment_error(
-			character_id, str(calendar_event.get("weekday", "")), block
+			character_id, date, str(calendar_event.get("weekday", "")), block
 		)
 		if not availability_error.is_empty():
 			return availability_error
@@ -565,20 +614,48 @@ func _complete_calendar_arrival(state: Dictionary, payload: Dictionary) -> Strin
 	return "Unknown calendar event: %s" % event_id
 
 
-func _npc_commitment_error(character_id: String, weekday: String, block: String) -> String:
+func _npc_commitment_error(character_id: String, date: String, weekday: String, block: String) -> String:
 	var character: Variant = _registry.get_character(character_id)
 	if not character is Dictionary:
 		return "Unknown calendar participant: %s" % character_id
 	for commitment: Variant in character.get("schedule", {}).get("fixed_commitments", []):
 		if not commitment is Dictionary or not bool(commitment.get("unavailable", false)):
 			continue
-		if weekday in commitment.get("days", []) and block in commitment.get("blocks", []):
+		if _schedule_day_matches(commitment.get("days", []), date, weekday) and block in commitment.get("blocks", []):
 			return "%s is unavailable during %s because of %s." % [
 				character.get("display_name", character_id),
 				block.replace("_", " ").capitalize(),
 				str(commitment.get("activity", "a prior commitment")).replace("_", " "),
 			]
 	return ""
+
+
+func _schedule_day_matches(days: Array, date: String, weekday: String) -> bool:
+	if weekday in days or "all" in days:
+		return true
+	var rotation_day: int = posmod(_calendar_date_serial(date) - _calendar_date_serial("Y1-08-20"), 7) + 1
+	if "rotation_day_%d" % rotation_day in days:
+		return true
+	if rotation_day == 5 and "first_day_off" in days:
+		return true
+	if rotation_day == 6 and "second_day_off" in days:
+		return true
+	return rotation_day == 7 and "third_day_off" in days
+
+
+func _calendar_date_serial(date: String) -> int:
+	var parts: PackedStringArray = date.trim_prefix("Y").split("-")
+	if parts.size() != 3:
+		return -1
+	var year: int = int(parts[0])
+	var month: int = int(parts[1])
+	var day: int = int(parts[2])
+	var serial: int = 0
+	for previous_year: int in range(1, year):
+		serial += 366 if previous_year % 4 == 0 else 365
+	for previous_month: int in range(1, month):
+		serial += _days_in_calendar_month(previous_month, year)
+	return serial + day
 
 
 func _valid_date_string(date: String) -> bool:

@@ -70,11 +70,13 @@ intoxication. Food and water ease symptoms but do not instantly remove alcohol.
 
 ## Stores
 
-Seven initial shops cover groceries, everyday clothing, formalwear, pharmacy
-items, school supplies, gym goods, and cinema concessions. Stores have opening
-hours, price multipliers, seasonal stock, discounts, and sold-out states.
+Twelve initial shops cover groceries, everyday clothing, formalwear, pharmacy
+items, school supplies, gym goods, cinema concessions, department-store goods,
+athletic wear, personal essentials, and food-hall meals. Seven city shops are joined
+by five occupied storefronts in Port Alder Galleria. Stores have opening hours,
+price multipliers, seasonal stock, discounts, and sold-out states.
 
-The Shopping app now browses all seven catalogs and delivers successful purchases
+The Shopping app now browses all twelve catalogs and delivers successful purchases
 to Wardrobe, Kitchen, Bathroom, Garage, or Carried storage according to item type.
 Quotes apply store multipliers, combined eligible student/employee discounts, and
 the authored seven-percent sales tax with grocery exemptions. Payment splits across
@@ -82,6 +84,10 @@ Cash, Checking, and the starter credit card in authored priority order. Inventor
 capacity and total purchasing power are validated before the transaction commits;
 declines leave both money and inventory unchanged. Each completed purchase saves an
 itemized receipt with subtotal, discount, tax, total, payment split, and return flag.
+Selecting an occupied storefront while physically inside the mall opens that one
+catalog even before remote Shopping access is unlocked. The mall directory itself
+contains sixteen stable unit IDs: five occupied, two coming soon, one rotating
+pop-up, and eight vacant expansion units.
 
 ## Source data
 

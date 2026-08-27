@@ -46,6 +46,14 @@ func availability_error(state: Dictionary, interaction: Dictionary) -> String:
 			return "%s is closed today." % location.get("name", "This destination")
 		if access.has("open_blocks") and str(state["clock"].get("block", "")) not in access["open_blocks"]:
 			return "%s is closed during this activity block." % location.get("name", "This destination")
+	if str(interaction.get("type", "activity")) == "store":
+		var store: Variant = _registry.get_content("stores", str(interaction.get("store_id", "")))
+		if not store is Dictionary:
+			return "This storefront is not configured yet."
+		if store.has("open_days") and str(state["clock"].get("weekday", "")) not in store["open_days"]:
+			return "%s is closed today." % store.get("name", "This store")
+		if store.has("open_blocks") and str(state["clock"].get("block", "")) not in store["open_blocks"]:
+			return "%s is closed during this activity block." % store.get("name", "This store")
 
 	var requirements: Dictionary = interaction.get("requirements", {})
 	var active_quests: Array = state["quest_state"].get("active", [])

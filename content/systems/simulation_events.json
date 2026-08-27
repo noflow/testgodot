@@ -48,6 +48,7 @@
     {"id": "inventory.clean_container", "payload": ["container_id", "cleanliness"], "checks": ["container_exists", "clothing_present"], "effects": ["clothing_cleanliness"]},
     {"id": "phone.append_message", "payload": ["character_id", "message"], "checks": ["known_contact", "message_id", "sender"], "effects": ["thread_update", "unread_state"]},
     {"id": "phone.mark_thread_read", "payload": ["character_id"], "checks": ["known_contact"], "effects": ["unread_state"]},
+    {"id": "npc.meet", "payload": ["character_id", "interaction", "location"], "checks": ["character_exists", "same_location", "introduction_before_contact"], "effects": ["npc_discovery", "meeting_history", "optional_phone_contact"]},
     {"id": "health.add_condition", "payload": ["condition_id", "severity", "known_to_player"], "effects": ["symptoms", "treatment_options", "records"]},
     {"id": "health.treat", "payload": ["condition_id", "treatment_id", "provider"], "checks": ["treatment_available", "funds_or_coverage"]},
     {"id": "health.screening_result", "payload": ["screening_type", "result", "disclosure_state"], "privacy": "private_health_record"},

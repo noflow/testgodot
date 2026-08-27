@@ -5,8 +5,9 @@ const PRIVATE_LOCATION_TYPES: PackedStringArray = ["npc_residence", "npc_and_ren
 const EMPLOYEE_ROOM_ACCESS: PackedStringArray = ["employee", "licensed_worker"]
 const EXPLICIT_GRANT_ROOM_ACCESS: PackedStringArray = [
 	"invitation", "relationship_permission", "permission_required",
-	"consenting_adult_appointment", "employee_or_appointment",
+	"consenting_adult_appointment", "employee_or_appointment", "appointment",
 ]
+const PROPERTY_ROOM_ACCESS: PackedStringArray = ["lease", "lease_or_viewing", "owner_or_viewing", "resident_or_guest"]
 
 var _registry: Node
 
@@ -70,7 +71,7 @@ func room_access_report(state: Dictionary, location_id: String, room_id: String)
 		if access == "employee_or_appointment" and _has_employment_access(state, location_id):
 			return _allowed()
 		return _denied("Permission is required before entering this room.")
-	if access == "lease":
+	if access in PROPERTY_ROOM_ACCESS:
 		return _allowed() if _has_property_access(state, location_id) else _denied("A lease or ownership agreement is required.")
 	if access in ["player_private", "household"]:
 		return _allowed() if str(state.get("player", {}).get("housing", {}).get("residence", "")) == location_id else _denied("Household access is required.")
@@ -85,7 +86,31 @@ func target_access_report(state: Dictionary, current_location_id: String, target
 	if target.contains("."):
 		target_location_id = target.get_slice(".", 0)
 		target_room_id = target.get_slice(".", 1)
-	return room_access_report(state, target_location_id, target_room_id)
+	var report: Dictionary = room_access_report(state, target_location_id, target_room_id)
+	if bool(report.get("allowed", false)) or target_location_id == current_location_id:
+		return report
+	var target_location: Variant = _registry.get_location(target_location_id)
+	if not target_location is Dictionary or str(target_location.get("type", "")) in PRIVATE_LOCATION_TYPES:
+		return report
+	if str(target_location.get("type", "")) == "residential_house":
+		return report
+	if not bool(location_visibility_report(state, target_location_id).get("allowed", false)):
+		return report
+	var discovery: Dictionary = target_location.get("discovery", {})
+	if discovery.has("discoverable") and not bool(discovery.get("discoverable", false)):
+		return report
+	var discovery_sources: Array = discovery.get("sources", [])
+	if not discovery_sources.is_empty() and "exploration" not in discovery_sources:
+		return report
+	var exploration_state: Dictionary = state.duplicate(true)
+	var exploration_world: Dictionary = exploration_state.get("world_state", {})
+	for collection_name: String in ["unlocked_locations", "discovered_locations"]:
+		if target_location_id not in exploration_world.get(collection_name, []):
+			exploration_world[collection_name].append(target_location_id)
+	report = room_access_report(exploration_state, target_location_id, target_room_id)
+	if bool(report.get("allowed", false)):
+		report["discover_on_entry"] = true
+	return report
 
 
 func accessible_rooms(state: Dictionary, location_id: String) -> Array:

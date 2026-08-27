@@ -19,6 +19,11 @@ map, quest progress, character statistics, and complete persistent settings. Ele
 Daniel, and Lily now follow their character-authored work, school, and home-room
 schedules, appear as scheduled character encounters on the VN stage, and expose
 available story or ambient conversations through contextual choices.
+All fifteen major NPCs now resolve work, school, rotating shifts, social time, and
+public availability to exact city rooms. Scheduled portraits appear over city
+backgrounds without walking sprites; busy NPCs remain visible but unavailable.
+Undiscovered characters begin as strangers, can be met through an introduction,
+and only enter Contacts and Messages after a separate exchange of phone numbers.
 Room backgrounds and character portraits now resolve through a cached data-driven
 artwork service. Location art is assigned by manifest or predictable file path,
 while each character owns portrait poses in its `.character` package. Home, city,
@@ -55,9 +60,11 @@ payments divide into interest and principal.
 The Money app now processes weekly family allowance, monthly rent, credit-card
 minimums, student-loan interest, financial aid, and tuition balances. Every payment
 is ledger-backed, missed rent affects the household relationship, and Monday closes
-an immutable weekly budget summary. The Shopping app exposes all seven authored
+an immutable weekly budget summary. The Shopping app exposes all twelve authored
 stores with opening hours, sales tax, student and employee discounts, split payment
-priority, inventory delivery, declined-payment rollback, and saved receipts.
+priority, inventory delivery, declined-payment rollback, and saved receipts. Port
+Alder Galleria adds five physical storefronts to a fourteen-area mall, plus coming-
+soon, rotating, and vacant units that can accept later content without scene code.
 The Education app turns Westshore's authored semester calendar into a complete
 academic loop. Classes and laboratories use their scheduled campus rooms, missed
 attendance resolves automatically, studying builds persistent preparation, and

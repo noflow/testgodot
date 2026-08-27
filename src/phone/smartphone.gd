@@ -101,6 +101,22 @@ func open_phone(default_app: String = "character_profile") -> void:
 		app_buttons.get_child(0).grab_focus()
 
 
+func open_storefront(store_id: String) -> void:
+	if not GameState.has_active_game() or ContentRegistry.get_content("stores", store_id) == null:
+		return
+	PhoneService.sync_messages()
+	visible = true
+	scheduler_panel.visible = false
+	route_panel.visible = false
+	_current_app = "shopping"
+	_selected_store_id = store_id
+	_clear_container(app_actions)
+	phone_status.text = "Shopping in person at this storefront."
+	_refresh_clock()
+	_render_store(store_id)
+	phone_opened.emit()
+
+
 func close_phone() -> void:
 	if not visible:
 		return

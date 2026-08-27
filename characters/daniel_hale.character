@@ -33,7 +33,7 @@
         "blocks": ["early_morning", "morning", "lunch", "afternoon"],
         "activity": "work_transit_depot",
         "label": "Working at the transit depot",
-        "location": "port_alder_transit_depot",
+        "location": "port_alder_transit_depot.repair_bays",
         "unavailable": true
       },
       {
