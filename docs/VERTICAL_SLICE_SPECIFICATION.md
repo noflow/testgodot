@@ -191,6 +191,11 @@ warnings. The City Map compares live route time, cost, waits, closures, weather,
 safety requirements before confirmation. Save/load, control remapping, text and
 contrast options, reduced motion, complete audio controls, display preferences, and
 VN skip behavior are available from both the phone and main menu.
+The separate Local Map button and M control open a no-teleport diagram of the current
+navigation scope. Building maps show the building's rooms plus outside boundary;
+outdoor maps show street or district areas and known adjoining destinations without
+revealing the inside of each building. The current node is highlighted and locked
+or undiscovered nodes obey the same access rules as the floating arrows.
 The Money app synchronizes recurring obligations exactly once per due date and the
 Shopping app commits payment and inventory delivery as one rollback-safe action.
 

@@ -22,12 +22,6 @@ func sync_housing(state: Dictionary) -> Dictionary:
 	for location_id: String in ["port_alder_realty"]:
 		if location_id not in unlocked:
 			unlocked.append(location_id)
-	for listing_value: Variant in _registry.get_all("housing_listings"):
-		if not listing_value is Dictionary:
-			continue
-		var location_id: String = str(listing_value.get("location_id", ""))
-		if not location_id.is_empty() and location_id not in unlocked:
-			unlocked.append(location_id)
 	return _success(working)
 
 

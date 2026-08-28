@@ -21,10 +21,7 @@ const MONTH_NAMES: PackedStringArray = [
 @onready var room_buttons: VBoxContainer = %RoomButtons
 @onready var action_title: Label = %ActionTitle
 @onready var action_buttons: VBoxContainer = %ActionButtons
-@onready var previous_room_arrow: Button = %PrevRoomArrow
-@onready var outside_arrow: Button = %OutsideArrow
-@onready var down_room_arrow: Button = %DownRoomArrow
-@onready var next_room_arrow: Button = %NextRoomArrow
+@onready var directional_navigation: PortAlderDirectionalNavigationUI = %DirectionalNavigation
 
 var _location_id: String = ""
 var _location: Dictionary = {}
@@ -57,6 +54,7 @@ func _ready() -> void:
 	smartphone.phone_opened.connect(_on_phone_opened)
 	smartphone.phone_closed.connect(_on_phone_closed)
 	smartphone.travel_completed.connect(_on_travel_completed)
+	directional_navigation.direction_requested.connect(_on_navigation_direction_requested)
 	location_label.text = str(_location.get("name", _location_id))
 	status_label.text = "Use the scene arrows to move through connected paths, doors, and rooms."
 	_render_location()
@@ -69,6 +67,13 @@ func _process(_delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if directional_navigation.is_minimap_open():
+		if event.is_action_pressed("cancel") or event.is_action_pressed("city_map"):
+			directional_navigation.close_minimap()
+			get_viewport().set_input_as_handled()
+			return
+		if event.is_action_pressed("phone"):
+			directional_navigation.close_minimap()
 	if smartphone.is_open():
 		if event.is_action_pressed("cancel") or event.is_action_pressed("phone"):
 			smartphone.close_phone()
@@ -78,7 +83,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		smartphone.open_phone()
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("city_map"):
-		smartphone.open_phone("city_map")
+		directional_navigation.toggle_minimap()
 		get_viewport().set_input_as_handled()
 
 
@@ -155,19 +160,20 @@ func _refresh_directional_navigation() -> void:
 	var next_id: String = _directional_target("right", current_index + 1)
 	var up_id: String = _directional_target("up", -1)
 	var down_id: String = _directional_target("down", -1)
-	_configure_direction_button(previous_room_arrow, previous_id, "◀", "Left")
-	_configure_direction_button(next_room_arrow, next_id, "▶", "Right", true)
-	_configure_direction_button(down_room_arrow, down_id, "▼", "Down")
+	directional_navigation.clear_all()
+	for entry: Dictionary in [
+		{"direction": "left", "target": previous_id},
+		{"direction": "up", "target": up_id},
+		{"direction": "right", "target": next_id},
+		{"direction": "down", "target": down_id},
+	]:
+		var target: String = str(entry["target"])
+		if not target.is_empty():
+			directional_navigation.configure_destination(str(entry["direction"]), _navigation_target_name(target))
 	if up_id.is_empty() and _can_open_route_planner_here():
-		outside_arrow.visible = true
-		outside_arrow.disabled = false
-		outside_arrow.text = "▲ Choose Bus Destination" if str(_location.get("type", "")) == "transport_stop" else "▲ Transit / Destinations"
-	else:
-		_configure_direction_button(outside_arrow, up_id, "▲", "Up")
-	SettingsService.apply_accessibility(previous_room_arrow)
-	SettingsService.apply_accessibility(outside_arrow)
-	SettingsService.apply_accessibility(down_room_arrow)
-	SettingsService.apply_accessibility(next_room_arrow)
+		directional_navigation.configure_destination("up", "Choose Bus Destination", "Open")
+	directional_navigation.configure_minimap(_location_id, _current_room_id)
+	directional_navigation.refresh_accessibility()
 
 
 func _directional_target(direction: String, fallback_index: int) -> String:
@@ -195,25 +201,21 @@ func _outside_room_id() -> String:
 	return str(_rooms[0].get("id", "main_area")) if not _rooms.is_empty() else "main_area"
 
 
-func _on_previous_room_pressed() -> void:
-	_move_direction("left", _room_index(_current_room_id) - 1)
-
-
-func _on_next_room_pressed() -> void:
-	_move_direction("right", _room_index(_current_room_id) + 1)
-
-
-func _on_outside_pressed() -> void:
-	var target: String = _directional_target("up", -1)
-	if not target.is_empty():
-		_move_to_navigation_target(target)
-	elif _can_open_route_planner_here():
-		smartphone.open_phone("city_map")
-		status_label.text = "Choose a destination from this transit point."
-
-
-func _on_down_room_pressed() -> void:
-	_move_direction("down", -1)
+func _on_navigation_direction_requested(direction: String) -> void:
+	if direction == "up":
+		var target: String = _directional_target("up", -1)
+		if not target.is_empty():
+			_move_to_navigation_target(target)
+		elif _can_open_route_planner_here():
+			smartphone.open_phone("city_map")
+			status_label.text = "Choose a destination from this transit point."
+		return
+	if direction == "left":
+		_move_direction(direction, _room_index(_current_room_id) - 1)
+	elif direction == "right":
+		_move_direction(direction, _room_index(_current_room_id) + 1)
+	elif direction == "down":
+		_move_direction(direction, -1)
 
 
 func _move_direction(direction: String, fallback_index: int) -> void:
@@ -242,7 +244,7 @@ func _move_to_navigation_target(target: String) -> void:
 	if destination_id == _location_id:
 		_select_room(target.get_slice(".", 1))
 		return
-	var result: Dictionary = TravelService.travel(destination_id, "walking", "world.directional_path")
+	var result: Dictionary = TravelService.travel(target, "walking", "world.directional_path")
 	if not result.get("ok", false):
 		status_label.text = str(result.get("errors", ["That path is unavailable right now."])[0])
 		return
@@ -250,17 +252,6 @@ func _move_to_navigation_target(target: String) -> void:
 	next_state["world_state"]["current_location"] = target
 	GameState.replace_state(next_state)
 	get_tree().change_scene_to_file(AppConstants.HALE_HOME_SCENE if destination_id == "hale_home" else AppConstants.CITY_LOCATION_SCENE)
-
-
-func _configure_direction_button(button: Button, target: String, symbol: String, _fallback: String, symbol_after: bool = false) -> void:
-	var has_target: bool = not target.is_empty()
-	button.visible = has_target
-	button.disabled = not has_target
-	if not has_target:
-		button.text = ""
-		return
-	var label: String = _navigation_target_name(target)
-	button.text = "%s %s" % [label, symbol] if symbol_after else "%s %s" % [symbol, label]
 
 
 func _navigation_target_name(target: String) -> String:
@@ -293,10 +284,7 @@ func _valid_navigation_target(target: String) -> bool:
 func _can_open_route_planner_here() -> bool:
 	if _current_room_id != _outside_room_id():
 		return false
-	var type_id: String = str(_location.get("type", ""))
-	if type_id == "transport_stop":
-		return true
-	return type_id not in ["outdoor_hub", "residential_house"]
+	return str(_location.get("type", "")) == "transport_stop" or "route_planner" in _location.get("services", [])
 
 
 func _rebuild_encounter_stage() -> void:
@@ -624,11 +612,11 @@ func _on_phone_button_pressed() -> void:
 
 
 func _on_map_button_pressed() -> void:
-	smartphone.open_phone("city_map")
+	directional_navigation.toggle_minimap()
 
 
 func _on_phone_opened() -> void:
-	pass
+	directional_navigation.close_minimap()
 
 
 func _on_phone_closed() -> void:

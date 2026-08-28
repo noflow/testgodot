@@ -1,0 +1,143 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://src/world/context_minimap.gd" id="1_map"]
+[ext_resource type="Script" path="res://src/world/context_minimap_canvas.gd" id="2_canvas"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_map_panel"]
+bg_color = Color(0.018, 0.047, 0.059, 0.98)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.404, 0.776, 0.765, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0, 0, 0, 0.72)
+shadow_size = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_close"]
+bg_color = Color(0.12, 0.19, 0.21, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.404, 0.776, 0.765, 0.8)
+corner_radius_top_left = 7
+corner_radius_top_right = 7
+corner_radius_bottom_right = 7
+corner_radius_bottom_left = 7
+
+[node name="ContextMiniMap" type="Control"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_map")
+
+[node name="MiniMapOverlay" type="Control" parent="."]
+unique_name_in_owner = true
+visible = false
+z_index = 20
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+
+[node name="Dimmer" type="ColorRect" parent="MiniMapOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+color = Color(0.004, 0.012, 0.016, 0.9)
+
+[node name="MapPanel" type="PanelContainer" parent="MiniMapOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 0.04
+anchor_top = 0.05
+anchor_right = 0.96
+anchor_bottom = 0.95
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBox_map_panel")
+
+[node name="Margin" type="MarginContainer" parent="MiniMapOverlay/MapPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 22
+theme_override_constants/margin_bottom = 18
+
+[node name="Layout" type="VBoxContainer" parent="MiniMapOverlay/MapPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Header" type="HBoxContainer" parent="MiniMapOverlay/MapPanel/Margin/Layout"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Titles" type="VBoxContainer" parent="MiniMapOverlay/MapPanel/Margin/Layout/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MiniMapTitle" type="Label" parent="MiniMapOverlay/MapPanel/Margin/Layout/Header/Titles"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.914, 0.659, 0.424, 1)
+theme_override_font_sizes/font_size = 23
+text = "LOCAL MAP"
+autowrap_mode = 2
+
+[node name="MiniMapScope" type="Label" parent="MiniMapOverlay/MapPanel/Margin/Layout/Header/Titles"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.404, 0.776, 0.765, 1)
+theme_override_font_sizes/font_size = 13
+text = "BUILDING MAP"
+
+[node name="CloseMiniMapButton" type="Button" parent="MiniMapOverlay/MapPanel/Margin/Layout/Header"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(104, 38)
+layout_mode = 2
+text = "Close  [M]"
+theme_override_styles/normal = SubResource("StyleBox_close")
+theme_override_styles/hover = SubResource("StyleBox_close")
+theme_override_styles/focus = SubResource("StyleBox_close")
+
+[node name="MiniMapCurrent" type="Label" parent="MiniMapOverlay/MapPanel/Margin/Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.93, 0.92, 1)
+theme_override_font_sizes/font_size = 14
+text = "Current position"
+
+[node name="Divider" type="HSeparator" parent="MiniMapOverlay/MapPanel/Margin/Layout"]
+layout_mode = 2
+
+[node name="MiniMapCanvas" type="Control" parent="MiniMapOverlay/MapPanel/Margin/Layout"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(620, 260)
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+script = ExtResource("2_canvas")
+
+[node name="Legend" type="Label" parent="MiniMapOverlay/MapPanel/Margin/Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 0.8, 0.8, 1)
+theme_override_font_sizes/font_size = 13
+text = "Orange = you are here  •  Teal = room or area  •  Purple = adjoining destination  •  Gray = known but locked\nThe mini-map is for orientation. Close it and use the floating directional arrows to move."
+horizontal_alignment = 1
+autowrap_mode = 2

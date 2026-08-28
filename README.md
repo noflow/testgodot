@@ -28,13 +28,18 @@ Room backgrounds and character portraits now resolve through a cached data-drive
 artwork service. Location art is assigned by manifest or predictable file path,
 while each character owns portrait poses in its `.character` package. Home, city,
 and dialogue scenes share safe fallback artwork when a production asset is missing.
-The City Map now plans and confirms graph-based walking, bus, taxi, and permitted
-car travel across twelve public opening destinations. Trips charge fares, advance the live
+The phone City Map plans and confirms graph-based walking, bus, taxi, and permitted
+car travel across the known public destinations. Trips charge fares, advance the live
 clock, respect closures and safety requirements, update quests, and arrive in a
 reusable data-driven destination scene with floating directional arrows. NPC homes
 are fully mapped but remain absent from arrows and the phone map until discovered
 through a quest, invitation, or housing agreement; visiting shared rooms does not
 automatically grant bedroom or other private-room access.
+Every destination also has a contextual Local Map available with the M key or footer
+button. Indoors it diagrams only the current building's rooms and outside exits;
+outdoors it switches to the current street or district and treats buildings as single
+destinations. The player position is highlighted, known locked rooms are marked, and
+undiscovered addresses remain hidden. Local maps never teleport the player.
 Westshore Administration, Harbor Employment Centre, and Forge Fitness now expose
 room-specific activity panels. The Westshore advisor creates an actual semester
 schedule and tuition state; Harbor provides employment orientation, listing review,

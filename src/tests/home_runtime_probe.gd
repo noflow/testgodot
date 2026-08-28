@@ -46,17 +46,42 @@ func _run_probe() -> void:
 		printerr("PROBE: immersive home did not retain fourteen authored spaces while hiding quick room travel")
 		get_tree().quit(1)
 		return
-	var previous_arrow: Button = instance.get_node_or_null("%PrevRoomArrow")
-	var outside_arrow: Button = instance.get_node_or_null("%OutsideArrow")
-	var down_arrow: Button = instance.get_node_or_null("%DownRoomArrow")
-	var next_arrow: Button = instance.get_node_or_null("%NextRoomArrow")
-	if previous_arrow == null or outside_arrow == null or down_arrow == null or next_arrow == null or previous_arrow.visible or outside_arrow.visible or next_arrow.visible or not down_arrow.visible or "Upstairs Landing" not in down_arrow.text:
+	var previous_arrow: Button = _navigation_button(instance, "PrevRoomArrow")
+	var outside_arrow: Button = _navigation_button(instance, "OutsideArrow")
+	var down_arrow: Button = _navigation_button(instance, "DownRoomArrow")
+	var next_arrow: Button = _navigation_button(instance, "NextRoomArrow")
+	var directional_navigation: Node = instance.get_node_or_null("%DirectionalNavigation")
+	var local_map_button: Button = instance.get_node_or_null("Interface/Screen/Footer/Margin/Layout/Buttons/MapButton")
+	if previous_arrow == null or outside_arrow == null or down_arrow == null or next_arrow == null or previous_arrow.visible or outside_arrow.visible or next_arrow.visible or not down_arrow.visible or not _arrow_leads_to(down_arrow, "Upstairs Landing"):
 		printerr("PROBE: bedroom did not show only its real exit to the upstairs landing")
+		get_tree().quit(1)
+		return
+	if directional_navigation == null or local_map_button == null or "Local Map" not in local_map_button.text:
+		printerr("PROBE: the shared contextual mini-map control was not available from the home footer")
+		get_tree().quit(1)
+		return
+	local_map_button.pressed.emit()
+	await get_tree().process_frame
+	var home_map_overlay: Control = directional_navigation.get_node("ContextMiniMap/MiniMapOverlay")
+	var home_map_scope: Label = directional_navigation.get_node("ContextMiniMap/MiniMapOverlay/MapPanel/Margin/Layout/Header/Titles/MiniMapScope")
+	var home_map_current: Label = directional_navigation.get_node("ContextMiniMap/MiniMapOverlay/MapPanel/Margin/Layout/MiniMapCurrent")
+	var home_map_nodes: PackedStringArray = directional_navigation.call("minimap_node_ids")
+	if not home_map_overlay.visible or home_map_scope.text != "HOUSE MAP" or "Your Bedroom" not in home_map_current.text or "player_bedroom" not in home_map_nodes or "kitchen" not in home_map_nodes or "boundary:front_yard" not in home_map_nodes or "hale_block" in home_map_nodes:
+		printerr("PROBE: the bedroom mini-map did not show the Hale house layout and exterior boundary")
+		get_tree().quit(1)
+		return
+	directional_navigation.call("close_minimap")
+	if str(GameState.current_state["world_state"]["current_location"]) != "hale_home.player_bedroom":
+		printerr("PROBE: viewing the local house map teleported the player")
+		get_tree().quit(1)
+		return
+	if not _navigation_layout_is_uniform(instance):
+		printerr("PROBE: home directional controls were not aligned to the shared screen-edge compass")
 		get_tree().quit(1)
 		return
 	down_arrow.pressed.emit()
 	await get_tree().process_frame
-	if str(GameState.current_state["world_state"]["current_location"]) != "hale_home.upstairs_landing" or not outside_arrow.visible or "Your Bedroom" not in outside_arrow.text:
+	if str(GameState.current_state["world_state"]["current_location"]) != "hale_home.upstairs_landing" or not outside_arrow.visible or not _arrow_leads_to(outside_arrow, "Your Bedroom"):
 		printerr("PROBE: player could not leave and return to the player bedroom from the landing")
 		get_tree().quit(1)
 		return
@@ -164,10 +189,19 @@ func _run_probe() -> void:
 	next_arrow.pressed.emit()
 	next_arrow.pressed.emit()
 	await get_tree().process_frame
-	if str(GameState.current_state["world_state"]["current_location"]) != "hale_home.front_yard" or "Hale Block" not in outside_arrow.text:
+	if str(GameState.current_state["world_state"]["current_location"]) != "hale_home.front_yard" or not _arrow_leads_to(outside_arrow, "Hale Block"):
 		printerr("PROBE: kitchen-to-outside path did not pass dining, living, entryway, and front yard")
 		get_tree().quit(1)
 		return
+	local_map_button.pressed.emit()
+	await get_tree().process_frame
+	var outdoor_map_title: Label = directional_navigation.get_node("ContextMiniMap/MiniMapOverlay/MapPanel/Margin/Layout/Header/Titles/MiniMapTitle")
+	var outdoor_map_nodes: PackedStringArray = directional_navigation.call("minimap_node_ids")
+	if not home_map_overlay.visible or home_map_scope.text != "NEIGHBORHOOD MAP" or "OUTSIDE HALE HOME" not in outdoor_map_title.text or "hale_home.front_yard" not in outdoor_map_nodes or "hale_block" not in outdoor_map_nodes or "alder_heights_bus_stop.shelter" not in outdoor_map_nodes or "player_bedroom" in outdoor_map_nodes or "rowan_family_home.porch" in outdoor_map_nodes:
+		printerr("PROBE: the front-yard mini-map did not switch to the discovered outdoor neighborhood context")
+		get_tree().quit(1)
+		return
+	directional_navigation.call("close_minimap")
 	down_arrow.pressed.emit()
 	instance.call("_set_current_room", "player_bedroom")
 	instance.call("_set_current_room", "living_room")
@@ -357,3 +391,37 @@ func _portrait_card_has_texture(card: Node) -> bool:
 		if child is TextureRect:
 			return child.texture != null
 	return false
+
+
+func _navigation_button(instance: Node, button_name: String) -> Button:
+	var navigation: Node = instance.get_node_or_null("%DirectionalNavigation")
+	if navigation == null:
+		return null
+	return navigation.get_node_or_null(button_name) as Button
+
+
+func _navigation_layout_is_uniform(instance: Node) -> bool:
+	var left: Button = _navigation_button(instance, "PrevRoomArrow")
+	var up: Button = _navigation_button(instance, "OutsideArrow")
+	var right: Button = _navigation_button(instance, "NextRoomArrow")
+	var down: Button = _navigation_button(instance, "DownRoomArrow")
+	if left == null or up == null or right == null or down == null:
+		return false
+	return (
+		is_equal_approx(left.anchor_left, 0.0)
+		and is_equal_approx(left.anchor_top, 0.5)
+		and is_equal_approx(up.anchor_left, 0.5)
+		and is_equal_approx(up.anchor_top, 0.0)
+		and is_equal_approx(right.anchor_left, 1.0)
+		and is_equal_approx(right.anchor_top, 0.5)
+		and is_equal_approx(down.anchor_left, 0.5)
+		and is_equal_approx(down.anchor_top, 1.0)
+		and left.size.x <= 191.0
+		and left.size.y <= 33.0
+		and up.size.x <= 191.0
+		and up.size.y <= 33.0
+	)
+
+
+func _arrow_leads_to(button: Button, destination_fragment: String) -> bool:
+	return button != null and destination_fragment in str(button.get_meta("destination_label", ""))

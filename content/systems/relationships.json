@@ -61,6 +61,30 @@
       "witness_chance": 45,
       "tags": ["coffee", "campus", "conversation", "public"],
       "need_effects": {"loneliness": -10, "mood": 5, "energy": 1}
+    },
+    {
+      "id": "nightclub_date",
+      "name": "Nightclub Date",
+      "description": "Meet at Undertow for music, dancing, and a high-energy night out.",
+      "location": "undertow_nightclub.dance_floor",
+      "allowed_blocks": ["evening", "late_evening", "night"],
+      "duration_minutes": 150,
+      "cost": 42,
+      "witness_chance": 82,
+      "tags": ["nightlife", "dancing", "public", "loud", "entertainment"],
+      "need_effects": {"loneliness": -14, "mood": 10, "energy": -8, "hydration": 8}
+    },
+    {
+      "id": "crown_point_dinner",
+      "name": "Crown Point Dinner",
+      "description": "Share a formal dinner overlooking the harbor at the Crown Point Hotel.",
+      "location": "crown_point_hotel_spa.restaurant",
+      "allowed_blocks": ["evening", "late_evening"],
+      "duration_minutes": 150,
+      "cost": 120,
+      "witness_chance": 72,
+      "tags": ["formal", "dining", "conversation", "public", "luxury"],
+      "need_effects": {"loneliness": -16, "mood": 12, "hunger": -20, "energy": -4}
     }
   ],
   "invitation_defaults": {

@@ -64,7 +64,7 @@ func plan_routes(state: Dictionary, destination: String) -> Dictionary:
 		option["arrival_weekday"] = arrival_clock["weekday"]
 		option["arrival_block"] = arrival_clock["block"]
 		option["arrival_minute_within_block"] = arrival_clock["minute_within_block"]
-		var mode_error: String = _destination_access_error(state, destination_id, int(option["minutes"]))
+		var mode_error: String = _destination_access_error(state, destination_id, int(option["minutes"]), destination)
 		if mode_error.is_empty():
 			mode_error = _mode_error(state, package, option)
 		if not mode_error.is_empty():
@@ -367,10 +367,10 @@ func _mode_error(state: Dictionary, package: Dictionary, option: Dictionary) -> 
 	return ""
 
 
-func _destination_access_error(state: Dictionary, destination: String, travel_minutes: int) -> String:
+func _destination_access_error(state: Dictionary, destination: String, travel_minutes: int, requested_destination: String = "") -> String:
 	var location: Dictionary = _registry.get_location(destination)
 	var access: Dictionary = location.get("access", {})
-	if bool(access.get("always_open", false)) or bool(access.get("always_open_to_player", false)):
+	if bool(access.get("always_open", false)) or bool(access.get("always_open_to_player", false)) or _is_after_hours_outdoor_connector(location, requested_destination):
 		return ""
 	var arrival_clock: Dictionary = _clock_after_minutes(state, travel_minutes)
 	if _access_is_open(access, arrival_clock):
@@ -379,6 +379,12 @@ func _destination_access_error(state: Dictionary, destination: String, travel_mi
 		location.get("name", destination),
 		_next_opening_label(access, arrival_clock),
 	]
+
+
+func _is_after_hours_outdoor_connector(location: Dictionary, requested_destination: String) -> bool:
+	if not requested_destination.contains(".") or str(location.get("type", "")) != "education_hub":
+		return false
+	return requested_destination.get_slice(".", 1) == str(location.get("outside_room", ""))
 
 
 func _access_is_open(access: Dictionary, clock: Dictionary) -> bool:

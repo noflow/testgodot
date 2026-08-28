@@ -117,7 +117,7 @@
           {"id": "stamina", "text": "I want more stamina.", "effects": [{"operation": "set_value", "key": "fitness.primary_goal", "value": "stamina"}], "next": "assessment_end"},
           {"id": "balanced", "text": "I want a balanced foundation.", "effects": [{"operation": "set_value", "key": "fitness.primary_goal", "value": "balanced"}], "next": "assessment_end"}
         ]},
-        "assessment_end": {"speaker": "rachel_morgan", "line": "Good. I added a beginner session to your calendar. Show up hydrated, wear proper shoes, and don't mistake soreness for progress.", "effects": [{"operation": "set_flag", "key": "fitness.gym_access", "value": true}, {"operation": "schedule_event", "value": "beginner_forge_workout"}, {"operation": "complete_objective", "quest": "first_rep", "objective": "complete_assessment"}, {"operation": "create_memory", "character": "rachel_morgan", "value": "completed_first_assessment"}], "next": null}
+        "assessment_end": {"speaker": "rachel_morgan", "line": "Good. I added a beginner session to your calendar. I also sent you the Cedar Vale route I use; you might find the neighborhood useful later.", "effects": [{"operation": "set_flag", "key": "fitness.gym_access", "value": true}, {"operation": "schedule_event", "value": "beginner_forge_workout"}, {"operation": "discover_location", "location_id": "cedar_vale_street", "discovery_source": "invitation", "character": "rachel_morgan"}, {"operation": "complete_objective", "quest": "first_rep", "objective": "complete_assessment"}, {"operation": "create_memory", "character": "rachel_morgan", "value": "completed_first_assessment"}], "next": null}
       }
     }
   ],

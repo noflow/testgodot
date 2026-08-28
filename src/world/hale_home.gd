@@ -1,6 +1,7 @@
 extends Control
 
 const HouseholdScheduleEngineScript: GDScript = preload("res://src/world/household_schedule_engine.gd")
+const HaleHomeNavigationScript: GDScript = preload("res://src/world/hale_home_navigation.gd")
 const HOUSEHOLD_CHARACTER_IDS: PackedStringArray = ["elena_reyes_hale", "daniel_hale", "lily_hale"]
 const MONTH_NAMES: PackedStringArray = [
 	"January", "February", "March", "April", "May", "June",
@@ -87,21 +88,50 @@ const ROOM_ORDER: PackedStringArray = [
 	"living_room", "dining_room", "kitchen", "parents_bedroom",
 	"backyard", "laundry_room", "garage", "front_yard",
 ]
-const ROOM_EXITS: Dictionary = {
-	"player_bedroom": {"down": "upstairs_landing"},
-	"upstairs_landing": {"up": "player_bedroom", "left": "upstairs_hall", "down": "entryway"},
-	"upstairs_hall": {"left": "lily_bedroom", "up": "parents_bedroom", "right": "upstairs_landing", "down": "family_bathroom"},
-	"lily_bedroom": {"right": "upstairs_hall"},
-	"parents_bedroom": {"down": "upstairs_hall"},
-	"family_bathroom": {"up": "upstairs_hall"},
-	"entryway": {"left": "living_room", "up": "upstairs_landing", "right": "front_yard"},
-	"living_room": {"right": "entryway", "down": "dining_room"},
-	"dining_room": {"up": "living_room", "right": "kitchen"},
-	"kitchen": {"left": "dining_room", "right": "laundry_room", "down": "backyard"},
-	"backyard": {"up": "kitchen"},
-	"laundry_room": {"left": "kitchen", "right": "garage"},
-	"garage": {"left": "laundry_room", "down": "front_yard"},
-	"front_yard": {"left": "garage", "up": "alder_heights_residential_street.hale_block", "down": "entryway"},
+const ROOM_EXITS: Dictionary = HaleHomeNavigationScript.ROOM_EXITS
+const HOME_MINIMAP_ROOMS: Array = [
+	"player_bedroom", "upstairs_landing", "upstairs_hall", "entryway", "family_bathroom", "lily_bedroom",
+	"living_room", "dining_room", "kitchen", "parents_bedroom", "laundry_room", "garage",
+]
+const HOME_MINIMAP_LABELS: Dictionary = {
+	"player_bedroom": "Your Bedroom",
+	"upstairs_landing": "Upstairs Landing",
+	"upstairs_hall": "Upstairs Hall",
+	"entryway": "Front Entryway",
+	"family_bathroom": "Family Bathroom",
+	"lily_bedroom": "Lily's Bedroom",
+	"living_room": "Living Room",
+	"dining_room": "Dining Room",
+	"kitchen": "Kitchen",
+	"parents_bedroom": "Parents' Bedroom",
+	"laundry_room": "Laundry Room",
+	"garage": "Garage",
+	"boundary:backyard": "Back Yard / Outside",
+	"boundary:front_yard": "Front Yard / Outside",
+}
+const HOME_MINIMAP_LAYOUT: Dictionary = {
+	"parents_bedroom": [0, 0],
+	"lily_bedroom": [-1, 1],
+	"upstairs_hall": [0, 1],
+	"family_bathroom": [0, 2],
+	"player_bedroom": [2, 0],
+	"upstairs_landing": [2, 1],
+	"entryway": [2, 3],
+	"living_room": [1, 3],
+	"dining_room": [1, 4],
+	"kitchen": [2, 4],
+	"laundry_room": [3, 4],
+	"garage": [4, 4],
+	"boundary:backyard": [2, 5],
+	"boundary:front_yard": [4, 5],
+}
+const HALE_OUTDOOR_MINIMAP_LAYOUT: Dictionary = {
+	"hale_home.front_yard": [0, 1],
+	"hale_block": [0, 0],
+	"neighborhood_corner": [1, 0],
+	"forge_fitness.front_desk": [1, -1],
+	"alder_heights_bus_stop.shelter": [2, 0],
+	"alder_bay_park.waterfront_path": [1, 1],
 }
 const PRIVATE_DOOR_RULES: Dictionary = {
 	"lily_bedroom": {"always_locked_blocks": ["early_morning", "night"], "chance_percent": 45, "salt": 17},
@@ -151,10 +181,7 @@ const INTERACTIONS: Array = [
 @onready var room_buttons: VBoxContainer = %RoomButtons
 @onready var action_title: Label = %ActionTitle
 @onready var action_buttons: VBoxContainer = %ActionButtons
-@onready var previous_room_arrow: Button = %PrevRoomArrow
-@onready var outside_arrow: Button = %OutsideArrow
-@onready var down_room_arrow: Button = %DownRoomArrow
-@onready var next_room_arrow: Button = %NextRoomArrow
+@onready var directional_navigation: PortAlderDirectionalNavigationUI = %DirectionalNavigation
 @onready var wardrobe_panel: PanelContainer = %WardrobePanel
 @onready var wardrobe_list: VBoxContainer = %WardrobeList
 @onready var outfit_text: RichTextLabel = %OutfitText
@@ -178,6 +205,7 @@ func _ready() -> void:
 	smartphone.phone_opened.connect(_on_phone_opened)
 	smartphone.phone_closed.connect(_on_phone_closed)
 	smartphone.travel_completed.connect(_on_travel_completed)
+	directional_navigation.direction_requested.connect(_on_navigation_direction_requested)
 	_restore_room()
 	_sync_household_schedule(true)
 	_render_room()
@@ -191,6 +219,13 @@ func _process(_delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if directional_navigation.is_minimap_open():
+		if event.is_action_pressed("cancel") or event.is_action_pressed("city_map"):
+			directional_navigation.close_minimap()
+			get_viewport().set_input_as_handled()
+			return
+		if event.is_action_pressed("phone"):
+			directional_navigation.close_minimap()
 	if smartphone.is_open():
 		if event.is_action_pressed("cancel") or event.is_action_pressed("phone"):
 			smartphone.close_phone()
@@ -206,7 +241,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		smartphone.open_phone()
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("city_map"):
-		smartphone.open_phone("city_map")
+		directional_navigation.toggle_minimap()
 		get_viewport().set_input_as_handled()
 
 
@@ -287,49 +322,50 @@ func _rebuild_room_buttons() -> void:
 
 
 func _refresh_directional_navigation() -> void:
-	var left_target: String = _room_exit("left")
-	var up_target: String = _room_exit("up")
-	var down_target: String = _room_exit("down")
-	var right_target: String = _room_exit("right")
-	_configure_direction_button(previous_room_arrow, left_target, "◀", "Left")
-	_configure_direction_button(outside_arrow, up_target, "▲", "Up")
-	_configure_direction_button(down_room_arrow, down_target, "▼", "Down")
-	_configure_direction_button(next_room_arrow, right_target, "▶", "Right", true)
-	SettingsService.apply_accessibility(previous_room_arrow)
-	SettingsService.apply_accessibility(outside_arrow)
-	SettingsService.apply_accessibility(down_room_arrow)
-	SettingsService.apply_accessibility(next_room_arrow)
+	directional_navigation.clear_all()
+	for direction: String in ["left", "up", "right", "down"]:
+		var target: String = _room_exit(direction)
+		if not target.is_empty():
+			directional_navigation.configure_destination(direction, _navigation_target_name(target))
+	_configure_context_minimap()
+	directional_navigation.refresh_accessibility()
 
 
-func _on_previous_room_pressed() -> void:
-	_move_through_exit("left")
+func _configure_context_minimap() -> void:
+	if _current_room == "front_yard":
+		directional_navigation.configure_minimap("hale_home", _current_room, {}, {
+			"context_location_id": "alder_heights_residential_street",
+			"current_node_id": "hale_home.front_yard",
+			"title": "Alder Heights • Outside Hale Home",
+			"scope_label": "NEIGHBORHOOD MAP",
+			"label_overrides": {"hale_home.front_yard": "Hale Family Home / Front Yard"},
+			"layout": HALE_OUTDOOR_MINIMAP_LAYOUT,
+		})
+		return
+	var locked_room_ids: Array = []
+	for private_room_id: String in ["lily_bedroom", "parents_bedroom"]:
+		if _private_door_locked(private_room_id):
+			locked_room_ids.append(private_room_id)
+	if str(_bathroom_door_state().get("status", "available")) != "available":
+		locked_room_ids.append("family_bathroom")
+	var current_node_id: String = "boundary:backyard" if _current_room == "backyard" else _current_room
+	directional_navigation.configure_minimap("hale_home", _current_room, ROOM_EXITS, {
+		"current_node_id": current_node_id,
+		"title": "Hale Family Home",
+		"scope_label": "HOUSE MAP",
+		"room_ids": HOME_MINIMAP_ROOMS,
+		"label_overrides": HOME_MINIMAP_LABELS,
+		"locked_room_ids": locked_room_ids,
+		"layout": HOME_MINIMAP_LAYOUT,
+	})
 
 
-func _on_next_room_pressed() -> void:
-	_move_through_exit("right")
-
-
-func _on_outside_pressed() -> void:
-	_move_through_exit("up")
-
-
-func _on_down_room_pressed() -> void:
-	_move_through_exit("down")
+func _on_navigation_direction_requested(direction: String) -> void:
+	_move_through_exit(direction)
 
 
 func _room_exit(direction: String) -> String:
 	return str(ROOM_EXITS.get(_current_room, {}).get(direction, ""))
-
-
-func _configure_direction_button(button: Button, target: String, symbol: String, _fallback: String, symbol_after: bool = false) -> void:
-	var has_target: bool = not target.is_empty()
-	button.visible = has_target
-	button.disabled = not has_target
-	if not has_target:
-		button.text = ""
-		return
-	var label: String = _navigation_target_name(target)
-	button.text = "%s %s" % [label, symbol] if symbol_after else "%s %s" % [symbol, label]
 
 
 func _navigation_target_name(target: String) -> String:
@@ -761,11 +797,12 @@ func _on_phone_button_pressed() -> void:
 
 
 func _on_map_button_pressed() -> void:
-	smartphone.open_phone("city_map")
+	directional_navigation.toggle_minimap()
 
 
 func _on_phone_opened() -> void:
 	_close_panels()
+	directional_navigation.close_minimap()
 
 
 func _on_phone_closed() -> void:

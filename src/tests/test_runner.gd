@@ -11,7 +11,9 @@ const PhoneEngineScript: GDScript = preload("res://src/phone/phone_engine.gd")
 const HouseholdScheduleEngineScript: GDScript = preload("res://src/world/household_schedule_engine.gd")
 const TravelEngineScript: GDScript = preload("res://src/world/travel_engine.gd")
 const NavigationAccessScript: GDScript = preload("res://src/world/navigation_access.gd")
+const NavigationIntegrityValidatorScript: GDScript = preload("res://src/world/navigation_integrity_validator.gd")
 const NpcPresenceEngineScript: GDScript = preload("res://src/world/npc_presence_engine.gd")
+const HaleHomeNavigationScript: GDScript = preload("res://src/world/hale_home_navigation.gd")
 const CityActionEngineScript: GDScript = preload("res://src/world/city_action_engine.gd")
 const EducationEngineScript: GDScript = preload("res://src/education/education_engine.gd")
 const EmploymentEngineScript: GDScript = preload("res://src/employment/employment_engine.gd")
@@ -41,6 +43,7 @@ func _run_all() -> void:
 	_test_character_packages()
 	_test_vertical_slice_acceptance_suite()
 	_test_content_registry()
+	_test_navigation_integrity()
 	_test_new_game_state_factory()
 	_test_character_creation_validation()
 	_test_clock_and_simulation_engine()
@@ -319,9 +322,11 @@ func _test_city_travel_and_routes() -> void:
 	var quests: RefCounted = QuestEngineScript.new(_registry, simulation)
 	var travel: RefCounted = TravelEngineScript.new(_registry, simulation, quests)
 	var state: Dictionary = factory.create_new_game({}, {"random_seed": 712})
-	_expect(state["world_state"]["unlocked_locations"].size() == 12, "New games unlock twelve public opening destinations while private NPC homes remain hidden.")
+	_expect(state["world_state"]["unlocked_locations"].size() == 13, "New games unlock thirteen essential opening destinations while optional districts and private NPC homes remain hidden.")
 	_expect("cypress_hall_dorm" in state["world_state"]["unlocked_locations"] and "maple_hall_dorm" in state["world_state"]["unlocked_locations"] and "westshore_bookshop" in state["world_state"]["unlocked_locations"], "The complete public Westshore destination set is known at new game start.")
 	var navigation: RefCounted = NavigationAccessScript.new(_registry)
+	for district_hub_id: String in ["mariner_row_shopping_street", "greyport_street", "cedar_vale_street", "crown_point_boulevard"]:
+		_expect(district_hub_id not in state["world_state"]["unlocked_locations"] and not bool(navigation.location_visibility_report(state, district_hub_id).get("allowed", false)), "Optional district begins hidden until organically discovered: %s" % district_hub_id)
 	_expect(not bool(navigation.location_visibility_report(state, "rowan_family_home").get("allowed", false)), "Emma's home is invisible before a quest or invitation reveals it.")
 	_expect(not bool(navigation.target_access_report(state, "alder_heights_residential_street", "rowan_family_home.porch").get("allowed", false)), "A hidden residence does not expose its street arrow.")
 	_expect("harbor_centre_downtown" not in state["world_state"]["unlocked_locations"] and "port_alder_galleria" not in state["world_state"]["unlocked_locations"], "Harbor Centre and the Galleria begin as organic walking discoveries instead of phone-map shortcuts.")
@@ -384,6 +389,13 @@ func _test_city_travel_and_routes() -> void:
 	campus_state["world_state"]["current_location"] = "westshore_campus.transit_loop"
 	var maple_plan: Dictionary = travel.plan_routes(campus_state, "maple_hall_dorm")
 	_expect(maple_plan.get("ok", false) and _route_option(maple_plan, "walking")["minutes"] == 8, "The campus transit loop connects to Maple Hall on foot.")
+	var after_hours_maple_state: Dictionary = campus_state.duplicate(true)
+	after_hours_maple_state["clock"]["block"] = "late_evening"
+	after_hours_maple_state["world_state"]["current_location"] = "maple_hall_dorm.lobby"
+	var maple_exit_plan: Dictionary = travel.plan_routes(after_hours_maple_state, "westshore_campus.transit_loop")
+	var closed_library_plan: Dictionary = travel.plan_routes(after_hours_maple_state, "westshore_campus.library")
+	_expect(maple_exit_plan.get("ok", false) and _route_option(maple_exit_plan, "walking").get("available", false), "Maple Hall residents can always leave through the outdoor campus transit loop.")
+	_expect(closed_library_plan.get("ok", false) and not _route_option(closed_library_plan, "walking").get("available", true), "After-hours dorm exits do not unlock closed campus interiors.")
 
 	var closed_plan: Dictionary = travel.plan_routes(state, "harborlight_cinema")
 	_expect(closed_plan.get("ok", false), "Closed destinations still expose route comparisons.")
@@ -424,6 +436,281 @@ func _test_city_travel_and_routes() -> void:
 	state = result["state"]
 	_expect("getting_around_port_alder" in state["quest_state"]["completed"], "Viewing routes and taking the bus completes transportation onboarding.")
 	_expect("transportation" in state["player"]["phone"]["unlocked_apps"], "Transportation onboarding unlocks its future phone app.")
+
+	var lantern_state: Dictionary = factory.create_new_game({}, {"random_seed": 714})
+	lantern_state["clock"]["weekday"] = "thursday"
+	lantern_state["clock"]["block"] = "evening"
+	lantern_state["world_state"]["current_location"] = "harborlight_cinema.lobby"
+	for lantern_location_id: String in ["harborlight_cinema", "lantern_district_street", "la_brisa_kitchen", "lantern_gallery", "tideglass_club", "harbor_companion_cooperative"]:
+		var lantern_discovery: Dictionary = simulation.apply_operation(lantern_state, "world.discover_location", {
+			"location_id": lantern_location_id,
+			"discovery_source": "exploration",
+		}, "test.lantern_discovery:%s" % lantern_location_id)
+		_expect(lantern_discovery.get("ok", false), "Lantern location supports organic walking discovery: %s" % lantern_location_id)
+		lantern_state = lantern_discovery.get("state", lantern_state)
+	var street_plan: Dictionary = travel.plan_routes(lantern_state, "lantern_district_street.cinema_block")
+	_expect(street_plan.get("ok", false) and _route_option(street_plan, "walking").get("minutes", 0) == 1, "The cinema lobby connects to Lantern District Street with a one-minute walk.")
+	var street_result: Dictionary = travel.execute_travel(lantern_state, "lantern_district_street.cinema_block", "walking", "test.lantern_street")
+	_expect(street_result.get("ok", false) and str(street_result.get("state", {}).get("world_state", {}).get("current_location", "")) == "lantern_district_street.cinema_block", "Walking out of the cinema arrives on the authored Cinema Block.")
+	lantern_state = street_result.get("state", lantern_state)
+	for destination: Dictionary in [
+		{"id": "la_brisa_kitchen", "minutes": 2},
+		{"id": "lantern_gallery", "minutes": 3},
+		{"id": "tideglass_club", "minutes": 3},
+		{"id": "harbor_companion_cooperative", "minutes": 4},
+	]:
+		var venue_plan: Dictionary = travel.plan_routes(lantern_state, str(destination["id"]))
+		_expect(venue_plan.get("ok", false) and _route_option(venue_plan, "walking").get("minutes", 0) == int(destination["minutes"]), "Lantern District Street has its authored walk to %s." % destination["id"])
+	var lantern_access: RefCounted = NavigationAccessScript.new(_registry)
+	_expect(bool(lantern_access.room_access_report(lantern_state, "harbor_companion_cooperative", "secure_reception").get("allowed", false)), "The cooperative's secure reception remains a public safety and licensing contact point.")
+	_expect(not bool(lantern_access.room_access_report(lantern_state, "harbor_companion_cooperative", "consultation_room").get("allowed", false)) and not bool(lantern_access.room_access_report(lantern_state, "harbor_companion_cooperative", "staff_lounge").get("allowed", false)) and not bool(lantern_access.room_access_report(lantern_state, "harbor_companion_cooperative", "private_suite").get("allowed", false)), "Appointment, licensed-worker, and consenting-adult rooms remain inaccessible without their specific grants.")
+
+	var bay_state: Dictionary = factory.create_new_game({}, {"random_seed": 715})
+	bay_state["clock"]["block"] = "afternoon"
+	bay_state["world_state"]["current_location"] = "alder_bay_park.waterfront_path"
+	for bay_location_id: String in ["alder_bay_park", "alder_bay_beach", "port_alder_marina", "bayview_cafe"]:
+		var bay_discovery: Dictionary = simulation.apply_operation(bay_state, "world.discover_location", {
+			"location_id": bay_location_id,
+			"discovery_source": "exploration",
+		}, "test.alder_bay_discovery:%s" % bay_location_id)
+		_expect(bay_discovery.get("ok", false), "Alder Bay location supports organic waterfront discovery: %s" % bay_location_id)
+		bay_state = bay_discovery.get("state", bay_state)
+	for bay_destination: Dictionary in [
+		{"id": "alder_bay_beach", "minutes": 2},
+		{"id": "bayview_cafe", "minutes": 4},
+		{"id": "port_alder_marina", "minutes": 5},
+	]:
+		var bay_plan: Dictionary = travel.plan_routes(bay_state, str(bay_destination["id"]))
+		_expect(bay_plan.get("ok", false) and _route_option(bay_plan, "walking").get("minutes", 0) == int(bay_destination["minutes"]), "Alder Bay Park has its authored waterfront walk to %s." % bay_destination["id"])
+	var beach_result: Dictionary = travel.execute_travel(bay_state, "alder_bay_beach.boardwalk", "walking", "test.alder_bay_beach")
+	_expect(beach_result.get("ok", false) and str(beach_result.get("state", {}).get("world_state", {}).get("current_location", "")) == "alder_bay_beach.boardwalk", "Walking to the beach arrives on its authored boardwalk entrance.")
+	var bay_access: RefCounted = NavigationAccessScript.new(_registry)
+	_expect(bool(bay_access.room_access_report(bay_state, "port_alder_marina", "promenade").get("allowed", false)) and not bool(bay_access.room_access_report(bay_state, "port_alder_marina", "marina_office").get("allowed", false)), "The marina promenade is public while its office requires employment or an appointment.")
+	var rainy_bay_state: Dictionary = bay_state.duplicate(true)
+	rainy_bay_state["world_state"]["weather"]["condition"] = "rain"
+	var rainy_walk: Dictionary = travel.plan_routes(rainy_bay_state, "alder_bay_beach")
+	_expect("Full weather exposure: rain" in _route_option(rainy_walk, "walking").get("warnings", PackedStringArray()), "Walking between Alder Bay outdoor locations warns about full rain exposure.")
+
+	var mariner_state: Dictionary = factory.create_new_game({}, {"random_seed": 716})
+	mariner_state["world_state"]["current_location"] = "hale_home.front_yard"
+	var mariner_plan: Dictionary = travel.plan_routes(mariner_state, "mariner_row_shopping_street")
+	_expect(not mariner_plan.get("ok", false), "Mariner Row cannot be selected before the player discovers it.")
+	var wrong_mariner_source: Dictionary = simulation.apply_operation(mariner_state, "world.discover_location", {"location_id": "mariner_row_shopping_street", "discovery_source": "housing_listing"}, "test.mariner_wrong_source")
+	_expect(not wrong_mariner_source.get("ok", false), "A discovery source not authored for Mariner Row cannot reveal it.")
+	var mariner_hub_discovery: Dictionary = simulation.apply_operation(mariner_state, "world.discover_location", {"location_id": "mariner_row_shopping_street", "discovery_source": "store_listing"}, "test.mariner_listing")
+	mariner_state = mariner_hub_discovery.get("state", mariner_state)
+	mariner_plan = travel.plan_routes(mariner_state, "mariner_row_shopping_street")
+	_expect(mariner_hub_discovery.get("ok", false) and mariner_plan.get("ok", false) and _route_option(mariner_plan, "walking").get("minutes", 0) == 35 and _route_option(mariner_plan, "bus") is Dictionary, "A shopping listing reveals Mariner Row and its walking and bus routes from home.")
+	var mariner_result: Dictionary = travel.execute_travel(mariner_state, "mariner_row_shopping_street", "walking", "test.mariner_row")
+	_expect(mariner_result.get("ok", false) and str(mariner_result.get("state", {}).get("world_state", {}).get("current_location", "")) == "mariner_row_shopping_street.transit_stop", "Travel to Mariner Row arrives at its authored transit stop.")
+	mariner_state = mariner_result.get("state", mariner_state)
+	for mariner_location_id: String in ["mariner_market", "northline_outfitters", "harbor_formalwear", "mariner_home_goods", "port_alder_auto"]:
+		var mariner_discovery: Dictionary = simulation.apply_operation(mariner_state, "world.discover_location", {
+			"location_id": mariner_location_id,
+			"discovery_source": "exploration",
+		}, "test.mariner_discovery:%s" % mariner_location_id)
+		_expect(mariner_discovery.get("ok", false), "Mariner Row business supports organic storefront discovery: %s" % mariner_location_id)
+		mariner_state = mariner_discovery.get("state", mariner_state)
+	for mariner_destination: Dictionary in [
+		{"id": "mariner_market", "minutes": 1},
+		{"id": "northline_outfitters", "minutes": 2},
+		{"id": "harbor_formalwear", "minutes": 2},
+		{"id": "mariner_home_goods", "minutes": 3},
+		{"id": "port_alder_auto", "minutes": 4},
+	]:
+		var business_plan: Dictionary = travel.plan_routes(mariner_state, str(mariner_destination["id"]))
+		_expect(business_plan.get("ok", false) and _route_option(business_plan, "walking").get("minutes", 0) == int(mariner_destination["minutes"]), "Mariner Row street has its authored walk to %s." % mariner_destination["id"])
+	var mariner_access: RefCounted = NavigationAccessScript.new(_registry)
+	_expect(not bool(mariner_access.room_access_report(mariner_state, "mariner_market", "stockroom").get("allowed", false)), "Mariner Market's stockroom is hidden from ordinary shoppers.")
+	var market_employee_state: Dictionary = mariner_state.duplicate(true)
+	market_employee_state["player"]["employment"]["active_jobs"].append({"job_id": "grocery_stock_clerk", "status": "active"})
+	_expect(bool(mariner_access.room_access_report(market_employee_state, "mariner_market", "stockroom").get("allowed", false)), "A Mariner Market employee can enter the stockroom through the same authored door.")
+	var mariner_actions: RefCounted = CityActionEngineScript.new(_registry, simulation, quests)
+	mariner_state["world_state"]["current_location"] = "mariner_market.grocery_floor"
+	var market_interactions: Array = mariner_actions.interactions_for_room(mariner_state, "mariner_market", "grocery_floor")
+	_expect(market_interactions.size() == 1 and str(market_interactions[0].get("store_id", "")) == "mariner_market" and bool(market_interactions[0].get("available", false)), "The physical Mariner Market floor opens its live data-driven storefront.")
+
+	var medical_state: Dictionary = factory.create_new_game({}, {"random_seed": 717})
+	medical_state["world_state"]["current_location"] = "hale_home.front_yard"
+	var medical_plan: Dictionary = travel.plan_routes(medical_state, "st_maren_medical_center")
+	_expect(medical_plan.get("ok", false) and _route_option(medical_plan, "walking").get("minutes", 0) == 42 and _route_option(medical_plan, "bus") is Dictionary, "St. Maren is an opening destination with walking and bus routes from home.")
+	var medical_result: Dictionary = travel.execute_travel(medical_state, "st_maren_medical_center", "walking", "test.st_maren")
+	_expect(medical_result.get("ok", false) and str(medical_result.get("state", {}).get("world_state", {}).get("current_location", "")) == "st_maren_medical_center.campus_transit_stop", "Travel to St. Maren arrives at its authored campus transit stop.")
+	medical_state = medical_result.get("state", medical_state)
+	for medical_location_id: String in ["st_maren_community_clinic", "st_maren_doctors_office", "harbor_wellness_therapy", "st_maren_sexual_health", "bay_pharmacy"]:
+		var medical_discovery: Dictionary = simulation.apply_operation(medical_state, "world.discover_location", {
+			"location_id": medical_location_id,
+			"discovery_source": "exploration",
+		}, "test.st_maren_discovery:%s" % medical_location_id)
+		_expect(medical_discovery.get("ok", false), "St. Maren facility supports organic campus discovery: %s" % medical_location_id)
+		medical_state = medical_discovery.get("state", medical_state)
+	for medical_destination: Dictionary in [
+		{"id": "st_maren_community_clinic", "minutes": 2},
+		{"id": "st_maren_doctors_office", "minutes": 2},
+		{"id": "harbor_wellness_therapy", "minutes": 3},
+		{"id": "st_maren_sexual_health", "minutes": 3},
+		{"id": "bay_pharmacy", "minutes": 2},
+	]:
+		var facility_plan: Dictionary = travel.plan_routes(medical_state, str(medical_destination["id"]))
+		_expect(facility_plan.get("ok", false) and _route_option(facility_plan, "walking").get("minutes", 0) == int(medical_destination["minutes"]), "St. Maren campus has its authored walk to %s." % medical_destination["id"])
+	var medical_access: RefCounted = NavigationAccessScript.new(_registry)
+	_expect(bool(medical_access.room_access_report(medical_state, "st_maren_community_clinic", "reception").get("allowed", false)) and not bool(medical_access.room_access_report(medical_state, "st_maren_community_clinic", "exam_room").get("allowed", false)), "Clinic reception is public while examination rooms require an appointment.")
+	_expect(not bool(medical_access.room_access_report(medical_state, "st_maren_medical_center", "staff_station").get("allowed", false)) and not bool(medical_access.room_access_report(medical_state, "st_maren_sexual_health", "testing_room").get("allowed", false)), "Hospital staff and private testing rooms remain hidden without the proper access grant.")
+	var clinic_employee_state: Dictionary = medical_state.duplicate(true)
+	clinic_employee_state["player"]["employment"]["active_jobs"].append({"job_id": "clinic_records_clerk", "status": "active"})
+	_expect(bool(medical_access.room_access_report(clinic_employee_state, "st_maren_community_clinic", "records_office").get("allowed", false)), "A clinic employee can enter the records office through the existing job-location alias.")
+	var appointment_state: Dictionary = medical_state.duplicate(true)
+	appointment_state["world_state"]["room_access_grants"].append("st_maren_sexual_health.testing_room")
+	_expect(bool(medical_access.room_access_report(appointment_state, "st_maren_sexual_health", "testing_room").get("allowed", false)), "A scheduled private-health appointment grants only its authored clinical room.")
+	var medical_actions: RefCounted = CityActionEngineScript.new(_registry, simulation, quests)
+	medical_state["world_state"]["current_location"] = "bay_pharmacy.sales_floor"
+	var pharmacy_interactions: Array = medical_actions.interactions_for_room(medical_state, "bay_pharmacy", "sales_floor")
+	_expect(pharmacy_interactions.size() == 1 and str(pharmacy_interactions[0].get("store_id", "")) == "bay_pharmacy" and bool(pharmacy_interactions[0].get("available", false)), "Bay Pharmacy exposes its live physical storefront from the sales floor.")
+
+	var greyport_state: Dictionary = factory.create_new_game({}, {"random_seed": 718})
+	greyport_state["world_state"]["current_location"] = "hale_home.front_yard"
+	var greyport_plan: Dictionary = travel.plan_routes(greyport_state, "greyport_street")
+	_expect(not greyport_plan.get("ok", false), "Greyport cannot be selected before the player discovers it.")
+	var greyport_hub_discovery: Dictionary = simulation.apply_operation(greyport_state, "world.discover_location", {"location_id": "greyport_street", "discovery_source": "job_listing"}, "test.greyport_listing")
+	greyport_state = greyport_hub_discovery.get("state", greyport_state)
+	greyport_plan = travel.plan_routes(greyport_state, "greyport_street")
+	_expect(greyport_hub_discovery.get("ok", false) and greyport_plan.get("ok", false) and _route_option(greyport_plan, "walking").get("minutes", 0) == 55 and _route_option(greyport_plan, "bus") is Dictionary, "A job listing reveals Greyport and its walking and bus routes from home.")
+	var greyport_result: Dictionary = travel.execute_travel(greyport_state, "greyport_street", "walking", "test.greyport")
+	_expect(greyport_result.get("ok", false) and str(greyport_result.get("state", {}).get("world_state", {}).get("current_location", "")) == "greyport_street.bus_exchange", "Travel to Greyport arrives at its authored bus exchange.")
+	greyport_state = greyport_result.get("state", greyport_state)
+	for greyport_location_id: String in ["greyport_studios", "greyport_distribution", "port_alder_transit_depot", "undertow_nightclub"]:
+		var greyport_discovery: Dictionary = simulation.apply_operation(greyport_state, "world.discover_location", {
+			"location_id": greyport_location_id,
+			"discovery_source": "exploration",
+		}, "test.greyport_discovery:%s" % greyport_location_id)
+		_expect(greyport_discovery.get("ok", false), "Greyport destination supports organic street discovery: %s" % greyport_location_id)
+		greyport_state = greyport_discovery.get("state", greyport_state)
+	for greyport_destination: Dictionary in [
+		{"id": "greyport_studios", "minutes": 2},
+		{"id": "greyport_distribution", "minutes": 4},
+		{"id": "port_alder_transit_depot", "minutes": 5},
+	]:
+		var greyport_destination_plan: Dictionary = travel.plan_routes(greyport_state, str(greyport_destination["id"]))
+		_expect(greyport_destination_plan.get("ok", false) and _route_option(greyport_destination_plan, "walking").get("minutes", 0) == int(greyport_destination["minutes"]), "Greyport Main Street has its authored walk to %s." % greyport_destination["id"])
+	var closed_undertow_plan: Dictionary = travel.plan_routes(greyport_state, "undertow_nightclub")
+	_expect(closed_undertow_plan.get("ok", false) and not _route_option(closed_undertow_plan, "walking").get("available", true) and "Next opening:" in str(_route_option(closed_undertow_plan, "walking").get("reason", "")), "Undertow remains visible while closed and reports its next opening time.")
+	greyport_state["clock"]["weekday"] = "friday"
+	greyport_state["clock"]["block"] = "evening"
+	var open_undertow_plan: Dictionary = travel.plan_routes(greyport_state, "undertow_nightclub")
+	_expect(open_undertow_plan.get("ok", false) and _route_option(open_undertow_plan, "walking").get("available", false) and _route_option(open_undertow_plan, "walking").get("minutes", 0) == 3, "Undertow opens for its authored three-minute Greyport walk on Friday evening.")
+	var greyport_access: RefCounted = NavigationAccessScript.new(_registry)
+	_expect(bool(greyport_access.room_access_report(greyport_state, "greyport_distribution", "security").get("allowed", false)) and not bool(greyport_access.room_access_report(greyport_state, "greyport_distribution", "warehouse_floor").get("allowed", false)), "Warehouse security is public while the floor remains employee-only.")
+	_expect(bool(greyport_access.room_access_report(greyport_state, "port_alder_transit_depot", "public_counter").get("allowed", false)) and not bool(greyport_access.room_access_report(greyport_state, "port_alder_transit_depot", "repair_bays").get("allowed", false)), "The transit public counter does not expose its repair bays.")
+	_expect(bool(greyport_access.room_access_report(greyport_state, "greyport_studios", "lobby").get("allowed", false)) and not bool(greyport_access.room_access_report(greyport_state, "greyport_studios", "studio_unit").get("allowed", false)), "Greyport Studios keeps rentable interiors behind viewing or lease access.")
+	var greyport_employee_state: Dictionary = greyport_state.duplicate(true)
+	greyport_employee_state["player"]["employment"]["active_jobs"].append({"job_id": "warehouse_associate", "status": "active"})
+	_expect(bool(greyport_access.room_access_report(greyport_employee_state, "greyport_distribution", "warehouse_floor").get("allowed", false)), "A warehouse employee can enter Greyport Distribution through the legacy job-location alias.")
+	var club_employee_state: Dictionary = greyport_state.duplicate(true)
+	club_employee_state["player"]["employment"]["active_jobs"].append({"job_id": "undertow_floor_staff", "status": "active"})
+	_expect(not bool(greyport_access.room_access_report(greyport_state, "undertow_nightclub", "staff_room").get("allowed", false)) and bool(greyport_access.room_access_report(club_employee_state, "undertow_nightclub", "staff_room").get("allowed", false)), "Undertow's staff room opens only for active nightclub employees.")
+	_expect(not bool(greyport_access.target_access_report(greyport_state, "greyport_street", "lee_family_apartment.front_door").get("allowed", false)), "Greyport's residential lane hides an NPC home until its address is discovered.")
+	var invited_greyport_state: Dictionary = greyport_state.duplicate(true)
+	var greyport_invitation: Dictionary = simulation.apply_operation(invited_greyport_state, "world.discover_location", {"location_id": "lee_family_apartment", "discovery_source": "invitation", "character_id": "marcus_lee"}, "test.greyport_invitation")
+	invited_greyport_state = greyport_invitation.get("state", invited_greyport_state)
+	_expect(bool(greyport_access.target_access_report(invited_greyport_state, "greyport_street", "lee_family_apartment.front_door").get("allowed", false)), "An invitation reveals the Lee apartment door on Greyport's north residential lane.")
+	var greyport_actions: RefCounted = CityActionEngineScript.new(_registry, simulation, quests)
+	greyport_state["world_state"]["current_location"] = "undertow_nightclub.dance_floor"
+	var undertow_interactions: Array = greyport_actions.interactions_for_room(greyport_state, "undertow_nightclub", "dance_floor")
+	var dance_result: Dictionary = greyport_actions.perform_activity(greyport_state, "dance_at_undertow")
+	_expect(undertow_interactions.size() == 1 and bool(undertow_interactions[0].get("available", false)) and dance_result.get("ok", false) and float(dance_result.get("state", {}).get("player", {}).get("skill_experience", {}).get("dancing", 0.0)) > 0.0, "Undertow exposes a working dance-floor activity that advances time and Dancing skill.")
+
+	var cedar_state: Dictionary = factory.create_new_game({}, {"random_seed": 719})
+	cedar_state["world_state"]["current_location"] = "hale_home.front_yard"
+	var cedar_plan: Dictionary = travel.plan_routes(cedar_state, "cedar_vale_street")
+	_expect(not cedar_plan.get("ok", false), "Cedar Vale cannot be selected before the player discovers it.")
+	var cedar_hub_discovery: Dictionary = simulation.apply_operation(cedar_state, "world.discover_location", {"location_id": "cedar_vale_street", "discovery_source": "housing_listing"}, "test.cedar_listing")
+	cedar_state = cedar_hub_discovery.get("state", cedar_state)
+	cedar_plan = travel.plan_routes(cedar_state, "cedar_vale_street")
+	_expect(cedar_hub_discovery.get("ok", false) and cedar_plan.get("ok", false) and _route_option(cedar_plan, "walking").get("minutes", 0) == 40 and _route_option(cedar_plan, "bus") is Dictionary, "A housing listing reveals Cedar Vale and its walking and bus routes from home.")
+	var cedar_result: Dictionary = travel.execute_travel(cedar_state, "cedar_vale_street", "walking", "test.cedar_vale")
+	_expect(cedar_result.get("ok", false) and str(cedar_result.get("state", {}).get("world_state", {}).get("current_location", "")) == "cedar_vale_street.bus_stop", "Travel to Cedar Vale arrives at its authored bus stop.")
+	cedar_state = cedar_result.get("state", cedar_state)
+	for cedar_location_id: String in ["cedar_vale_townhouses", "cedar_vale_detached_homes", "cedar_vale_care_home", "cedar_vale_family_centre"]:
+		var cedar_discovery: Dictionary = simulation.apply_operation(cedar_state, "world.discover_location", {
+			"location_id": cedar_location_id,
+			"discovery_source": "exploration",
+		}, "test.cedar_discovery:%s" % cedar_location_id)
+		_expect(cedar_discovery.get("ok", false), "Cedar Vale destination supports organic street discovery: %s" % cedar_location_id)
+		cedar_state = cedar_discovery.get("state", cedar_state)
+	for cedar_destination: Dictionary in [
+		{"id": "cedar_vale_townhouses", "minutes": 1},
+		{"id": "cedar_vale_detached_homes", "minutes": 3},
+		{"id": "cedar_vale_care_home", "minutes": 3},
+		{"id": "cedar_vale_family_centre", "minutes": 2},
+	]:
+		var cedar_destination_plan: Dictionary = travel.plan_routes(cedar_state, str(cedar_destination["id"]))
+		_expect(cedar_destination_plan.get("ok", false) and _route_option(cedar_destination_plan, "walking").get("minutes", 0) == int(cedar_destination["minutes"]), "Cedar Vale Street has its authored walk to %s." % cedar_destination["id"])
+	var cedar_access: RefCounted = NavigationAccessScript.new(_registry)
+	_expect(bool(cedar_access.room_access_report(cedar_state, "cedar_vale_townhouses", "entry").get("allowed", false)) and not bool(cedar_access.room_access_report(cedar_state, "cedar_vale_townhouses", "living_room").get("allowed", false)), "The townhouse entry is public while its rentable interior requires a lease or viewing.")
+	_expect(bool(cedar_access.room_access_report(cedar_state, "cedar_vale_detached_homes", "foyer").get("allowed", false)) and not bool(cedar_access.room_access_report(cedar_state, "cedar_vale_detached_homes", "living_room").get("allowed", false)), "The detached-home foyer is public while the property interior requires ownership or a viewing.")
+	_expect(bool(cedar_access.room_access_report(cedar_state, "cedar_vale_care_home", "resident_lounge").get("allowed", false)) and not bool(cedar_access.room_access_report(cedar_state, "cedar_vale_care_home", "care_station").get("allowed", false)), "The care-home lounge is public while its care station remains employee-only.")
+	_expect(bool(cedar_access.room_access_report(cedar_state, "cedar_vale_family_centre", "parent_group_room").get("allowed", false)) and not bool(cedar_access.room_access_report(cedar_state, "cedar_vale_family_centre", "childcare_room").get("allowed", false)) and not bool(cedar_access.room_access_report(cedar_state, "cedar_vale_family_centre", "counselor_office").get("allowed", false)), "The family-centre group room is public while childcare and counseling rooms require appointments.")
+	var cedar_employee_state: Dictionary = cedar_state.duplicate(true)
+	cedar_employee_state["player"]["employment"]["active_jobs"].append({"job_id": "cedar_care_support_worker", "status": "active"})
+	_expect(bool(cedar_access.room_access_report(cedar_employee_state, "cedar_vale_care_home", "care_station").get("allowed", false)), "An active Cedar Vale care worker can enter the employee care station.")
+	_expect(not bool(cedar_access.target_access_report(cedar_state, "cedar_vale_street", "rachel_cedar_vale_townhouse.front_door").get("allowed", false)), "Rachel's Cedar Vale home remains hidden until its address is discovered.")
+	var invited_cedar_state: Dictionary = cedar_state.duplicate(true)
+	var cedar_invitation: Dictionary = simulation.apply_operation(invited_cedar_state, "world.discover_location", {"location_id": "rachel_cedar_vale_townhouse", "discovery_source": "invitation", "character_id": "rachel_morgan"}, "test.cedar_invitation")
+	invited_cedar_state = cedar_invitation.get("state", invited_cedar_state)
+	_expect(bool(cedar_access.target_access_report(invited_cedar_state, "cedar_vale_street", "rachel_cedar_vale_townhouse.front_door").get("allowed", false)), "Rachel's invitation reveals only her Cedar Vale front door.")
+	var cedar_actions: RefCounted = CityActionEngineScript.new(_registry, simulation, quests)
+	cedar_state["world_state"]["current_location"] = "cedar_vale_family_centre.parent_group_room"
+	var cedar_interactions: Array = cedar_actions.interactions_for_room(cedar_state, "cedar_vale_family_centre", "parent_group_room")
+	var workshop_result: Dictionary = cedar_actions.perform_activity(cedar_state, "cedar_family_skills_workshop")
+	_expect(cedar_interactions.size() == 1 and bool(cedar_interactions[0].get("available", false)) and workshop_result.get("ok", false) and float(workshop_result.get("state", {}).get("player", {}).get("skill_experience", {}).get("caregiving", 0.0)) > 0.0, "The family centre exposes a working workshop that advances time and Caregiving skill.")
+
+	var crown_state: Dictionary = factory.create_new_game({}, {"random_seed": 720})
+	crown_state["world_state"]["current_location"] = "hale_home.front_yard"
+	var crown_plan: Dictionary = travel.plan_routes(crown_state, "crown_point_boulevard")
+	_expect(not crown_plan.get("ok", false), "Crown Point cannot be selected before the player discovers it.")
+	var crown_hub_discovery: Dictionary = simulation.apply_operation(crown_state, "world.discover_location", {"location_id": "crown_point_boulevard", "discovery_source": "job_listing"}, "test.crown_listing")
+	crown_state = crown_hub_discovery.get("state", crown_state)
+	crown_plan = travel.plan_routes(crown_state, "crown_point_boulevard")
+	_expect(crown_hub_discovery.get("ok", false) and crown_plan.get("ok", false) and _route_option(crown_plan, "walking").get("minutes", 0) == 62 and _route_option(crown_plan, "bus") is Dictionary, "A job listing reveals Crown Point and its walking and bus routes from home.")
+	var crown_result: Dictionary = travel.execute_travel(crown_state, "crown_point_boulevard", "walking", "test.crown_point")
+	_expect(crown_result.get("ok", false) and str(crown_result.get("state", {}).get("world_state", {}).get("current_location", "")) == "crown_point_boulevard.boulevard_entry", "Travel to Crown Point arrives at its authored transit plaza.")
+	crown_state = crown_result.get("state", crown_state)
+	for crown_location_id: String in ["price_caldwell_law", "crown_point_condos", "crown_point_penthouses", "crown_point_hotel_spa"]:
+		var crown_discovery: Dictionary = simulation.apply_operation(crown_state, "world.discover_location", {
+			"location_id": crown_location_id,
+			"discovery_source": "exploration",
+		}, "test.crown_discovery:%s" % crown_location_id)
+		_expect(crown_discovery.get("ok", false), "Crown Point destination supports organic boulevard discovery: %s" % crown_location_id)
+		crown_state = crown_discovery.get("state", crown_state)
+	for crown_destination: Dictionary in [
+		{"id": "price_caldwell_law", "minutes": 1},
+		{"id": "crown_point_condos", "minutes": 2},
+		{"id": "crown_point_penthouses", "minutes": 3},
+		{"id": "crown_point_hotel_spa", "minutes": 3},
+	]:
+		var crown_destination_plan: Dictionary = travel.plan_routes(crown_state, str(crown_destination["id"]))
+		_expect(crown_destination_plan.get("ok", false) and _route_option(crown_destination_plan, "walking").get("minutes", 0) == int(crown_destination["minutes"]), "Crown Point Boulevard has its authored walk to %s." % crown_destination["id"])
+	var crown_access: RefCounted = NavigationAccessScript.new(_registry)
+	_expect(bool(crown_access.room_access_report(crown_state, "price_caldwell_law", "reception").get("allowed", false)) and not bool(crown_access.room_access_report(crown_state, "price_caldwell_law", "associate_floor").get("allowed", false)) and not bool(crown_access.room_access_report(crown_state, "price_caldwell_law", "conference_room").get("allowed", false)), "Price & Caldwell reception is public while its professional rooms require employment or an appointment.")
+	_expect(bool(crown_access.room_access_report(crown_state, "crown_point_condos", "lobby").get("allowed", false)) and not bool(crown_access.room_access_report(crown_state, "crown_point_condos", "one_bedroom_condo").get("allowed", false)), "The condominium lobby is public while its homes and amenities require ownership or a viewing.")
+	_expect(bool(crown_access.room_access_report(crown_state, "crown_point_penthouses", "private_elevator").get("allowed", false)) and not bool(crown_access.room_access_report(crown_state, "crown_point_penthouses", "great_room").get("allowed", false)), "The penthouse elevator lobby is public while the residence requires ownership or a viewing.")
+	_expect(bool(crown_access.room_access_report(crown_state, "crown_point_hotel_spa", "restaurant").get("allowed", false)) and not bool(crown_access.room_access_report(crown_state, "crown_point_hotel_spa", "spa").get("allowed", false)) and not bool(crown_access.room_access_report(crown_state, "crown_point_hotel_spa", "staff_corridor").get("allowed", false)), "Hotel dining remains public while its spa and staff corridor require the appropriate booking or employment.")
+	var crown_law_employee_state: Dictionary = crown_state.duplicate(true)
+	crown_law_employee_state["player"]["employment"]["active_jobs"].append({"job_id": "price_caldwell_office_assistant", "status": "active"})
+	_expect(bool(crown_access.room_access_report(crown_law_employee_state, "price_caldwell_law", "associate_floor").get("allowed", false)) and bool(crown_access.room_access_report(crown_law_employee_state, "price_caldwell_law", "records_room").get("allowed", false)), "A Price & Caldwell employee can enter the associate floor and records room.")
+	var crown_hotel_employee_state: Dictionary = crown_state.duplicate(true)
+	crown_hotel_employee_state["player"]["employment"]["active_jobs"].append({"job_id": "crown_point_hotel_guest_services", "status": "active"})
+	_expect(bool(crown_access.room_access_report(crown_hotel_employee_state, "crown_point_hotel_spa", "staff_corridor").get("allowed", false)), "A Crown Point Hotel employee can enter the staff corridor.")
+	_expect(not bool(crown_access.target_access_report(crown_state, "crown_point_boulevard", "olivia_crown_point_penthouse.private_elevator").get("allowed", false)), "Olivia's penthouse remains hidden until its address is discovered.")
+	var invited_crown_state: Dictionary = crown_state.duplicate(true)
+	var crown_invitation: Dictionary = simulation.apply_operation(invited_crown_state, "world.discover_location", {"location_id": "olivia_crown_point_penthouse", "discovery_source": "invitation", "character_id": "olivia_price"}, "test.crown_invitation")
+	invited_crown_state = crown_invitation.get("state", invited_crown_state)
+	_expect(bool(crown_access.target_access_report(invited_crown_state, "crown_point_boulevard", "olivia_crown_point_penthouse.private_elevator").get("allowed", false)), "Olivia's invitation reveals only her private elevator on Crown Point Boulevard.")
+	var crown_actions: RefCounted = CityActionEngineScript.new(_registry, simulation, quests)
+	crown_state["world_state"]["current_location"] = "crown_point_boulevard.harbor_overlook"
+	var crown_interactions: Array = crown_actions.interactions_for_room(crown_state, "crown_point_boulevard", "harbor_overlook")
+	var overlook_result: Dictionary = crown_actions.perform_activity(crown_state, "crown_point_harbor_overlook")
+	_expect(crown_interactions.size() == 1 and bool(crown_interactions[0].get("available", false)) and overlook_result.get("ok", false) and float(overlook_result.get("state", {}).get("player", {}).get("skill_experience", {}).get("observation", 0.0)) > 0.0, "Crown Point's public overlook exposes a working activity that advances time and Observation skill.")
 
 
 func _test_city_npc_presence_and_acquaintances() -> void:
@@ -589,6 +876,8 @@ func _test_city_institutions_and_fitness() -> void:
 	_expect(_calendar_template_exists(state, "beginner_forge_workout"), "Rachel adds a usable beginner workout to the calendar.")
 	result = dialogue.advance(state)
 	state = result["state"]
+	_expect("cedar_vale_street" in state["world_state"]["discovered_locations"] and "cedar_vale_street" in state["world_state"]["unlocked_locations"], "Rachel's completed assessment reveals Cedar Vale through an authored invitation without revealing her private home.")
+	_expect("rachel_cedar_vale_townhouse" not in state["world_state"]["discovered_locations"], "Rachel's neighborhood invitation does not reveal her private townhouse address.")
 	state["world_state"]["current_location"] = "forge_fitness.strength_floor"
 	var strength_before: float = state["player"]["attributes"]["strength"]
 	result = city_actions.perform_activity(state, "beginner_forge_workout")
@@ -930,6 +1219,8 @@ func _test_housing_qualification_contracts_and_moving() -> void:
 	var sync_result: Dictionary = housing.sync_housing(state)
 	state = sync_result["state"]
 	_expect("housing" in state["player"]["phone"]["unlocked_apps"] and state["player"]["housing"].get("contracts", []) is Array, "Opening the phone upgrades an older runtime state with Housing access and contract storage.")
+	_expect("port_alder_realty" in state["world_state"]["unlocked_locations"], "Housing synchronization keeps the public realty service available.")
+	_expect("greyport_studios" not in state["world_state"]["unlocked_locations"] and "cedar_vale_townhouses" not in state["world_state"]["unlocked_locations"] and "crown_point_condos" not in state["world_state"]["unlocked_locations"], "Opening Housing does not reveal every listed property or bypass neighborhood discovery.")
 	var report: Dictionary = housing.qualification_report(state, "cypress_student_room")
 	_expect(not bool(report.get("qualified", true)) and "enrollment" in str(report.get("failures", [])).to_lower(), "The student dorm clearly rejects a player who is not enrolled.")
 	state["player"]["education"]["enrolled"] = true
@@ -979,6 +1270,48 @@ func _test_housing_qualification_contracts_and_moving() -> void:
 	var recurring_count: int = state["player"]["economy"]["recurring_transactions"].size()
 	result = economy.sync_economy(state)
 	_expect(result["state"]["player"]["economy"]["recurring_transactions"].size() == recurring_count, "Repeated economy synchronization never duplicates a housing payment.")
+
+	var cedar_rental_state: Dictionary = factory.create_new_game({}, {"random_seed": 1403})
+	cedar_rental_state["player"]["economy"]["accounts"].merge({"wallet_cash": 0.0, "checking": 10000.0, "savings": 0.0}, true)
+	cedar_rental_state["player"]["economy"]["credit_score"] = 700
+	cedar_rental_state["player"]["employment"]["active_jobs"].append({"id": "cedar-rental-income", "status": "active", "hourly_pay": 40.0, "weekly_hours": 40.0})
+	report = housing.qualification_report(cedar_rental_state, "cedar_vale_townhouse_rental")
+	_expect(bool(report.get("qualified", false)) and float(report.get("upfront_cost", 0.0)) == 3725.0, "Income, credit, and funds qualify the player for the Cedar Vale townhouse's authored upfront cost.")
+	result = housing.acquire(cedar_rental_state, "cedar_vale_townhouse_rental")
+	cedar_rental_state = result.get("state", cedar_rental_state)
+	var cedar_property_access: RefCounted = NavigationAccessScript.new(_registry)
+	_expect(result.get("ok", false) and bool(cedar_property_access.room_access_report(cedar_rental_state, "cedar_vale_townhouses", "living_room").get("allowed", false)), "Signing the Cedar Vale townhouse lease unlocks its private VN rooms.")
+
+	var cedar_purchase_state: Dictionary = factory.create_new_game({}, {"random_seed": 1404})
+	cedar_purchase_state["player"]["economy"]["accounts"].merge({"wallet_cash": 0.0, "checking": 100000.0, "savings": 0.0}, true)
+	cedar_purchase_state["player"]["economy"]["credit_score"] = 750
+	cedar_purchase_state["player"]["employment"]["active_jobs"].append({"id": "cedar-purchase-income", "status": "active", "hourly_pay": 70.0, "weekly_hours": 40.0})
+	report = housing.qualification_report(cedar_purchase_state, "cedar_vale_detached_purchase")
+	_expect(bool(report.get("qualified", false)) and float(report.get("upfront_cost", 0.0)) == 87000.0, "Strong income, credit, and savings qualify the player for the Cedar Vale detached home's down payment and closing costs.")
+	result = housing.acquire(cedar_purchase_state, "cedar_vale_detached_purchase")
+	cedar_purchase_state = result.get("state", cedar_purchase_state)
+	_expect(result.get("ok", false) and cedar_purchase_state["player"]["housing"]["owned_properties"].size() == 1 and bool(cedar_property_access.room_access_report(cedar_purchase_state, "cedar_vale_detached_homes", "living_room").get("allowed", false)), "Purchasing the Cedar Vale detached home records ownership and unlocks its complete interior.")
+
+	var crown_condo_state: Dictionary = factory.create_new_game({}, {"random_seed": 1405})
+	crown_condo_state["player"]["economy"]["accounts"].merge({"wallet_cash": 0.0, "checking": 250000.0, "savings": 0.0}, true)
+	crown_condo_state["player"]["economy"]["credit_score"] = 780
+	crown_condo_state["player"]["employment"]["active_jobs"].append({"id": "crown-condo-income", "status": "active", "hourly_pay": 100.0, "weekly_hours": 40.0})
+	report = housing.qualification_report(crown_condo_state, "crown_point_one_bedroom_condo")
+	_expect(bool(report.get("qualified", false)) and float(report.get("upfront_cost", 0.0)) == 209000.0, "High income, excellent credit, and savings qualify the player for the Crown Point condo's down payment and closing costs.")
+	result = housing.acquire(crown_condo_state, "crown_point_one_bedroom_condo")
+	crown_condo_state = result.get("state", crown_condo_state)
+	var crown_property_access: RefCounted = NavigationAccessScript.new(_registry)
+	_expect(result.get("ok", false) and bool(crown_property_access.room_access_report(crown_condo_state, "crown_point_condos", "one_bedroom_condo").get("allowed", false)) and bool(crown_property_access.room_access_report(crown_condo_state, "crown_point_condos", "gym").get("allowed", false)), "Purchasing the Crown Point condo unlocks its residence and building amenities.")
+
+	var crown_penthouse_state: Dictionary = factory.create_new_game({}, {"random_seed": 1406})
+	crown_penthouse_state["player"]["economy"]["accounts"].merge({"wallet_cash": 0.0, "checking": 900000.0, "savings": 0.0}, true)
+	crown_penthouse_state["player"]["economy"]["credit_score"] = 820
+	crown_penthouse_state["player"]["employment"]["active_jobs"].append({"id": "crown-penthouse-income", "status": "active", "hourly_pay": 260.0, "weekly_hours": 40.0})
+	report = housing.qualification_report(crown_penthouse_state, "crown_point_penthouse_purchase")
+	_expect(bool(report.get("qualified", false)) and float(report.get("upfront_cost", 0.0)) == 864000.0, "Exceptional income, credit, and liquid funds meet the penthouse's intentionally demanding qualification rules.")
+	result = housing.acquire(crown_penthouse_state, "crown_point_penthouse_purchase")
+	crown_penthouse_state = result.get("state", crown_penthouse_state)
+	_expect(result.get("ok", false) and bool(crown_property_access.room_access_report(crown_penthouse_state, "crown_point_penthouses", "great_room").get("allowed", false)) and bool(crown_property_access.room_access_report(crown_penthouse_state, "crown_point_penthouses", "private_elevator").get("allowed", false)), "Purchasing the Crown Point penthouse unlocks its private elevator and complete residence.")
 
 
 func _test_character_creation_scene() -> void:
@@ -1062,9 +1395,9 @@ func _test_vertical_slice_acceptance_suite() -> void:
 func _test_content_registry() -> void:
 	var errors: PackedStringArray = _registry.validate_foundation()
 	_expect(errors.is_empty(), "Complete content registry validates without errors.")
-	_expect(_registry.get_document_count() == 43, "Registry loads all 43 source documents.")
+	_expect(_registry.get_document_count() == 42, "Registry loads all 42 runtime source documents.")
 	_expect(_registry.get_package_count() == 26, "Registry indexes all 26 global packages.")
-	_expect(_registry.get_all("locations").size() == 64, "Registry indexes all 64 locations.")
+	_expect(_registry.get_all("locations").size() == 65, "Registry indexes all 65 locations.")
 	_expect(_registry.get_all("districts").size() == 10, "Registry indexes all 10 districts.")
 	_expect(_registry.get_character("elena_reyes_hale") is Dictionary, "Characters can be retrieved by id.")
 	_expect(_registry.get_location("hale_home") is Dictionary, "Locations can be retrieved by id.")
@@ -1078,7 +1411,7 @@ func _test_content_registry() -> void:
 	_expect(str(westshore_rooms.get("cafeteria", {}).get("navigation", {}).get("right", "")) == "westshore_bookshop.sales_floor" and str(westshore_rooms.get("transit_loop", {}).get("navigation", {}).get("left", "")) == "cypress_hall_dorm.lobby", "Westshore arrows reach the Bookshop and Cypress Hall lobby.")
 	_expect(_registry.get_content("quests", "opening_future_choice") is Dictionary, "Quests can be retrieved by id.")
 	_expect(_registry.get_all("operations").size() == 67, "Registry indexes all 67 simulation operations.")
-	_expect(_registry.get_all("date_activities").size() == 3, "Registry indexes all three opening date activities.")
+	_expect(_registry.get_all("date_activities").size() == 5, "Registry indexes all five opening date activities, including Undertow and Crown Point dinner.")
 	_expect(_registry.get_all("vn_backgrounds").size() == 17, "Registry indexes the initial seventeen VN background assignments, including the Hale landing and entryway.")
 	var emma_assets: Dictionary = _registry.get_character("emma_rowan").get("asset_refs", {})
 	_expect(not emma_assets.get("portraits", []).is_empty() and str(emma_assets["portraits"][0].get("id", "")) == "default", "Character packages declare their own default portrait artwork.")
@@ -1088,7 +1421,7 @@ func _test_content_registry() -> void:
 	_expect(bool(quest_rules.get("repeatable_quest_rules", {}).get("authored_requirements_rechecked_before_every_run", false)), "Repeatable quest runs recheck all authored requirements.")
 	_expect(_registry.get_content("quests", "build_a_training_rhythm") is Dictionary and _registry.get_content("quests", "consistency_under_pressure") is Dictionary, "Registry indexes both counted stages of Rachel's repeatable training chain.")
 	_expect(_registry.get_all("actions").size() == 10, "Registry indexes all 10 initial home actions.")
-	_expect(_registry.get_all("city_interactions").size() == 15, "Registry indexes all fifteen opening city interactions.")
+	_expect(_registry.get_all("city_interactions").size() == 22, "Registry indexes the foundation activities, physical storefronts, district activities, and workshops.")
 	_expect(_registry.get_all("stores").size() == 12, "Registry indexes seven city shops plus five opening Galleria storefronts.")
 	var harbor_centre: Dictionary = _registry.get_location("harbor_centre_downtown")
 	var harbor_rooms: Dictionary = {}
@@ -1104,7 +1437,201 @@ func _test_content_registry() -> void:
 	_expect(galleria.get("rooms", []).size() == 14 and storefront_slots.size() == 16, "Port Alder Galleria has fourteen navigable areas and sixteen storefront slots.")
 	_expect(occupied_slots == 5 and vacant_slots == 8, "The Galleria opens with five stores and reserves eight vacant expansion units.")
 	_expect(_registry.get_all("phone_apps").size() == 14, "Registry indexes the foundation apps plus Education, Jobs, Money, Housing, and Shopping.")
-	_expect(_registry.get_all("housing_listings").size() == 3, "Registry indexes the dorm, affordable studio, and starter condo listings.")
+	var phone_rules: Dictionary = _registry.get_package("port_alder_phone_system")
+	var movie_calendar_type: Dictionary = {}
+	for event_type_value: Variant in phone_rules.get("calendar_event_types", []):
+		if event_type_value is Dictionary and str(event_type_value.get("id", "")) == "movie":
+			movie_calendar_type = event_type_value
+			break
+	_expect(str(movie_calendar_type.get("default_location", "")) == "harborlight_cinema.auditorium", "Movie plans point to the cinema's real authored auditorium.")
+	_expect(_registry.get_all("housing_listings").size() == 7, "Registry indexes seven housing choices from a student room through Crown Point's penthouse.")
+	var district_hub_ids: Array[String] = []
+	for location_value: Variant in _registry.get_all("locations"):
+		if location_value is Dictionary and str(location_value.get("discovery", {}).get("tier", "")) == "district_hub":
+			district_hub_ids.append(str(location_value.get("id", "")))
+	_expect(district_hub_ids.size() == 4 and district_hub_ids.has("mariner_row_shopping_street") and district_hub_ids.has("greyport_street") and district_hub_ids.has("cedar_vale_street") and district_hub_ids.has("crown_point_boulevard"), "Four optional district hubs form the opening discovery layer.")
+	for district_hub_id: String in district_hub_ids:
+		var hub_discovery: Dictionary = _registry.get_location(district_hub_id).get("discovery", {})
+		_expect(bool(hub_discovery.get("discoverable", false)) and bool(hub_discovery.get("hidden_until_discovered", false)) and not hub_discovery.get("sources", []).is_empty(), "District hub is hidden and declares authored discovery sources: %s" % district_hub_id)
+	_expect(str(_registry.get_content("jobs", "warehouse_associate").get("discovery_location_id", "")) == "greyport_street" and str(_registry.get_content("jobs", "crown_point_hotel_guest_services").get("discovery_location_id", "")) == "crown_point_boulevard", "Job listings reveal their district hubs instead of exact workplaces.")
+	_expect(str(_registry.get_content("housing_listings", "cedar_vale_townhouse_rental").get("discovery_location_id", "")) == "cedar_vale_street" and str(_registry.get_content("housing_listings", "crown_point_one_bedroom_condo").get("discovery_location_id", "")) == "crown_point_boulevard", "Housing listings reveal neighborhoods instead of exact properties.")
+	_expect(str(_registry.get_content("stores", "mariner_market").get("discovery_location_id", "")) == "mariner_row_shopping_street", "Shopping listings can organically reveal Mariner Row.")
+	var lantern_street: Dictionary = _registry.get_location("lantern_district_street")
+	var lantern_street_rooms: Dictionary = {}
+	for room_value: Variant in lantern_street.get("rooms", []):
+		if room_value is Dictionary:
+			lantern_street_rooms[str(room_value.get("id", ""))] = room_value
+	_expect(str(lantern_street.get("outside_room", "")) == "cinema_block" and lantern_street_rooms.size() == 3, "Lantern District Street has an authored arrival point and three walkable sections.")
+	_expect(str(lantern_street_rooms.get("restaurant_lane", {}).get("navigation", {}).get("up", "")) == "la_brisa_kitchen.dining_room" and str(lantern_street_rooms.get("restaurant_lane", {}).get("navigation", {}).get("down", "")) == "tideglass_club.entry", "Restaurant Lane physically connects La Brisa Kitchen and Tideglass Club.")
+	_expect(str(lantern_street_rooms.get("gallery_walk", {}).get("navigation", {}).get("up", "")) == "lantern_gallery.main_gallery" and str(lantern_street_rooms.get("gallery_walk", {}).get("navigation", {}).get("right", "")) == "harbor_companion_cooperative.secure_reception", "Gallery Walk connects the gallery and the cooperative's public reception.")
+	for lantern_location_id: String in ["harborlight_cinema", "la_brisa_kitchen", "lantern_gallery", "tideglass_club", "harbor_companion_cooperative"]:
+		var lantern_location: Dictionary = _registry.get_location(lantern_location_id)
+		var every_room_authored: bool = not str(lantern_location.get("outside_room", "")).is_empty()
+		for room_value: Variant in lantern_location.get("rooms", []):
+			every_room_authored = every_room_authored and room_value is Dictionary and not room_value.get("navigation", {}).is_empty()
+		_expect(every_room_authored, "Every room has intentional navigation and an authored entrance: %s" % lantern_location_id)
+	var alder_bay_park: Dictionary = _registry.get_location("alder_bay_park")
+	var park_rooms: Dictionary = {}
+	for room_value: Variant in alder_bay_park.get("rooms", []):
+		if room_value is Dictionary:
+			park_rooms[str(room_value.get("id", ""))] = room_value
+	_expect(str(alder_bay_park.get("outside_room", "")) == "waterfront_path" and park_rooms.size() == 5, "Alder Bay Park has an authored waterfront arrival and five connected spaces.")
+	_expect(str(park_rooms.get("waterfront_path", {}).get("navigation", {}).get("left", "")) == "alder_heights_residential_street.neighborhood_corner" and str(park_rooms.get("waterfront_path", {}).get("navigation", {}).get("right", "")) == "alder_bay_beach.boardwalk", "The waterfront path connects the home neighborhood to Alder Bay Beach.")
+	_expect(str(park_rooms.get("lookout", {}).get("navigation", {}).get("right", "")) == "bayview_cafe.patio", "The Bay Lookout connects directly to Bayview Café's waterfront patio.")
+	for alder_bay_location_id: String in ["alder_bay_park", "alder_bay_beach", "port_alder_marina", "bayview_cafe"]:
+		var alder_bay_location: Dictionary = _registry.get_location(alder_bay_location_id)
+		var every_bay_room_authored: bool = not str(alder_bay_location.get("outside_room", "")).is_empty()
+		for room_value: Variant in alder_bay_location.get("rooms", []):
+			every_bay_room_authored = every_bay_room_authored and room_value is Dictionary and not room_value.get("navigation", {}).is_empty()
+		_expect(every_bay_room_authored, "Every Alder Bay room has intentional navigation and an authored entrance: %s" % alder_bay_location_id)
+	var park_run_activity: Dictionary = _registry.get_content("activities", "park_run")
+	_expect("alder_bay_park.waterfront_path" in park_run_activity.get("locations", []), "The repeatable park run uses the park's real authored waterfront path.")
+	var mariner_street: Dictionary = _registry.get_location("mariner_row_shopping_street")
+	var mariner_street_rooms: Dictionary = {}
+	for room_value: Variant in mariner_street.get("rooms", []):
+		if room_value is Dictionary:
+			mariner_street_rooms[str(room_value.get("id", ""))] = room_value
+	_expect(str(mariner_street.get("outside_room", "")) == "transit_stop" and "route_planner" in mariner_street.get("services", []) and mariner_street_rooms.size() == 4, "Mariner Row has an authored transit arrival, route planner, and three shopping blocks.")
+	_expect(str(mariner_street_rooms.get("fashion_block", {}).get("navigation", {}).get("up", "")) == "northline_outfitters.sales_floor" and str(mariner_street_rooms.get("fashion_block", {}).get("navigation", {}).get("down", "")) == "harbor_formalwear.showroom", "Fashion Block physically connects Northline Outfitters and Harbor Formalwear.")
+	_expect(str(mariner_street_rooms.get("home_and_auto_block", {}).get("navigation", {}).get("up", "")) == "mariner_home_goods.furniture_floor" and str(mariner_street_rooms.get("home_and_auto_block", {}).get("navigation", {}).get("right", "")) == "port_alder_auto.showroom", "Home and Auto Block connects both of its named businesses.")
+	for mariner_location_id: String in ["mariner_row_shopping_street", "mariner_market", "northline_outfitters", "harbor_formalwear", "mariner_home_goods", "port_alder_auto"]:
+		var mariner_location: Dictionary = _registry.get_location(mariner_location_id)
+		var every_mariner_room_authored: bool = not str(mariner_location.get("outside_room", "")).is_empty()
+		for room_value: Variant in mariner_location.get("rooms", []):
+			every_mariner_room_authored = every_mariner_room_authored and room_value is Dictionary and not room_value.get("navigation", {}).is_empty()
+		_expect(every_mariner_room_authored, "Every Mariner Row room has intentional navigation and an authored entrance: %s" % mariner_location_id)
+	for mariner_store_interaction_id: String in ["shop_mariner_market", "shop_northline_outfitters", "shop_harbor_formalwear"]:
+		_expect(_registry.get_content("city_interactions", mariner_store_interaction_id) is Dictionary, "Mariner Row physical storefront is registered: %s" % mariner_store_interaction_id)
+	var medical_center: Dictionary = _registry.get_location("st_maren_medical_center")
+	var medical_center_rooms: Dictionary = {}
+	for room_value: Variant in medical_center.get("rooms", []):
+		if room_value is Dictionary:
+			medical_center_rooms[str(room_value.get("id", ""))] = room_value
+	_expect(str(medical_center.get("outside_room", "")) == "campus_transit_stop" and "route_planner" in medical_center.get("services", []) and medical_center_rooms.size() == 13, "St. Maren has an authored transit arrival, route planner, campus paths, and hospital interior.")
+	_expect(str(medical_center_rooms.get("campus_plaza", {}).get("navigation", {}).get("right", "")) == "clinic_walk" and str(medical_center_rooms.get("clinic_walk", {}).get("navigation", {}).get("right", "")) == "wellness_walk", "St. Maren's plaza connects its two pedestrian clinic paths.")
+	_expect(str(medical_center_rooms.get("clinic_walk", {}).get("navigation", {}).get("up", "")) == "st_maren_community_clinic.reception" and str(medical_center_rooms.get("wellness_walk", {}).get("navigation", {}).get("down", "")) == "st_maren_sexual_health.private_reception", "The medical campus paths connect public reception areas without bypassing private rooms.")
+	for medical_location_id: String in ["st_maren_medical_center", "st_maren_community_clinic", "st_maren_doctors_office", "harbor_wellness_therapy", "st_maren_sexual_health", "bay_pharmacy"]:
+		var medical_location: Dictionary = _registry.get_location(medical_location_id)
+		var every_medical_room_authored: bool = not str(medical_location.get("outside_room", "")).is_empty()
+		for room_value: Variant in medical_location.get("rooms", []):
+			every_medical_room_authored = every_medical_room_authored and room_value is Dictionary and not room_value.get("navigation", {}).is_empty()
+		_expect(every_medical_room_authored, "Every St. Maren room has intentional navigation and an authored entrance: %s" % medical_location_id)
+	_expect(_registry.get_content("city_interactions", "shop_bay_pharmacy") is Dictionary, "Bay Pharmacy's physical storefront is registered.")
+	var therapy_activity: Dictionary = _registry.get_content("activities", "therapy_session")
+	var doctor_activity: Dictionary = _registry.get_content("activities", "doctor_appointment")
+	var screening_activity: Dictionary = _registry.get_content("activities", "sexual_health_screening")
+	_expect("harbor_wellness_therapy.individual_office" in therapy_activity.get("locations", []) and "st_maren_community_clinic.exam_room" in doctor_activity.get("locations", []) and "st_maren_sexual_health.testing_room" in screening_activity.get("locations", []), "Medical activities reference their exact private appointment rooms instead of legacy placeholders.")
+	var greyport_street: Dictionary = _registry.get_location("greyport_street")
+	var greyport_street_rooms: Dictionary = {}
+	for room_value: Variant in greyport_street.get("rooms", []):
+		if room_value is Dictionary:
+			greyport_street_rooms[str(room_value.get("id", ""))] = room_value
+	_expect(str(greyport_street.get("outside_room", "")) == "bus_exchange" and "route_planner" in greyport_street.get("services", []) and greyport_street_rooms.size() == 6, "Greyport has an authored bus arrival and six connected street areas.")
+	_expect(str(greyport_street_rooms.get("industrial_corner", {}).get("navigation", {}).get("up", "")) == "greyport_distribution.security" and str(greyport_street_rooms.get("industrial_corner", {}).get("navigation", {}).get("right", "")) == "port_alder_transit_depot.public_counter" and str(greyport_street_rooms.get("industrial_corner", {}).get("navigation", {}).get("down", "")) == "nightlife_alley", "Greyport's industrial corner connects both workplaces and Nightlife Alley.")
+	_expect(str(greyport_street_rooms.get("north_residences", {}).get("navigation", {}).get("up", "")) == "lee_family_apartment.front_door" and str(greyport_street_rooms.get("south_residences", {}).get("navigation", {}).get("right", "")) == "greyport_shared_apartment.entry", "Greyport's residential lanes hold discoverable NPC and rentable addresses.")
+	for greyport_location_id: String in ["greyport_street", "greyport_distribution", "port_alder_transit_depot", "greyport_studios", "undertow_nightclub"]:
+		var greyport_location: Dictionary = _registry.get_location(greyport_location_id)
+		var every_greyport_room_authored: bool = not str(greyport_location.get("outside_room", "")).is_empty()
+		for room_value: Variant in greyport_location.get("rooms", []):
+			every_greyport_room_authored = every_greyport_room_authored and room_value is Dictionary and not room_value.get("navigation", {}).is_empty()
+		_expect(every_greyport_room_authored, "Every public Greyport room has intentional navigation and an authored entrance: %s" % greyport_location_id)
+	var undertow: Dictionary = _registry.get_location("undertow_nightclub")
+	_expect(undertow.get("rooms", []).size() == 9 and "night" in undertow.get("access", {}).get("open_blocks", []) and "intoxication_safety_checks" in undertow.get("content_rules", []), "Undertow is a nine-area adult nightclub with late hours and explicit safety rules.")
+	var nightclub_date: Dictionary = _registry.get_content("date_activities", "nightclub_date")
+	var nightclub_job: Dictionary = _registry.get_content("jobs", "undertow_floor_staff")
+	_expect(str(nightclub_date.get("location", "")) == "undertow_nightclub.dance_floor" and "night" in nightclub_date.get("allowed_blocks", []), "Undertow is available as a scheduled evening or night date.")
+	_expect(str(nightclub_job.get("location", "")) == "undertow_nightclub" and "part_time" in nightclub_job.get("employment_types", []) and nightclub_job.get("promotion_path", []).size() == 2, "Undertow offers a part-time night job with two promotion steps.")
+	var cedar_street: Dictionary = _registry.get_location("cedar_vale_street")
+	var cedar_street_rooms: Dictionary = {}
+	for room_value: Variant in cedar_street.get("rooms", []):
+		if room_value is Dictionary:
+			cedar_street_rooms[str(room_value.get("id", ""))] = room_value
+	_expect(str(cedar_street.get("outside_room", "")) == "bus_stop" and "route_planner" in cedar_street.get("services", []) and cedar_street_rooms.size() == 5, "Cedar Vale has an authored bus arrival, route planner, and five connected neighborhood spaces.")
+	_expect(str(cedar_street_rooms.get("townhouse_row", {}).get("navigation", {}).get("up", "")) == "rachel_cedar_vale_townhouse.front_door" and str(cedar_street_rooms.get("townhouse_row", {}).get("navigation", {}).get("down", "")) == "cedar_vale_townhouses.entry", "Townhouse Row holds Rachel's discoverable address and the public townhouse listing entry.")
+	_expect(str(cedar_street_rooms.get("family_block", {}).get("navigation", {}).get("up", "")) == "cedar_vale_care_home.reception" and str(cedar_street_rooms.get("family_block", {}).get("navigation", {}).get("down", "")) == "cedar_vale_family_centre.reception" and str(cedar_street_rooms.get("family_block", {}).get("navigation", {}).get("right", "")) == "detached_home_lane", "Cedar Vale's Family Block connects care, family services, and the detached-home lane.")
+	for cedar_location_id: String in ["cedar_vale_street", "cedar_vale_townhouses", "cedar_vale_detached_homes", "cedar_vale_care_home", "cedar_vale_family_centre"]:
+		var cedar_location: Dictionary = _registry.get_location(cedar_location_id)
+		var every_cedar_room_authored: bool = not str(cedar_location.get("outside_room", "")).is_empty()
+		for room_value: Variant in cedar_location.get("rooms", []):
+			every_cedar_room_authored = every_cedar_room_authored and room_value is Dictionary and not room_value.get("navigation", {}).is_empty()
+		_expect(every_cedar_room_authored, "Every public Cedar Vale room has intentional navigation and an authored entrance: %s" % cedar_location_id)
+	var cedar_rental_listing: Dictionary = _registry.get_content("housing_listings", "cedar_vale_townhouse_rental")
+	var cedar_purchase_listing: Dictionary = _registry.get_content("housing_listings", "cedar_vale_detached_purchase")
+	_expect(str(cedar_rental_listing.get("location_id", "")) == "cedar_vale_townhouses" and str(cedar_rental_listing.get("tenure", "")) == "rental" and int(cedar_rental_listing.get("bedrooms", 0)) == 2, "Cedar Vale offers an authored two-bedroom townhouse rental.")
+	_expect(str(cedar_purchase_listing.get("location_id", "")) == "cedar_vale_detached_homes" and str(cedar_purchase_listing.get("tenure", "")) == "purchase" and int(cedar_purchase_listing.get("bedrooms", 0)) == 3, "Cedar Vale offers an authored three-bedroom detached home purchase.")
+	var cedar_workshop: Dictionary = _registry.get_content("city_interactions", "cedar_family_skills_workshop")
+	var cedar_care_job: Dictionary = _registry.get_content("jobs", "cedar_care_support_worker")
+	_expect(str(cedar_workshop.get("location", "")) == "cedar_vale_family_centre" and "parent_group_room" in cedar_workshop.get("rooms", []), "The family-skills workshop is registered in its exact public group room.")
+	_expect(str(cedar_care_job.get("location", "")) == "cedar_vale_care_home" and "part_time" in cedar_care_job.get("employment_types", []) and cedar_care_job.get("promotion_path", []).size() == 2, "Cedar Vale Care Home offers part- and full-time work with two promotion steps.")
+	var crown_boulevard: Dictionary = _registry.get_location("crown_point_boulevard")
+	var crown_boulevard_rooms: Dictionary = {}
+	for room_value: Variant in crown_boulevard.get("rooms", []):
+		if room_value is Dictionary:
+			crown_boulevard_rooms[str(room_value.get("id", ""))] = room_value
+	_expect(str(crown_boulevard.get("outside_room", "")) == "boulevard_entry" and "route_planner" in crown_boulevard.get("services", []) and crown_boulevard_rooms.size() == 6, "Crown Point has an authored transit arrival, route planner, and six connected boulevard spaces.")
+	_expect(str(crown_boulevard_rooms.get("corporate_block", {}).get("navigation", {}).get("up", "")) == "price_caldwell_law.reception" and str(crown_boulevard_rooms.get("residential_towers", {}).get("navigation", {}).get("down", "")) == "crown_point_condos.lobby", "Crown Point's corporate and residential blocks connect their public entrances.")
+	_expect(str(crown_boulevard_rooms.get("residential_towers", {}).get("navigation", {}).get("up", "")) == "olivia_crown_point_penthouse.private_elevator" and str(crown_boulevard_rooms.get("penthouse_towers", {}).get("navigation", {}).get("up", "")) == "crown_point_penthouses.private_elevator", "Residential Towers preserves Olivia's discoverable home separately from the purchasable penthouse tower.")
+	_expect(str(crown_boulevard_rooms.get("hotel_block", {}).get("navigation", {}).get("up", "")) == "crown_point_hotel_spa.lobby" and str(crown_boulevard_rooms.get("hotel_block", {}).get("navigation", {}).get("right", "")) == "harbor_overlook", "Hotel Block connects the hotel lobby and the public harbor overlook.")
+	for crown_location_id: String in ["crown_point_boulevard", "price_caldwell_law", "crown_point_condos", "crown_point_penthouses", "crown_point_hotel_spa"]:
+		var crown_location: Dictionary = _registry.get_location(crown_location_id)
+		var every_crown_room_authored: bool = not str(crown_location.get("outside_room", "")).is_empty()
+		for room_value: Variant in crown_location.get("rooms", []):
+			every_crown_room_authored = every_crown_room_authored and room_value is Dictionary and not room_value.get("navigation", {}).is_empty()
+		_expect(every_crown_room_authored, "Every public Crown Point room has intentional navigation and an authored entrance: %s" % crown_location_id)
+	var crown_condo_listing: Dictionary = _registry.get_content("housing_listings", "crown_point_one_bedroom_condo")
+	var crown_penthouse_listing: Dictionary = _registry.get_content("housing_listings", "crown_point_penthouse_purchase")
+	_expect(str(crown_condo_listing.get("location_id", "")) == "crown_point_condos" and int(crown_condo_listing.get("purchase_price", 0)) == 950000, "Crown Point offers an authored premium one-bedroom condo purchase.")
+	_expect(str(crown_penthouse_listing.get("location_id", "")) == "crown_point_penthouses" and int(crown_penthouse_listing.get("purchase_price", 0)) == 3200000, "The Crown Point penthouse is preserved as a demanding long-term wealth goal.")
+	var crown_overlook_activity: Dictionary = _registry.get_content("city_interactions", "crown_point_harbor_overlook")
+	var crown_dinner_date: Dictionary = _registry.get_content("date_activities", "crown_point_dinner")
+	var crown_hotel_job: Dictionary = _registry.get_content("jobs", "crown_point_hotel_guest_services")
+	var crown_law_job: Dictionary = _registry.get_content("jobs", "price_caldwell_office_assistant")
+	_expect(str(crown_overlook_activity.get("location", "")) == "crown_point_boulevard" and "harbor_overlook" in crown_overlook_activity.get("rooms", []), "Crown Point's overlook activity is registered in its exact public boulevard room.")
+	_expect(str(crown_dinner_date.get("location", "")) == "crown_point_hotel_spa.restaurant" and float(crown_dinner_date.get("cost", 0.0)) == 120.0, "Crown Point Hotel offers a formal luxury dinner date.")
+	_expect(str(crown_hotel_job.get("location", "")) == "crown_point_hotel_spa" and crown_hotel_job.get("promotion_path", []).size() == 2 and str(crown_law_job.get("location", "")) == "price_caldwell_law" and crown_law_job.get("promotion_path", []).size() == 2, "Crown Point adds hotel and legal careers with two promotion steps each.")
+
+
+func _test_navigation_integrity() -> void:
+	var validator: RefCounted = NavigationIntegrityValidatorScript.new(_registry)
+	var report: Dictionary = validator.audit()
+	var errors: PackedStringArray = report.get("errors", PackedStringArray())
+	var stats: Dictionary = report.get("stats", {})
+	_expect(errors.is_empty(), "Every enterable authored room has a valid target and an escape path: %s" % "; ".join(errors))
+	_expect(int(stats.get("locations", 0)) == 65, "Navigation validation audits all 65 city locations.")
+	_expect(int(stats.get("rooms", 0)) >= 250, "Navigation validation audits the complete authored room inventory.")
+	_expect(int(stats.get("cross_location_links", 0)) >= 30, "Navigation validation checks the walkable links between locations.")
+	_expect(int(stats.get("fallback_navigation_locations", 0)) == 1, "The only data fallback remaining is Hale Home's intentionally replaced runtime graph.")
+	var runtime_graph_report: Dictionary = validator.audit_locations(_registry.get_all("locations"), {
+		"hale_home": {
+			"outside_room": HaleHomeNavigationScript.OUTSIDE_ROOM,
+			"exits": HaleHomeNavigationScript.ROOM_EXITS,
+			"replace_all_navigation": true,
+		},
+	})
+	_expect(bool(runtime_graph_report.get("ok", false)), "The hardcoded Hale Home room graph and every city data graph pass the same integrity audit.")
+
+	var bad_target_report: Dictionary = validator.audit_locations([
+		{"id": "test_bad_target", "outside_room": "entry", "rooms": [
+			{"id": "entry", "navigation": {"right": "missing_room"}},
+		]},
+	])
+	_expect(not bool(bad_target_report.get("ok", true)) and _messages_contain(bad_target_report.get("errors", PackedStringArray()), "unknown local room"), "The validator rejects arrows that point to missing rooms.")
+
+	var trapped_room_report: Dictionary = validator.audit_locations([
+		{"id": "test_trap", "outside_room": "entry", "rooms": [
+			{"id": "entry", "navigation": {"right": "private_room"}},
+			{"id": "private_room", "access": "invitation", "navigation": {"right": "private_room"}},
+		]},
+	])
+	_expect(not bool(trapped_room_report.get("ok", true)) and _messages_contain(trapped_room_report.get("errors", PackedStringArray()), "cannot return"), "The validator catches an invited or otherwise conditional room that can trap the player.")
+
+	var restricted_room_report: Dictionary = validator.audit_locations([
+		{"id": "test_locked_room", "outside_room": "entry", "rooms": [
+			{"id": "entry"},
+			{"id": "never_enterable", "access": "restricted", "navigation": {"right": "never_enterable"}},
+		]},
+	])
+	_expect(bool(restricted_room_report.get("ok", false)), "A permanently restricted room is not falsely reported as a player trap.")
 
 
 func _test_new_game_state_factory() -> void:
@@ -1446,7 +1973,7 @@ func _test_phone_messages_and_calendar() -> void:
 	marcus_plan["title"] = "Movie with Marcus"
 	marcus_plan["type"] = "movie"
 	marcus_plan["participants"] = ["marcus_lee"]
-	marcus_plan["location"] = "harborlight_cinema.auditorium_1"
+	marcus_plan["location"] = "harborlight_cinema.auditorium"
 	result = simulation.apply_operation(state, "calendar.schedule", {"calendar_event": marcus_plan}, "test.phone_calendar")
 	_expect(result.get("ok", false), "Optional plans may be double-booked with a visible warning.")
 	state = result["state"]
@@ -2127,6 +2654,15 @@ func _parse_json(path: String) -> Variant:
 	if json.parse(file.get_as_text()) != OK:
 		return null
 	return json.data
+
+
+func _messages_contain(messages: Variant, fragment: String) -> bool:
+	if not messages is Array and not messages is PackedStringArray:
+		return false
+	for message: Variant in messages:
+		if fragment in str(message):
+			return true
+	return false
 
 
 func _expect(condition: bool, description: String) -> void:

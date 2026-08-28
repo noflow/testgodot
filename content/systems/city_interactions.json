@@ -202,6 +202,92 @@
       "store_id": "harbor_food_hall",
       "location": "port_alder_galleria",
       "rooms": ["food_court"]
+    },
+    {
+      "id": "shop_mariner_market",
+      "name": "Shop at Mariner Market",
+      "description": "Browse groceries, drinks, hygiene supplies, and household basics.",
+      "type": "store",
+      "store_id": "mariner_market",
+      "location": "mariner_market",
+      "rooms": ["grocery_floor", "prepared_food", "alcohol_section", "checkout"]
+    },
+    {
+      "id": "shop_northline_outfitters",
+      "name": "Shop at Northline Outfitters",
+      "description": "Browse everyday clothing, underwear, shoes, and weather-ready outerwear.",
+      "type": "store",
+      "store_id": "northline_outfitters",
+      "location": "northline_outfitters",
+      "rooms": ["sales_floor", "underwear_section", "outerwear_section", "fitting_rooms", "checkout"]
+    },
+    {
+      "id": "shop_harbor_formalwear",
+      "name": "Shop at Harbor Formalwear",
+      "description": "Browse interview clothing, formal outfits, dress shoes, and alterations.",
+      "type": "store",
+      "store_id": "harbor_formalwear",
+      "location": "harbor_formalwear",
+      "rooms": ["showroom", "fitting_room", "tailoring_desk"]
+    },
+    {
+      "id": "shop_bay_pharmacy",
+      "name": "Shop at Bay Pharmacy",
+      "description": "Browse medicine, hygiene supplies, contraception, and home health items.",
+      "type": "store",
+      "store_id": "bay_pharmacy",
+      "location": "bay_pharmacy",
+      "rooms": ["sales_floor", "pharmacy_counter"]
+    },
+    {
+      "id": "dance_at_undertow",
+      "name": "Dance at Undertow",
+      "description": "Spend an hour on the dance floor beneath Greyport's converted warehouse lights.",
+      "type": "activity",
+      "activity_id": "nightclub_dancing",
+      "location": "undertow_nightclub",
+      "rooms": ["dance_floor"],
+      "operations": [
+        {"operation": "time.advance", "payload": {"minutes": 60}},
+        {"operation": "skill.add_experience", "payload": {"skill": "dancing", "experience": 75, "activity_difficulty": 12}},
+        {"operation": "need.adjust", "payload": {"need": "energy", "amount": -9}},
+        {"operation": "need.adjust", "payload": {"need": "hydration", "amount": 10}},
+        {"operation": "need.adjust", "payload": {"need": "hygiene", "amount": -7}},
+        {"operation": "need.adjust", "payload": {"need": "mood", "amount": 7}},
+        {"operation": "need.adjust", "payload": {"need": "loneliness", "amount": -8}}
+      ]
+    },
+    {
+      "id": "cedar_family_skills_workshop",
+      "name": "Attend a Family Skills Workshop",
+      "description": "Join a practical session on communication, caregiving, and supporting a household.",
+      "type": "activity",
+      "activity_id": "family_skills_workshop",
+      "location": "cedar_vale_family_centre",
+      "rooms": ["parent_group_room"],
+      "operations": [
+        {"operation": "time.advance", "payload": {"minutes": 60}},
+        {"operation": "skill.add_experience", "payload": {"skill": "caregiving", "experience": 70, "activity_difficulty": 12}},
+        {"operation": "attribute.adjust", "payload": {"attribute": "empathy", "amount": 1}},
+        {"operation": "attribute.adjust", "payload": {"attribute": "emotional_intelligence", "amount": 1}},
+        {"operation": "need.adjust", "payload": {"need": "stress", "amount": -3}}
+      ]
+    },
+    {
+      "id": "crown_point_harbor_overlook",
+      "name": "Take In the Harbor View",
+      "description": "Pause at Crown Point's public overlook and study the city from above.",
+      "type": "activity",
+      "activity_id": "harbor_observation",
+      "location": "crown_point_boulevard",
+      "rooms": ["harbor_overlook"],
+      "operations": [
+        {"operation": "time.advance", "payload": {"minutes": 45}},
+        {"operation": "skill.add_experience", "payload": {"skill": "observation", "experience": 55, "activity_difficulty": 10}},
+        {"operation": "attribute.adjust", "payload": {"attribute": "creativity", "amount": 1}},
+        {"operation": "need.adjust", "payload": {"need": "mood", "amount": 6}},
+        {"operation": "need.adjust", "payload": {"need": "stress", "amount": -4}}
+      ]
     }
   ]
 }

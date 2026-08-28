@@ -179,6 +179,8 @@ func binding_label(action: String) -> String:
 
 
 func action_name(action: String) -> String:
+	if action == "city_map":
+		return "Local map"
 	return action.replace("_", " ").capitalize()
 
 

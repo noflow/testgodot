@@ -652,6 +652,9 @@ func _render_job_detail(job_id: String) -> void:
 		elif stage in ["offer_received", "rejected", "waitlisted"]:
 			lines.append("Interview score: %d • %s" % [int(application.get("interview_score", 0)), str(application.get("interview_outcome", stage)).replace("_", " ").capitalize()])
 	app_content.text = "\n".join(lines)
+	var discovery_location_id: String = str(job.get("discovery_location_id", ""))
+	if not discovery_location_id.is_empty():
+		_add_action_button("Plan Route to %s" % _location_name(discovery_location_id), _open_route_planner.bind(discovery_location_id))
 	_add_action_button("← All Listings", _close_job_detail)
 	if not active_job.is_empty():
 		var active_shift_status: Dictionary = EmploymentService.shift_status(job_id)
@@ -684,8 +687,11 @@ func _render_job_detail(job_id: String) -> void:
 
 
 func _open_job_detail(job_id: String) -> void:
+	var job: Variant = ContentRegistry.get_content("jobs", job_id)
+	var discovery: Dictionary = _discover_listing_location(job, "job_listing") if job is Dictionary else {}
 	_selected_job_id = job_id
 	_render_jobs()
+	_show_listing_discovery(discovery)
 
 
 func _close_job_detail() -> void:
@@ -932,8 +938,11 @@ func _render_housing() -> void:
 
 
 func _open_housing_detail(listing_id: String) -> void:
+	var listing: Variant = ContentRegistry.get_content("housing_listings", listing_id)
+	var discovery: Dictionary = _discover_listing_location(listing, "housing_listing") if listing is Dictionary else {}
 	_selected_housing_id = listing_id
 	_render_housing()
+	_show_listing_discovery(discovery)
 
 
 func _render_housing_detail(listing_id: String) -> void:
@@ -979,7 +988,9 @@ func _render_housing_detail(listing_id: String) -> void:
 		_add_action_button("Acquire — Pay $%.2f" % report.get("upfront_cost", 0.0), _acquire_housing.bind(listing_id))
 	elif not contract.is_empty() and str(GameState.current_state["player"]["housing"].get("active_listing_id", "")) != listing_id:
 		_add_action_button("Move In", _move_to_housing.bind(listing_id))
-	_add_action_button("Plan Route to View Property", _open_route_planner.bind(str(listing.get("location_id", ""))))
+	var route_target: String = str(listing.get("location_id", "")) if not contract.is_empty() else str(listing.get("discovery_location_id", listing.get("location_id", "")))
+	var route_label: String = "Plan Route to Property" if not contract.is_empty() else "Plan Route to Neighborhood"
+	_add_action_button(route_label, _open_route_planner.bind(route_target))
 	_add_action_button("Back to Listings", _close_housing_detail)
 
 
@@ -1055,12 +1066,18 @@ func _render_store(store_id: String) -> void:
 		if listing.get("open", false):
 			_add_action_button("Buy %s — $%.2f" % [item.get("name", "Item"), quote.get("total", 0.0)], _purchase_store_item.bind(store_id, str(item.get("id", ""))))
 	app_content.text = "\n\n".join(lines)
+	var discovery_location_id: String = str(store.get("discovery_location_id", ""))
+	if not discovery_location_id.is_empty():
+		_add_action_button("Plan Route to %s" % _location_name(discovery_location_id), _open_route_planner.bind(discovery_location_id))
 	_add_action_button("← All Stores", _close_store)
 
 
 func _open_store(store_id: String) -> void:
+	var store: Variant = ContentRegistry.get_content("stores", store_id)
+	var discovery: Dictionary = _discover_listing_location(store, "store_listing") if store is Dictionary else {}
 	_selected_store_id = store_id
 	_render_shopping()
+	_show_listing_discovery(discovery)
 
 
 func _close_store() -> void:
@@ -1275,6 +1292,10 @@ func _render_map() -> void:
 			lines.append("• %s — %s" % [location.get("name", location_id), marker])
 			if location_id != current_root and bool(departure_access.get("allowed", false)):
 				_add_action_button("Plan route to %s" % location.get("name", location_id), _open_route_planner.bind(location_id))
+	var undiscovered_districts: int = _undiscovered_district_hub_count()
+	if undiscovered_districts > 0:
+		lines.append("\n[color=#e9a86c]Undiscovered districts: %d[/color]" % undiscovered_districts)
+		lines.append("Browse job, housing, and shopping listings; follow quests and invitations; or explore connected streets to reveal them.")
 	if bool(departure_access.get("allowed", false)):
 		lines.append("\nSelect a destination to compare walking, bus, taxi, and car routes. Closed destinations remain visible but cannot be confirmed.")
 	else:
@@ -1885,6 +1906,44 @@ func _thread_has_reply(thread: Dictionary, message_id: String) -> bool:
 
 func _friendly_timestamp(timestamp: String) -> String:
 	return timestamp.trim_prefix("Y").replace(":", " • ").replace("+", " +").replace("_", " ")
+
+
+func _discover_listing_location(listing: Variant, discovery_source: String) -> Dictionary:
+	if not listing is Dictionary or not GameState.has_active_game():
+		return {"ok": true, "newly_discovered": false}
+	var location_id: String = str(listing.get("discovery_location_id", ""))
+	if location_id.is_empty() or location_id in GameState.current_state["world_state"].get("unlocked_locations", []):
+		return {"ok": true, "newly_discovered": false, "location_id": location_id}
+	var result: Dictionary = SimulationService.apply_operation("world.discover_location", {
+		"location_id": location_id,
+		"discovery_source": discovery_source,
+	}, "phone.%s:%s" % [discovery_source, listing.get("id", "listing")])
+	return {
+		"ok": bool(result.get("ok", false)),
+		"newly_discovered": bool(result.get("ok", false)),
+		"location_id": location_id,
+		"errors": result.get("errors", PackedStringArray()),
+	}
+
+
+func _show_listing_discovery(discovery: Dictionary) -> void:
+	if not bool(discovery.get("ok", true)):
+		var errors: Array = Array(discovery.get("errors", []))
+		phone_status.text = str(errors[0]) if not errors.is_empty() else "The listing's location could not be added to the map."
+	elif bool(discovery.get("newly_discovered", false)):
+		phone_status.text = "New district discovered: %s. It is now available on the City Map." % _location_name(str(discovery.get("location_id", "")))
+
+
+func _undiscovered_district_hub_count() -> int:
+	var count: int = 0
+	var discovered: Array = GameState.current_state.get("world_state", {}).get("discovered_locations", [])
+	for location_value: Variant in ContentRegistry.get_all("locations"):
+		if not location_value is Dictionary:
+			continue
+		var discovery: Dictionary = location_value.get("discovery", {})
+		if str(discovery.get("tier", "")) == "district_hub" and str(location_value.get("id", "")) not in discovered:
+			count += 1
+	return count
 
 
 func _character_name(character_id: String) -> String:

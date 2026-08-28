@@ -3,6 +3,7 @@ extends Node
 signal validation_completed(errors: PackedStringArray)
 signal content_loaded(document_count: int, package_count: int)
 
+const NavigationIntegrityValidatorScript: GDScript = preload("res://src/world/navigation_integrity_validator.gd")
 const CONTENT_ROOT: String = "res://content"
 const CHARACTER_ROOT: String = "res://characters"
 const INDEXED_COLLECTIONS: PackedStringArray = [
@@ -17,6 +18,7 @@ var _packages: Dictionary = {}
 var _characters: Dictionary = {}
 var _indexes: Dictionary = {}
 var _last_errors: PackedStringArray = []
+var _last_navigation_audit: Dictionary = {}
 
 
 func validate_foundation() -> PackedStringArray:
@@ -25,6 +27,7 @@ func validate_foundation() -> PackedStringArray:
 	_characters.clear()
 	_indexes.clear()
 	_last_errors.clear()
+	_last_navigation_audit.clear()
 
 	for collection_name: String in INDEXED_COLLECTIONS:
 		_indexes[collection_name] = {}
@@ -42,6 +45,7 @@ func validate_foundation() -> PackedStringArray:
 	_validate_sandbox_quest_package()
 	_validate_housing_package()
 	_validate_vn_art_assets()
+	_validate_navigation_integrity()
 	validation_completed.emit(_last_errors.duplicate())
 	content_loaded.emit(_documents.size(), _packages.size())
 	return _last_errors.duplicate()
@@ -88,6 +92,10 @@ func get_loaded_package_ids() -> PackedStringArray:
 
 func get_last_errors() -> PackedStringArray:
 	return _last_errors.duplicate()
+
+
+func get_navigation_audit() -> Dictionary:
+	return _last_navigation_audit.duplicate(true)
 
 
 func get_document_count() -> int:
@@ -202,6 +210,13 @@ func _validate_required_files() -> void:
 	for path: String in AppConstants.REQUIRED_FOUNDATION_FILES:
 		if not _documents.has(path):
 			_last_errors.append("Required foundation document did not load: %s" % path)
+
+
+func _validate_navigation_integrity() -> void:
+	var validator: RefCounted = NavigationIntegrityValidatorScript.new(self)
+	_last_navigation_audit = validator.audit()
+	for error: String in _last_navigation_audit.get("errors", PackedStringArray()):
+		_last_errors.append("Navigation integrity: %s" % error)
 
 
 func _validate_character_packages() -> void:
@@ -502,18 +517,18 @@ func _validate_vn_art_assets() -> void:
 		return
 	for fallback_type: String in ["background", "portrait"]:
 		var fallback_path: String = str(package.get("fallbacks", {}).get(fallback_type, ""))
-		if fallback_path.is_empty() or not FileAccess.file_exists(fallback_path):
+		if not _runtime_asset_exists(fallback_path):
 			_last_errors.append("VN artwork is missing its %s fallback: %s" % [fallback_type, fallback_path])
 	for background_value: Variant in get_all("vn_backgrounds"):
 		if not background_value is Dictionary:
 			continue
 		var background: Dictionary = background_value
 		var path: String = str(background.get("path", ""))
-		if path.is_empty() or not FileAccess.file_exists(path):
+		if not _runtime_asset_exists(path):
 			_last_errors.append("VN background %s has a missing asset: %s" % [background.get("id", "unknown"), path])
 		for variant_name: Variant in background.get("variants", {}):
 			var variant_path: String = str(background["variants"][variant_name])
-			if not FileAccess.file_exists(variant_path):
+			if not _runtime_asset_exists(variant_path):
 				_last_errors.append("VN background %s variant %s is missing: %s" % [background.get("id", "unknown"), variant_name, variant_path])
 	for character_id_value: Variant in _characters:
 		var character_id: String = str(character_id_value)
@@ -530,5 +545,9 @@ func _validate_vn_art_assets() -> void:
 				_last_errors.append("Character %s has a missing or duplicate portrait id." % character_id)
 			else:
 				portrait_ids.append(portrait_id)
-			if portrait_path.is_empty() or not FileAccess.file_exists(portrait_path):
+			if not _runtime_asset_exists(portrait_path):
 				_last_errors.append("Character %s portrait %s is missing: %s" % [character_id, portrait_id, portrait_path])
+
+
+func _runtime_asset_exists(path: String) -> bool:
+	return not path.is_empty() and (ResourceLoader.exists(path) or FileAccess.file_exists(path))
