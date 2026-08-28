@@ -76,6 +76,8 @@ func advance(state: Dictionary) -> Dictionary:
 		return _failure("No conversation is active.")
 	var conversation: Dictionary = context["conversation"]
 	var node: Dictionary = context["node"]
+	if not node.get("branches", []).is_empty():
+		return _resolve_automatic_branch(state, conversation, node)
 	if not _visible_choices(state, node).is_empty():
 		return _failure("A dialogue choice is required.")
 	var next_node: Variant = node.get("next")
@@ -168,12 +170,21 @@ func _enter_node(state: Dictionary, conversation: Dictionary, node_id: String) -
 	if not quest_result.get("ok", false):
 		return quest_result
 	working = quest_result["state"]
+	if not node.get("branches", []).is_empty():
+		return _resolve_automatic_branch(working, conversation, node)
 	return _success(working, _make_view(working, conversation))
 
 
 func _finish(state: Dictionary, conversation: Dictionary) -> Dictionary:
-	var result: Dictionary = _simulation.apply_operation(
+	var completion_result: Dictionary = _apply_effects(
 		state,
+		conversation.get("completion_effects", []),
+		"dialogue.complete:%s" % conversation["id"]
+	)
+	if not completion_result.get("ok", false):
+		return completion_result
+	var result: Dictionary = _simulation.apply_operation(
+		completion_result["state"],
 		"conversation.end",
 		{"conversation_id": conversation["id"], "outcome": "completed"},
 		"dialogue.end"
@@ -231,11 +242,11 @@ func _apply_effect(state: Dictionary, effect: Dictionary, source: String) -> Dic
 			return _simulation.apply_operation(state, "relationship.adjust_meter", {
 				"character_id": effect.get("character"),
 				"meter": effect.get("meter"),
-				"amount": effect.get("value", 0),
+				"amount": effect.get("value", effect.get("amount", 0)),
 				"reason": source,
 			}, source)
 		"start_quest":
-			return _quests.start_quest(state, str(effect.get("value", "")), source)
+			return _quests.start_quest(state, str(effect.get("value", effect.get("quest", ""))), source)
 		"complete_objective", "complete_objective_if_active":
 			if str(effect.get("quest", "")).is_empty():
 				return _complete_named_objective_if_active(state, str(effect.get("objective", "")), source)
@@ -279,10 +290,18 @@ func _apply_effect(state: Dictionary, effect: Dictionary, source: String) -> Dic
 		"create_memory":
 			return _simulation.apply_operation(state, "memory.create", {
 				"character_id": effect.get("character"),
-				"memory_id": effect.get("value"),
+				"memory_id": effect.get("value", effect.get("memory_id", "")),
 				"importance": effect.get("importance", 50),
 				"tags": effect.get("tags", []),
 			}, source)
+		"unlock_relationship_chapter":
+			return _unlock_relationship_chapter(state, effect)
+		"add_character_stat":
+			return _add_character_stat(state, effect)
+		"add_player_value":
+			return _add_player_value(state, effect, source)
+		"complete_activity":
+			return _complete_activity(state, str(effect.get("value", effect.get("activity", ""))), source)
 		"spend_money":
 			return _spend_money(state, float(effect.get("value", 0)), source, str(effect.get("category", "dialogue_purchase")))
 		"schedule_event":
@@ -295,6 +314,110 @@ func _apply_effect(state: Dictionary, effect: Dictionary, source: String) -> Dic
 			return _success(state)
 		_:
 			return _failure("Unsupported dialogue effect: %s" % effect.get("operation", ""), state)
+
+
+func _resolve_automatic_branch(state: Dictionary, conversation: Dictionary, node: Dictionary) -> Dictionary:
+	for branch_value: Variant in node.get("branches", []):
+		if not branch_value is Dictionary:
+			continue
+		var branch: Dictionary = branch_value
+		if not _conditions_pass(state, branch.get("conditions", [])):
+			continue
+		var branch_id: String = str(branch.get("id", "branch"))
+		var effects_result: Dictionary = _apply_effects(
+			state,
+			branch.get("effects", []),
+			"dialogue.branch:%s:%s" % [conversation["id"], branch_id]
+		)
+		if not effects_result.get("ok", false):
+			return effects_result
+		return _transition(effects_result["state"], conversation, branch.get("next"), branch_id)
+	return _failure("No automatic dialogue branch is available in %s." % conversation.get("id", "conversation"), state)
+
+
+func _unlock_relationship_chapter(state: Dictionary, effect: Dictionary) -> Dictionary:
+	var character_id: String = str(effect.get("character", ""))
+	if not state.get("relationships", {}).has(character_id):
+		return _failure("Unknown relationship character: %s" % character_id, state)
+	var level: int = clampi(int(effect.get("level", 1)), 1, 5)
+	var changed: Dictionary = state.duplicate(true)
+	var relationship: Dictionary = changed["relationships"][character_id]
+	relationship["unlocked_chapter_level"] = maxi(int(relationship.get("unlocked_chapter_level", 1)), level)
+	relationship["relationship_level"] = maxi(int(relationship.get("relationship_level", 1)), level)
+	return _success(changed)
+
+
+func _add_character_stat(state: Dictionary, effect: Dictionary) -> Dictionary:
+	var character_id: String = str(effect.get("character", ""))
+	var stat_id: String = str(effect.get("key", ""))
+	if not state.get("relationships", {}).has(character_id):
+		return _failure("Unknown character-stat owner: %s" % character_id, state)
+	if stat_id.is_empty():
+		return _failure("Character-stat effects require a key.", state)
+	var amount: Variant = effect.get("value", effect.get("amount"))
+	if not amount is int and not amount is float:
+		return _failure("Character-stat effects require a numeric value.", state)
+	var changed: Dictionary = state.duplicate(true)
+	var relationship: Dictionary = changed["relationships"][character_id]
+	if not relationship.get("character_stats") is Dictionary:
+		relationship["character_stats"] = {}
+	var minimum: float = 0.0
+	var maximum: float = 100.0
+	var character: Variant = _registry.get_character(character_id)
+	if character is Dictionary:
+		var definition: Variant = character.get("custom_stat_definitions", {}).get(stat_id)
+		if definition is Dictionary:
+			minimum = float(definition.get("minimum", minimum))
+			maximum = float(definition.get("maximum", maximum))
+	var current: float = float(relationship["character_stats"].get(stat_id, 0.0))
+	relationship["character_stats"][stat_id] = clampf(current + float(amount), minimum, maximum)
+	return _success(changed)
+
+
+func _add_player_value(state: Dictionary, effect: Dictionary, source: String) -> Dictionary:
+	var section: String = str(effect.get("section", ""))
+	var key: String = str(effect.get("key", ""))
+	var amount: Variant = effect.get("value", effect.get("amount"))
+	if section == "attributes":
+		return _simulation.apply_operation(state, "attribute.adjust", {"attribute": key, "amount": amount}, source)
+	if section == "needs":
+		return _simulation.apply_operation(state, "need.adjust", {"need": key, "amount": amount}, source)
+	return _failure("Unsupported player-value section: %s" % section, state)
+
+
+func _complete_activity(state: Dictionary, activity_id: String, source: String) -> Dictionary:
+	var activity: Variant = _registry.get_content("activities", activity_id)
+	if not activity is Dictionary:
+		return _failure("Unknown character activity: %s" % activity_id, state)
+	var changed: Dictionary = state.duplicate(true)
+	var conversation_state: Dictionary = changed["conversation_state"]
+	if not conversation_state.get("activity_progress") is Dictionary:
+		conversation_state["activity_progress"] = {}
+	var progress: Dictionary = conversation_state["activity_progress"].get(activity_id, {}).duplicate(true)
+	var count: int = int(progress.get("count", 0)) + 1
+	progress["count"] = count
+	progress["last_completed_at"] = "Y%d-%02d-%02d:%s" % [
+		int(changed["clock"].get("year", 1)),
+		int(changed["clock"].get("month", 1)),
+		int(changed["clock"].get("day", 1)),
+		str(changed["clock"].get("block", "morning")),
+	]
+	conversation_state["activity_progress"][activity_id] = progress
+	var counter_key: String = str(activity.get("counter_key", "activity.%s.count" % activity_id))
+	changed["player"]["flags"][counter_key] = count
+	var success_flag: String = str(activity.get("success_flag", ""))
+	if not success_flag.is_empty():
+		changed["player"]["flags"][success_flag] = true
+	var event_result: Dictionary = _quests.record_event(changed, "activity_completed", {
+		"activity": activity_id,
+		"count": count,
+	}, source)
+	if not event_result.get("ok", false):
+		return event_result
+	return _quests.record_event(event_result["state"], "activity_count_at_least", {
+		"activity": activity_id,
+		"count": count,
+	}, source)
 
 
 func _spend_money(state: Dictionary, amount: float, source: String, category: String = "dialogue_purchase") -> Dictionary:
@@ -552,6 +675,8 @@ func _calendar_value(date: Dictionary) -> int:
 
 func _activation_error(state: Dictionary, conversation: Dictionary) -> String:
 	var activation: Dictionary = conversation.get("activation", {})
+	if not _conditions_pass(state, conversation.get("condition", [])):
+		return "Conversation requirements are not met."
 	if activation.has("quest_active") and str(activation["quest_active"]) not in state["quest_state"]["active"]:
 		return "Required quest is not active."
 	if activation.has("quest_any_active"):
@@ -571,6 +696,10 @@ func _activation_error(state: Dictionary, conversation: Dictionary) -> String:
 		return "Conversation is unavailable during this activity block."
 	if activation.has("blocks") and str(state["clock"]["block"]) not in activation["blocks"]:
 		return "Conversation is unavailable during this activity block."
+	if activation.has("day") and str(activation["day"]) != str(state["clock"]["weekday"]):
+		return "Conversation is unavailable today."
+	if activation.has("days") and str(state["clock"]["weekday"]) not in activation["days"]:
+		return "Conversation is unavailable today."
 	if activation.has("npc_available"):
 		var character: Variant = _registry.get_character(str(activation["npc_available"]))
 		if not character is Dictionary:
@@ -647,7 +776,7 @@ func _make_view(state: Dictionary, conversation: Dictionary) -> Dictionary:
 		"line": _resolve_tokens(str(node.get("line", "")), state),
 		"stage_direction": _resolve_tokens(str(node.get("stage_direction", "")), state),
 		"choices": choices,
-		"can_advance": choices.is_empty(),
+		"can_advance": choices.is_empty() and node.get("branches", []).is_empty(),
 	}
 
 
@@ -659,24 +788,140 @@ func _visible_choices(state: Dictionary, node: Dictionary) -> Array:
 	return visible
 
 
-func _conditions_pass(state: Dictionary, conditions: Array) -> bool:
+func _conditions_pass(state: Dictionary, conditions_value: Variant) -> bool:
+	var conditions: Array = conditions_value if conditions_value is Array else ([conditions_value] if conditions_value is Dictionary and not conditions_value.is_empty() else [])
 	for condition: Variant in conditions:
 		if not condition is Dictionary:
-			continue
+			return false
+		var handled_keys: Dictionary = {}
 		if condition.has("money_at_least"):
+			handled_keys["money_at_least"] = true
 			var accounts: Dictionary = state["player"]["economy"]["accounts"]
 			var available: float = float(accounts.get("wallet_cash", 0)) + float(accounts.get("checking", 0)) + float(accounts.get("savings", 0))
 			if available < float(condition["money_at_least"]):
 				return false
 		if condition.has("value_equals"):
+			handled_keys["value_equals"] = true
 			var comparison: Array = condition["value_equals"]
 			if comparison.size() != 2 or _get_state_value(state, str(comparison[0])) != comparison[1]:
+				return false
+		for key: String in ["flag", "flag_not"]:
+			if not condition.has(key):
+				continue
+			handled_keys[key] = true
+			var flag_set: bool = _flag_is_set(state, str(condition[key]))
+			if (key == "flag" and not flag_set) or (key == "flag_not" and flag_set):
+				return false
+		for key: String in ["meter_at_least", "meter_at_most", "meter_equals"]:
+			if not condition.has(key):
+				continue
+			handled_keys[key] = true
+			var meter_rule: Variant = condition[key]
+			if not meter_rule is Array or meter_rule.size() != 3:
+				return false
+			var relationship: Variant = state.get("relationships", {}).get(str(meter_rule[0]))
+			if not relationship is Dictionary or not relationship.has(str(meter_rule[1])):
+				return false
+			var meter_value: float = float(relationship[str(meter_rule[1])])
+			var meter_target: float = float(meter_rule[2])
+			if key == "meter_at_least" and meter_value < meter_target:
+				return false
+			if key == "meter_at_most" and meter_value > meter_target:
+				return false
+			if key == "meter_equals" and not is_equal_approx(meter_value, meter_target):
+				return false
+		for key: String in ["character_stat_at_least", "character_stat_at_most"]:
+			if not condition.has(key):
+				continue
+			handled_keys[key] = true
+			var stat_rule: Variant = condition[key]
+			if not stat_rule is Array or stat_rule.size() != 3:
+				return false
+			var stat_relationship: Variant = state.get("relationships", {}).get(str(stat_rule[0]))
+			if not stat_relationship is Dictionary:
+				return false
+			var stat_value: float = float(stat_relationship.get("character_stats", {}).get(str(stat_rule[1]), 0.0))
+			if key == "character_stat_at_least" and stat_value < float(stat_rule[2]):
+				return false
+			if key == "character_stat_at_most" and stat_value > float(stat_rule[2]):
+				return false
+		if condition.has("chapter_at_least"):
+			handled_keys["chapter_at_least"] = true
+			var chapter_rule: Variant = condition["chapter_at_least"]
+			if not chapter_rule is Array or chapter_rule.size() != 2:
+				return false
+			var chapter_relationship: Variant = state.get("relationships", {}).get(str(chapter_rule[0]))
+			if not chapter_relationship is Dictionary or int(chapter_relationship.get("unlocked_chapter_level", 1)) < int(chapter_rule[1]):
+				return false
+		for key: String in ["memory_exists", "memory_missing"]:
+			if not condition.has(key):
+				continue
+			handled_keys[key] = true
+			var memory_rule: Variant = condition[key]
+			if not memory_rule is Array or memory_rule.size() != 2:
+				return false
+			var memory_found: bool = _memory_exists(state, str(memory_rule[0]), str(memory_rule[1]))
+			if (key == "memory_exists" and not memory_found) or (key == "memory_missing" and memory_found):
+				return false
+		if condition.has("event"):
+			handled_keys["event"] = true
+			for selector: String in ["character", "quest", "conversation"]:
+				if condition.has(selector):
+					handled_keys[selector] = true
+			if not _state_event_condition_passes(state, condition):
+				return false
+		for condition_key: Variant in condition.keys():
+			if not handled_keys.has(str(condition_key)):
 				return false
 	return true
 
 
+func _flag_is_set(state: Dictionary, key: String) -> bool:
+	if key.begins_with("met_"):
+		var character_id: String = key.trim_prefix("met_")
+		for npc_state: Variant in state.get("npc_states", []):
+			if npc_state is Dictionary and str(npc_state.get("character_id", "")) == character_id:
+				return npc_state.get("discovered", false) == true
+	var flags: Dictionary = state.get("player", {}).get("flags", {})
+	if flags.has(key):
+		return _value_is_truthy(flags[key])
+	return _value_is_truthy(_get_state_value(state, key))
+
+
+func _value_is_truthy(value: Variant) -> bool:
+	if value is bool:
+		return value
+	if value is int or value is float:
+		return float(value) != 0.0
+	if value is String:
+		return not value.is_empty()
+	return value != null
+
+
+func _memory_exists(state: Dictionary, character_id: String, memory_id: String) -> bool:
+	var relationship: Variant = state.get("relationships", {}).get(character_id)
+	if not relationship is Dictionary:
+		return false
+	for memory: Variant in relationship.get("memories", []):
+		if memory is Dictionary and str(memory.get("id", "")) == memory_id:
+			return true
+	return false
+
+
+func _state_event_condition_passes(state: Dictionary, condition: Dictionary) -> bool:
+	match str(condition.get("event", "")):
+		"character_met":
+			return _flag_is_set(state, "met_%s" % str(condition.get("character", "")))
+		"quest_completed":
+			return str(condition.get("quest", "")) in state.get("quest_state", {}).get("completed", [])
+		"conversation_completed":
+			return str(condition.get("conversation", "")) in state.get("conversation_state", {}).get("completed", [])
+		_:
+			return false
+
+
 func _set_state_value(state: Dictionary, path: String, value: Variant) -> void:
-	if path.begins_with("education.") or path.begins_with("employment.") or path.begins_with("economy."):
+	if path.begins_with("education.") or path.begins_with("employment.") or path.begins_with("fitness.") or path.begins_with("economy."):
 		path = "player.%s" % path
 	var parts: PackedStringArray = path.split(".")
 	var current: Dictionary = state
@@ -688,7 +933,10 @@ func _set_state_value(state: Dictionary, path: String, value: Variant) -> void:
 
 
 func _get_state_value(state: Dictionary, path: String) -> Variant:
-	if path.begins_with("education.") or path.begins_with("employment.") or path.begins_with("economy."):
+	var flags: Dictionary = state.get("player", {}).get("flags", {})
+	if flags.has(path):
+		return flags[path]
+	if path.begins_with("education.") or path.begins_with("employment.") or path.begins_with("fitness.") or path.begins_with("economy."):
 		path = "player.%s" % path
 	var current: Variant = state
 	for part: String in path.split("."):

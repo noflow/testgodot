@@ -218,12 +218,32 @@ func _run_probe() -> void:
 		get_tree().quit(1)
 		return
 	instance.call("_render_room")
-	phone.open_phone()
-	await get_tree().process_frame
-	if not phone.visible or phone.get_node("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/Navigation/NavMargin/NavScroll/AppButtons").get_child_count() != 14:
-		printerr("PROBE: phone did not open with all fourteen apps")
+	GameState.current_state["world_state"]["current_location"] = "alder_heights_residential_street.hale_block"
+	var exploration_result: Dictionary = CityActionService.perform("explore_hale_block")
+	if not exploration_result.get("ok", false) or str(exploration_result.get("outcome", {}).get("id", "")) != "first_orientation":
+		printerr("PROBE: Hale Block exploration did not resolve its first-visit outcome")
 		get_tree().quit(1)
 		return
+	phone.open_phone()
+	await get_tree().process_frame
+	if not phone.visible or phone.get_node("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/Navigation/NavMargin/NavScroll/AppButtons").get_child_count() != 15:
+		printerr("PROBE: phone did not open with all fifteen apps")
+		get_tree().quit(1)
+		return
+	phone.call("_show_app", "notifications")
+	await get_tree().process_frame
+	var exploration_phone_content: RichTextLabel = phone.get_node("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/ContentPanel/ContentMargin/ContentLayout/AppContent")
+	if "Alder Heights Notes Started" not in exploration_phone_content.text:
+		printerr("PROBE: exploration notification did not render in the Notifications app")
+		get_tree().quit(1)
+		return
+	phone.call("_show_app", "city_map")
+	await get_tree().process_frame
+	if "LOCAL DISCOVERIES" not in exploration_phone_content.text or "Neighborhood Corner" not in exploration_phone_content.text:
+		printerr("PROBE: exploration lead did not render in City Map notes")
+		get_tree().quit(1)
+		return
+	GameState.current_state["world_state"]["current_location"] = "hale_home.living_room"
 	phone.call("_show_app", "jobs")
 	await get_tree().process_frame
 	if str(phone.get_node("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/ContentPanel/ContentMargin/ContentLayout/AppTitle").text) != "JOBS" or phone.get_node("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/ContentPanel/ContentMargin/ContentLayout/ActionScroll/AppActions").get_child_count() < 10:
@@ -248,7 +268,7 @@ func _run_probe() -> void:
 		printerr("PROBE: Education app did not render the academic dashboard")
 		get_tree().quit(1)
 		return
-	for app_id: String in ["character_profile", "contacts", "messages", "calendar", "quests", "relationships", "city_map", "weather", "settings"]:
+	for app_id: String in ["character_profile", "contacts", "messages", "notifications", "calendar", "quests", "relationships", "city_map", "weather", "settings"]:
 		phone.call("_show_app", app_id)
 		await get_tree().process_frame
 		if str(phone.get_node("OuterMargin/PhoneFrame/FrameMargin/Layout/Body/ContentPanel/ContentMargin/ContentLayout/AppTitle").text).is_empty():

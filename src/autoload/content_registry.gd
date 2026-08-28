@@ -41,6 +41,7 @@ func validate_foundation() -> PackedStringArray:
 	_validate_required_files()
 	_validate_character_packages()
 	_validate_navigation_package()
+	_validate_exploration_content()
 	_validate_vertical_slice_manifest()
 	_validate_sandbox_quest_package()
 	_validate_housing_package()
@@ -309,6 +310,49 @@ func _validate_navigation_package() -> void:
 			_last_errors.append("NPC home %s must explicitly define discoverable visibility." % home_location_id)
 		if str(home.get("outside_room", "")).is_empty():
 			_last_errors.append("NPC home %s requires an authored entrance room." % home_location_id)
+
+
+func _validate_exploration_content() -> void:
+	for interaction_value: Variant in get_all("city_interactions"):
+		if not interaction_value is Dictionary or str(interaction_value.get("type", "activity")) != "exploration":
+			continue
+		var interaction: Dictionary = interaction_value
+		var interaction_id: String = str(interaction.get("id", "unknown"))
+		var location: Variant = get_location(str(interaction.get("location", "")))
+		if not location is Dictionary:
+			_last_errors.append("Exploration %s references an unknown location." % interaction_id)
+			continue
+		for room_id_value: Variant in interaction.get("rooms", []):
+			if not _location_has_room(location, str(room_id_value)):
+				_last_errors.append("Exploration %s references an unknown room: %s." % [interaction_id, room_id_value])
+		var outcomes: Variant = interaction.get("outcomes")
+		if not outcomes is Array or outcomes.is_empty():
+			_last_errors.append("Exploration %s requires at least one outcome." % interaction_id)
+			continue
+		var outcome_ids: Dictionary = {}
+		var has_fallback: bool = false
+		for outcome_value: Variant in outcomes:
+			if not outcome_value is Dictionary:
+				_last_errors.append("Exploration %s has a non-object outcome." % interaction_id)
+				continue
+			var outcome: Dictionary = outcome_value
+			var outcome_id: String = str(outcome.get("id", ""))
+			if outcome_id.is_empty() or outcome_ids.has(outcome_id):
+				_last_errors.append("Exploration %s has a missing or duplicate outcome id: %s." % [interaction_id, outcome_id])
+			else:
+				outcome_ids[outcome_id] = true
+			if str(outcome.get("summary", "")).is_empty():
+				_last_errors.append("Exploration %s outcome %s requires a player-facing summary." % [interaction_id, outcome_id])
+			if int(outcome.get("priority", 0)) <= 0 and outcome.get("requirements", {}).is_empty() and not bool(outcome.get("once_only", false)):
+				has_fallback = true
+			for operation_value: Variant in outcome.get("operations", []):
+				if not operation_value is Dictionary or get_content("operations", str(operation_value.get("operation", ""))) == null:
+					_last_errors.append("Exploration %s outcome %s references an unknown operation." % [interaction_id, outcome_id])
+			for lead_value: Variant in outcome.get("leads", []):
+				if not lead_value is Dictionary or str(lead_value.get("id", "")).is_empty() or str(lead_value.get("title", "")).is_empty():
+					_last_errors.append("Exploration %s outcome %s has an invalid local lead." % [interaction_id, outcome_id])
+		if not has_fallback:
+			_last_errors.append("Exploration %s requires an unrestricted repeatable fallback outcome." % interaction_id)
 
 
 func _validate_mall_location(location_id: String, location: Dictionary, room_ids: PackedStringArray) -> void:

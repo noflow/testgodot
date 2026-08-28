@@ -6,7 +6,7 @@ signal travel_completed(destination: String)
 
 const NavigationAccessScript: GDScript = preload("res://src/world/navigation_access.gd")
 const APP_ORDER: PackedStringArray = [
-	"character_profile", "contacts", "messages", "calendar", "education", "jobs", "money", "housing", "shopping", "quests",
+	"character_profile", "contacts", "messages", "notifications", "calendar", "education", "jobs", "money", "housing", "shopping", "quests",
 	"relationships", "city_map", "weather", "settings",
 ]
 const BLOCKS: PackedStringArray = [
@@ -89,6 +89,7 @@ func _input(event: InputEvent) -> void:
 func open_phone(default_app: String = "character_profile") -> void:
 	if not GameState.has_active_game():
 		return
+	_ensure_core_phone_state()
 	PhoneService.sync_messages()
 	HousingService.sync_housing()
 	RelationshipService.sync_dates()
@@ -162,6 +163,8 @@ func _show_app(app_id: String) -> void:
 			_render_contacts()
 		"messages":
 			_render_messages()
+		"notifications":
+			_render_notifications()
 		"calendar":
 			_render_calendar()
 		"education":
@@ -277,6 +280,54 @@ func _render_messages() -> void:
 		var character: Dictionary = ContentRegistry.get_character(character_id)
 		var unread: bool = character_id in GameState.current_state["player"]["phone"].get("unread_threads", [])
 		_add_action_button("%s%s" % ["● " if unread else "", character.get("display_name", character_id)], _open_message_thread.bind(character_id))
+
+
+func _render_notifications() -> void:
+	_clear_container(app_actions)
+	app_title.text = "NOTIFICATIONS"
+	var notifications: Array = GameState.current_state["player"]["phone"].get("notifications", []).duplicate(true)
+	notifications.reverse()
+	if notifications.is_empty():
+		app_content.text = "No notifications yet. Exploration discoveries and important reminders will appear here."
+		return
+	var lines: PackedStringArray = []
+	var unread_count: int = 0
+	for notification_value: Variant in notifications:
+		if not notification_value is Dictionary:
+			continue
+		var notification: Dictionary = notification_value
+		var unread: bool = not bool(notification.get("read", false))
+		if unread:
+			unread_count += 1
+		var marker: String = "[color=#e9a86c]NEW[/color] • " if unread else ""
+		lines.append("%s[font_size=21]%s[/font_size]\n[color=#9eb4b5]%s • %s[/color]\n%s" % [
+			marker,
+			notification.get("title", "Notification"),
+			str(notification.get("category", "system")).replace("_", " ").capitalize(),
+			_friendly_timestamp(str(notification.get("timestamp", ""))),
+			notification.get("body", ""),
+		])
+	app_content.text = "\n\n".join(lines)
+	if unread_count > 0:
+		_add_action_button("Mark all as read (%d)" % unread_count, _mark_all_notifications_read)
+
+
+func _mark_all_notifications_read() -> void:
+	for notification_value: Variant in GameState.current_state["player"]["phone"].get("notifications", []):
+		if notification_value is Dictionary:
+			notification_value["read"] = true
+	phone_status.text = "Notifications marked as read."
+	_render_notifications()
+
+
+func _ensure_core_phone_state() -> void:
+	var phone: Dictionary = GameState.current_state["player"]["phone"]
+	if not phone.get("notifications") is Array:
+		phone["notifications"] = []
+	if not phone.get("unlocked_apps") is Array:
+		phone["unlocked_apps"] = []
+	if "notifications" not in phone["unlocked_apps"]:
+		phone["unlocked_apps"].append("notifications")
 
 
 func _render_calendar() -> void:
@@ -1292,6 +1343,17 @@ func _render_map() -> void:
 			lines.append("• %s — %s" % [location.get("name", location_id), marker])
 			if location_id != current_root and bool(departure_access.get("allowed", false)):
 				_add_action_button("Plan route to %s" % location.get("name", location_id), _open_route_planner.bind(location_id))
+	var local_leads: Array = world.get("exploration", {}).get("discovered_leads", [])
+	if not local_leads.is_empty():
+		lines.append("\nLOCAL DISCOVERIES")
+		var first_index: int = maxi(local_leads.size() - 8, 0)
+		for lead_index: int in range(local_leads.size() - 1, first_index - 1, -1):
+			var lead_value: Variant = local_leads[lead_index]
+			if lead_value is Dictionary:
+				lines.append("• [color=#e9a86c]%s[/color] — %s" % [
+					lead_value.get("title", "Local lead"),
+					lead_value.get("description", ""),
+				])
 	var undiscovered_districts: int = _undiscovered_district_hub_count()
 	if undiscovered_districts > 0:
 		lines.append("\n[color=#e9a86c]Undiscovered districts: %d[/color]" % undiscovered_districts)

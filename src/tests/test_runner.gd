@@ -21,6 +21,7 @@ const EconomyEngineScript: GDScript = preload("res://src/economy/economy_engine.
 const HousingEngineScript: GDScript = preload("res://src/housing/housing_engine.gd")
 const SaveEngineScript: GDScript = preload("res://src/save/save_engine.gd")
 const RelationshipEngineScript: GDScript = preload("res://src/relationships/relationship_engine.gd")
+const ScreenwriterFixtureRegistryScript: GDScript = preload("res://src/tests/screenwriter_fixture_registry.gd")
 
 var _failures: PackedStringArray = []
 var _tests_run: int = 0
@@ -52,6 +53,7 @@ func _run_all() -> void:
 	_test_city_travel_and_routes()
 	_test_city_npc_presence_and_acquaintances()
 	_test_city_institutions_and_fitness()
+	_test_district_exploration_and_local_leads()
 	_test_playable_education_semester()
 	_test_employment_applications_interviews_and_offers()
 	_test_recurring_economy_and_shopping()
@@ -61,6 +63,7 @@ func _run_all() -> void:
 	_test_relationship_dating_agreements_and_conflicts()
 	_test_sandbox_quest_progression_and_tracking()
 	_test_opening_dialogue_branches()
+	_test_screenwriter_dialogue_bridge()
 
 	if _failures.is_empty():
 		print("PASS: %d foundation tests completed." % _tests_run)
@@ -890,6 +893,58 @@ func _test_city_institutions_and_fitness() -> void:
 	_expect(int(state["relationships"]["rachel_morgan"].get("relationship_level", 0)) == 2, "Authored quest chapter unlocks keep the relationship level synchronized.")
 
 
+func _test_district_exploration_and_local_leads() -> void:
+	var factory: RefCounted = NewGameStateFactoryScript.new(_registry)
+	var simulation: RefCounted = SimulationEngineScript.new(_registry)
+	var quests: RefCounted = QuestEngineScript.new(_registry, simulation)
+	var city_actions: RefCounted = CityActionEngineScript.new(_registry, simulation, quests)
+	var state: Dictionary = factory.create_new_game({}, {"random_seed": 818})
+	state["world_state"]["current_location"] = "alder_heights_residential_street.hale_block"
+	var room_interactions: Array = city_actions.interactions_for_room(state, "alder_heights_residential_street", "hale_block")
+	_expect(_interaction_exists_for_test(room_interactions, "explore_hale_block"), "Hale Block exposes the authored Look Around exploration choice.")
+	_expect(_interaction_exists_for_test(room_interactions, "walk_alder_heights_loop"), "Hale Block exposes the repeatable neighborhood walk.")
+
+	var result: Dictionary = city_actions.perform_activity(state, "explore_hale_block")
+	_expect(result.get("ok", false), "Looking around Hale Block resolves through the city activity engine.")
+	state = result.get("state", state)
+	_expect(str(result.get("outcome", {}).get("id", "")) == "first_orientation", "The first visit selects the one-time neighborhood orientation outcome.")
+	var exploration: Dictionary = state["world_state"].get("exploration", {})
+	_expect(exploration.get("history", []).size() == 1 and "explore_hale_block:first_orientation" in exploration.get("completed_outcomes", []), "Exploration history and completed outcomes persist in world state.")
+	_expect(_exploration_lead_exists_for_test(exploration.get("discovered_leads", []), "alder_heights_neighborhood_corner"), "The first look saves a neighborhood lead for the City Map.")
+	_expect(state["player"]["phone"].get("notifications", []).size() == 1 and not bool(state["player"]["phone"]["notifications"][0].get("read", true)), "The first discovery creates an unread phone notification.")
+	_expect("get_to_know_alder_heights" in state["quest_state"].get("available", []) and "get_to_know_alder_heights" not in state["quest_state"].get("active", []), "Exploration offers the neighborhood quest without auto-starting it.")
+	_expect("rowan_family_home" not in state["world_state"].get("discovered_locations", []), "Public exploration does not reveal Emma's private home.")
+
+	result = city_actions.perform_activity(state, "explore_hale_block")
+	_expect(result.get("ok", false) and str(result.get("outcome", {}).get("id", "")) == "morning_departures", "A repeat look selects the current morning context instead of replaying the first-visit result.")
+	state = result.get("state", state)
+	exploration = state["world_state"]["exploration"]
+	_expect(exploration.get("history", []).size() == 2 and exploration.get("discovered_leads", []).size() == 1 and state["player"]["phone"].get("notifications", []).size() == 1, "Repeat exploration adds history without duplicating leads or notifications.")
+
+	state["world_state"]["weather"]["condition"] = "heavy_rain"
+	result = city_actions.perform_activity(state, "explore_hale_block")
+	_expect(result.get("ok", false) and str(result.get("outcome", {}).get("id", "")) == "rain_on_the_block", "Weather-specific exploration outcomes take priority when their conditions match.")
+	state = result.get("state", state)
+	var time_before_walk: int = int(state["clock"].get("minute_within_block", 0))
+	result = city_actions.perform_activity(state, "walk_alder_heights_loop")
+	_expect(result.get("ok", false) and int(result["state"]["clock"].get("minute_within_block", 0)) != time_before_walk, "The Alder Heights loop is a repeatable timed neighborhood activity.")
+	state = result.get("state", state)
+
+	result = quests.accept_quest(state, "get_to_know_alder_heights", "test.exploration_accept")
+	_expect(result.get("ok", false) and "get_to_know_alder_heights" in result["state"]["quest_state"].get("active", []), "The player may accept the discovered neighborhood quest from its offer.")
+	state = result.get("state", state)
+	for location_path: String in [
+		"alder_heights_residential_street.neighborhood_corner",
+		"alder_heights_bus_stop.shelter",
+		"forge_fitness.front_desk",
+		"alder_bay_park.waterfront_path",
+	]:
+		result = quests.record_event(state, "location_entered", {"location": location_path}, "test.exploration_route")
+		state = result.get("state", state)
+	_expect("get_to_know_alder_heights" in state["quest_state"].get("completed", []) and bool(state["player"]["flags"].get("exploration.alder_heights_oriented", false)), "Visiting the four public destinations completes the optional neighborhood quest.")
+	_expect("rowan_family_home" not in state["world_state"].get("discovered_locations", []), "Completing the public route still keeps private residences hidden.")
+
+
 func _test_playable_education_semester() -> void:
 	var simulation: RefCounted = SimulationEngineScript.new(_registry)
 	var education: RefCounted = EducationEngineScript.new(_registry, simulation)
@@ -1421,7 +1476,7 @@ func _test_content_registry() -> void:
 	_expect(bool(quest_rules.get("repeatable_quest_rules", {}).get("authored_requirements_rechecked_before_every_run", false)), "Repeatable quest runs recheck all authored requirements.")
 	_expect(_registry.get_content("quests", "build_a_training_rhythm") is Dictionary and _registry.get_content("quests", "consistency_under_pressure") is Dictionary, "Registry indexes both counted stages of Rachel's repeatable training chain.")
 	_expect(_registry.get_all("actions").size() == 10, "Registry indexes all 10 initial home actions.")
-	_expect(_registry.get_all("city_interactions").size() == 22, "Registry indexes the foundation activities, physical storefronts, district activities, and workshops.")
+	_expect(_registry.get_all("city_interactions").size() == 26, "Registry indexes the foundation activities, storefronts, district exploration choices, and workshops.")
 	_expect(_registry.get_all("stores").size() == 12, "Registry indexes seven city shops plus five opening Galleria storefronts.")
 	var harbor_centre: Dictionary = _registry.get_location("harbor_centre_downtown")
 	var harbor_rooms: Dictionary = {}
@@ -1436,7 +1491,7 @@ func _test_content_registry() -> void:
 	var vacant_slots: int = storefront_slots.filter(func(slot: Variant) -> bool: return slot is Dictionary and str(slot.get("status", "")) == "vacant").size()
 	_expect(galleria.get("rooms", []).size() == 14 and storefront_slots.size() == 16, "Port Alder Galleria has fourteen navigable areas and sixteen storefront slots.")
 	_expect(occupied_slots == 5 and vacant_slots == 8, "The Galleria opens with five stores and reserves eight vacant expansion units.")
-	_expect(_registry.get_all("phone_apps").size() == 14, "Registry indexes the foundation apps plus Education, Jobs, Money, Housing, and Shopping.")
+	_expect(_registry.get_all("phone_apps").size() == 15, "Registry indexes the foundation apps plus Notifications, Education, Jobs, Money, Housing, and Shopping.")
 	var phone_rules: Dictionary = _registry.get_package("port_alder_phone_system")
 	var movie_calendar_type: Dictionary = {}
 	for event_type_value: Variant in phone_rules.get("calendar_event_types", []):
@@ -1678,11 +1733,13 @@ func _test_new_game_state_factory() -> void:
 	_expect("jobs" in state["player"]["phone"]["unlocked_apps"], "The Jobs app is available from the start.")
 	_expect("money" in state["player"]["phone"]["unlocked_apps"], "The Money app is available from the start.")
 	_expect("housing" in state["player"]["phone"]["unlocked_apps"], "The Housing app is available from the start.")
+	_expect("notifications" in state["player"]["phone"]["unlocked_apps"], "The Notifications app is available from the start.")
 	_expect("shopping" not in state["player"]["phone"]["unlocked_apps"], "Shopping remains tied to the authored wardrobe tutorial unlock.")
 	_expect(state["relationships"].size() == 15, "Relationship defaults initialize for every opening character.")
 	_expect(state["relationships"]["emma_rowan"].get("dating_history", []) is Array, "Relationship runtime state initializes date history.")
 	_expect(state["relationships"]["emma_rowan"].get("dating_agreement", {}).get("status", "") == "none", "Relationships begin without an assumed dating agreement.")
 	_expect(state["world_state"]["weather"]["condition"] == "partly_cloudy", "Opening weather initializes from the calendar.")
+	_expect(state["world_state"].get("exploration", {}).get("history", []).is_empty(), "A new game initializes empty persistent exploration history.")
 	_expect(state["content_state"]["loaded_packages"].size() == 26, "Runtime state records its loaded content manifest.")
 	_expect(state["content_state"]["package_manifest"].size() == 26, "Runtime state records versioned manifest details for every loaded package.")
 	_expect(str(state["content_state"]["package_manifest"][0].get("checksum", "")).length() == 64, "Content manifest entries include SHA-256 package checksums.")
@@ -2289,6 +2346,121 @@ func _test_opening_dialogue_branches() -> void:
 		_expect(not result.get("ok", true), "Elena's opening conversation cannot run twice.")
 
 
+func _test_screenwriter_dialogue_bridge() -> void:
+	var bridge_conversation: Dictionary = {
+		"id": "screenwriter_bridge_fixture",
+		"type": "standard_topic",
+		"start_node": "setup",
+		"activation": {"days": ["tuesday"], "block": "morning"},
+		"condition": {"flag": "screenwriter.bridge_enabled"},
+		"completion_effects": [
+			{"operation": "add_meter", "character": "emma_rowan", "meter": "trust", "value": 3},
+			{"operation": "complete_activity", "value": "screenwriter_bridge_activity"},
+			{"operation": "set_flag", "key": "screenwriter.bridge_completed", "value": true},
+		],
+		"nodes": {
+			"setup": {
+				"speaker": "emma_rowan",
+				"line": "This line uses the Screenwriter interchange contract.",
+				"effects": [
+					{"operation": "create_memory", "character": "emma_rowan", "value": "bridge_memory"},
+					{"operation": "add_character_stat", "character": "emma_rowan", "key": "courage", "value": 5},
+					{"operation": "add_player_value", "section": "attributes", "key": "confidence", "value": 2},
+				],
+				"next": "automatic_gate",
+			},
+			"automatic_gate": {
+				"branches": [
+					{
+						"id": "impossible",
+						"text": "The created memory is missing.",
+						"conditions": [{"memory_missing": ["emma_rowan", "bridge_memory"]}],
+						"effects": [{"operation": "set_flag", "key": "screenwriter.wrong_branch", "value": true}],
+						"next": "ending",
+					},
+					{
+						"id": "qualified",
+						"text": "Every authored condition passes.",
+						"conditions": [
+							{"meter_at_least": ["emma_rowan", "friendship", 1]},
+							{"meter_at_most": ["emma_rowan", "friendship", 100]},
+							{"character_stat_at_least": ["emma_rowan", "courage", 5]},
+							{"character_stat_at_most": ["emma_rowan", "courage", 5]},
+							{"chapter_at_least": ["emma_rowan", 1]},
+							{"memory_exists": ["emma_rowan", "bridge_memory"]},
+							{"flag": "screenwriter.bridge_enabled"},
+							{"flag_not": "screenwriter.bridge_blocked"},
+							{"value_equals": ["player.life_path", "college"]},
+						],
+						"effects": [{"operation": "unlock_relationship_chapter", "character": "emma_rowan", "level": 2}],
+						"next": "ending",
+					},
+					{"id": "fallback", "text": "Fallback", "effects": [{"operation": "set_flag", "key": "screenwriter.wrong_branch", "value": true}], "next": "ending"},
+				],
+			},
+			"ending": {"speaker": "emma_rowan", "line": "The automatic branch resolved."},
+		},
+	}
+	var unknown_condition_conversation: Dictionary = {
+		"id": "screenwriter_unknown_condition_fixture",
+		"type": "standard_topic",
+		"start_node": "choice",
+		"activation": {},
+		"nodes": {
+			"choice": {
+				"speaker": "player",
+				"choices": [{"id": "unsafe", "text": "This must remain hidden.", "conditions": [{"future_unhandled_gate": true}]}],
+			},
+		},
+	}
+	var bridge_registry: Node = ScreenwriterFixtureRegistryScript.new(_registry, {
+		"conversations": {
+			"screenwriter_bridge_fixture": bridge_conversation,
+			"screenwriter_unknown_condition_fixture": unknown_condition_conversation,
+		},
+		"activities": {
+			"screenwriter_bridge_activity": {
+				"id": "screenwriter_bridge_activity",
+				"kind": "social_activity",
+				"character": "emma_rowan",
+				"counter_key": "activity.screenwriter_bridge_activity.count",
+			},
+		},
+	})
+	root.add_child(bridge_registry)
+	var factory: RefCounted = NewGameStateFactoryScript.new(bridge_registry)
+	var simulation: RefCounted = SimulationEngineScript.new(bridge_registry)
+	var quests: RefCounted = QuestEngineScript.new(bridge_registry, simulation)
+	var dialogue: RefCounted = DialogueEngineScript.new(bridge_registry, simulation, quests)
+	var state: Dictionary = factory.create_new_game({"first_name": "Bridge"}, {"random_seed": 314})
+	state["player"]["flags"]["screenwriter.bridge_enabled"] = true
+	state["player"]["life_path"] = "college"
+	state["clock"]["weekday"] = "monday"
+	_expect(not dialogue.can_begin(state, "screenwriter_bridge_fixture")["ok"], "Screenwriter conversation day gates reject unavailable weekdays.")
+	state["clock"]["weekday"] = "tuesday"
+	var confidence_before: float = float(state["player"]["attributes"]["confidence"])
+	var trust_before: float = float(state["relationships"]["emma_rowan"]["trust"])
+	var result: Dictionary = dialogue.begin(state, "screenwriter_bridge_fixture")
+	_expect(result.get("ok", false) and result.get("view", {}).get("node_id", "") == "setup", "Screenwriter-format conversation activation and first node load.")
+	state = result.get("state", state)
+	_expect(float(state["player"]["attributes"]["confidence"]) == confidence_before + 2.0, "Screenwriter player-value effects use the simulation attribute range.")
+	_expect(float(state["relationships"]["emma_rowan"]["character_stats"].get("courage", 0)) == 5.0, "Screenwriter custom character stats persist in relationship state.")
+	result = dialogue.advance(state)
+	state = result.get("state", state)
+	_expect(result.get("ok", false) and result.get("view", {}).get("node_id", "") == "ending", "Screenwriter automatic stat branches resolve without showing a blank node.")
+	_expect(not bool(state["player"]["flags"].get("screenwriter.wrong_branch", false)), "Automatic branches choose the first matching authored condition set.")
+	_expect(int(state["relationships"]["emma_rowan"]["unlocked_chapter_level"]) == 2, "Screenwriter chapter-unlock effects synchronize relationship level state.")
+	result = dialogue.advance(state)
+	state = result.get("state", state)
+	_expect(result.get("ok", false) and result.get("ended", false), "Screenwriter-format conversation finishes cleanly.")
+	_expect(float(state["relationships"]["emma_rowan"]["trust"]) == trust_before + 3.0, "Conversation completion effects apply exactly once.")
+	_expect(int(state["conversation_state"].get("activity_progress", {}).get("screenwriter_bridge_activity", {}).get("count", 0)) == 1, "Explicit activity success records its persistent counter.")
+	_expect(bool(state["player"]["flags"].get("screenwriter.bridge_completed", false)), "Screenwriter completion flags persist in player state.")
+	result = dialogue.begin(state, "screenwriter_unknown_condition_fixture")
+	_expect(result.get("ok", false) and result.get("view", {}).get("choices", []).is_empty(), "Unknown imported condition types fail closed instead of exposing locked choices.")
+	bridge_registry.queue_free()
+
+
 func _test_save_round_trip_rotation_recovery_and_migration() -> void:
 	var test_root: String = "user://port_alder_save_engine_tests"
 	var slot_ids: Array = ["manual_1", "autosave_0", "autosave_1", "autosave_2", "legacy"]
@@ -2642,6 +2814,20 @@ func _route_option(plan: Dictionary, mode: String) -> Dictionary:
 		if option is Dictionary and str(option.get("mode", "")) == mode:
 			return option
 	return {}
+
+
+func _interaction_exists_for_test(interactions: Array, interaction_id: String) -> bool:
+	for interaction_value: Variant in interactions:
+		if interaction_value is Dictionary and str(interaction_value.get("id", "")) == interaction_id:
+			return true
+	return false
+
+
+func _exploration_lead_exists_for_test(leads: Array, lead_id: String) -> bool:
+	for lead_value: Variant in leads:
+		if lead_value is Dictionary and str(lead_value.get("id", "")) == lead_id:
+			return true
+	return false
 
 
 func _parse_json(path: String) -> Variant:

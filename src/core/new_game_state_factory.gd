@@ -223,6 +223,8 @@ func _apply_relationship_defaults(state: Dictionary) -> void:
 			relationship["chapter_notifications"] = []
 			relationship["pending_agreement_proposal"] = null
 			relationship["romantic_interest_known"] = false
+			relationship["memories"] = []
+			relationship["character_stats"] = character.get("custom_stats", {}).duplicate(true)
 			relationships[character_id] = relationship
 	state["relationships"] = relationships
 

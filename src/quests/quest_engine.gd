@@ -801,7 +801,9 @@ func _all_objectives_complete(state: Dictionary, quest_id: String) -> bool:
 func _event_condition_matches(condition: Dictionary, event_name: String, payload: Dictionary) -> bool:
 	if str(condition.get("event", "")) != event_name:
 		return false
-	for key: String in ["conversation", "node", "character", "participant", "activity", "tag", "key", "mode", "quest", "recipient"]:
+	if event_name == "activity_count_at_least" and int(payload.get("count", 0)) < int(condition.get("value", 1)):
+		return false
+	for key: String in ["conversation", "node", "character", "participant", "activity", "tag", "key", "mode", "quest", "recipient", "district", "area", "outcome"]:
 		if condition.has(key) and str(condition[key]) != str(payload.get(key, "")):
 			return false
 	if condition.has("location"):

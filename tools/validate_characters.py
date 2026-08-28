@@ -30,10 +30,59 @@ REQUIRED_TOP_LEVEL = {
     "conversation_topics", "text_style", "quests", "conversations",
     "text_messages", "outcomes", "asset_refs", "entry_event"
 }
+SCREENWRITER_DIALOGUE_CONDITIONS = {
+    "money_at_least", "value_equals", "flag", "flag_not", "meter_at_least",
+    "meter_at_most", "meter_equals", "character_stat_at_least",
+    "character_stat_at_most", "chapter_at_least", "memory_exists",
+    "memory_missing", "event", "character", "quest", "conversation",
+}
+SCREENWRITER_DIALOGUE_EFFECTS = {
+    "add_meter", "start_quest", "complete_objective",
+    "complete_objective_if_active", "complete_quest", "set_value", "set_flag",
+    "unlock_phone_app", "discover_location", "create_memory",
+    "unlock_relationship_chapter", "add_character_stat", "add_player_value",
+    "complete_activity", "spend_money", "schedule_event", "create_debt",
+    "create_calendar_from_class_schedule", "complete_conversation",
+}
 
 
 def fail(errors: list[str], path: Path, message: str) -> None:
     errors.append(f"{path.name}: {message}")
+
+
+def validate_dialogue_conditions(
+    errors: list[str], path: Path, conversation_id: str, owner: str, conditions: object
+) -> None:
+    if conditions is None:
+        return
+    rows = conditions if isinstance(conditions, list) else [conditions]
+    for row in rows:
+        if not isinstance(row, dict) or not row:
+            fail(errors, path, f"conversation {conversation_id} {owner} has an invalid condition")
+            continue
+        unknown = sorted(set(row) - SCREENWRITER_DIALOGUE_CONDITIONS)
+        if unknown:
+            fail(errors, path, f"conversation {conversation_id} {owner} uses unsupported condition keys: {', '.join(unknown)}")
+        for key in ("value_equals", "chapter_at_least", "memory_exists", "memory_missing"):
+            if key in row and (not isinstance(row[key], list) or len(row[key]) != 2):
+                fail(errors, path, f"conversation {conversation_id} {owner} has malformed {key}")
+        for key in ("meter_at_least", "meter_at_most", "meter_equals", "character_stat_at_least", "character_stat_at_most"):
+            if key in row and (not isinstance(row[key], list) or len(row[key]) != 3):
+                fail(errors, path, f"conversation {conversation_id} {owner} has malformed {key}")
+
+
+def validate_dialogue_effects(
+    errors: list[str], path: Path, conversation_id: str, owner: str, effects: object
+) -> None:
+    if effects is None:
+        return
+    if not isinstance(effects, list):
+        fail(errors, path, f"conversation {conversation_id} {owner} effects must be a list")
+        return
+    for effect in effects:
+        operation = effect.get("operation") if isinstance(effect, dict) else None
+        if operation not in SCREENWRITER_DIALOGUE_EFFECTS:
+            fail(errors, path, f"conversation {conversation_id} {owner} uses unsupported dialogue effect: {operation}")
 
 
 def validate_file(path: Path, known_ids: set[str]) -> list[str]:
@@ -175,6 +224,8 @@ def validate_file(path: Path, known_ids: set[str]) -> list[str]:
     for quest in quests:
         if not quest.get("id") or not quest.get("title") or not quest.get("category"):
             fail(errors, path, "each quest needs id, title, and category")
+        if not isinstance(quest.get("discovery"), dict) or not quest["discovery"].get("source"):
+            fail(errors, path, f"quest {quest.get('id')} must preserve its explicit sandbox discovery source")
         objectives = quest.get("objectives", [])
         objective_ids = [objective.get("id") for objective in objectives]
         if not objectives or any(not item for item in objective_ids):
@@ -195,15 +246,37 @@ def validate_file(path: Path, known_ids: set[str]) -> list[str]:
         if not nodes or start_node not in nodes:
             fail(errors, path, f"conversation {conversation_id} has an invalid start node")
             continue
+        activation = conversation.get("activation", {})
+        for block in ([activation.get("block")] if activation.get("block") else []) + activation.get("blocks", []):
+            if block not in VALID_BLOCKS:
+                fail(errors, path, f"conversation {conversation_id} uses invalid activity block {block}")
+        for day in ([activation.get("day")] if activation.get("day") else []) + activation.get("days", []):
+            if day not in {"monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"}:
+                fail(errors, path, f"conversation {conversation_id} uses invalid weekday {day}")
+        validate_dialogue_conditions(errors, path, conversation_id, "activation", conversation.get("condition"))
+        validate_dialogue_effects(errors, path, conversation_id, "completion", conversation.get("completion_effects"))
         for node_id, node in nodes.items():
             targets = []
             if node.get("next") is not None:
                 targets.append(node.get("next"))
-            for choice in node.get("choices", []):
-                if not choice.get("id") or not choice.get("text"):
-                    fail(errors, path, f"conversation {conversation_id} node {node_id} has an invalid choice")
-                if choice.get("next") is not None:
-                    targets.append(choice.get("next"))
+            choices = node.get("choices", [])
+            branches = node.get("branches", [])
+            if choices and branches:
+                fail(errors, path, f"conversation {conversation_id} node {node_id} cannot mix choices and automatic branches")
+            validate_dialogue_effects(errors, path, conversation_id, f"node {node_id}", node.get("effects"))
+            for collection_name, options in (("choice", choices), ("branch", branches)):
+                option_ids = [option.get("id") for option in options if isinstance(option, dict)]
+                if len(option_ids) != len(options) or any(not option_id for option_id in option_ids) or len(option_ids) != len(set(option_ids)):
+                    fail(errors, path, f"conversation {conversation_id} node {node_id} has invalid {collection_name} ids")
+                for option in options:
+                    if not isinstance(option, dict):
+                        continue
+                    if collection_name == "choice" and not option.get("text"):
+                        fail(errors, path, f"conversation {conversation_id} node {node_id} has a choice without text")
+                    validate_dialogue_conditions(errors, path, conversation_id, f"{collection_name} {option.get('id')}", option.get("conditions"))
+                    validate_dialogue_effects(errors, path, conversation_id, f"{collection_name} {option.get('id')}", option.get("effects"))
+                    if option.get("next") is not None:
+                        targets.append(option.get("next"))
             for target in targets:
                 if target not in nodes:
                     fail(errors, path, f"conversation {conversation_id} links to missing node {target}")

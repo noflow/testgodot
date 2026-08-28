@@ -12,8 +12,8 @@ unnamed service NPCs lives here.
 - `systems/education.json` defines Westshore programs, course sections, semester dates, assessment cadence, effort choices, grading, and academic-standing consequences.
 - `systems/character_creation.json` defines appearance choices, traits, values, hobbies, archetypes, and validation rules.
 - `systems/home_interactions.json` defines atomic bedroom, bathroom, kitchen, and laundry actions.
-- `systems/city_interactions.json` connects city rooms to conversations and atomic institutional, employment, and fitness activities.
-- `systems/phone.json` defines reusable phone apps—including Education, Jobs, Money, Housing, and Shopping—scheduling types, and relationship level labels.
+- `systems/city_interactions.json` connects city rooms to conversations, contextual exploration outcomes, and atomic institutional, employment, and fitness activities.
+- `systems/phone.json` defines reusable phone apps—including Notifications, Education, Jobs, Money, Housing, and Shopping—scheduling types, and relationship level labels.
 - `systems/housing.json` defines property listings, qualification rules, upfront costs, recurring charges, mortgage terms, and residence storage access.
 - `systems/employment.json` defines jobs, requirements, interviews, work approaches, performance, raises, and promotions.
 - `systems/repeatable_activities.json` defines routine actions and simulation effects.

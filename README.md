@@ -13,7 +13,8 @@ quest engines, complete data-driven character creation, Elena's playable
 three-branch opening scene, and the first connected Hale home sandbox. The home
 uses Ren'Py-style navigation arrows floating over unframed background stages, shows only real adjacent destinations and present NPC portrait sprites, and supports private doors, needs-aware food and hygiene actions,
 sleep, laundry, household storage, and a working wardrobe. The reusable smartphone
-now provides the nine vertical-slice apps plus Education, Jobs, Money, and Shopping, authored character messages and replies,
+now provides the full vertical-slice app suite plus Notifications, Education, Jobs,
+Money, Housing, and Shopping, authored character messages and replies,
 NPC-aware calendar scheduling, live relationships, weather/outfit checks, the city
 map, quest progress, character statistics, and complete persistent settings. Elena,
 Daniel, and Lily now follow their character-authored work, school, and home-room
@@ -40,6 +41,12 @@ button. Indoors it diagrams only the current building's rooms and outside exits;
 outdoors it switches to the current street or district and treats buildings as single
 destinations. The player position is highlighted, known locked rooms are marked, and
 undiscovered addresses remain hidden. Local maps never teleport the player.
+Outdoor rooms can now offer contextual `Look Around` choices. Alder Heights is the
+first complete exploration slice: Hale Block, the neighborhood corner, and the bus
+shelter produce saved first-visit discoveries plus repeat outcomes influenced by
+time and weather. Public leads appear in City Map notes, unread discoveries appear
+in the Notifications app, and a neighborhood quest is offered without auto-starting.
+A repeatable local walking loop provides a small sandbox activity between stories.
 Westshore Administration, Harbor Employment Centre, and Forge Fitness now expose
 room-specific activity panels. The Westshore advisor creates an actual semester
 schedule and tuition state; Harbor provides employment orientation, listing review,
@@ -141,7 +148,9 @@ Economy, inventory, clothing, food, and stores are summarized in [docs/ECONOMY_I
 Housing listings, qualification, contracts, moving, and recurring costs are described in [docs/HOUSING_PLAYBOOK.md](docs/HOUSING_PLAYBOOK.md).
 Runtime state, simulation events, saves, and migrations are described in [docs/RUNTIME_SAVE_ARCHITECTURE.md](docs/RUNTIME_SAVE_ARCHITECTURE.md).
 Date authoring, agreements, conflicts, and relationship progression are described in [docs/RELATIONSHIP_DATING_PLAYBOOK.md](docs/RELATIONSHIP_DATING_PLAYBOOK.md).
+The safe Screenwriter export workflow and supported dialogue interchange contract are described in [docs/SCREENWRITER_INTEGRATION.md](docs/SCREENWRITER_INTEGRATION.md).
 Sandbox discovery, gates, paths, deadlines, and player-controlled tracking are described in [docs/SANDBOX_QUEST_PLAYBOOK.md](docs/SANDBOX_QUEST_PLAYBOOK.md).
+Contextual outdoor outcomes, persistent local leads, notifications, and privacy-safe exploration authoring are described in [docs/DISTRICT_EXPLORATION_PLAYBOOK.md](docs/DISTRICT_EXPLORATION_PLAYBOOK.md).
 The implemented settings and accessibility baseline are described in [docs/ACCESSIBILITY_PLAYBOOK.md](docs/ACCESSIBILITY_PLAYBOOK.md).
 The background, portrait, pose, fallback, and no-code art-import workflow is described in [docs/VN_ART_ASSET_PLAYBOOK.md](docs/VN_ART_ASSET_PLAYBOOK.md).
 The first playable build is defined in [docs/VERTICAL_SLICE_SPECIFICATION.md](docs/VERTICAL_SLICE_SPECIFICATION.md).

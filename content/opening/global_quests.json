@@ -118,6 +118,24 @@
       "branches": [],
       "completion_effects": [{"operation": "unlock_phone_app", "value": "transportation"}, {"operation": "set_flag", "key": "tutorials.transportation_complete", "value": true}],
       "failure": {"mode": "cannot_fail"}
+    },
+    {
+      "id": "get_to_know_alder_heights",
+      "category": "discovery",
+      "title": "Get to Know Alder Heights",
+      "summary": "Explore the public places around home and learn how the neighborhood connects to the rest of Port Alder.",
+      "discovery": {"policy": "offer", "source": "world_exploration"},
+      "activation": {"event": "district_explored", "district": "alder_heights", "area": "hale_block"},
+      "availability": {"locations": ["alder_heights_residential_street", "alder_heights_bus_stop", "forge_fitness", "alder_bay_park"]},
+      "objectives": [
+        {"id": "visit_corner", "text": "Walk to the Alder Heights neighborhood corner.", "completion": {"event": "location_entered", "location": "alder_heights_residential_street.neighborhood_corner"}},
+        {"id": "check_bus_shelter", "text": "Visit the Alder Heights bus shelter.", "completion": {"event": "location_entered", "location": "alder_heights_bus_stop.shelter"}},
+        {"id": "visit_forge", "text": "Step into the public front desk at Forge Fitness.", "completion": {"event": "location_entered", "location": "forge_fitness.front_desk"}},
+        {"id": "reach_waterfront", "text": "Follow the route to Alder Bay's waterfront path.", "completion": {"event": "location_entered", "location": "alder_bay_park.waterfront_path"}}
+      ],
+      "branches": [],
+      "completion_effects": [{"operation": "set_flag", "key": "exploration.alder_heights_oriented", "value": true}],
+      "failure": {"mode": "cannot_fail"}
     }
   ]
 }

@@ -411,7 +411,8 @@ func _on_conversation_selected(conversation_id: String) -> void:
 func _on_activity_selected(interaction_id: String) -> void:
 	var result: Dictionary = CityActionService.perform(interaction_id)
 	if result.get("ok", false):
-		status_label.text = "%s completed. Time, stats, and quest progress were updated." % result["interaction"].get("name", interaction_id)
+		var outcome: Dictionary = result.get("outcome", {})
+		status_label.text = str(outcome.get("summary", "")) if not outcome.is_empty() else "%s completed. Time, stats, and quest progress were updated." % result["interaction"].get("name", interaction_id)
 	else:
 		status_label.text = str(result.get("errors", ["That activity could not be completed."])[0])
 	_sync_city_presence()

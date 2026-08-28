@@ -240,6 +240,212 @@
       "rooms": ["sales_floor", "pharmacy_counter"]
     },
     {
+      "id": "explore_hale_block",
+      "name": "Look Around Hale Block",
+      "description": "Take a few minutes to notice routes, people, and opportunities close to home.",
+      "type": "exploration",
+      "location": "alder_heights_residential_street",
+      "rooms": ["hale_block"],
+      "outcomes": [
+        {
+          "id": "first_orientation",
+          "priority": 100,
+          "once_only": true,
+          "summary": "You get your bearings. The neighborhood corner connects home to the bus shelter, Forge Fitness, and the waterfront path.",
+          "operations": [
+            {"operation": "time.advance", "payload": {"minutes": 15}},
+            {"operation": "skill.add_experience", "payload": {"skill": "observation", "experience": 30, "activity_difficulty": 8}},
+            {"operation": "need.adjust", "payload": {"need": "mood", "amount": 1}}
+          ],
+          "leads": [
+            {"id": "alder_heights_neighborhood_corner", "title": "Neighborhood Corner", "description": "The public junction between Hale Block, Forge Fitness, the bus shelter, and Alder Bay Park.", "location_id": "alder_heights_residential_street.neighborhood_corner", "district": "alder_heights"}
+          ],
+          "notification": {"title": "Alder Heights Notes Started", "body": "Your phone saved the neighborhood junction and a new optional quest offer.", "category": "exploration"},
+          "quest_events": [{"event": "district_explored", "district": "alder_heights", "area": "hale_block"}]
+        },
+        {
+          "id": "rain_on_the_block",
+          "priority": 40,
+          "requirements": {"weather_conditions": ["rain", "heavy_rain"]},
+          "summary": "Rain gathers along the curbs while umbrellas and hurried footsteps change the rhythm of the block.",
+          "operations": [
+            {"operation": "time.advance", "payload": {"minutes": 15}},
+            {"operation": "skill.add_experience", "payload": {"skill": "observation", "experience": 18, "activity_difficulty": 8}}
+          ]
+        },
+        {
+          "id": "morning_departures",
+          "priority": 25,
+          "requirements": {"blocks": ["early_morning", "morning"]},
+          "summary": "Front doors open one after another as commuters, students, and dog walkers begin their day.",
+          "operations": [
+            {"operation": "time.advance", "payload": {"minutes": 15}},
+            {"operation": "skill.add_experience", "payload": {"skill": "observation", "experience": 18, "activity_difficulty": 8}}
+          ]
+        },
+        {
+          "id": "evening_windows",
+          "priority": 20,
+          "requirements": {"blocks": ["evening", "late_evening", "night"]},
+          "summary": "Porch lights and warm windows make the quiet residential block feel lived in without revealing anyone's private life.",
+          "operations": [
+            {"operation": "time.advance", "payload": {"minutes": 15}},
+            {"operation": "skill.add_experience", "payload": {"skill": "observation", "experience": 16, "activity_difficulty": 8}},
+            {"operation": "need.adjust", "payload": {"need": "stress", "amount": -1}}
+          ]
+        },
+        {
+          "id": "quiet_block",
+          "priority": 0,
+          "summary": "The block is calm. You notice small changes in gardens, parked cars, and the flow toward the corner.",
+          "operations": [
+            {"operation": "time.advance", "payload": {"minutes": 15}},
+            {"operation": "skill.add_experience", "payload": {"skill": "observation", "experience": 15, "activity_difficulty": 8}}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "explore_neighborhood_corner",
+      "name": "Look Around the Neighborhood Corner",
+      "description": "Watch the public intersection and see what nearby places might be worth visiting.",
+      "type": "exploration",
+      "location": "alder_heights_residential_street",
+      "rooms": ["neighborhood_corner"],
+      "outcomes": [
+        {
+          "id": "first_local_leads",
+          "priority": 100,
+          "once_only": true,
+          "summary": "Signs and foot traffic clarify three local possibilities: training at Forge, taking the bus toward school or downtown, and following the path into Alder Bay Park.",
+          "operations": [
+            {"operation": "time.advance", "payload": {"minutes": 15}},
+            {"operation": "skill.add_experience", "payload": {"skill": "observation", "experience": 30, "activity_difficulty": 8}}
+          ],
+          "leads": [
+            {"id": "forge_public_training", "title": "Forge Fitness", "description": "A public gym where an introductory assessment can open strength and stamina training.", "location_id": "forge_fitness.front_desk", "district": "alder_heights"},
+            {"id": "alder_heights_bus_routes", "title": "Alder Heights Bus Routes", "description": "The neighborhood shelter connects to Westshore College and Harbor Centre during operating hours.", "location_id": "alder_heights_bus_stop.shelter", "district": "alder_heights"},
+            {"id": "alder_bay_waterfront", "title": "Alder Bay Waterfront", "description": "A public route for walking, running, quiet breaks, and future outings.", "location_id": "alder_bay_park.waterfront_path", "district": "alder_bay"}
+          ],
+          "notification": {"title": "Three Local Leads", "body": "Forge Fitness, the bus connection, and Alder Bay Waterfront were added to City Map notes.", "category": "exploration"}
+        },
+        {
+          "id": "wet_intersection",
+          "priority": 40,
+          "requirements": {"weather_conditions": ["rain", "heavy_rain"]},
+          "summary": "The intersection empties between buses as rain pushes everyone under awnings and into the shelter.",
+          "operations": [
+            {"operation": "time.advance", "payload": {"minutes": 15}},
+            {"operation": "skill.add_experience", "payload": {"skill": "observation", "experience": 18, "activity_difficulty": 8}}
+          ]
+        },
+        {
+          "id": "commuter_crossroads",
+          "priority": 25,
+          "requirements": {"blocks": ["early_morning", "morning", "lunch", "afternoon"]},
+          "summary": "Students and workers split toward the gym, waterfront, and bus shelter, making the corner feel like a small crossroads.",
+          "operations": [
+            {"operation": "time.advance", "payload": {"minutes": 15}},
+            {"operation": "skill.add_experience", "payload": {"skill": "observation", "experience": 18, "activity_difficulty": 8}}
+          ]
+        },
+        {
+          "id": "after_dark_corner",
+          "priority": 20,
+          "requirements": {"blocks": ["evening", "late_evening", "night"]},
+          "summary": "The gym sign and bus shelter lights stand out after dark while the waterfront path becomes quieter.",
+          "operations": [
+            {"operation": "time.advance", "payload": {"minutes": 15}},
+            {"operation": "skill.add_experience", "payload": {"skill": "observation", "experience": 16, "activity_difficulty": 8}}
+          ]
+        },
+        {
+          "id": "ordinary_crossroads",
+          "priority": 0,
+          "summary": "Nothing dramatic happens, but the ordinary flow of the corner makes the neighborhood easier to read.",
+          "operations": [
+            {"operation": "time.advance", "payload": {"minutes": 15}},
+            {"operation": "skill.add_experience", "payload": {"skill": "observation", "experience": 15, "activity_difficulty": 8}}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "explore_alder_heights_bus_shelter",
+      "name": "Read the Bus Shelter Board",
+      "description": "Study the route board, local notices, and the changing crowd at the shelter.",
+      "type": "exploration",
+      "location": "alder_heights_bus_stop",
+      "rooms": ["shelter"],
+      "outcomes": [
+        {
+          "id": "first_route_notes",
+          "priority": 100,
+          "once_only": true,
+          "summary": "You identify the useful connections: one route serves Westshore College and another reaches Harbor Centre's work and shopping blocks.",
+          "operations": [
+            {"operation": "time.advance", "payload": {"minutes": 10}},
+            {"operation": "skill.add_experience", "payload": {"skill": "observation", "experience": 22, "activity_difficulty": 7}}
+          ],
+          "leads": [
+            {"id": "westshore_bus_connection", "title": "Westshore Connection", "description": "A daytime bus connection serving Westshore's campus and administration offices.", "location_id": "westshore_campus.transit_loop", "district": "westshore"},
+            {"id": "harbor_centre_bus_connection", "title": "Harbor Centre Connection", "description": "A daytime bus connection toward employment services, the cinema, and the Galleria.", "location_id": "harbor_centre_downtown.transit_exchange", "district": "harbor_centre"}
+          ],
+          "notification": {"title": "Bus Connections Saved", "body": "Westshore and Harbor Centre route notes were added to the City Map.", "category": "transportation"}
+        },
+        {
+          "id": "rainy_shelter",
+          "priority": 40,
+          "requirements": {"weather_conditions": ["rain", "heavy_rain"]},
+          "summary": "The shelter fills quickly in the rain, and the route board becomes the focus of several impatient glances.",
+          "operations": [
+            {"operation": "time.advance", "payload": {"minutes": 10}},
+            {"operation": "skill.add_experience", "payload": {"skill": "observation", "experience": 14, "activity_difficulty": 7}}
+          ]
+        },
+        {
+          "id": "busy_shelter",
+          "priority": 20,
+          "requirements": {"blocks": ["early_morning", "morning", "lunch", "afternoon"]},
+          "summary": "A steady mix of students and workers makes it easy to see which routes matter most at this hour.",
+          "operations": [
+            {"operation": "time.advance", "payload": {"minutes": 10}},
+            {"operation": "skill.add_experience", "payload": {"skill": "observation", "experience": 14, "activity_difficulty": 7}}
+          ]
+        },
+        {
+          "id": "quiet_shelter",
+          "priority": 0,
+          "summary": "Between arrivals, you reread the notices and become a little more familiar with the city's public routes.",
+          "operations": [
+            {"operation": "time.advance", "payload": {"minutes": 10}},
+            {"operation": "skill.add_experience", "payload": {"skill": "observation", "experience": 12, "activity_difficulty": 7}}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "walk_alder_heights_loop",
+      "name": "Walk the Alder Heights Loop",
+      "description": "Take a relaxed half-hour loop through the public neighborhood streets.",
+      "type": "activity",
+      "activity_id": "neighborhood_walk",
+      "location": "alder_heights_residential_street",
+      "rooms": ["hale_block", "neighborhood_corner"],
+      "requirements": {"minimum_energy": 10, "maximum_inebriation": 39},
+      "operations": [
+        {"operation": "time.advance", "payload": {"minutes": 30}},
+        {"operation": "skill.add_experience", "payload": {"skill": "running", "experience": 24, "activity_difficulty": 8}},
+        {"operation": "skill.add_experience", "payload": {"skill": "observation", "experience": 12, "activity_difficulty": 8}},
+        {"operation": "need.adjust", "payload": {"need": "energy", "amount": -5}},
+        {"operation": "need.adjust", "payload": {"need": "hydration", "amount": 4}},
+        {"operation": "need.adjust", "payload": {"need": "hygiene", "amount": -2}},
+        {"operation": "need.adjust", "payload": {"need": "mood", "amount": 3}},
+        {"operation": "need.adjust", "payload": {"need": "stress", "amount": -2}}
+      ],
+      "quest_events": [{"event": "activity_completed", "tag": "neighborhood_walk", "activity": "neighborhood_walk"}]
+    },
+    {
       "id": "dance_at_undertow",
       "name": "Dance at Undertow",
       "description": "Spend an hour on the dance floor beneath Greyport's converted warehouse lights.",
