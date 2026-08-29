@@ -608,6 +608,7 @@ def validate_global_content(
 
         if package_id == "port_alder_vn_art":
             vocabulary = data.get("art_vocabulary")
+            vocabulary_ids: dict[str, set[str]] = {}
             if not isinstance(vocabulary, dict):
                 errors.append(f"{path.relative_to(ROOT)}: art_vocabulary must be an object")
             else:
@@ -621,6 +622,74 @@ def validate_global_content(
                         errors.append(f"{path.relative_to(ROOT)}: {vocabulary_name} vocabulary has invalid ids")
                     if any(not isinstance(entry.get("label"), str) or not entry.get("label") for entry in entries if isinstance(entry, dict)):
                         errors.append(f"{path.relative_to(ROOT)}: {vocabulary_name} vocabulary requires labels")
+                    vocabulary_ids[vocabulary_name] = set(entry_ids)
+            backlog = data.get("production_backlog")
+            if not isinstance(backlog, dict):
+                errors.append(f"{path.relative_to(ROOT)}: production_backlog must be an object")
+            else:
+                allowed_statuses = backlog.get("allowed_statuses")
+                expected_statuses = {"missing", "placeholder", "in_progress", "review", "ready"}
+                if (
+                    not isinstance(allowed_statuses, list)
+                    or any(not isinstance(status, str) for status in allowed_statuses)
+                    or set(allowed_statuses) != expected_statuses
+                ):
+                    errors.append(f"{path.relative_to(ROOT)}: production_backlog must declare the five artwork statuses")
+                    allowed_statuses = []
+                if backlog.get("audio_in_scope") is not False:
+                    errors.append(f"{path.relative_to(ROOT)}: production_backlog audio must remain out of scope")
+                phases = backlog.get("phases")
+                if not isinstance(phases, list) or not phases:
+                    errors.append(f"{path.relative_to(ROOT)}: production_backlog phases must be a non-empty list")
+                    phases = []
+                phase_ids: set[str] = set()
+                priorities: set[int] = set()
+                for phase in phases:
+                    if not isinstance(phase, dict):
+                        errors.append(f"{path.relative_to(ROOT)}: production_backlog contains an invalid phase")
+                        continue
+                    phase_id = phase.get("id")
+                    priority = phase.get("priority")
+                    if not isinstance(phase_id, str) or not phase_id or phase_id in phase_ids:
+                        errors.append(f"{path.relative_to(ROOT)}: production_backlog has a missing or duplicate phase id")
+                    else:
+                        phase_ids.add(phase_id)
+                    if not isinstance(priority, int) or priority < 1 or priority in priorities:
+                        errors.append(f"{path.relative_to(ROOT)}: production_backlog phase {phase_id} has an invalid priority")
+                    else:
+                        priorities.add(priority)
+                    if not phase.get("title") or not phase.get("goal"):
+                        errors.append(f"{path.relative_to(ROOT)}: production_backlog phase {phase_id} needs a title and goal")
+                    assets = phase.get("assets")
+                    if not isinstance(assets, list) or not assets:
+                        errors.append(f"{path.relative_to(ROOT)}: production_backlog phase {phase_id} needs assets")
+                        continue
+                    asset_keys: set[str] = set()
+                    for asset in assets:
+                        if not isinstance(asset, dict) or asset.get("kind") not in {"background", "portrait_set"}:
+                            errors.append(f"{path.relative_to(ROOT)}: production_backlog phase {phase_id} has an invalid asset")
+                            continue
+                        kind = asset["kind"]
+                        asset_key = str(asset.get("id") if kind == "background" else asset.get("character_id"))
+                        if not asset_key or asset_key == "None" or f"{kind}:{asset_key}" in asset_keys:
+                            errors.append(f"{path.relative_to(ROOT)}: production_backlog phase {phase_id} has a missing or duplicate asset")
+                        asset_keys.add(f"{kind}:{asset_key}")
+                        if asset.get("status") not in allowed_statuses:
+                            errors.append(f"{path.relative_to(ROOT)}: production_backlog asset {asset_key} has an invalid status")
+                        if not isinstance(asset.get("reason"), str) or not asset.get("reason"):
+                            errors.append(f"{path.relative_to(ROOT)}: production_backlog asset {asset_key} needs a reason")
+                        looks_key = "required_variants" if kind == "background" else "required_expressions"
+                        vocabulary_key = "background_variants" if kind == "background" else "portrait_expressions"
+                        looks = asset.get(looks_key)
+                        if (
+                            not isinstance(looks, list)
+                            or not looks
+                            or any(not isinstance(look, str) for look in looks)
+                            or len(looks) != len(set(looks))
+                        ):
+                            errors.append(f"{path.relative_to(ROOT)}: production_backlog asset {asset_key} has invalid {looks_key}")
+                        elif vocabulary_key in vocabulary_ids and any(look not in vocabulary_ids[vocabulary_key] for look in looks):
+                            errors.append(f"{path.relative_to(ROOT)}: production_backlog asset {asset_key} uses an unknown planned look")
             if data.get("vn_audio") != []:
                 errors.append(f"{path.relative_to(ROOT)}: audio catalog must remain empty while game audio is disabled")
 
@@ -706,6 +775,23 @@ def validate_global_content(
     for character_id, home_location in character_home_locations.items():
         if home_location not in location_ids:
             errors.append(f"{character_id}.character: home references unknown location {home_location}")
+
+    for path, data in packages:
+        if data.get("package_id") != "port_alder_vn_art":
+            continue
+        backlog = data.get("production_backlog")
+        if not isinstance(backlog, dict):
+            continue
+        for phase in backlog.get("phases", []):
+            if not isinstance(phase, dict):
+                continue
+            for asset in phase.get("assets", []):
+                if not isinstance(asset, dict):
+                    continue
+                if asset.get("kind") == "background" and asset.get("id") not in room_ids:
+                    errors.append(f"{path.relative_to(ROOT)}: production backlog references unknown room {asset.get('id')}")
+                if asset.get("kind") == "portrait_set" and asset.get("character_id") not in known_character_ids:
+                    errors.append(f"{path.relative_to(ROOT)}: production backlog references unknown character {asset.get('character_id')}")
 
     account_ids: set[str] = set()
     budget_ids: set[str] = set()
