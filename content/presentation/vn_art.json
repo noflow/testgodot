@@ -48,7 +48,7 @@
         "priority": 1,
         "goal": "Replace the opening placeholders and establish the Hale family before the sandbox begins.",
         "assets": [
-          {"kind": "background", "id": "hale_home.player_bedroom", "status": "placeholder", "required_variants": ["day", "night", "winter"], "reason": "The game opens here and the room remains the player's daily home base."},
+          {"kind": "background", "id": "hale_home.player_bedroom", "status": "in_progress", "required_variants": ["day", "night", "winter"], "reason": "The game opens here and the room remains the player's daily home base."},
           {"kind": "background", "id": "hale_home.upstairs_hall", "status": "placeholder", "required_variants": ["day", "night"], "reason": "Required for the first room-to-room navigation sequence."},
           {"kind": "background", "id": "hale_home.upstairs_landing", "status": "placeholder", "required_variants": ["day", "night"], "reason": "Connects the bedrooms to the ground floor."},
           {"kind": "background", "id": "hale_home.entryway", "status": "placeholder", "required_variants": ["day", "night", "rain"], "reason": "The player's gateway between home and the city."},
@@ -56,7 +56,7 @@
           {"kind": "background", "id": "hale_home.kitchen", "status": "placeholder", "required_variants": ["day", "sunset", "night"], "reason": "Daily needs, family encounters, and Lily's opening story."},
           {"kind": "background", "id": "hale_home.family_bathroom", "status": "placeholder", "required_variants": ["day", "night"], "reason": "Supports the hygiene loop and locked-door household events."},
           {"kind": "background", "id": "hale_home.front_yard", "status": "placeholder", "required_variants": ["day", "night", "rain", "winter"], "reason": "The first exterior and transition into Alder Heights."},
-          {"kind": "portrait_set", "character_id": "elena_reyes_hale", "status": "placeholder", "required_expressions": ["neutral", "warm", "concerned", "amused"], "reason": "Elena delivers the opening future choice and household guidance."},
+          {"kind": "portrait_set", "character_id": "elena_reyes_hale", "status": "in_progress", "required_expressions": ["neutral", "warm", "concerned", "amused"], "reason": "Elena delivers the opening future choice and household guidance."},
           {"kind": "portrait_set", "character_id": "daniel_hale", "status": "placeholder", "required_expressions": ["neutral", "warm", "thoughtful", "concerned"], "reason": "Daniel anchors the quieter family relationship route."},
           {"kind": "portrait_set", "character_id": "lily_hale", "status": "placeholder", "required_expressions": ["neutral", "happy", "playful", "concerned"], "reason": "Lily is the player's older sister and an early recurring presence."}
         ]
@@ -111,7 +111,7 @@
   },
   "vn_audio": [],
   "vn_backgrounds": [
-    {"id": "hale_home.player_bedroom", "location": "hale_home", "room": "player_bedroom", "path": "res://assets/art/backgrounds/hale_home/player_bedroom.svg", "credit": "Original Port Alder placeholder"},
+    {"id": "hale_home.player_bedroom", "location": "hale_home", "room": "player_bedroom", "path": "res://assets/art/backgrounds/hale_home/player_bedroom.png", "variants": {"day": "res://assets/art/backgrounds/hale_home/player_bedroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "hale_home.upstairs_landing", "location": "hale_home", "room": "upstairs_landing", "path": "res://assets/art/backgrounds/hale_home/living_room.svg", "credit": "Original Port Alder placeholder"},
     {"id": "hale_home.upstairs_hall", "location": "hale_home", "room": "upstairs_hall", "path": "res://assets/art/backgrounds/hale_home/living_room.svg", "credit": "Original Port Alder placeholder"},
     {"id": "hale_home.entryway", "location": "hale_home", "room": "entryway", "path": "res://assets/art/backgrounds/hale_home/living_room.svg", "credit": "Original Port Alder placeholder"},

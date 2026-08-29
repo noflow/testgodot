@@ -1474,6 +1474,8 @@ func _test_content_registry() -> void:
 	_expect(_registry.get_all("vn_backgrounds").size() == 17, "Registry indexes the initial seventeen VN background assignments, including the Hale landing and entryway.")
 	var vn_art: Dictionary = _registry.get_package("port_alder_vn_art")
 	_expect(vn_art.get("art_vocabulary", {}).get("background_variants", []).size() == 12 and vn_art.get("art_vocabulary", {}).get("portrait_expressions", []).size() == 14, "VN art defines shared background-variant and portrait-expression vocabularies.")
+	var player_bedroom_art: Dictionary = _registry.get_content("vn_backgrounds", "hale_home.player_bedroom")
+	_expect(str(player_bedroom_art.get("path", "")).ends_with("player_bedroom.png") and str(player_bedroom_art.get("status", "")) == "ready", "The opening bedroom resolves to its production background artwork.")
 	var artwork_phases: Array = vn_art.get("production_backlog", {}).get("phases", [])
 	var artwork_asset_count: int = 0
 	for artwork_phase_value: Variant in artwork_phases:
@@ -1482,6 +1484,8 @@ func _test_content_registry() -> void:
 	_expect(artwork_phases.size() == 4 and artwork_asset_count == 33, "VN art provides four prioritized production phases covering 33 opening assets.")
 	_expect(str(artwork_phases[0].get("id", "")) == "opening_morning" and int(artwork_phases[0].get("priority", 0)) == 1, "The Hale home opening is the first artwork production milestone.")
 	_expect(vn_art.get("vn_audio", []).is_empty(), "VN audio remains deliberately disabled while the artwork pipeline is developed.")
+	var elena_assets: Dictionary = _registry.get_character("elena_reyes_hale").get("asset_refs", {})
+	_expect(elena_assets.get("portraits", []).size() == 2 and str(elena_assets["portraits"][0].get("path", "")).ends_with("elena_reyes_hale/default.png"), "Elena provides production default and neutral portraits for the opening scene.")
 	var emma_assets: Dictionary = _registry.get_character("emma_rowan").get("asset_refs", {})
 	_expect(not emma_assets.get("portraits", []).is_empty() and str(emma_assets["portraits"][0].get("id", "")) == "default", "Character packages declare their own default portrait artwork.")
 	var quest_rules: Dictionary = _registry.get_package("port_alder_sandbox_quest_system")
