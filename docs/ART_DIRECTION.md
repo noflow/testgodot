@@ -41,10 +41,10 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The eight completed base-art locations are the Hale Home, Alder Heights Residential
+The nine completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
-Centre, Alder Bay Park, Harborlight Cinema, and Forge Fitness. Together they
-provide 41 unique base-day PNG backgrounds. Each base image is marked ready in the
+Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, and Westshore Campus.
+Together they provide 51 unique base-day PNG backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
 
@@ -140,6 +140,32 @@ Destination-specific briefs:
 | Forge Fitness | Locker Room | `forge_fitness/locker_room.png` | Inclusive privacy-conscious changing room with lockers, cubicles, sinks, and private showers. |
 | Forge Fitness | Trainer Office | `forge_fitness/trainer_office.png` | Compact two-chair coaching office overlooking the strength floor. |
 
+### Westshore Campus batch prompt set
+
+This batch completes all ten mapped rooms in the main college location. The
+Courtyard, Library, and Cafeteria were generated as anchor images. Every connected
+room then used one of those anchors to preserve the campus's cedar, charcoal slate,
+coastal landscaping, lighting, and navigable architecture.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped Westshore Campus destination in grounded cinematic contemporary-drama realism. Match the supplied campus anchor's Pacific Northwest coastal atmosphere, cedar wood, charcoal slate, warm practical lighting, and restrained color palette. Preserve clear believable routes to the connected rooms, open character staging space, and an uncluttered lower region for dialogue UI. No people or reflections of people, character sprites, navigation arrows, interface, readable signs or screens, letters, numbers, logos, trademarks, or watermark.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Courtyard | `westshore_campus/courtyard.png` | Wet central pedestrian hub with landscaped paths toward Administration, Library, Cafeteria, and the Transit Loop. |
+| Transit Loop | `westshore_campus/transit_loop.png` | Curved campus bus loop with cedar canopy, benches, bicycle racks, and routes to both student residences and the Courtyard. |
+| Library | `westshore_campus/library.png` | Two-level study library with stacks, reading areas, courtyard access, and routes toward classrooms, career resources, and the cafeteria wing. |
+| Cafeteria | `westshore_campus/cafeteria.png` | Bright dining hall with a warm service counter, varied seating, courtyard windows, and routes to the Bookshop, Career Board, and Student Lounge. |
+| Classrooms | `westshore_campus/classrooms.png` | Quiet teaching corridor with a visible general classroom, seating alcove, Library route, and stair toward the Science Labs. |
+| Science Labs | `westshore_campus/science_labs.png` | Modern teaching laboratory with safe benches, sinks, microscopes, and routes to the classroom and computer wings. |
+| Computer Labs | `westshore_campus/computer_labs.png` | Two-row workstation lab with blank screens, instructor station, and connections to the Science Labs and Art Studios. |
+| Art Studios | `westshore_campus/art_studios.png` | North-lit visual-arts studio with work tables, easels, sinks, storage, and routes to the Computer Labs and Student Lounge. |
+| Career Board | `westshore_campus/career_board.png` | Career-resources alcove with abstract posting board, blank kiosk, consultation table, and routes to the Library and Cafeteria. |
+| Student Lounge | `westshore_campus/student_lounge.png` | Flexible social room with sofas, study tables, kitchenette, unbranded vending, and routes to the Cafeteria and Art Studios. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -160,7 +186,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all three room batches were generated with the built-in
+The baseline assets and all four room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the

@@ -52,7 +52,8 @@
         "harbor_employment_centre",
         "alder_bay_park",
         "harborlight_cinema",
-        "forge_fitness"
+        "forge_fitness",
+        "westshore_campus"
       ]
     },
     "audio_in_scope": false,
@@ -125,14 +126,20 @@
       },
       {
         "id": "campus_social_circle",
-        "title": "Westshore Campus Social Circle",
+        "title": "Westshore Campus Daily Circuit",
         "priority": 4,
-        "goal": "Give college play a recognizable daily circuit and introduce the next group of recurring characters.",
+        "goal": "Complete every mapped Westshore Campus destination as a coherent, fully navigable daily circuit.",
         "assets": [
-          {"kind": "background", "id": "westshore_campus.courtyard", "status": "missing", "required_variants": ["day", "rain", "autumn", "winter"], "reason": "The central campus navigation hub and common encounter space."},
-          {"kind": "background", "id": "westshore_campus.library", "status": "missing", "required_variants": ["day", "sunset"], "reason": "Study, skill growth, and quiet character scenes."},
-          {"kind": "background", "id": "westshore_campus.cafeteria", "status": "missing", "required_variants": ["day"], "reason": "The main lunch-block social destination."},
-          {"kind": "background", "id": "westshore_campus.student_lounge", "status": "missing", "required_variants": ["day", "sunset"], "reason": "A flexible home for campus friendships and club stories."},
+          {"kind": "background", "id": "westshore_campus.courtyard", "status": "in_progress", "required_variants": ["day", "rain", "autumn", "winter"], "reason": "The central campus navigation hub and common encounter space."},
+          {"kind": "background", "id": "westshore_campus.transit_loop", "status": "in_progress", "required_variants": ["day", "rain", "autumn", "winter"], "reason": "Connects the campus circuit to both student residences and the city bus network."},
+          {"kind": "background", "id": "westshore_campus.library", "status": "in_progress", "required_variants": ["day", "sunset"], "reason": "Study, skill growth, and quiet character scenes."},
+          {"kind": "background", "id": "westshore_campus.cafeteria", "status": "ready", "required_variants": ["day"], "reason": "The main lunch-block social destination."},
+          {"kind": "background", "id": "westshore_campus.classrooms", "status": "ready", "required_variants": ["day"], "reason": "Supports the scheduled morning and afternoon class blocks."},
+          {"kind": "background", "id": "westshore_campus.science_labs", "status": "ready", "required_variants": ["day"], "reason": "Supports science coursework, practical study, and skill checks."},
+          {"kind": "background", "id": "westshore_campus.computer_labs", "status": "ready", "required_variants": ["day"], "reason": "Supports coursework, job searches, and technology skill growth."},
+          {"kind": "background", "id": "westshore_campus.art_studios", "status": "ready", "required_variants": ["day"], "reason": "Supports studio classes, creative skill growth, and character stories."},
+          {"kind": "background", "id": "westshore_campus.career_board", "status": "ready", "required_variants": ["day"], "reason": "Connects student life to part-time jobs, internships, and career quests."},
+          {"kind": "background", "id": "westshore_campus.student_lounge", "status": "in_progress", "required_variants": ["day", "sunset"], "reason": "A flexible home for campus friendships and club stories."},
           {"kind": "background", "id": "bayview_cafe.patio", "status": "missing", "required_variants": ["day", "sunset", "rain"], "reason": "A reusable off-campus meeting and date location."}
         ]
       }
@@ -180,6 +187,16 @@
     {"id": "forge_fitness.cardio_floor", "location": "forge_fitness", "room": "cardio_floor", "path": "res://assets/art/backgrounds/forge_fitness/cardio_floor.png", "variants": {"day": "res://assets/art/backgrounds/forge_fitness/cardio_floor.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "forge_fitness.studio", "location": "forge_fitness", "room": "studio", "path": "res://assets/art/backgrounds/forge_fitness/studio.png", "variants": {"day": "res://assets/art/backgrounds/forge_fitness/studio.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "forge_fitness.locker_room", "location": "forge_fitness", "room": "locker_room", "path": "res://assets/art/backgrounds/forge_fitness/locker_room.png", "variants": {"day": "res://assets/art/backgrounds/forge_fitness/locker_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "forge_fitness.trainer_office", "location": "forge_fitness", "room": "trainer_office", "path": "res://assets/art/backgrounds/forge_fitness/trainer_office.png", "variants": {"day": "res://assets/art/backgrounds/forge_fitness/trainer_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "forge_fitness.trainer_office", "location": "forge_fitness", "room": "trainer_office", "path": "res://assets/art/backgrounds/forge_fitness/trainer_office.png", "variants": {"day": "res://assets/art/backgrounds/forge_fitness/trainer_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "westshore_campus.courtyard", "location": "westshore_campus", "room": "courtyard", "path": "res://assets/art/backgrounds/westshore_campus/courtyard.png", "variants": {"day": "res://assets/art/backgrounds/westshore_campus/courtyard.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "westshore_campus.transit_loop", "location": "westshore_campus", "room": "transit_loop", "path": "res://assets/art/backgrounds/westshore_campus/transit_loop.png", "variants": {"day": "res://assets/art/backgrounds/westshore_campus/transit_loop.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "westshore_campus.library", "location": "westshore_campus", "room": "library", "path": "res://assets/art/backgrounds/westshore_campus/library.png", "variants": {"day": "res://assets/art/backgrounds/westshore_campus/library.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "westshore_campus.cafeteria", "location": "westshore_campus", "room": "cafeteria", "path": "res://assets/art/backgrounds/westshore_campus/cafeteria.png", "variants": {"day": "res://assets/art/backgrounds/westshore_campus/cafeteria.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "westshore_campus.classrooms", "location": "westshore_campus", "room": "classrooms", "path": "res://assets/art/backgrounds/westshore_campus/classrooms.png", "variants": {"day": "res://assets/art/backgrounds/westshore_campus/classrooms.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "westshore_campus.science_labs", "location": "westshore_campus", "room": "science_labs", "path": "res://assets/art/backgrounds/westshore_campus/science_labs.png", "variants": {"day": "res://assets/art/backgrounds/westshore_campus/science_labs.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "westshore_campus.computer_labs", "location": "westshore_campus", "room": "computer_labs", "path": "res://assets/art/backgrounds/westshore_campus/computer_labs.png", "variants": {"day": "res://assets/art/backgrounds/westshore_campus/computer_labs.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "westshore_campus.art_studios", "location": "westshore_campus", "room": "art_studios", "path": "res://assets/art/backgrounds/westshore_campus/art_studios.png", "variants": {"day": "res://assets/art/backgrounds/westshore_campus/art_studios.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "westshore_campus.career_board", "location": "westshore_campus", "room": "career_board", "path": "res://assets/art/backgrounds/westshore_campus/career_board.png", "variants": {"day": "res://assets/art/backgrounds/westshore_campus/career_board.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "westshore_campus.student_lounge", "location": "westshore_campus", "room": "student_lounge", "path": "res://assets/art/backgrounds/westshore_campus/student_lounge.png", "variants": {"day": "res://assets/art/backgrounds/westshore_campus/student_lounge.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }
