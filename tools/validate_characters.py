@@ -627,6 +627,20 @@ def validate_global_content(
             if not isinstance(backlog, dict):
                 errors.append(f"{path.relative_to(ROOT)}: production_backlog must be an object")
             else:
+                if backlog.get("mode") != "room_art_first":
+                    errors.append(f"{path.relative_to(ROOT)}: production_backlog must use room_art_first mode")
+                active_kinds = backlog.get("active_kinds")
+                if active_kinds != ["background"]:
+                    errors.append(f"{path.relative_to(ROOT)}: room-first production must activate background work only")
+                    active_kinds = []
+                room_scope = backlog.get("room_scope")
+                if (
+                    not isinstance(room_scope, dict)
+                    or room_scope.get("policy") != "all_mapped_rooms"
+                    or room_scope.get("base_backgrounds_before_variants") is not True
+                    or room_scope.get("production_order") != "location_by_location"
+                ):
+                    errors.append(f"{path.relative_to(ROOT)}: production_backlog needs the complete room-first scope policy")
                 allowed_statuses = backlog.get("allowed_statuses")
                 expected_statuses = {"missing", "placeholder", "in_progress", "review", "ready"}
                 if (
@@ -670,6 +684,8 @@ def validate_global_content(
                             errors.append(f"{path.relative_to(ROOT)}: production_backlog phase {phase_id} has an invalid asset")
                             continue
                         kind = asset["kind"]
+                        if kind not in active_kinds:
+                            errors.append(f"{path.relative_to(ROOT)}: production_backlog phase {phase_id} includes inactive asset kind {kind}")
                         asset_key = str(asset.get("id") if kind == "background" else asset.get("character_id"))
                         if not asset_key or asset_key == "None" or f"{kind}:{asset_key}" in asset_keys:
                             errors.append(f"{path.relative_to(ROOT)}: production_backlog phase {phase_id} has a missing or duplicate asset")
@@ -792,6 +808,46 @@ def validate_global_content(
                     errors.append(f"{path.relative_to(ROOT)}: production backlog references unknown room {asset.get('id')}")
                 if asset.get("kind") == "portrait_set" and asset.get("character_id") not in known_character_ids:
                     errors.append(f"{path.relative_to(ROOT)}: production backlog references unknown character {asset.get('character_id')}")
+
+        background_registry: dict[str, dict] = {}
+        for background in data.get("vn_backgrounds", []):
+            if not isinstance(background, dict):
+                errors.append(f"{path.relative_to(ROOT)}: VN background entries must be objects")
+                continue
+            background_id = background.get("id")
+            if not isinstance(background_id, str) or not background_id or background_id in background_registry:
+                errors.append(f"{path.relative_to(ROOT)}: VN background has a missing or duplicate id {background_id}")
+                continue
+            background_registry[background_id] = background
+            if background_id not in room_ids:
+                errors.append(f"{path.relative_to(ROOT)}: VN background references unknown room {background_id}")
+            asset_path = background.get("path")
+            if not isinstance(asset_path, str) or not asset_path.startswith("res://"):
+                errors.append(f"{path.relative_to(ROOT)}: VN background {background_id} requires a res:// path")
+            elif not (ROOT / asset_path.removeprefix("res://")).is_file():
+                errors.append(f"{path.relative_to(ROOT)}: VN background {background_id} references missing file {asset_path}")
+            variants = background.get("variants", {})
+            if not isinstance(variants, dict):
+                errors.append(f"{path.relative_to(ROOT)}: VN background {background_id} variants must be an object")
+                continue
+            for variant_id, variant_path in variants.items():
+                if variant_id not in {"dawn", "day", "sunset", "night", "rain", "storm", "fog", "snow", "spring", "summer", "autumn", "winter"}:
+                    errors.append(f"{path.relative_to(ROOT)}: VN background {background_id} uses unknown variant {variant_id}")
+                if not isinstance(variant_path, str) or not variant_path.startswith("res://") or not (ROOT / variant_path.removeprefix("res://")).is_file():
+                    errors.append(f"{path.relative_to(ROOT)}: VN background {background_id} has missing variant file {variant_path}")
+
+        hale_room_ids = {room_id for room_id in room_ids if room_id.startswith("hale_home.")}
+        hale_background_ids = {background_id for background_id in background_registry if background_id.startswith("hale_home.")}
+        if hale_background_ids != hale_room_ids:
+            errors.append(f"{path.relative_to(ROOT)}: every Hale Home room must have a registered production background")
+        for background_id in hale_room_ids:
+            background = background_registry.get(background_id, {})
+            if (
+                background.get("status") != "ready"
+                or not str(background.get("path", "")).endswith(".png")
+                or background.get("variants", {}).get("day") != background.get("path")
+            ):
+                errors.append(f"{path.relative_to(ROOT)}: Hale Home background {background_id} needs ready base-day PNG art")
 
     account_ids: set[str] = set()
     budget_ids: set[str] = set()

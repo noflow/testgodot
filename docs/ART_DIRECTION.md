@@ -33,6 +33,51 @@ light and natural wood provide warmth.
 - Portraits must have genuine alpha transparency and no painted backdrop or floor.
 - Sexualized presentation is reserved for explicitly authored adult scenes; everyday portraits remain grounded and non-graphic.
 
+## Room-first production policy
+
+Room art is the active production priority. Every mapped room will receive a unique
+base daytime background before time, weather, or season variants are produced.
+Locations are completed one at a time so connected rooms share believable
+architecture, materials, sightlines, and exterior continuity. Character portrait
+work is deferred; existing portrait data and completed assets remain intact.
+
+The first completed location is the Hale Home. Its 14 mapped destinations now have
+unique base-day PNG backgrounds. Each base image is marked ready in the art
+registry, while its backlog task remains in progress until every listed variant is
+finished.
+
+### Hale Home batch prompt set
+
+The player-bedroom image was the primary visual reference. The entryway and living
+room generations were also used as continuity references for connected ground-floor
+rooms and the property exterior.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production visual-novel background for a Godot game. Create the named room in the established Hale family home in the fictional coastal city of Port Alder. Grounded semi-realistic contemporary-drama illustration with painterly materials and restrained clean linework. Eye-level 16:9 composition, believable middle-class architecture, open character staging space, and a calm darker lower region for dialogue. Soft late-August daytime coastal light; slate blue, muted teal, warm cedar, cream, charcoal, and restrained rust accents. Preserve clear believable entrances and exits for room-to-room navigation. No people, character sprites, navigation arrows, interface, text, logos, watermark, or fisheye distortion.
+
+Room-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Upstairs landing | `upstairs_landing.png` | Compact stair landing connecting the second floor to the entryway below. |
+| Upstairs hall | `upstairs_hall.png` | Family bedroom corridor with distinct doors and coherent upstairs geometry. |
+| Entryway | `entryway.png` | Main front-door foyer, stairs, coat storage, and access toward the living spaces. |
+| Family bathroom | `family_bathroom.png` | Shared practical bathroom with tub-shower, vanity, toilet, and lockable hall door. |
+| Lily's bedroom | `lily_bedroom.png` | Older sister's mature, personalized bedroom with bed, desk, storage, and hall door. |
+| Parents' bedroom | `parents_bedroom.png` | Calm adult primary bedroom with restrained decor, storage, and hall access. |
+| Living room | `living_room.png` | Warm family gathering room connected naturally to the foyer and dining area. |
+| Kitchen | `kitchen.png` | Lived-in family kitchen with work surfaces, appliances, and clear adjacent-room exits. |
+| Dining room | `dining_room.png` | Six-place family dining space bridging the kitchen and living room. |
+| Laundry room | `laundry_room.png` | Practical utility room linking the kitchen side of the house to the garage. |
+| Garage | `garage.png` | Single-family attached garage with shared car, storage, workbench, and interior door. |
+| Front yard | `front_yard.png` | Blue-gray two-story coastal Craftsman exterior, driveway, porch, and neighborhood path. |
+| Backyard | `backyard.png` | Private fenced garden, patio, lawn, and rear view of the same home. |
+
+All files are saved under
+`res://assets/art/backgrounds/hale_home/`. The existing player bedroom completes
+the 14-destination set.
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -53,8 +98,8 @@ Prompt:
 
 ## Provenance
 
-Both baseline assets were generated with the built-in OpenAI image-generation tool
-on 2026-08-29 for the Port Alder project. They are original project assets intended
-for redistribution and modification with the game. Source generations remain in
-the local Codex generated-image store; the checked-in PNG files are the canonical
-game copies.
+The baseline assets and complete Hale Home room batch were generated with the
+built-in OpenAI image-generation tool on 2026-08-29 for the Port Alder project.
+They are original project assets intended for redistribution and modification with
+the game. Source generations remain in the local Codex generated-image store; the
+checked-in PNG files are the canonical game copies.
