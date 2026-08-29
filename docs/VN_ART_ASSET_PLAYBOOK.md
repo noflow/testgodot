@@ -131,6 +131,11 @@ the same `id`, `path`, `bus`, `loop`, and optional `credit` fields. Recommended 
 are `Music`, `Ambience`, and `UI`. Cue ids are stable content identifiers; replacing
 the referenced file does not require rewriting conversations.
 
+Rebuilding the neighboring Screenwriter project reads this manifest together with
+every character's `asset_refs` and produces its checked-in presentation catalog.
+The Scene Director then offers registered cue ids as selectors and visibly marks a
+custom id until it has been added here or to the speaking character's sheet.
+
 ## Adding a new character
 
 1. Create `characters/<character_id>.character`.
@@ -155,10 +160,10 @@ the room and its artwork from data.
 
 ## Validation and fallbacks
 
-The Python validator checks every character portrait object, unique portrait id,
-required default portrait, `res://` path, and referenced source file. Godot content
-validation checks background ids, variant files, character portrait files, and both
-global fallbacks. The Godot test runner imports source artwork before runtime probes,
+The Python validator checks every character portrait and audio object, unique ids,
+required default portrait, `res://` paths, and referenced source files. Godot content
+validation checks background ids, variant files, character portrait/audio files,
+global audio files, and both global fallbacks. The Godot test runner imports source artwork before runtime probes,
 so a fresh clone exercises the same imported textures as the editor.
 
 Current SVGs are original temporary Port Alder artwork and may be replaced in place
