@@ -5,6 +5,38 @@
     "background": "res://assets/art/backgrounds/_shared/coastal_city.svg",
     "portrait": "res://assets/art/characters/_fallback_portrait.svg"
   },
+  "art_vocabulary": {
+    "background_variants": [
+      {"id": "dawn", "label": "Dawn"},
+      {"id": "day", "label": "Day"},
+      {"id": "sunset", "label": "Sunset"},
+      {"id": "night", "label": "Night"},
+      {"id": "rain", "label": "Rain"},
+      {"id": "storm", "label": "Storm"},
+      {"id": "fog", "label": "Fog"},
+      {"id": "snow", "label": "Snow"},
+      {"id": "spring", "label": "Spring"},
+      {"id": "summer", "label": "Summer"},
+      {"id": "autumn", "label": "Autumn"},
+      {"id": "winter", "label": "Winter"}
+    ],
+    "portrait_expressions": [
+      {"id": "neutral", "label": "Neutral"},
+      {"id": "happy", "label": "Happy"},
+      {"id": "warm", "label": "Warm"},
+      {"id": "amused", "label": "Amused"},
+      {"id": "playful", "label": "Playful"},
+      {"id": "surprised", "label": "Surprised"},
+      {"id": "thoughtful", "label": "Thoughtful"},
+      {"id": "concerned", "label": "Concerned"},
+      {"id": "sad", "label": "Sad"},
+      {"id": "angry", "label": "Angry"},
+      {"id": "embarrassed", "label": "Embarrassed"},
+      {"id": "nervous", "label": "Nervous"},
+      {"id": "flirty", "label": "Flirty"},
+      {"id": "tired", "label": "Tired"}
+    ]
+  },
   "vn_audio": [],
   "vn_backgrounds": [
     {"id": "hale_home.player_bedroom", "location": "hale_home", "room": "player_bedroom", "path": "res://assets/art/backgrounds/hale_home/player_bedroom.svg", "credit": "Original Port Alder placeholder"},

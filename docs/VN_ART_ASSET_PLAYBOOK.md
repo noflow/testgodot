@@ -11,9 +11,10 @@ and dialogue screen. Artwork is loaded once and cached by resource path. Missing
 optional artwork never breaks a save or conversation: the service uses the declared
 fallback background or portrait and preserves the character or room label.
 
-The same service resolves Scene Director music, ambience, and sound-effect cues.
-Missing optional audio remains silent without stopping the conversation. Music and
-ambience use their independent settings buses; one-shot sound cues use the UI bus.
+The same service retains future-ready Scene Director music, ambience, and
+sound-effect support. Audio is intentionally disabled during the current
+artwork-first phase: `vn_audio` remains empty and all character audio lists remain
+empty, so the game stays silent without stopping a conversation.
 
 Room selection itself does not advance time. Artwork changes immediately when the
 player selects another room. Dialogue can change portrait poses or background
@@ -49,6 +50,19 @@ important subjects kept away from the bottom 35%, where the dialogue box appears
 The `id` must be `<location_id>.<room_id>`. A manifest assignment takes priority
 over convention-based discovery. A requested variant falls back to `path` when the
 variant is not declared.
+
+## Shared artwork vocabulary
+
+`art_vocabulary` in the presentation manifest standardizes twelve planned
+background looks: dawn, day, sunset, night, rain, storm, fog, snow, spring, summer,
+autumn, and winter. It also defines fourteen portrait expressions used by the Scene
+Director. These are planning ids, not claims that artwork exists.
+
+When a planned background variant has no path under a room's `variants` object, the
+Director marks it as planned and Godot safely uses the room's main background. An
+expression without a matching character portrait likewise uses that character's
+default portrait. Adding the matching registered asset later upgrades every scene
+that already uses the stable id.
 
 ## Character portraits
 
@@ -111,6 +125,9 @@ participant on stage when possible. Scene defaults may live in the conversation'
 `presentation` object, with individual nodes overriding only what changes.
 
 ## Audio cues
+
+Status: intentionally disabled. The runtime contract below is retained for a later
+phase, but the validator currently requires the global audio catalog to remain empty.
 
 Global audio belongs in `content/presentation/vn_art.json`:
 

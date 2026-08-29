@@ -606,6 +606,24 @@ def validate_global_content(
         if data.get("format_version") != 1:
             errors.append(f"{path.relative_to(ROOT)}: format_version must be 1")
 
+        if package_id == "port_alder_vn_art":
+            vocabulary = data.get("art_vocabulary")
+            if not isinstance(vocabulary, dict):
+                errors.append(f"{path.relative_to(ROOT)}: art_vocabulary must be an object")
+            else:
+                for vocabulary_name in ("background_variants", "portrait_expressions"):
+                    entries = vocabulary.get(vocabulary_name)
+                    if not isinstance(entries, list) or not entries:
+                        errors.append(f"{path.relative_to(ROOT)}: {vocabulary_name} vocabulary must be a non-empty list")
+                        continue
+                    entry_ids = [entry.get("id") for entry in entries if isinstance(entry, dict)]
+                    if len(entry_ids) != len(entries) or any(not entry_id for entry_id in entry_ids) or len(entry_ids) != len(set(entry_ids)):
+                        errors.append(f"{path.relative_to(ROOT)}: {vocabulary_name} vocabulary has invalid ids")
+                    if any(not isinstance(entry.get("label"), str) or not entry.get("label") for entry in entries if isinstance(entry, dict)):
+                        errors.append(f"{path.relative_to(ROOT)}: {vocabulary_name} vocabulary requires labels")
+            if data.get("vn_audio") != []:
+                errors.append(f"{path.relative_to(ROOT)}: audio catalog must remain empty while game audio is disabled")
+
         for quest in data.get("quests", []):
             quest_id = quest.get("id")
             if not quest_id or quest_id in quest_ids:
