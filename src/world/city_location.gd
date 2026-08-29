@@ -317,10 +317,14 @@ func _rebuild_encounter_stage() -> void:
 	encounter_text.visible = false
 
 
-func _add_portrait_card(character_id: String, _display_name: String) -> void:
+func _add_portrait_card(character_id: String, display_name: String) -> void:
 	var card: VBoxContainer = VBoxContainer.new()
+	card.name = "NpcPortrait_%s" % character_id
+	card.set_meta("character_id", character_id)
+	card.tooltip_text = display_name
 	card.custom_minimum_size = Vector2(230, 360)
 	var portrait: TextureRect = TextureRect.new()
+	portrait.name = "PortraitImage"
 	portrait.custom_minimum_size = Vector2(230, 360)
 	portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED

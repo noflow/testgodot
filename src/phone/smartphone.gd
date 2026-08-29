@@ -5,6 +5,7 @@ signal phone_closed
 signal travel_completed(destination: String)
 
 const NavigationAccessScript: GDScript = preload("res://src/world/navigation_access.gd")
+const SimulationEngineScript: GDScript = preload("res://src/simulation/simulation_engine.gd")
 const APP_ORDER: PackedStringArray = [
 	"character_profile", "contacts", "messages", "notifications", "calendar", "education", "jobs", "money", "housing", "shopping", "quests",
 	"relationships", "city_map", "weather", "settings",
@@ -32,6 +33,7 @@ const MONTH_NAMES: PackedStringArray = [
 @onready var day_option: OptionButton = %DayOption
 @onready var block_option: OptionButton = %BlockOption
 @onready var scheduler_status: Label = %SchedulerStatus
+@onready var confirm_schedule_button: Button = %ConfirmButton
 @onready var route_panel: PanelContainer = %RoutePanel
 @onready var route_origin: Label = %RouteOrigin
 @onready var route_destination: Label = %RouteDestination
@@ -54,10 +56,16 @@ var _selected_housing_id: String = ""
 var _pending_manual_overwrite: String = ""
 var _pending_remap_action: String = ""
 var _navigation_access: RefCounted
+var _scheduler_preview_engine: RefCounted
 
 
 func _ready() -> void:
 	_navigation_access = NavigationAccessScript.new(ContentRegistry)
+	_scheduler_preview_engine = SimulationEngineScript.new(ContentRegistry)
+	contact_option.item_selected.connect(_on_scheduler_selection_changed)
+	type_option.item_selected.connect(_on_scheduler_selection_changed)
+	day_option.item_selected.connect(_on_scheduler_selection_changed)
+	block_option.item_selected.connect(_on_scheduler_selection_changed)
 	_build_app_buttons()
 	SettingsService.settings_changed.connect(_apply_accessibility_settings)
 	_apply_accessibility_settings()
@@ -1765,9 +1773,9 @@ func _reply_to_message(message_id: String, reply_index: int) -> void:
 
 func _open_scheduler(preselected_contact: String = "") -> void:
 	_populate_scheduler(preselected_contact)
-	scheduler_status.text = "Required work, class, and NPC commitments block confirmation. Other overlaps create a warning."
 	scheduler_panel.visible = true
 	route_panel.visible = false
+	_refresh_scheduler_availability()
 
 
 func _populate_scheduler(preselected_contact: String) -> void:
@@ -1800,34 +1808,22 @@ func _populate_scheduler(preselected_contact: String) -> void:
 
 
 func _on_confirm_schedule_pressed() -> void:
-	var character_id: String = str(contact_option.get_selected_metadata())
-	var event_type: Dictionary = type_option.get_selected_metadata()
-	var day: Dictionary = day_option.get_selected_metadata()
-	var block: String = str(block_option.get_selected_metadata())
-	var title: String = str(event_type.get("name", "Plan"))
-	if not character_id.is_empty():
-		title = "%s with %s" % [title, _character_name(character_id)]
+	var calendar_event: Dictionary = _scheduler_draft_event()
+	if calendar_event.is_empty():
+		scheduler_status.text = "Choose a contact, plan type, day, and activity block."
+		return
+	var character_id: String = str(calendar_event.get("participants", [""])[0]) if not calendar_event.get("participants", []).is_empty() else ""
+	var title: String = str(calendar_event.get("title", "Plan"))
 	var result: Dictionary = SimulationService.apply_operation(
 		"calendar.schedule",
-		{
-			"calendar_event": {
-				"title": title,
-				"type": event_type.get("id", "personal"),
-				"date": "Y%d-%02d-%02d" % [day["year"], day["month"], day["day"]],
-				"weekday": day["weekday"],
-				"block": block,
-				"participants": [] if character_id.is_empty() else [character_id],
-				"location": event_type.get("default_location", "hale_home.player_bedroom"),
-				"source": "phone.calendar",
-			},
-		},
+		{"calendar_event": calendar_event},
 		"phone.calendar"
 	)
 	if not result.get("ok", false):
 		scheduler_status.text = str(result.get("errors", ["The plan could not be scheduled."])[0])
 		return
 	if not character_id.is_empty():
-		var event_type_id: String = str(event_type.get("id", "personal"))
+		var event_type_id: String = str(calendar_event.get("type", "personal"))
 		var quest_result: Dictionary = QuestService.record_event(
 			"calendar_event_created",
 			{
@@ -1843,6 +1839,60 @@ func _on_confirm_schedule_pressed() -> void:
 	scheduler_panel.visible = false
 	phone_status.text = "%s was added to the calendar." % title
 	_show_app("calendar")
+
+
+func _on_scheduler_selection_changed(_index: int) -> void:
+	_refresh_scheduler_availability()
+
+
+func _refresh_scheduler_availability() -> void:
+	var calendar_event: Dictionary = _scheduler_draft_event()
+	if calendar_event.is_empty() or _scheduler_preview_engine == null or not GameState.has_active_game():
+		confirm_schedule_button.disabled = true
+		scheduler_status.text = "Choose a contact, plan type, day, and activity block."
+		return
+	var conflict_count: int = GameState.current_state.get("calendar_state", {}).get("conflicts", []).size()
+	var preview: Dictionary = _scheduler_preview_engine.apply_operation(
+		GameState.current_state,
+		"calendar.schedule",
+		{"calendar_event": calendar_event},
+		"phone.calendar.preview"
+	)
+	confirm_schedule_button.disabled = not bool(preview.get("ok", false))
+	if not preview.get("ok", false):
+		scheduler_status.text = str(preview.get("errors", ["That time is unavailable."])[0])
+		return
+	var preview_conflicts: int = preview.get("state", {}).get("calendar_state", {}).get("conflicts", []).size()
+	if preview_conflicts > conflict_count:
+		scheduler_status.text = "Available, but this overlaps another optional plan. Both will remain on the calendar."
+	else:
+		scheduler_status.text = "Available. This plan can be confirmed."
+
+
+func _scheduler_draft_event() -> Dictionary:
+	if contact_option.item_count == 0 or type_option.item_count == 0 or day_option.item_count == 0 or block_option.item_count == 0:
+		return {}
+	var character_id: String = str(contact_option.get_selected_metadata())
+	var event_type_value: Variant = type_option.get_selected_metadata()
+	var day_value: Variant = day_option.get_selected_metadata()
+	if not event_type_value is Dictionary or not day_value is Dictionary:
+		return {}
+	var event_type: Dictionary = event_type_value
+	var day: Dictionary = day_value
+	var block: String = str(block_option.get_selected_metadata())
+	var title: String = str(event_type.get("name", "Plan"))
+	if not character_id.is_empty():
+		title = "%s with %s" % [title, _character_name(character_id)]
+	return {
+		"title": title,
+		"type": event_type.get("id", "personal"),
+		"date": "Y%d-%02d-%02d" % [day["year"], day["month"], day["day"]],
+		"weekday": day["weekday"],
+		"block": block,
+		"participants": [] if character_id.is_empty() else [character_id],
+		"location": event_type.get("default_location", "hale_home.player_bedroom"),
+		"source": "phone.calendar",
+	}
 
 
 func _cancel_calendar_event(event_id: String) -> void:

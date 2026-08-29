@@ -18,12 +18,16 @@ foundation and focused live-scene probes. The route verifies:
 5. A paid bus trip from the Hale home to Westshore Administration.
 6. Part-time Computer Systems enrollment with financial aid, two courses, and the
    generated class calendar.
-7. Acceptance of Emma's optional story, her authored text reply, scheduling a valid
-   evening hangout, travel to the waterfront, and completion of her friendship path.
-8. Rejection of Emma's scene when its required appointment is absent.
-9. Completion of the appointment, quest, relationship effects, and character memory.
-10. An isolated checksum-backed save/load round trip and scene resume at Alder Bay
-    Park. Probe saves use their own temporary directory and are removed afterward.
+7. Acceptance of Emma's optional story and her authored text reply.
+8. A live phone-scheduler availability preview that disables a class conflict and
+   enables a valid evening hangout.
+9. Calendar-driven placement of Emma in the exact waterfront room, with her portrait
+   rendered over the location's visual-novel background.
+10. Rejection of Emma's scene when its required appointment is absent.
+11. Completion of the appointment, quest, relationship effects, and character memory.
+12. An isolated checksum-backed save/load round trip that preserves Emma's meters and
+    memory, then resumes the saved scene at Alder Bay Park. Probe saves use their own
+    temporary directory and are removed afterward.
 
 ## Manual verification
 

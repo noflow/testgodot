@@ -677,6 +677,13 @@ func _clock_timestamp(clock: Dictionary) -> String:
 
 func _apply_completion_effect(state: Dictionary, effect: Dictionary) -> void:
 	match str(effect.get("operation", "")):
+		"add_meter":
+			var character_id: String = str(effect.get("character", ""))
+			var meter: String = str(effect.get("meter", ""))
+			if state["relationships"].has(character_id) and state["relationships"][character_id].has(meter):
+				state["relationships"][character_id][meter] = clampf(
+					float(state["relationships"][character_id][meter]) + float(effect.get("value", 0.0)), 0.0, 100.0
+				)
 		"unlock_phone_app":
 			var app_id: String = str(effect.get("value", ""))
 			if app_id not in state["player"]["phone"]["unlocked_apps"]:
@@ -725,6 +732,25 @@ func _apply_completion_effect(state: Dictionary, effect: Dictionary) -> void:
 				state["relationships"][character_id]["relationship_level"] = maxi(
 					int(state["relationships"][character_id].get("relationship_level", 1)), chapter_level
 				)
+		"create_memory":
+			var character_id: String = str(effect.get("character", ""))
+			var memory_id: String = str(effect.get("value", effect.get("memory_id", "")))
+			if state["relationships"].has(character_id) and not memory_id.is_empty():
+				var relationship: Dictionary = state["relationships"][character_id]
+				if not relationship.get("memories") is Array:
+					relationship["memories"] = []
+				var already_recorded: bool = false
+				for memory_value: Variant in relationship["memories"]:
+					if memory_value is Dictionary and str(memory_value.get("id", "")) == memory_id:
+						already_recorded = true
+						break
+				if not already_recorded:
+					relationship["memories"].append({
+						"id": memory_id,
+						"importance": effect.get("importance", 50),
+						"tags": effect.get("tags", []).duplicate(true),
+						"created_on": "Y%d-%02d-%02d" % [state["clock"]["year"], state["clock"]["month"], state["clock"]["day"]],
+					})
 		"set_value":
 			_set_state_value(state, str(effect.get("key", "")), effect.get("value"))
 		"schedule_event":

@@ -2407,6 +2407,22 @@ func _test_sandbox_quest_progression_and_tracking() -> void:
 	_expect("before_everything_changes" in declined_state["quest_state"]["deferred"] and "before_everything_changes" not in declined_state["quest_state"]["active"], "Declining defers a quest instead of silently starting or failing it.")
 	_expect(declined_state["quest_state"]["decision_history"].back().get("decision", "") == "declined", "Declining records a durable player decision.")
 
+	var completion_state: Dictionary = factory.create_new_game({}, {"random_seed": 235})
+	completion_state["player"]["flags"]["sandbox.active"] = true
+	result = quests.sync_automatic_activations(completion_state, "test.character_quest_discovery")
+	completion_state = result.get("state", completion_state)
+	result = quests.accept_quest(completion_state, "before_everything_changes", "test.character_quest_accept")
+	completion_state = result.get("state", completion_state)
+	result = quests.complete_quest(completion_state, "before_everything_changes", "test.character_quest_complete")
+	completion_state = result.get("state", completion_state)
+	var emma_memory_found: bool = false
+	for memory_value: Variant in completion_state["relationships"]["emma_rowan"].get("memories", []):
+		if memory_value is Dictionary and str(memory_value.get("id", "")) == "walked_alder_bay_before_college":
+			emma_memory_found = true
+			break
+	_expect(result.get("ok", false) and emma_memory_found, "Character-quest completion creates its authored relationship memory.")
+	_expect(int(completion_state["relationships"]["emma_rowan"].get("unlocked_chapter_level", 1)) == 2, "Character-quest completion unlocks its authored relationship chapter.")
+
 	var repeat_state: Dictionary = factory.create_new_game({}, {"random_seed": 234})
 	repeat_state["player"]["flags"]["fitness.gym_access"] = true
 	repeat_state["player"]["skills"]["fitness_training"] = 10

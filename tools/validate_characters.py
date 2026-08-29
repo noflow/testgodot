@@ -22,6 +22,14 @@ VALID_BLOCKS = {
     "early_morning", "morning", "lunch", "afternoon",
     "evening", "late_evening", "night"
 }
+VALID_WEEK_DAYS = {
+    "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"
+}
+VALID_ROTATION_DAYS = {
+    "rotation_day_1", "rotation_day_2", "rotation_day_3", "rotation_day_4",
+    "first_day_off", "second_day_off", "third_day_off"
+}
+VALID_SCHEDULE_DAYS = VALID_WEEK_DAYS | VALID_ROTATION_DAYS
 VALID_AGREEMENTS = {"casual", "exclusive", "open"}
 REQUIRED_TOP_LEVEL = {
     "format_version", "id", "display_name", "profile", "home", "personality",
@@ -217,11 +225,62 @@ def validate_file(path: Path, known_ids: set[str]) -> list[str]:
     schedule = data["schedule"]
     if not schedule.get("fixed_commitments"):
         fail(errors, path, "schedule requires at least one fixed commitment")
-    for commitment in schedule.get("fixed_commitments", []):
+    fixed_slots: dict[tuple[str, str], tuple[int, dict]] = {}
+    for commitment_index, commitment in enumerate(schedule.get("fixed_commitments", []), 1):
+        days = commitment.get("days", [])
+        if not days or any(day not in VALID_SCHEDULE_DAYS for day in days):
+            fail(errors, path, f"fixed commitment {commitment_index} uses invalid schedule days")
         if not commitment.get("blocks") or "unavailable" not in commitment:
             fail(errors, path, "each commitment needs blocks and unavailable")
         if any(block not in VALID_BLOCKS for block in commitment.get("blocks", [])):
             fail(errors, path, "fixed commitment uses an invalid activity block")
+        if not commitment.get("location"):
+            fail(errors, path, f"fixed commitment {commitment_index} requires a location")
+        for day in days:
+            for block in commitment.get("blocks", []):
+                slot = (day, block)
+                if slot in fixed_slots:
+                    fail(errors, path, f"fixed commitments {fixed_slots[slot][0]} and {commitment_index} overlap at {day} {block}")
+                else:
+                    fixed_slots[slot] = (commitment_index, commitment)
+
+    public_slots: dict[tuple[str, str], int] = {}
+    for presence_index, presence in enumerate(schedule.get("public_presence", []), 1):
+        days = presence.get("days", [])
+        blocks = presence.get("blocks", [])
+        if not days or any(day not in VALID_SCHEDULE_DAYS for day in days):
+            fail(errors, path, f"public presence {presence_index} uses invalid schedule days")
+        if not blocks or any(block not in VALID_BLOCKS for block in blocks):
+            fail(errors, path, f"public presence {presence_index} uses invalid activity blocks")
+        if not presence.get("location"):
+            fail(errors, path, f"public presence {presence_index} requires a location")
+        for day in days:
+            for block in blocks:
+                slot = (day, block)
+                if slot in public_slots:
+                    fail(errors, path, f"public presences {public_slots[slot]} and {presence_index} overlap at {day} {block}")
+                elif slot in fixed_slots:
+                    fail(errors, path, f"public presence {presence_index} is hidden by fixed commitment {fixed_slots[slot][0]} at {day} {block}")
+                else:
+                    public_slots[slot] = presence_index
+
+    precise_preferences = {
+        f"{day}_{block}": (day, block)
+        for day in VALID_SCHEDULE_DAYS
+        for block in VALID_BLOCKS
+    }
+    for preference in schedule.get("preferred_social_blocks", []):
+        if preference in VALID_BLOCKS:
+            preferred_slots = [(day, preference) for day in VALID_WEEK_DAYS]
+        elif preference in precise_preferences:
+            preferred_slots = [precise_preferences[preference]]
+        else:
+            fail(errors, path, f"preferred social block {preference} is invalid")
+            continue
+        for slot in preferred_slots:
+            fixed = fixed_slots.get(slot)
+            if fixed and fixed[1].get("unavailable", False):
+                fail(errors, path, f"preferred social block {slot[0]} {slot[1]} conflicts with fixed commitment {fixed[0]}")
 
     home_routine = data.get("home_routine", {})
     for block, placement in home_routine.get("default_by_block", {}).items():

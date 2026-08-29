@@ -2,6 +2,7 @@ extends Node
 
 const CharacterCreationValidatorScript: GDScript = preload("res://src/creation/character_creation_validator.gd")
 const SaveEngineScript: GDScript = preload("res://src/save/save_engine.gd")
+const NpcPresenceEngineScript: GDScript = preload("res://src/world/npc_presence_engine.gd")
 const PROBE_SAVE_ROOT: String = "user://port_alder_vertical_slice_probe"
 const PROBE_SLOT: String = "connected_run"
 
@@ -306,8 +307,28 @@ func _schedule_and_complete_emma_walk() -> bool:
 		phone.free()
 		return false
 	_select_dictionary_metadata(type_option, "id", "hangout")
+	var thursday_index: int = _option_index_for_metadata_key(day_option, "weekday", "thursday")
+	if not _check(thursday_index >= 0, "scheduler did not offer a future Thursday"):
+		phone.free()
+		return false
+	day_option.select(thursday_index)
+	day_option.emit_signal("item_selected", thursday_index)
+	_select_option_metadata(block_option, "morning")
+	block_option.emit_signal("item_selected", block_option.selected)
+	await get_tree().process_frame
+	var confirm_button: Button = phone.get_node("SchedulerPanel/Margin/Layout/Buttons/ConfirmButton")
+	var scheduler_status: Label = phone.get_node("SchedulerPanel/Margin/Layout/SchedulerStatus")
+	if not _check(confirm_button.disabled and "Emma Rowan is unavailable" in scheduler_status.text, "scheduler did not explain and disable Emma's class conflict"):
+		phone.free()
+		return false
 	day_option.select(0)
+	day_option.emit_signal("item_selected", 0)
 	_select_option_metadata(block_option, "evening")
+	block_option.emit_signal("item_selected", block_option.selected)
+	await get_tree().process_frame
+	if not _check(not confirm_button.disabled and scheduler_status.text.begins_with("Available"), "scheduler did not enable Emma's available evening"):
+		phone.free()
+		return false
 	phone.call("_on_confirm_schedule_pressed")
 	await get_tree().process_frame
 	var emma_event: Dictionary = _scheduled_event_for("emma_rowan")
@@ -348,6 +369,30 @@ func _schedule_and_complete_emma_walk() -> bool:
 	if not _check(not blocked_result.get("ok", false), "Emma's scheduled scene incorrectly began without a current calendar plan"):
 		return false
 	GameState.replace_state(original_state)
+	var presence_engine: RefCounted = NpcPresenceEngineScript.new(ContentRegistry)
+	var emma_presence: Dictionary = presence_engine.resolve_character(GameState.current_state, "emma_rowan")
+	if not _check(str(emma_presence.get("source", "")) == "calendar" and str(emma_presence.get("location", "")) == "alder_bay_park.waterfront_path" and bool(emma_presence.get("available_to_talk", false)), "Emma's appointment did not override her ordinary schedule at the exact waterfront room"):
+		return false
+	var city_scene: PackedScene = load(AppConstants.CITY_LOCATION_SCENE)
+	var city: Control = city_scene.instantiate()
+	get_tree().root.add_child(city)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var background_image: TextureRect = city.get_node("BackgroundImage")
+	var portrait_stage: HBoxContainer = city.get_node("%PortraitStage")
+	if not _check(background_image.visible and background_image.texture != null, "Emma's waterfront meeting did not render a VN background"):
+		city.free()
+		return false
+	var emma_portrait_found: bool = false
+	for portrait_card: Node in portrait_stage.get_children():
+		if str(portrait_card.get_meta("character_id", "")) == "emma_rowan":
+			var portrait_image: TextureRect = portrait_card.get_node_or_null("PortraitImage")
+			emma_portrait_found = portrait_image != null and portrait_image.visible and portrait_image.texture != null
+			break
+	if not _check(emma_portrait_found, "Emma's scheduled portrait did not appear over the waterfront background"):
+		city.free()
+		return false
+	city.free()
 
 	var friendship_before: float = float(GameState.current_state["relationships"]["emma_rowan"]["friendship"])
 	var result: Dictionary = DialogueService.begin("emma_alder_bay_walk")
@@ -378,6 +423,8 @@ func _schedule_and_complete_emma_walk() -> bool:
 		return false
 	if not _check(float(GameState.current_state["relationships"]["emma_rowan"]["friendship"]) > friendship_before, "Emma's authored relationship effects did not apply"):
 		return false
+	if not _check(_relationship_has_memory(GameState.current_state, "emma_rowan", "walked_alder_bay_before_college"), "Emma's completed story did not create its authored relationship memory"):
+		return false
 	return _check(_calendar_status(str(emma_event.get("id", ""))) == "completed", "Emma's completed scene did not complete its calendar appointment")
 
 
@@ -403,6 +450,11 @@ func _save_reload_and_resume() -> bool:
 		return false
 	if not _check("before_everything_changes" in loaded["quest_state"]["completed"], "save/load lost Emma's completed quest"):
 		return false
+	if not _check(_relationship_has_memory(loaded, "emma_rowan", "walked_alder_bay_before_college"), "save/load lost Emma's waterfront memory"):
+		return false
+	for meter: String in ["friendship", "trust"]:
+		if not _check(float(loaded["relationships"]["emma_rowan"].get(meter, 0.0)) == float(expected_state["relationships"]["emma_rowan"].get(meter, 0.0)), "save/load changed Emma's %s meter" % meter):
+			return false
 	if not _check(str(loaded["world_state"]["current_location"]) == "alder_bay_park.waterfront_path", "save/load lost the current city room"):
 		return false
 	if not _check(SaveService.resume_scene_path() == AppConstants.CITY_LOCATION_SCENE, "loaded city save selected the wrong resume scene"):
@@ -431,6 +483,24 @@ func _option_index_for_id(option: OptionButton, item_id: int) -> int:
 		if option.get_item_id(index) == item_id:
 			return index
 	return -1
+
+
+func _option_index_for_metadata_key(option: OptionButton, key: String, expected: Variant) -> int:
+	for index: int in option.item_count:
+		var metadata: Variant = option.get_item_metadata(index)
+		if metadata is Dictionary and metadata.get(key) == expected:
+			return index
+	return -1
+
+
+func _relationship_has_memory(state: Dictionary, character_id: String, memory_id: String) -> bool:
+	var relationship: Variant = state.get("relationships", {}).get(character_id)
+	if not relationship is Dictionary:
+		return false
+	for memory_value: Variant in relationship.get("memories", []):
+		if memory_value is Dictionary and str(memory_value.get("id", "")) == memory_id:
+			return true
+	return false
 
 
 func _option_index_for_metadata(option: OptionButton, value: String) -> int:
