@@ -41,10 +41,11 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The nine completed base-art locations are the Hale Home, Alder Heights Residential
+The ten completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
-Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, and Westshore Campus.
-Together they provide 51 unique base-day PNG backgrounds. Each base image is marked ready in the
+Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
+Bayview Café. Together they
+provide 54 unique base-day PNG backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
 
@@ -166,6 +167,25 @@ Destination-specific briefs:
 | Career Board | `westshore_campus/career_board.png` | Career-resources alcove with abstract posting board, blank kiosk, consultation table, and routes to the Library and Cafeteria. |
 | Student Lounge | `westshore_campus/student_lounge.png` | Flexible social room with sofas, study tables, kitchenette, unbranded vending, and routes to the Cafeteria and Art Studios. |
 
+### Bayview Café batch prompt set
+
+This batch completes the three mapped café destinations. The Alder Bay Park
+Lookout established the waterfront, weather, landscaping, and approach path for
+the Patio. The Patio then anchored the Dining Room, and the Dining Room anchored
+the Counter so the building reads as one continuous interior and exterior space.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped Bayview Café destination in grounded cinematic contemporary-drama realism. Match the supplied reference's late-August Pacific Northwest waterfront, cedar architecture, charcoal slate, warm practical light, and wet coastal atmosphere. Preserve clear believable routes to connected rooms, open character staging, and an uncluttered lower region for dialogue UI. No people or reflections of people, character sprites, navigation arrows, interface, readable menus or screens, letters, numbers, prices, logos, trademarks, captions, or watermark.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Counter | `bayview_cafe/counter.png` | Cedar service counter with espresso equipment, blank register and menu boards, pastry case, workplace staging, and an open route to the Dining Room. |
+| Dining Room | `bayview_cafe/dining_room.png` | Warm bay-facing tables and booths with the Counter on the left and glass doors opening to the Waterfront Patio. |
+| Waterfront Patio | `bayview_cafe/patio.png` | Wet cedar-and-slate terrace overlooking the bay with routes back to the park, onward to the marina, and inside to the Dining Room. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -186,7 +206,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all four room batches were generated with the built-in
+The baseline assets and all five room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the

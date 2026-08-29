@@ -53,7 +53,8 @@
         "alder_bay_park",
         "harborlight_cinema",
         "forge_fitness",
-        "westshore_campus"
+        "westshore_campus",
+        "bayview_cafe"
       ]
     },
     "audio_in_scope": false,
@@ -126,9 +127,9 @@
       },
       {
         "id": "campus_social_circle",
-        "title": "Westshore Campus Daily Circuit",
+        "title": "Campus and Café Social Circuit",
         "priority": 4,
-        "goal": "Complete every mapped Westshore Campus destination as a coherent, fully navigable daily circuit.",
+        "goal": "Complete every mapped Westshore Campus and Bayview Café destination as coherent, fully navigable social circuits.",
         "assets": [
           {"kind": "background", "id": "westshore_campus.courtyard", "status": "in_progress", "required_variants": ["day", "rain", "autumn", "winter"], "reason": "The central campus navigation hub and common encounter space."},
           {"kind": "background", "id": "westshore_campus.transit_loop", "status": "in_progress", "required_variants": ["day", "rain", "autumn", "winter"], "reason": "Connects the campus circuit to both student residences and the city bus network."},
@@ -140,7 +141,9 @@
           {"kind": "background", "id": "westshore_campus.art_studios", "status": "ready", "required_variants": ["day"], "reason": "Supports studio classes, creative skill growth, and character stories."},
           {"kind": "background", "id": "westshore_campus.career_board", "status": "ready", "required_variants": ["day"], "reason": "Connects student life to part-time jobs, internships, and career quests."},
           {"kind": "background", "id": "westshore_campus.student_lounge", "status": "in_progress", "required_variants": ["day", "sunset"], "reason": "A flexible home for campus friendships and club stories."},
-          {"kind": "background", "id": "bayview_cafe.patio", "status": "missing", "required_variants": ["day", "sunset", "rain"], "reason": "A reusable off-campus meeting and date location."}
+          {"kind": "background", "id": "bayview_cafe.counter", "status": "in_progress", "required_variants": ["day", "sunset"], "reason": "Supports ordering, casual encounters, and café employment scenes."},
+          {"kind": "background", "id": "bayview_cafe.dining_room", "status": "in_progress", "required_variants": ["day", "sunset"], "reason": "A warm indoor destination for meals, dates, and relationship scenes."},
+          {"kind": "background", "id": "bayview_cafe.patio", "status": "in_progress", "required_variants": ["day", "sunset", "rain"], "reason": "A reusable off-campus meeting and date location."}
         ]
       }
     ]
@@ -197,6 +200,9 @@
     {"id": "westshore_campus.computer_labs", "location": "westshore_campus", "room": "computer_labs", "path": "res://assets/art/backgrounds/westshore_campus/computer_labs.png", "variants": {"day": "res://assets/art/backgrounds/westshore_campus/computer_labs.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "westshore_campus.art_studios", "location": "westshore_campus", "room": "art_studios", "path": "res://assets/art/backgrounds/westshore_campus/art_studios.png", "variants": {"day": "res://assets/art/backgrounds/westshore_campus/art_studios.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "westshore_campus.career_board", "location": "westshore_campus", "room": "career_board", "path": "res://assets/art/backgrounds/westshore_campus/career_board.png", "variants": {"day": "res://assets/art/backgrounds/westshore_campus/career_board.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "westshore_campus.student_lounge", "location": "westshore_campus", "room": "student_lounge", "path": "res://assets/art/backgrounds/westshore_campus/student_lounge.png", "variants": {"day": "res://assets/art/backgrounds/westshore_campus/student_lounge.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "westshore_campus.student_lounge", "location": "westshore_campus", "room": "student_lounge", "path": "res://assets/art/backgrounds/westshore_campus/student_lounge.png", "variants": {"day": "res://assets/art/backgrounds/westshore_campus/student_lounge.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "bayview_cafe.counter", "location": "bayview_cafe", "room": "counter", "path": "res://assets/art/backgrounds/bayview_cafe/counter.png", "variants": {"day": "res://assets/art/backgrounds/bayview_cafe/counter.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "bayview_cafe.dining_room", "location": "bayview_cafe", "room": "dining_room", "path": "res://assets/art/backgrounds/bayview_cafe/dining_room.png", "variants": {"day": "res://assets/art/backgrounds/bayview_cafe/dining_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "bayview_cafe.patio", "location": "bayview_cafe", "room": "patio", "path": "res://assets/art/backgrounds/bayview_cafe/patio.png", "variants": {"day": "res://assets/art/backgrounds/bayview_cafe/patio.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }
