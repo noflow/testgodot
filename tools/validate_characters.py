@@ -238,6 +238,28 @@ def validate_file(path: Path, known_ids: set[str]) -> list[str]:
         if "default" not in portrait_ids:
             fail(errors, path, "asset_refs.portraits requires a default portrait")
 
+    audio_refs = asset_refs.get("audio", []) if isinstance(asset_refs, dict) else []
+    if not isinstance(audio_refs, list):
+        fail(errors, path, "asset_refs.audio must be a list")
+    else:
+        audio_ids: list[str] = []
+        for audio_ref in audio_refs:
+            if not isinstance(audio_ref, dict):
+                fail(errors, path, "each audio reference must be an object")
+                continue
+            audio_id = audio_ref.get("id")
+            asset_path = audio_ref.get("path")
+            if not isinstance(audio_id, str) or not audio_id:
+                fail(errors, path, "audio reference requires a non-empty id")
+            elif audio_id in audio_ids:
+                fail(errors, path, f"duplicate audio id: {audio_id}")
+            else:
+                audio_ids.append(audio_id)
+            if not isinstance(asset_path, str) or not asset_path.startswith("res://"):
+                fail(errors, path, f"audio {audio_id or 'unknown'} requires a res:// path")
+            elif not (ROOT / asset_path.removeprefix("res://")).is_file():
+                fail(errors, path, f"audio {audio_id or 'unknown'} asset does not exist: {asset_path}")
+
     meters = data["relationship_defaults"]
     missing_meters = sorted((PRIMARY_METERS | SUPPORT_METERS) - meters.keys())
     if missing_meters:

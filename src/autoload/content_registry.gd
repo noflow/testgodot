@@ -10,7 +10,7 @@ const INDEXED_COLLECTIONS: PackedStringArray = [
 	"locations", "districts", "quests", "conversations", "items",
 	"jobs", "courses", "programs", "activities", "actions", "city_interactions",
 	"phone_apps", "stores", "operations",
-	"date_activities", "social_activities", "housing_listings", "vn_backgrounds",
+	"date_activities", "social_activities", "housing_listings", "vn_backgrounds", "vn_audio",
 ]
 
 var _documents: Dictionary = {}
@@ -574,6 +574,13 @@ func _validate_vn_art_assets() -> void:
 			var variant_path: String = str(background["variants"][variant_name])
 			if not _runtime_asset_exists(variant_path):
 				_last_errors.append("VN background %s variant %s is missing: %s" % [background.get("id", "unknown"), variant_name, variant_path])
+	for audio_value: Variant in get_all("vn_audio"):
+		if not audio_value is Dictionary:
+			continue
+		var audio: Dictionary = audio_value
+		var audio_path: String = str(audio.get("path", ""))
+		if not _runtime_asset_exists(audio_path):
+			_last_errors.append("VN audio cue %s has a missing asset: %s" % [audio.get("id", "unknown"), audio_path])
 	for character_id_value: Variant in _characters:
 		var character_id: String = str(character_id_value)
 		var character: Dictionary = _characters[character_id]
@@ -591,6 +598,20 @@ func _validate_vn_art_assets() -> void:
 				portrait_ids.append(portrait_id)
 			if not _runtime_asset_exists(portrait_path):
 				_last_errors.append("Character %s portrait %s is missing: %s" % [character_id, portrait_id, portrait_path])
+		var audio_ids: PackedStringArray = []
+		for audio_value: Variant in character.get("asset_refs", {}).get("audio", []):
+			if not audio_value is Dictionary:
+				_last_errors.append("Character %s audio reference must be an object." % character_id)
+				continue
+			var audio: Dictionary = audio_value
+			var audio_id: String = str(audio.get("id", ""))
+			var audio_path: String = str(audio.get("path", ""))
+			if audio_id.is_empty() or audio_id in audio_ids:
+				_last_errors.append("Character %s has a missing or duplicate audio id." % character_id)
+			else:
+				audio_ids.append(audio_id)
+			if not _runtime_asset_exists(audio_path):
+				_last_errors.append("Character %s audio %s is missing: %s" % [character_id, audio_id, audio_path])
 
 
 func _runtime_asset_exists(path: String) -> bool:

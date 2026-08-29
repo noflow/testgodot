@@ -4,8 +4,14 @@ const CHARACTERS_PER_SECOND: float = 55.0
 
 @onready var scene_title: Label = %SceneTitle
 @onready var background_image: TextureRect = %BackgroundImage
+@onready var transition_overlay: ColorRect = %TransitionOverlay
+@onready var portrait_area: CenterContainer = $PortraitArea
+@onready var portrait_card: Control = $PortraitArea/PortraitCard
 @onready var portrait_image: TextureRect = %PortraitImage
 @onready var portrait_placeholder: Label = %PortraitPlaceholder
+@onready var music_player: AudioStreamPlayer = %MusicPlayer
+@onready var ambience_player: AudioStreamPlayer = %AmbiencePlayer
+@onready var sfx_player: AudioStreamPlayer = %SfxPlayer
 @onready var speaker_label: Label = %SpeakerLabel
 @onready var line_label: Label = %LineLabel
 @onready var choices_box: VBoxContainer = %ChoicesBox
@@ -22,10 +28,13 @@ var _auto_enabled: bool = false
 var _auto_wait: float = 0.0
 var _skip_active: bool = false
 var _skip_wait: float = 0.0
+var _transition_tween: Tween
 
 
 func _ready() -> void:
 	SettingsService.settings_changed.connect(_apply_accessibility_settings)
+	music_player.finished.connect(_on_looping_audio_finished.bind(music_player))
+	ambience_player.finished.connect(_on_looping_audio_finished.bind(ambience_player))
 	_apply_accessibility_settings()
 	var resumed: Dictionary = DialogueService.resume()
 	if not resumed.get("ok", false):
@@ -78,6 +87,8 @@ func _render_view(view: Dictionary) -> void:
 	error_label.text = ""
 	scene_title.text = _scene_heading()
 	_render_artwork(view)
+	_render_audio_cues(view)
+	_apply_transition(str(view.get("transition", "")))
 	var stage_direction: String = str(view.get("stage_direction", ""))
 	var line: String = str(view.get("line", ""))
 	if not stage_direction.is_empty():
@@ -114,22 +125,101 @@ func _render_artwork(view: Dictionary) -> void:
 	var location_id: String = location_path.get_slice(".", 0)
 	var room_id: String = location_path.get_slice(".", 1)
 	VNAssetService.apply_background(background_image, location_id, room_id, str(view.get("background_variant", "")))
+	var character_id: String = _artwork_character_id(view)
+	if character_id.is_empty() or character_id == "player":
+		portrait_card.visible = false
+		_apply_portrait_position("offstage")
+		return
+	var character: Variant = ContentRegistry.get_character(character_id)
+	var display_name: String = str(character.get("display_name", character_id)) if character is Dictionary else str(view.get("speaker_name", character_id.replace("_", " ").capitalize()))
+	var portrait_id: String = str(view.get("portrait_id", "default"))
+	var expression: String = str(view.get("expression", ""))
+	if portrait_id in ["", "default"] and VNAssetService.has_portrait(character_id, expression):
+		portrait_id = expression
+	VNAssetService.apply_portrait(portrait_image, character_id, portrait_id)
+	portrait_placeholder.text = display_name.to_upper()
+	portrait_card.tooltip_text = "%s%s" % [display_name, " · %s" % expression if not expression.is_empty() else ""]
+	portrait_card.visible = portrait_image.texture != null
+	_apply_portrait_position(str(view.get("portrait_position", "center")))
+
+
+func _artwork_character_id(view: Dictionary) -> String:
 	var character_id: String = str(view.get("speaker_id", ""))
 	if character_id.is_empty() or character_id == "player":
 		for participant_value: Variant in view.get("participants", []):
 			var participant: String = str(participant_value)
 			if participant != "player":
-				character_id = participant
-				break
-	var portrait_card: Control = $PortraitArea/PortraitCard
-	if character_id.is_empty() or character_id == "player":
+				return participant
+	return character_id
+
+
+func _apply_portrait_position(position: String) -> void:
+	var normalized: String = position.to_lower()
+	if normalized not in ["left", "center", "right", "offstage"]:
+		normalized = "center"
+	portrait_area.set_meta("portrait_position", normalized)
+	portrait_area.offset_left = 0.0
+	portrait_area.offset_right = 0.0
+	match normalized:
+		"left":
+			portrait_area.anchor_left = 0.0
+			portrait_area.anchor_right = 0.56
+		"right":
+			portrait_area.anchor_left = 0.44
+			portrait_area.anchor_right = 1.0
+		_:
+			portrait_area.anchor_left = 0.0
+			portrait_area.anchor_right = 1.0
+	if normalized == "offstage":
 		portrait_card.visible = false
+
+
+func _render_audio_cues(view: Dictionary) -> void:
+	var character_id: String = _artwork_character_id(view)
+	_apply_continuous_audio(music_player, str(view.get("music_cue", "")), "music", character_id)
+	_apply_continuous_audio(ambience_player, str(view.get("ambience_cue", "")), "ambience", character_id)
+	var sfx_cue: String = str(view.get("sfx_cue", ""))
+	if not sfx_cue.is_empty():
+		VNAssetService.apply_audio(sfx_player, sfx_cue, "sfx", character_id, true)
+
+
+func _apply_continuous_audio(player: AudioStreamPlayer, cue_id: String, cue_type: String, character_id: String) -> void:
+	if cue_id.is_empty():
 		return
-	var character: Variant = ContentRegistry.get_character(character_id)
-	var display_name: String = str(character.get("display_name", character_id)) if character is Dictionary else str(view.get("speaker_name", character_id.replace("_", " ").capitalize()))
-	VNAssetService.apply_portrait(portrait_image, character_id, str(view.get("portrait_id", "default")))
-	portrait_placeholder.text = display_name.to_upper()
-	portrait_card.visible = portrait_image.texture != null
+	VNAssetService.apply_audio(player, cue_id, cue_type, character_id)
+
+
+func _on_looping_audio_finished(player: AudioStreamPlayer) -> void:
+	if bool(player.get_meta("cue_loop", false)) and player.stream != null:
+		player.play()
+
+
+func _apply_transition(transition: String) -> void:
+	if _transition_tween != null and _transition_tween.is_valid():
+		_transition_tween.kill()
+	var cue: String = transition.to_lower()
+	transition_overlay.set_meta("transition", cue)
+	transition_overlay.position = Vector2.ZERO
+	transition_overlay.modulate.a = 0.0
+	if cue in ["", "cut"] or SettingsService.reduce_motion or not SettingsService.screen_effects_enabled:
+		return
+	_transition_tween = create_tween().set_ease(Tween.EASE_OUT)
+	match cue:
+		"fade":
+			transition_overlay.modulate.a = 1.0
+			_transition_tween.set_trans(Tween.TRANS_QUAD)
+			_transition_tween.tween_property(transition_overlay, "modulate:a", 0.0, 0.35)
+		"dissolve":
+			transition_overlay.modulate.a = 0.72
+			_transition_tween.set_trans(Tween.TRANS_SINE)
+			_transition_tween.tween_property(transition_overlay, "modulate:a", 0.0, 0.6)
+		"wipe_left", "wipe_right":
+			transition_overlay.modulate.a = 0.9
+			var direction: float = -1.0 if cue == "wipe_left" else 1.0
+			_transition_tween.set_trans(Tween.TRANS_CUBIC)
+			_transition_tween.tween_property(transition_overlay, "position", Vector2(direction * get_viewport_rect().size.x, 0.0), 0.42)
+		_:
+			transition_overlay.modulate.a = 0.0
 
 
 func _scene_heading() -> String:
@@ -239,7 +329,6 @@ func _apply_accessibility_settings() -> void:
 	SettingsService.apply_accessibility(self)
 	var scale: float = SettingsService.text_scale
 	var dialogue_margin: MarginContainer = $DialogueMargin
-	var portrait_area: CenterContainer = $PortraitArea
 	dialogue_margin.offset_top = -minf(640.0, 295.0 * scale)
 	portrait_area.offset_bottom = -minf(600.0, 260.0 * scale)
 	if SettingsService.reduce_motion:

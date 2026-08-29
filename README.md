@@ -29,6 +29,11 @@ Room backgrounds and character portraits now resolve through a cached data-drive
 artwork service. Location art is assigned by manifest or predictable file path,
 while each character owns portrait poses in its `.character` package. Home, city,
 and dialogue scenes share safe fallback artwork when a production asset is missing.
+Screenwriter Scene Director cues now reach the Godot dialogue view: portraits can
+stage left, center, right, or offscreen; expression ids select matching poses;
+background variants and reduced-motion-aware transitions render per node; and music,
+ambience, and sound effects resolve through global or character-owned audio manifests.
+Missing optional audio remains safely silent.
 The phone City Map plans and confirms graph-based walking, bus, taxi, and permitted
 car travel across the known public destinations. Trips charge fares, advance the live
 clock, respect closures and safety requirements, update quests, and arrive in a

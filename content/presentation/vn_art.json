@@ -5,6 +5,7 @@
     "background": "res://assets/art/backgrounds/_shared/coastal_city.svg",
     "portrait": "res://assets/art/characters/_fallback_portrait.svg"
   },
+  "vn_audio": [],
   "vn_backgrounds": [
     {"id": "hale_home.player_bedroom", "location": "hale_home", "room": "player_bedroom", "path": "res://assets/art/backgrounds/hale_home/player_bedroom.svg", "credit": "Original Port Alder placeholder"},
     {"id": "hale_home.upstairs_landing", "location": "hale_home", "room": "upstairs_landing", "path": "res://assets/art/backgrounds/hale_home/living_room.svg", "credit": "Original Port Alder placeholder"},

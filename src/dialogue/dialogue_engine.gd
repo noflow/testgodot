@@ -761,6 +761,8 @@ func _make_view(state: Dictionary, conversation: Dictionary) -> Dictionary:
 	var active: Dictionary = state["conversation_state"]["active"]
 	var node_id: String = str(active["node_id"])
 	var node: Dictionary = conversation["nodes"][node_id]
+	var presentation_value: Variant = conversation.get("presentation", {})
+	var presentation: Dictionary = presentation_value if presentation_value is Dictionary else {}
 	var choices: Array = []
 	for choice: Dictionary in _visible_choices(state, node):
 		choices.append({"id": choice.get("id"), "text": _resolve_tokens(str(choice.get("text", "")), state)})
@@ -772,12 +774,25 @@ func _make_view(state: Dictionary, conversation: Dictionary) -> Dictionary:
 		"speaker_name": _speaker_name(speaker_id, state),
 		"participants": _conversation_participants(conversation),
 		"portrait_id": str(node.get("portrait", "default")),
-		"background_variant": str(node.get("background_variant", "")),
+		"expression": str(node.get("expression", node.get("emotion", ""))),
+		"background_variant": _presentation_cue(node, presentation, "background_variant"),
+		"portrait_position": _presentation_cue(node, presentation, "position", "center"),
+		"transition": _presentation_cue(node, presentation, "transition"),
+		"music_cue": _presentation_cue(node, presentation, "music"),
+		"ambience_cue": _presentation_cue(node, presentation, "ambience"),
+		"sfx_cue": _presentation_cue(node, presentation, "sfx"),
+		"director_notes": str(presentation.get("notes", "")),
 		"line": _resolve_tokens(str(node.get("line", "")), state),
 		"stage_direction": _resolve_tokens(str(node.get("stage_direction", "")), state),
 		"choices": choices,
 		"can_advance": choices.is_empty() and node.get("branches", []).is_empty(),
 	}
+
+
+func _presentation_cue(node: Dictionary, presentation: Dictionary, key: String, fallback: String = "") -> String:
+	if node.has(key):
+		return str(node.get(key, fallback))
+	return str(presentation.get(key, fallback))
 
 
 func _visible_choices(state: Dictionary, node: Dictionary) -> Array:

@@ -11,6 +11,10 @@ and dialogue screen. Artwork is loaded once and cached by resource path. Missing
 optional artwork never breaks a save or conversation: the service uses the declared
 fallback background or portrait and preserves the character or room label.
 
+The same service resolves Scene Director music, ambience, and sound-effect cues.
+Missing optional audio remains silent without stopping the conversation. Music and
+ambience use their independent settings buses; one-shot sound cues use the UI bus.
+
 Room selection itself does not advance time. Artwork changes immediately when the
 player selects another room. Dialogue can change portrait poses or background
 variants per node without loading a different gameplay scene.
@@ -80,7 +84,7 @@ For future convention-only portrait discovery, use:
 assets/art/characters/<character_id>/<portrait_id>.webp
 ```
 
-## Dialogue pose and background changes
+## Dialogue staging and presentation cues
 
 A dialogue node may request artwork declaratively:
 
@@ -88,15 +92,44 @@ A dialogue node may request artwork declaratively:
 {
   "speaker": "emma_rowan",
   "portrait": "smile",
+  "expression": "warm",
   "background_variant": "night",
+  "position": "right",
+  "transition": "dissolve",
+  "music": "emma_theme",
+  "ambience": "waterfront_evening",
+  "sfx": "phone_buzz",
   "line": "I was hoping you might say that.",
   "next": "walk_end"
 }
 ```
 
-Both fields are optional. `portrait` defaults to `default`; `background_variant`
-defaults to the room's main background. Narration and player-choice nodes retain the
-first non-player participant on stage when possible.
+All presentation fields are optional. `portrait` defaults to an expression-matched
+portrait when one exists, then `default`; `background_variant` defaults to the room's
+main background. Narration and player-choice nodes retain the first non-player
+participant on stage when possible. Scene defaults may live in the conversation's
+`presentation` object, with individual nodes overriding only what changes.
+
+## Audio cues
+
+Global audio belongs in `content/presentation/vn_art.json`:
+
+```json
+"vn_audio": [
+  {
+    "id": "waterfront_evening",
+    "path": "res://assets/audio/ambience/waterfront_evening.ogg",
+    "bus": "Ambience",
+    "loop": true,
+    "credit": "Artist or source"
+  }
+]
+```
+
+Character-owned themes or signature sounds may instead use `asset_refs.audio` with
+the same `id`, `path`, `bus`, `loop`, and optional `credit` fields. Recommended buses
+are `Music`, `Ambience`, and `UI`. Cue ids are stable content identifiers; replacing
+the referenced file does not require rewriting conversations.
 
 ## Adding a new character
 

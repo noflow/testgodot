@@ -8,7 +8,9 @@ runtime state, saves, quests, relationships, schedules, and phone delivery.
 
 Use **Port Alder sheets** when moving authored work into the game. Do not import
 Screenwriter's flattened `scenewright.v3` Godot JSON or its standalone dialogue
-director into this project. Those files describe an alternative runtime and would
+graph/export formats into this project. Use the Scene Director inside the normal
+Screenwriter project and export the edited `.character` sheets. The alternate files
+describe a separate runtime and would
 split persistent state between two systems.
 
 Keep exported files in a staging directory until both checks pass:
@@ -49,6 +51,31 @@ Screenwriter effects supported by dialogue include relationship meters, flags an
 values, quests and objectives, phone-app unlocks, location discoveries, memories,
 relationship chapters, custom character stats, player attributes or needs, calendar
 events, and explicit character-activity completion.
+
+## VN presentation contract
+
+The Scene Director writes optional scene defaults to `conversation.presentation`:
+
+```json
+"presentation": {
+  "transition": "fade",
+  "music": "quiet_piano",
+  "ambience": "cafe_room_tone",
+  "notes": "Keep the camera intimate."
+}
+```
+
+Each dialogue node may override `portrait`, `expression`, `background_variant`,
+`position`, `transition`, `music`, `ambience`, or `sfx`. Position accepts `left`,
+`center`, `right`, and `offstage`; transitions accept `cut`, `fade`, `dissolve`,
+`wipe_left`, and `wipe_right`. Unspecified node fields inherit the scene default.
+Reduced-motion or disabled screen effects turn animated transitions into immediate
+cuts without changing authored data.
+
+Audio cue ids resolve first from the speaking character's `asset_refs.audio`, then
+from the global `vn_audio` manifest in `content/presentation/vn_art.json`. A direct
+`res://` audio path is also accepted. `none`, `stop`, or `silence` stops a continuous
+cue. Missing optional audio is recorded as unresolved and never blocks dialogue.
 
 ## Runtime ownership
 

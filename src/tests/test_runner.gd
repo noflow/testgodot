@@ -198,6 +198,8 @@ func _test_dialogue_ui_scenes() -> void:
 		var dialogue_instance: Node = dialogue_scene.instantiate()
 		_expect(dialogue_instance.get_node_or_null("BackgroundImage") != null, "VN scene contains a data-driven background layer.")
 		_expect(dialogue_instance.get_node_or_null("PortraitArea/PortraitCard/PortraitMargin/PortraitLayout/PortraitImage") != null, "VN scene contains a data-driven portrait layer.")
+		_expect(dialogue_instance.get_node_or_null("TransitionOverlay") != null, "VN scene contains its Director transition layer.")
+		_expect(dialogue_instance.get_node_or_null("MusicPlayer") != null and dialogue_instance.get_node_or_null("AmbiencePlayer") != null and dialogue_instance.get_node_or_null("SfxPlayer") != null, "VN scene contains separate Director music, ambience, and sound-effect players.")
 		_expect(dialogue_instance.get_node_or_null("DialogueMargin/DialoguePanel/PanelMargin/DialogueContent/SpeakerLabel") != null, "VN scene contains a speaker label.")
 		_expect(dialogue_instance.get_node_or_null("DialogueMargin/DialoguePanel/PanelMargin/DialogueContent/ChoicesBox") != null, "VN scene contains dynamic dialogue choices.")
 		_expect(dialogue_instance.get_node_or_null("DialogueMargin/DialoguePanel/PanelMargin/DialogueContent/Controls/SkipButton") != null, "VN scene exposes hold-or-toggle dialogue skipping.")
@@ -2566,6 +2568,12 @@ func _test_screenwriter_dialogue_bridge() -> void:
 		"start_node": "setup",
 		"activation": {"days": ["tuesday"], "block": "morning"},
 		"condition": {"flag": "screenwriter.bridge_enabled"},
+		"presentation": {
+			"transition": "fade",
+			"music": "bridge_theme",
+			"ambience": "quiet_cafe",
+			"notes": "Keep the camera intimate.",
+		},
 		"completion_effects": [
 			{"operation": "add_meter", "character": "emma_rowan", "meter": "trust", "value": 3},
 			{"operation": "complete_activity", "value": "screenwriter_bridge_activity"},
@@ -2575,6 +2583,12 @@ func _test_screenwriter_dialogue_bridge() -> void:
 			"setup": {
 				"speaker": "emma_rowan",
 				"line": "This line uses the Screenwriter interchange contract.",
+				"expression": "warm",
+				"portrait": "default",
+				"background_variant": "rain",
+				"position": "left",
+				"transition": "dissolve",
+				"sfx": "cup_down",
 				"effects": [
 					{"operation": "create_memory", "character": "emma_rowan", "value": "bridge_memory"},
 					{"operation": "add_character_stat", "character": "emma_rowan", "key": "courage", "value": 5},
@@ -2611,7 +2625,7 @@ func _test_screenwriter_dialogue_bridge() -> void:
 					{"id": "fallback", "text": "Fallback", "effects": [{"operation": "set_flag", "key": "screenwriter.wrong_branch", "value": true}], "next": "ending"},
 				],
 			},
-			"ending": {"speaker": "emma_rowan", "line": "The automatic branch resolved."},
+			"ending": {"speaker": "emma_rowan", "line": "The automatic branch resolved.", "position": "right", "music": "bridge_ending"},
 		},
 	}
 	var unknown_condition_conversation: Dictionary = {
@@ -2655,12 +2669,18 @@ func _test_screenwriter_dialogue_bridge() -> void:
 	var trust_before: float = float(state["relationships"]["emma_rowan"]["trust"])
 	var result: Dictionary = dialogue.begin(state, "screenwriter_bridge_fixture")
 	_expect(result.get("ok", false) and result.get("view", {}).get("node_id", "") == "setup", "Screenwriter-format conversation activation and first node load.")
+	var opening_view: Dictionary = result.get("view", {})
+	_expect(str(opening_view.get("expression", "")) == "warm" and str(opening_view.get("background_variant", "")) == "rain" and str(opening_view.get("portrait_position", "")) == "left", "Screenwriter expressions, background variants, and portrait positions reach the VN view.")
+	_expect(str(opening_view.get("transition", "")) == "dissolve" and str(opening_view.get("music_cue", "")) == "bridge_theme" and str(opening_view.get("ambience_cue", "")) == "quiet_cafe" and str(opening_view.get("sfx_cue", "")) == "cup_down", "Node presentation overrides merge with conversation-level audio and transition defaults.")
+	_expect(str(opening_view.get("director_notes", "")) == "Keep the camera intimate.", "Conversation direction notes survive into the runtime view for diagnostics.")
 	state = result.get("state", state)
 	_expect(float(state["player"]["attributes"]["confidence"]) == confidence_before + 2.0, "Screenwriter player-value effects use the simulation attribute range.")
 	_expect(float(state["relationships"]["emma_rowan"]["character_stats"].get("courage", 0)) == 5.0, "Screenwriter custom character stats persist in relationship state.")
 	result = dialogue.advance(state)
 	state = result.get("state", state)
 	_expect(result.get("ok", false) and result.get("view", {}).get("node_id", "") == "ending", "Screenwriter automatic stat branches resolve without showing a blank node.")
+	var ending_view: Dictionary = result.get("view", {})
+	_expect(str(ending_view.get("portrait_position", "")) == "right" and str(ending_view.get("transition", "")) == "fade" and str(ending_view.get("music_cue", "")) == "bridge_ending" and str(ending_view.get("ambience_cue", "")) == "quiet_cafe" and str(ending_view.get("sfx_cue", "")) == "", "Later nodes can override one cue while inheriting the rest of the scene direction.")
 	_expect(not bool(state["player"]["flags"].get("screenwriter.wrong_branch", false)), "Automatic branches choose the first matching authored condition set.")
 	_expect(int(state["relationships"]["emma_rowan"]["unlocked_chapter_level"]) == 2, "Screenwriter chapter-unlock effects synchronize relationship level state.")
 	result = dialogue.advance(state)
