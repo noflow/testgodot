@@ -41,11 +41,11 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The ten completed base-art locations are the Hale Home, Alder Heights Residential
+The eleven completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
-Bayview Café. Together they
-provide 54 unique base-day PNG backgrounds. Each base image is marked ready in the
+Bayview Café, plus Port Alder Marina. Together they provide 57 unique base-day PNG
+backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
 
@@ -186,6 +186,25 @@ Destination-specific briefs:
 | Dining Room | `bayview_cafe/dining_room.png` | Warm bay-facing tables and booths with the Counter on the left and glass doors opening to the Waterfront Patio. |
 | Waterfront Patio | `bayview_cafe/patio.png` | Wet cedar-and-slate terrace overlooking the bay with routes back to the park, onward to the marina, and inside to the Dining Room. |
 
+### Port Alder Marina batch prompt set
+
+This batch completes the three mapped marina destinations. The Bayview Café Patio
+anchored the shoreline, weather, and public approach for the Promenade. The
+Promenade then established the basin and boats for the Dock Gate, and the Dock
+Gate established the exterior view from the Marina Office.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped Port Alder Marina destination in grounded cinematic contemporary-drama realism. Match the supplied reference's late-August Pacific Northwest bay, tied unbranded boats, cedar-and-slate architecture, dark metal safety fixtures, warm practical light, and wet coastal atmosphere. Preserve clear believable routes to connected rooms, open character staging, an uncluttered lower region for dialogue UI, accessibility, and safe dock geometry. No people or reflections of people, character sprites, navigation arrows, interface, readable signs, boat names, registration numbers, screens, letters, numbers, logos, trademarks, captions, or watermark.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Marina Promenade | `port_alder_marina/promenade.png` | Broad wet waterfront walk with café and beach continuations, landscaped seating, marina basin, and a clear gated route to the docks. |
+| Dock Gate | `port_alder_marina/dock_gate.png` | Accessible secured transition to the floating docks with safe railings, tied boats, a promenade return, and the Marina Office on the right. |
+| Marina Office | `port_alder_marina/marina_office.png` | Warm practical operations office with blank workstations, reception counter, consultation table, dock windows, and one return door. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -206,7 +225,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all five room batches were generated with the built-in
+The baseline assets and all six room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the

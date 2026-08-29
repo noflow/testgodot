@@ -54,7 +54,8 @@
         "harborlight_cinema",
         "forge_fitness",
         "westshore_campus",
-        "bayview_cafe"
+        "bayview_cafe",
+        "port_alder_marina"
       ]
     },
     "audio_in_scope": false,
@@ -145,6 +146,17 @@
           {"kind": "background", "id": "bayview_cafe.dining_room", "status": "in_progress", "required_variants": ["day", "sunset"], "reason": "A warm indoor destination for meals, dates, and relationship scenes."},
           {"kind": "background", "id": "bayview_cafe.patio", "status": "in_progress", "required_variants": ["day", "sunset", "rain"], "reason": "A reusable off-campus meeting and date location."}
         ]
+      },
+      {
+        "id": "waterfront_marina",
+        "title": "Port Alder Marina Waterfront",
+        "priority": 5,
+        "goal": "Complete the public waterfront route from Bayview Café through the marina gate and its appointment-only office.",
+        "assets": [
+          {"kind": "background", "id": "port_alder_marina.promenade", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain"], "reason": "Extends the public waterfront walk toward the beach and marina docks."},
+          {"kind": "background", "id": "port_alder_marina.dock_gate", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain"], "reason": "Supports dock access, marina events, and the route to the operations office."},
+          {"kind": "background", "id": "port_alder_marina.marina_office", "status": "in_progress", "required_variants": ["day", "sunset"], "reason": "Supports employee, appointment, and waterfront-event conversations."}
+        ]
       }
     ]
   },
@@ -203,6 +215,9 @@
     {"id": "westshore_campus.student_lounge", "location": "westshore_campus", "room": "student_lounge", "path": "res://assets/art/backgrounds/westshore_campus/student_lounge.png", "variants": {"day": "res://assets/art/backgrounds/westshore_campus/student_lounge.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "bayview_cafe.counter", "location": "bayview_cafe", "room": "counter", "path": "res://assets/art/backgrounds/bayview_cafe/counter.png", "variants": {"day": "res://assets/art/backgrounds/bayview_cafe/counter.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "bayview_cafe.dining_room", "location": "bayview_cafe", "room": "dining_room", "path": "res://assets/art/backgrounds/bayview_cafe/dining_room.png", "variants": {"day": "res://assets/art/backgrounds/bayview_cafe/dining_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "bayview_cafe.patio", "location": "bayview_cafe", "room": "patio", "path": "res://assets/art/backgrounds/bayview_cafe/patio.png", "variants": {"day": "res://assets/art/backgrounds/bayview_cafe/patio.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "bayview_cafe.patio", "location": "bayview_cafe", "room": "patio", "path": "res://assets/art/backgrounds/bayview_cafe/patio.png", "variants": {"day": "res://assets/art/backgrounds/bayview_cafe/patio.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "port_alder_marina.promenade", "location": "port_alder_marina", "room": "promenade", "path": "res://assets/art/backgrounds/port_alder_marina/promenade.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_marina/promenade.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "port_alder_marina.dock_gate", "location": "port_alder_marina", "room": "dock_gate", "path": "res://assets/art/backgrounds/port_alder_marina/dock_gate.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_marina/dock_gate.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "port_alder_marina.marina_office", "location": "port_alder_marina", "room": "marina_office", "path": "res://assets/art/backgrounds/port_alder_marina/marina_office.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_marina/marina_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }
