@@ -27,8 +27,10 @@ player-controlled sandbox quest tracking, complete persistent settings, and the
 accessibility baseline now work.
 An automated connected-run probe also completes character creation, Elena's college
 branch, home and phone interactions, bus travel, Westshore enrollment, Emma's
-calendar-gated waterfront story, and an isolated save/load resume at the saved city
-room.
+calendar-gated waterfront story, Marcus's independently scheduled cinema story and
+follow-up quest, and an isolated save/load resume at the saved city room. Character
+quest branches support authored flags, state comparisons, meter effects, topic and
+activity unlocks, calendar hooks, status/tutorial flags, and chained quests.
 
 ## Purpose
 

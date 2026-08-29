@@ -115,9 +115,10 @@ or controller remapping. VN lines can also be replayed, and accessibility choice
 apply across character creation, dialogue, home, city, and phone interfaces.
 The automated connected-run probe now drives the actual character-creation controls,
 Elena's college opening branch, a home hygiene action, live Quest and Calendar apps,
-bus travel, Westshore enrollment, Emma's scheduled waterfront story, and an isolated
-save/load resume at Alder Bay Park. Calendar-authored character scenes require the
-correct current appointment, and phone-created hangouts advance their owning quests.
+bus travel, Westshore enrollment, Emma's scheduled waterfront story, Marcus's cinema
+story and follow-up quest, and an isolated save/load resume at Harborlight Cinema.
+Calendar-authored character scenes require the correct current
+appointment, and phone-created hangouts or movie plans advance their owning quests.
 
 ## Planned technology
 

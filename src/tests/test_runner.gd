@@ -1500,7 +1500,7 @@ func _test_content_registry() -> void:
 		if event_type_value is Dictionary and str(event_type_value.get("id", "")) == "movie":
 			movie_calendar_type = event_type_value
 			break
-	_expect(str(movie_calendar_type.get("default_location", "")) == "harborlight_cinema.auditorium", "Movie plans point to the cinema's real authored auditorium.")
+	_expect(str(movie_calendar_type.get("default_location", "")) == "harborlight_cinema.lobby", "Movie plans begin in the cinema lobby so participants can meet before entering an auditorium.")
 	_expect(_registry.get_all("housing_listings").size() == 7, "Registry indexes seven housing choices from a student room through Crown Point's penthouse.")
 	var district_hub_ids: Array[String] = []
 	for location_value: Variant in _registry.get_all("locations"):
@@ -2413,6 +2413,9 @@ func _test_sandbox_quest_progression_and_tracking() -> void:
 	completion_state = result.get("state", completion_state)
 	result = quests.accept_quest(completion_state, "before_everything_changes", "test.character_quest_accept")
 	completion_state = result.get("state", completion_state)
+	completion_state["player"]["flags"]["emma.walk_friendship_focus"] = true
+	var emma_friendship_before: float = float(completion_state["relationships"]["emma_rowan"]["friendship"])
+	var emma_trust_before: float = float(completion_state["relationships"]["emma_rowan"]["trust"])
 	result = quests.complete_quest(completion_state, "before_everything_changes", "test.character_quest_complete")
 	completion_state = result.get("state", completion_state)
 	var emma_memory_found: bool = false
@@ -2422,6 +2425,20 @@ func _test_sandbox_quest_progression_and_tracking() -> void:
 			break
 	_expect(result.get("ok", false) and emma_memory_found, "Character-quest completion creates its authored relationship memory.")
 	_expect(int(completion_state["relationships"]["emma_rowan"].get("unlocked_chapter_level", 1)) == 2, "Character-quest completion unlocks its authored relationship chapter.")
+	_expect(float(completion_state["relationships"]["emma_rowan"]["friendship"]) == emma_friendship_before + 6.0 and float(completion_state["relationships"]["emma_rowan"]["trust"]) == emma_trust_before + 3.0, "Flag-selected character quest branches apply every authored relationship effect.")
+
+	var marcus_state: Dictionary = factory.create_new_game({}, {"random_seed": 236})
+	marcus_state["player"]["flags"]["sandbox.active"] = true
+	result = quests.sync_automatic_activations(marcus_state, "test.marcus_discovery")
+	marcus_state = result.get("state", marcus_state)
+	result = quests.accept_quest(marcus_state, "one_last_summer_movie", "test.marcus_accept")
+	marcus_state = result.get("state", marcus_state)
+	marcus_state["player"]["flags"]["marcus.showed_rough_cut"] = true
+	var marcus_trust_before: float = float(marcus_state["relationships"]["marcus_lee"]["trust"])
+	result = quests.complete_quest(marcus_state, "one_last_summer_movie", "test.marcus_complete")
+	marcus_state = result.get("state", marcus_state)
+	_expect(result.get("ok", false) and "marcus_student_film" in marcus_state["quest_state"]["active"], "A character quest branch can start its authored follow-up quest.")
+	_expect(float(marcus_state["relationships"]["marcus_lee"]["trust"]) == marcus_trust_before + 4.0, "A follow-up branch also applies its authored meter effect.")
 
 	var repeat_state: Dictionary = factory.create_new_game({}, {"random_seed": 234})
 	repeat_state["player"]["flags"]["fitness.gym_access"] = true

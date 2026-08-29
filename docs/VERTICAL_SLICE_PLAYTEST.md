@@ -25,16 +25,25 @@ foundation and focused live-scene probes. The route verifies:
    rendered over the location's visual-novel background.
 10. Rejection of Emma's scene when its required appointment is absent.
 11. Completion of the appointment, quest, relationship effects, and character memory.
-12. An isolated checksum-backed save/load round trip that preserves Emma's meters and
-    memory, then resumes the saved scene at Alder Bay Park. Probe saves use their own
-    temporary directory and are removed afterward.
+12. Acceptance of Marcus's independent cinema story, including a second authored text
+    thread and a movie appointment created in the phone.
+13. Rejection of Marcus's Wednesday film-club conflict and acceptance of his available
+    Tuesday late-evening window.
+14. Travel to Harborlight Cinema, calendar placement and portrait staging in the lobby,
+    and rejection of the VN scene when its appointment is absent.
+15. Completion of Marcus's scene, his flag-selected trust branch, and the automatic
+    start and text delivery for his next quest, The Missing Scene.
+16. An isolated checksum-backed save/load round trip that preserves both characters'
+    quest, message, meter, and memory state, then resumes at Harborlight Cinema. Probe
+    saves use their own temporary directory and are removed afterward.
 
 ## Manual verification
 
 Before packaging a playable build, repeat the same route with mouse and keyboard,
 then repeat character creation, dialogue choices, phone navigation, and interactions
 with a controller. Confirm visual focus, readable text, correct button states,
-transition timing, audio feedback, and that Continue resumes at the waterfront.
+transition timing, audio feedback, and that Continue resumes at Harborlight Cinema
+with The Missing Scene still active and Marcus's rough-cut message in the thread.
 
 The connected probe is a regression gate, not a replacement for the remaining
 priority-zero and priority-one acceptance cases in `tests/acceptance/vertical_slice.json`.

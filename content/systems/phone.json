@@ -21,7 +21,7 @@
   "calendar_event_types": [
     {"id": "hangout", "name": "Hangout", "default_location": "alder_bay_park.waterfront_path"},
     {"id": "date", "name": "Date", "default_location": "alder_bay_park.waterfront_path"},
-    {"id": "movie", "name": "Movie", "default_location": "harborlight_cinema.auditorium"},
+    {"id": "movie", "name": "Movie", "default_location": "harborlight_cinema.lobby"},
     {"id": "personal", "name": "Personal Plan", "default_location": "hale_home.player_bedroom"}
   ],
   "relationship_levels": [

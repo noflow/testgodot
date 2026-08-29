@@ -39,13 +39,16 @@ func _run_probe() -> void:
 	if not await _schedule_and_complete_emma_walk():
 		_finish_failure()
 		return
+	if not await _schedule_and_complete_marcus_movie():
+		_finish_failure()
+		return
 	if not await _save_reload_and_resume():
 		_finish_failure()
 		return
 
 	_cleanup_probe_save()
 	GameState.clear_state()
-	print("PASS: Connected vertical slice completed creation, opening, home, phone, bus travel, enrollment, an NPC story, and save/reload.")
+	print("PASS: Connected vertical slice completed creation, opening, home, phone, travel, enrollment, two independent NPC stories, and save/reload.")
 	get_tree().quit(0)
 
 
@@ -428,6 +431,169 @@ func _schedule_and_complete_emma_walk() -> bool:
 	return _check(_calendar_status(str(emma_event.get("id", ""))) == "completed", "Emma's completed scene did not complete its calendar appointment")
 
 
+func _schedule_and_complete_marcus_movie() -> bool:
+	QuestService.sync_automatic_activations("probe.marcus_movie")
+	QuestService.sync_availability("probe.marcus_movie")
+	if not _check("one_last_summer_movie" in GameState.current_state["quest_state"].get("available", []), "Marcus's cinema story offer did not become available"):
+		return false
+	var accept_result: Dictionary = QuestService.accept_quest("one_last_summer_movie")
+	if not _check(accept_result.get("ok", false), "Marcus's cinema story offer could not be accepted"):
+		return false
+	var message_result: Dictionary = PhoneService.sync_messages()
+	if not _check(message_result.get("ok", false), "Marcus's movie invitation did not synchronize"):
+		return false
+
+	var phone_scene: PackedScene = load("res://scenes/phone/smartphone.tscn")
+	var phone: Control = phone_scene.instantiate()
+	get_tree().root.add_child(phone)
+	await get_tree().process_frame
+	phone.open_phone("messages")
+	phone.call("_open_message_thread", "marcus_lee")
+	phone.call("_reply_to_message", "marcus_movie_invitation", 0)
+	await get_tree().process_frame
+	var scheduler: Control = phone.get_node("SchedulerPanel")
+	if not _check(scheduler.visible, "replying to Marcus did not open the calendar scheduler"):
+		phone.free()
+		return false
+	var contact_option: OptionButton = phone.get_node("SchedulerPanel/Margin/Layout/ContactOption")
+	var type_option: OptionButton = phone.get_node("SchedulerPanel/Margin/Layout/TypeOption")
+	var day_option: OptionButton = phone.get_node("SchedulerPanel/Margin/Layout/DayOption")
+	var block_option: OptionButton = phone.get_node("SchedulerPanel/Margin/Layout/BlockOption")
+	if not _check(str(contact_option.get_selected_metadata()) == "marcus_lee", "scheduler did not retain Marcus as the participant"):
+		phone.free()
+		return false
+	_select_dictionary_metadata(type_option, "id", "movie")
+	var wednesday_index: int = _option_index_for_metadata_key(day_option, "weekday", "wednesday")
+	if not _check(wednesday_index >= 0, "scheduler did not offer Wednesday for Marcus"):
+		phone.free()
+		return false
+	day_option.select(wednesday_index)
+	day_option.emit_signal("item_selected", wednesday_index)
+	_select_option_metadata(block_option, "evening")
+	block_option.emit_signal("item_selected", block_option.selected)
+	await get_tree().process_frame
+	var confirm_button: Button = phone.get_node("SchedulerPanel/Margin/Layout/Buttons/ConfirmButton")
+	var scheduler_status: Label = phone.get_node("SchedulerPanel/Margin/Layout/SchedulerStatus")
+	if not _check(confirm_button.disabled and "Marcus Lee is unavailable" in scheduler_status.text, "scheduler did not block Marcus's Wednesday film-club conflict"):
+		phone.free()
+		return false
+	day_option.select(0)
+	day_option.emit_signal("item_selected", 0)
+	_select_option_metadata(block_option, "late_evening")
+	block_option.emit_signal("item_selected", block_option.selected)
+	await get_tree().process_frame
+	if not _check(not confirm_button.disabled and scheduler_status.text.begins_with("Available"), "scheduler did not enable Marcus's free late evening"):
+		phone.free()
+		return false
+	phone.call("_on_confirm_schedule_pressed")
+	await get_tree().process_frame
+	var marcus_event: Dictionary = _scheduled_event_for("marcus_lee")
+	if not _check(not marcus_event.is_empty() and str(marcus_event.get("location", "")) == "harborlight_cinema.lobby", "phone scheduler did not create Marcus's cinema-lobby appointment"):
+		phone.free()
+		return false
+	if not _check(bool(GameState.current_state["quest_state"]["objectives"]["one_last_summer_movie"].get("schedule_movie", false)), "calendar scheduling did not advance Marcus's quest"):
+		phone.free()
+		return false
+	phone.close_phone()
+	phone.free()
+
+	var route_plan: Dictionary = TravelService.plan_routes("harborlight_cinema")
+	var route_mode: String = _first_available_route_mode(route_plan, ["walking", "bus", "taxi"])
+	if not _check(route_plan.get("ok", false) and not route_mode.is_empty(), "no route connected Alder Bay Park to Harborlight Cinema"):
+		return false
+	var travel_result: Dictionary = TravelService.travel("harborlight_cinema", route_mode, "probe.marcus_movie")
+	if not _check(travel_result.get("ok", false), "travel to Marcus's cinema meeting failed"):
+		return false
+	var guard: int = 0
+	while str(GameState.current_state["clock"]["block"]) != "late_evening" and guard < 7:
+		var advance_result: Dictionary = TimeService.advance_blocks(1, "probe.wait_for_marcus")
+		if not _check(advance_result.get("ok", false), "time could not advance to Marcus's appointment"):
+			return false
+		guard += 1
+	if not _check(str(GameState.current_state["clock"]["block"]) == "late_evening", "clock did not reach Marcus's scheduled block"):
+		return false
+	if not _check(str(GameState.current_state["world_state"]["current_location"]) == "harborlight_cinema.lobby", "player was not in Harborlight Cinema's lobby"):
+		return false
+
+	var unscheduled_state: Dictionary = GameState.current_state.duplicate(true)
+	for event_value: Variant in unscheduled_state["calendar_state"]["events"]:
+		if event_value is Dictionary and str(event_value.get("id", "")) == str(marcus_event.get("id", "")):
+			event_value["status"] = "cancelled"
+	var original_state: Dictionary = GameState.current_state
+	GameState.replace_state(unscheduled_state)
+	var blocked_result: Dictionary = DialogueService.begin("marcus_after_screening")
+	if not _check(not blocked_result.get("ok", false), "Marcus's scheduled scene incorrectly began without a current calendar plan"):
+		return false
+	GameState.replace_state(original_state)
+	var presence_engine: RefCounted = NpcPresenceEngineScript.new(ContentRegistry)
+	var marcus_presence: Dictionary = presence_engine.resolve_character(GameState.current_state, "marcus_lee")
+	if not _check(str(marcus_presence.get("source", "")) == "calendar" and str(marcus_presence.get("location", "")) == "harborlight_cinema.lobby" and bool(marcus_presence.get("available_to_talk", false)), "Marcus's appointment did not override his ordinary schedule in the cinema lobby"):
+		return false
+	var city_scene: PackedScene = load(AppConstants.CITY_LOCATION_SCENE)
+	var city: Control = city_scene.instantiate()
+	get_tree().root.add_child(city)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var background_image: TextureRect = city.get_node("BackgroundImage")
+	var portrait_stage: HBoxContainer = city.get_node("%PortraitStage")
+	if not _check(background_image.visible and background_image.texture != null, "Marcus's cinema meeting did not render a VN background"):
+		city.free()
+		return false
+	var marcus_portrait_found: bool = false
+	for portrait_card: Node in portrait_stage.get_children():
+		if str(portrait_card.get_meta("character_id", "")) == "marcus_lee":
+			var portrait_image: TextureRect = portrait_card.get_node_or_null("PortraitImage")
+			marcus_portrait_found = portrait_image != null and portrait_image.visible and portrait_image.texture != null
+			break
+	if not _check(marcus_portrait_found, "Marcus's scheduled portrait did not appear over the cinema background"):
+		city.free()
+		return false
+	city.free()
+
+	var trust_before: float = float(GameState.current_state["relationships"]["marcus_lee"]["trust"])
+	var result: Dictionary = DialogueService.begin("marcus_after_screening")
+	if not _view_is(result, "lobby_intro", "Marcus's scheduled cinema scene did not begin"):
+		return false
+	result = DialogueService.advance()
+	if not _view_is(result, "marcus_welcome", "Marcus's scene did not reach his welcome"):
+		return false
+	result = DialogueService.advance()
+	if not _view_is(result, "movie_response", "Marcus's scene did not reach the movie response"):
+		return false
+	result = DialogueService.choose("joke")
+	if not _view_is(result, "after_movie", "Marcus's playful response did not reach the screening aftermath"):
+		return false
+	result = DialogueService.advance()
+	if not _view_is(result, "marcus_confession", "Marcus did not confide in the player after the movie"):
+		return false
+	result = DialogueService.advance()
+	if not _view_is(result, "film_response", "Marcus's scene did not reach the rough-cut choice"):
+		return false
+	result = DialogueService.choose("ask_to_see")
+	if not _view_is(result, "marcus_agrees", "asking to see the film did not reach Marcus's agreement"):
+		return false
+	result = DialogueService.advance()
+	if not _view_is(result, "cinema_end", "Marcus's scene did not reach its ending"):
+		return false
+	result = DialogueService.advance()
+	if not _check(result.get("ok", false) and result.get("ended", false), "Marcus's cinema scene did not finish cleanly"):
+		return false
+	if not _check("one_last_summer_movie" in GameState.current_state["quest_state"]["completed"], "Marcus's cinema story quest did not complete"):
+		return false
+	if not _check(float(GameState.current_state["relationships"]["marcus_lee"]["trust"]) == trust_before + 7.0, "Marcus's choice and quest-branch trust effects did not both apply"):
+		return false
+	if not _check(_relationship_has_memory(GameState.current_state, "marcus_lee", "shared_last_summer_screening"), "Marcus's completed story did not create its authored relationship memory"):
+		return false
+	if not _check(_calendar_status(str(marcus_event.get("id", ""))) == "completed", "Marcus's completed scene did not complete its calendar appointment"):
+		return false
+	message_result = PhoneService.sync_messages()
+	if not _check(message_result.get("ok", false), "Marcus's rough-cut follow-up message did not synchronize"):
+		return false
+	if not _check("marcus_student_film" in GameState.current_state["quest_state"]["active"], "encouraging Marcus did not start The Missing Scene follow-up quest"):
+		return false
+	return _check(_thread_has_message(GameState.current_state, "marcus_lee", "marcus_rough_cut_link"), "The Missing Scene did not deliver Marcus's rough-cut message")
+
+
 func _save_reload_and_resume() -> bool:
 	var save_engine: RefCounted = SaveEngineScript.new(PROBE_SAVE_ROOT)
 	var expected_state: Dictionary = GameState.current_state.duplicate(true)
@@ -452,10 +618,19 @@ func _save_reload_and_resume() -> bool:
 		return false
 	if not _check(_relationship_has_memory(loaded, "emma_rowan", "walked_alder_bay_before_college"), "save/load lost Emma's waterfront memory"):
 		return false
+	if not _check("one_last_summer_movie" in loaded["quest_state"]["completed"], "save/load lost Marcus's completed cinema quest"):
+		return false
+	if not _check("marcus_student_film" in loaded["quest_state"]["active"] and _thread_has_message(loaded, "marcus_lee", "marcus_rough_cut_link"), "save/load lost Marcus's active follow-up and rough-cut message"):
+		return false
+	if not _check(_relationship_has_memory(loaded, "marcus_lee", "shared_last_summer_screening"), "save/load lost Marcus's cinema memory"):
+		return false
 	for meter: String in ["friendship", "trust"]:
 		if not _check(float(loaded["relationships"]["emma_rowan"].get(meter, 0.0)) == float(expected_state["relationships"]["emma_rowan"].get(meter, 0.0)), "save/load changed Emma's %s meter" % meter):
 			return false
-	if not _check(str(loaded["world_state"]["current_location"]) == "alder_bay_park.waterfront_path", "save/load lost the current city room"):
+	for meter: String in ["comfort", "trust"]:
+		if not _check(float(loaded["relationships"]["marcus_lee"].get(meter, 0.0)) == float(expected_state["relationships"]["marcus_lee"].get(meter, 0.0)), "save/load changed Marcus's %s meter" % meter):
+			return false
+	if not _check(str(loaded["world_state"]["current_location"]) == "harborlight_cinema.lobby", "save/load lost the current cinema room"):
 		return false
 	if not _check(SaveService.resume_scene_path() == AppConstants.CITY_LOCATION_SCENE, "loaded city save selected the wrong resume scene"):
 		return false
@@ -466,7 +641,7 @@ func _save_reload_and_resume() -> bool:
 	await get_tree().process_frame
 	await get_tree().process_frame
 	var location_label: Label = resumed_city.get_node("Interface/Header/Margin/Layout/Top/LocationLabel")
-	var resumed_correctly: bool = _check(location_label.text == "Alder Bay Park", "loaded save did not render its saved destination")
+	var resumed_correctly: bool = _check(location_label.text == "Harborlight Cinema", "loaded save did not render its saved cinema destination")
 	resumed_city.free()
 	return resumed_correctly
 
@@ -499,6 +674,16 @@ func _relationship_has_memory(state: Dictionary, character_id: String, memory_id
 		return false
 	for memory_value: Variant in relationship.get("memories", []):
 		if memory_value is Dictionary and str(memory_value.get("id", "")) == memory_id:
+			return true
+	return false
+
+
+func _thread_has_message(state: Dictionary, character_id: String, message_id: String) -> bool:
+	var messages: Variant = state.get("player", {}).get("phone", {}).get("message_threads", {}).get(character_id, {}).get("messages", [])
+	if not messages is Array:
+		return false
+	for message_value: Variant in messages:
+		if message_value is Dictionary and str(message_value.get("id", "")) == message_id:
 			return true
 	return false
 

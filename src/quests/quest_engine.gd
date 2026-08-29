@@ -324,6 +324,21 @@ func apply_matching_branch(state: Dictionary, quest_id: String, source: String) 
 		working = result["state"]
 	for key: Variant in branch.get("set_rules", {}):
 		_set_state_value(working, str(key), branch["set_rules"][key])
+	for effect_value: Variant in branch.get("effects", []):
+		if not effect_value is Dictionary:
+			continue
+		var effect: Dictionary = effect_value
+		var operation: String = str(effect.get("operation", ""))
+		if operation == "start_quest":
+			var next_quest_id: String = str(effect.get("quest", effect.get("value", "")))
+			if next_quest_id.is_empty():
+				return _failure("Quest branch %s has a start_quest effect without a quest id." % str(branch.get("id", "")))
+			var start_result: Dictionary = start_quest(working, next_quest_id, "%s.branch.%s" % [source, str(branch.get("id", ""))])
+			if not start_result.get("ok", false):
+				return start_result
+			working = start_result["state"]
+		else:
+			_apply_completion_effect(working, effect)
 	return _success(working)
 
 
@@ -425,10 +440,40 @@ func _matching_branch(state: Dictionary, quest: Dictionary) -> Dictionary:
 		if not branch is Dictionary:
 			continue
 		var condition: Dictionary = branch.get("condition", {})
-		var comparison: Array = condition.get("value_equals", [])
-		if comparison.size() == 2 and _get_state_value(state, str(comparison[0])) == comparison[1]:
+		if _branch_condition_matches(state, condition):
 			return branch
 	return {}
+
+
+func _branch_condition_matches(state: Dictionary, condition: Dictionary) -> bool:
+	if condition.has("value_equals"):
+		var comparison: Variant = condition["value_equals"]
+		if not comparison is Array or comparison.size() != 2 or _get_state_value(state, str(comparison[0])) != comparison[1]:
+			return false
+	if condition.has("value_below"):
+		var comparison: Variant = condition["value_below"]
+		if not comparison is Array or comparison.size() != 2:
+			return false
+		var current_value: Variant = _get_state_value(state, str(comparison[0]))
+		if not (current_value is int or current_value is float) or float(current_value) >= float(comparison[1]):
+			return false
+	if condition.has("flag") and not _branch_flag_is_set(state, str(condition["flag"])):
+		return false
+	if condition.has("flag_not") and _branch_flag_is_set(state, str(condition["flag_not"])):
+		return false
+	return not condition.is_empty()
+
+
+func _branch_flag_is_set(state: Dictionary, key: String) -> bool:
+	var flags: Dictionary = state.get("player", {}).get("flags", {})
+	var value: Variant = flags.get(key) if flags.has(key) else _get_state_value(state, key)
+	if value is bool:
+		return value
+	if value is int or value is float:
+		return float(value) != 0.0
+	if value is String:
+		return not str(value).is_empty()
+	return value != null
 
 
 func _state_activation_ready(state: Dictionary, quest: Dictionary) -> bool:
@@ -753,6 +798,23 @@ func _apply_completion_effect(state: Dictionary, effect: Dictionary) -> void:
 					})
 		"set_value":
 			_set_state_value(state, str(effect.get("key", "")), effect.get("value"))
+		"unlock_topic":
+			var character_id: String = str(effect.get("character", ""))
+			var topic_id: String = str(effect.get("value", ""))
+			if state["relationships"].has(character_id) and not topic_id.is_empty():
+				var relationship: Dictionary = state["relationships"][character_id]
+				if not relationship.get("unlocked_topics") is Array:
+					relationship["unlocked_topics"] = []
+				if topic_id not in relationship["unlocked_topics"]:
+					relationship["unlocked_topics"].append(topic_id)
+		"add_status":
+			var status_id: String = str(effect.get("value", ""))
+			if not status_id.is_empty():
+				state["player"]["flags"]["status.%s" % status_id] = true
+		"show_tutorial":
+			var tutorial_id: String = str(effect.get("value", ""))
+			if not tutorial_id.is_empty():
+				state["player"]["flags"]["tutorial.shown.%s" % tutorial_id] = true
 		"schedule_event":
 			var event_id: String = str(effect.get("value", ""))
 			if not event_id.is_empty():

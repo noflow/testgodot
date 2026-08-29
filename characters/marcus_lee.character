@@ -53,6 +53,22 @@
       ],
       "completion_effects": [{"operation": "create_memory", "character": "marcus_lee", "value": "shared_last_summer_screening"}, {"operation": "unlock_relationship_chapter", "character": "marcus_lee", "level": 2}],
       "failure": {"mode": "relationship_consequence", "on_no_show": [{"operation": "add_meter", "character": "marcus_lee", "meter": "trust", "value": -7}, {"operation": "add_meter", "character": "marcus_lee", "meter": "resentment", "value": 4}]}
+    },
+    {
+      "id": "marcus_student_film",
+      "category": "character_story",
+      "title": "The Missing Scene",
+      "summary": "Watch Marcus's rough cut and tell him what the unfinished film needs.",
+      "discovery": {"policy": "auto_start", "source": "prior_quest_branch"},
+      "requirements": [{"type": "world_state", "path": "player.flags.marcus.showed_rough_cut", "equals": true, "visibility": "hidden", "description": "Marcus shares the rough cut only after trusting the player with it."}],
+      "activation": {"event": "quest_completed", "quest": "one_last_summer_movie"},
+      "availability": {"phone_app": "messages"},
+      "objectives": [
+        {"id": "review_rough_cut", "text": "Reply after reviewing Marcus's rough cut.", "completion": {"event": "text_replied", "thread": "marcus_rough_cut_link"}}
+      ],
+      "branches": [],
+      "completion_effects": [{"operation": "create_memory", "character": "marcus_lee", "value": "reviewed_marcus_rough_cut"}, {"operation": "unlock_relationship_chapter", "character": "marcus_lee", "level": 3}],
+      "failure": {"mode": "cannot_fail"}
     }
   ],
   "conversations": [
@@ -86,7 +102,8 @@
   ],
   "text_messages": [
     {"id": "marcus_opening_checkin", "trigger": {"sandbox_activated": true}, "sender": "marcus_lee", "text": "Congratulations on entering the open-world portion of adulthood. Reviews are mixed.", "quick_replies": [{"text": "Any beginner tips?", "tone": ["playful"], "effects": [{"operation": "add_meter", "character": "marcus_lee", "meter": "comfort", "value": 1}]}, {"text": "I picked a direction.", "tone": ["confident"], "effects": [{"operation": "add_meter", "character": "marcus_lee", "meter": "respect", "value": 1}]}, {"text": "One star. Would not recommend.", "tone": ["playful"], "effects": [{"operation": "add_meter", "character": "marcus_lee", "meter": "friendship", "value": 1}]}]},
-    {"id": "marcus_movie_invitation", "trigger": {"quest_started": "one_last_summer_movie"}, "sender": "marcus_lee", "text": "One last bad summer movie before college ruins our schedules? I can sneak you into the late show Tue/Wed/Thu.", "quick_replies": [{"text": "Pick a night.", "tone": ["playful"], "effects": [{"operation": "open_calendar_scheduler", "participant": "marcus_lee", "valid_quest": "one_last_summer_movie"}]}, {"text": "Only if this counts as a date.", "tone": ["flirty"], "effects": [{"operation": "add_meter", "character": "marcus_lee", "meter": "attraction", "value": 1}, {"operation": "open_calendar_scheduler", "participant": "marcus_lee", "valid_quest": "one_last_summer_movie"}]}, {"text": "Can't this week.", "tone": ["honest"], "effects": [{"operation": "set_quest_state", "quest": "one_last_summer_movie", "value": "deferred"}]}]}
+    {"id": "marcus_movie_invitation", "trigger": {"quest_started": "one_last_summer_movie"}, "sender": "marcus_lee", "text": "One last bad summer movie before college ruins our schedules? I can sneak you into the late show Tue/Wed/Thu.", "quick_replies": [{"text": "Pick a night.", "tone": ["playful"], "effects": [{"operation": "open_calendar_scheduler", "participant": "marcus_lee", "valid_quest": "one_last_summer_movie"}]}, {"text": "Only if this counts as a date.", "tone": ["flirty"], "effects": [{"operation": "add_meter", "character": "marcus_lee", "meter": "attraction", "value": 1}, {"operation": "open_calendar_scheduler", "participant": "marcus_lee", "valid_quest": "one_last_summer_movie"}]}, {"text": "Can't this week.", "tone": ["honest"], "effects": [{"operation": "set_quest_state", "quest": "one_last_summer_movie", "value": "deferred"}]}]},
+    {"id": "marcus_rough_cut_link", "trigger": {"quest_started": "marcus_student_film"}, "sender": "marcus_lee", "text": "I made a terrible decision and kept my promise. The rough cut link is here. Tell me what works, what doesn't, and whether the ending needs the missing scene.", "quick_replies": [{"text": "The heart of it works. The ending needs one honest scene.", "tone": ["honest", "supportive"], "effects": [{"operation": "add_meter", "character": "marcus_lee", "meter": "trust", "value": 2}]}, {"text": "Good news: I only have seventeen pages of notes.", "tone": ["playful"], "effects": [{"operation": "add_meter", "character": "marcus_lee", "meter": "comfort", "value": 1}]}, {"text": "Finish this version. You can make the next one perfect.", "tone": ["encouraging"], "effects": [{"operation": "add_meter", "character": "marcus_lee", "meter": "respect", "value": 1}]}]}
   ],
   "outcomes": ["lifelong_creative_partner", "romantic_partnership", "successful_filmmaker_friend", "friendship_lost_to_unreliability"],
   "asset_refs": {"portraits": [{"id": "default", "path": "res://assets/art/characters/_fallback_portrait.svg", "accent": "#8eabc4", "anchor": "center"}], "sprites": [], "audio": []},

@@ -66,6 +66,11 @@ SCREENWRITER_PHONE_TRIGGERS = {
 SCREENWRITER_PHONE_CONDITIONS = {
     "meter_at_least", "meter_at_most", "flag", "flag_not", "value_equals",
 }
+QUEST_BRANCH_CONDITIONS = {"value_equals", "value_below", "flag", "flag_not"}
+QUEST_BRANCH_EFFECTS = {
+    "add_meter", "set_value", "unlock_activity", "start_quest",
+    "schedule_event", "unlock_topic", "add_status", "show_tutorial",
+}
 
 
 def fail(errors: list[str], path: Path, message: str) -> None:
@@ -141,6 +146,43 @@ def validate_phone_effects(
         operation = effect.get("operation") if isinstance(effect, dict) else None
         if operation not in SCREENWRITER_PHONE_EFFECTS:
             fail(errors, path, f"phone message {message_id} {owner} uses unsupported effect: {operation}")
+
+
+def validate_character_quest_branches(paths: list[Path], all_quest_ids: set[str]) -> list[str]:
+    errors: list[str] = []
+    for path in paths:
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        for quest in data.get("quests", []):
+            quest_id = quest.get("id", "")
+            for branch in quest.get("branches", []):
+                branch_id = branch.get("id", "") if isinstance(branch, dict) else ""
+                condition = branch.get("condition", {}) if isinstance(branch, dict) else {}
+                if not isinstance(condition, dict) or not condition:
+                    fail(errors, path, f"quest {quest_id} branch {branch_id} requires a condition")
+                    continue
+                unknown_conditions = sorted(set(condition) - QUEST_BRANCH_CONDITIONS)
+                if unknown_conditions:
+                    fail(errors, path, f"quest {quest_id} branch {branch_id} uses unsupported condition keys: {', '.join(unknown_conditions)}")
+                for key in ("value_equals", "value_below"):
+                    if key in condition and (not isinstance(condition[key], list) or len(condition[key]) != 2):
+                        fail(errors, path, f"quest {quest_id} branch {branch_id} has malformed {key}")
+                effects = branch.get("effects", [])
+                if not isinstance(effects, list):
+                    fail(errors, path, f"quest {quest_id} branch {branch_id} effects must be a list")
+                    continue
+                for effect in effects:
+                    operation = effect.get("operation") if isinstance(effect, dict) else None
+                    if operation not in QUEST_BRANCH_EFFECTS:
+                        fail(errors, path, f"quest {quest_id} branch {branch_id} uses unsupported effect: {operation}")
+                        continue
+                    if operation == "start_quest":
+                        target = effect.get("quest", effect.get("value", ""))
+                        if target not in all_quest_ids:
+                            fail(errors, path, f"quest {quest_id} branch {branch_id} starts unknown quest {target}")
+    return errors
 
 
 def validate_file(path: Path, known_ids: set[str]) -> list[str]:
@@ -962,6 +1004,14 @@ def main() -> int:
                 character_home_locations[character_data["id"]] = home_location
         except (OSError, json.JSONDecodeError):
             pass
+    global_quest_ids: set[str] = set()
+    for content_path in GLOBAL_CONTENT_DIR.rglob("*.json"):
+        try:
+            content_data = json.loads(content_path.read_text(encoding="utf-8"))
+            global_quest_ids.update(quest.get("id") for quest in content_data.get("quests", []) if quest.get("id"))
+        except (OSError, json.JSONDecodeError):
+            pass
+    errors.extend(validate_character_quest_branches(paths, character_quest_ids | global_quest_ids))
     errors.extend(validate_phone_registry(paths))
     errors.extend(
         validate_global_content(
