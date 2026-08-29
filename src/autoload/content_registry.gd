@@ -10,7 +10,7 @@ const INDEXED_COLLECTIONS: PackedStringArray = [
 	"locations", "districts", "quests", "conversations", "items",
 	"jobs", "courses", "programs", "activities", "actions", "city_interactions",
 	"phone_apps", "stores", "operations",
-	"date_activities", "housing_listings", "vn_backgrounds",
+	"date_activities", "social_activities", "housing_listings", "vn_backgrounds",
 ]
 
 var _documents: Dictionary = {}

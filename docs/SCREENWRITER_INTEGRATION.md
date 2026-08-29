@@ -59,6 +59,45 @@ Authored defaults belong in `.character` files. Mutable values belong in saves:
 - activity counter keys are mirrored into player flags for authored conditions;
 - the simulation engine still clamps player attributes and needs to their game ranges.
 
-Phone-message delivery and the full activity/milestone picker are later bridge phases.
-Until those phases land, character sheets may safely contain the authored data, but
-the game will not yet expose every Screenwriter phone or activity workflow.
+## Phone contract
+
+The Messages app supports Screenwriter's incoming and player-authored outgoing
+directions. An incoming message may use `introduces_contact` to create its contact and
+thread at delivery time. Outgoing messages appear as **Send** actions only while their
+triggers and conditions pass, and one-shot messages cannot be sent twice.
+
+Message triggers include sandbox activation, quests and objectives, calendar timing,
+weekdays, activity blocks, flags, relationship meters, sent messages, any reply to a
+message, and a specific stable reply ID. Message and reply conditions fail closed.
+Sending or replying consumes five in-game minutes and then synchronizes immediate
+follow-up messages.
+
+Phone effects can adjust relationship meters; start, advance, complete, defer, or fail
+quests; set flags and game values; and open calendar scheduling or rescheduling. Text
+events also feed the quest engine as `text_sent`, `text_replied`, and
+`text_thread_completed` events.
+
+## Relationship story milestones
+
+Each character's existing five-entry `relationship_chapters` list is the stable
+bridge between Screenwriter and relationship progression. The game combines dates
+and non-romantic hangouts into shared-activity due diligence, then exposes the next
+authored chapter as a player-controlled story arc. When a chapter `id` matches a
+quest in that character file, beginning the milestone starts the quest. A chapter
+without a matching quest can receive its scene chain later without changing save
+identity.
+
+An optional character-level `social_preferences` object can tune generic hangouts:
+
+```json
+{
+  "social_preferences": {
+    "invitation_threshold": 24,
+    "preferred_activities": ["cafe_catchup", "waterfront_hangout"]
+  }
+}
+```
+
+Social activity ids are reusable system content. Screenwriter owns character
+preference and story content; Godot owns scheduling, costs, time, outcomes, and
+save persistence.

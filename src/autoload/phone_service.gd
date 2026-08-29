@@ -22,6 +22,18 @@ func reply_to_message(character_id: String, message_id: String, reply_index: int
 	return _commit(_engine.reply_to_message(GameState.current_state, character_id, message_id, reply_index))
 
 
+func available_replies(character_id: String, message_id: String) -> Array:
+	return _engine.available_replies(GameState.current_state, character_id, message_id)
+
+
+func available_outgoing_messages(character_id: String) -> Array:
+	return _engine.available_outgoing_messages(GameState.current_state, character_id)
+
+
+func send_outgoing_message(character_id: String, message_id: String) -> Dictionary:
+	return _commit(_engine.send_outgoing_message(GameState.current_state, character_id, message_id))
+
+
 func mark_thread_read(character_id: String) -> Dictionary:
 	return _commit(_engine.mark_thread_read(GameState.current_state, character_id))
 

@@ -4,6 +4,15 @@ Character-owned quests, conversations, texts, and outcomes live inside that
 character's `.character` package. Content involving locations, institutions, or
 unnamed service NPCs lives here.
 
+Screenwriter-authored incoming messages, outgoing player texts, conditional replies,
+contact introductions, and message/reply follow-up triggers use the same persistent
+phone and quest state as the rest of the game.
+
+Reusable non-romantic social activities schedule around each contact's work and
+school commitments. Completed dates and hangouts feed five player-paced relationship
+story milestones while character packages continue to own chapter ids, quests,
+scenes, and optional social preferences.
+
 - `opening/global_quests.json` contains the opening institutional and tutorial quests.
 - `opening/global_conversations.json` contains their service conversations.
 - `opening/opening_week.json` maps Tuesday through Sunday across all seven blocks.

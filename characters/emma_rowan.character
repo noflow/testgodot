@@ -26,6 +26,7 @@
       "open_disclosed": "Emma knew about the date, but seeing it is harder than discussing it. She asks for reassurance and an honest check-in."
     }
   },
+  "social_preferences": {"invitation_threshold": 20, "preferred_activities": ["cafe_catchup", "waterfront_hangout"]},
   "private_profile": {"fertility_tier": "average", "reproductive_capability": "can_become_pregnant", "knowledge": "hidden_until_discovered", "adult_preferences": {"established": ["romantic_atmosphere"], "discoverable": ["playful_roleplay"], "hard_limits": ["humiliation", "public_exposure"]}},
   "relationship_chapters": [{"level": 1, "id": "before_everything_changes", "title": "Before Everything Changes"}, {"level": 2, "id": "margin_notes", "title": "Margin Notes"}, {"level": 3, "id": "the_story_she_hid", "title": "The Story She Hid"}, {"level": 4, "id": "old_friend_new_rules", "title": "Old Friend, New Rules"}, {"level": 5, "id": "our_next_chapter", "title": "Our Next Chapter"}],
   "quest_hooks": ["alder_bay_walk", "literary_magazine", "lost_manuscript", "relationship_definition"],

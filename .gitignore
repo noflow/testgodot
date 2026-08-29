@@ -28,6 +28,7 @@ Thumbs.db
 logs/
 test-results/
 coverage/
+.screenwriter-backups/
 
 # Local secrets and machine-specific settings
 .env

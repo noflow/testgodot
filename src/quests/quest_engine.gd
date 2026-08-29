@@ -803,7 +803,7 @@ func _event_condition_matches(condition: Dictionary, event_name: String, payload
 		return false
 	if event_name == "activity_count_at_least" and int(payload.get("count", 0)) < int(condition.get("value", 1)):
 		return false
-	for key: String in ["conversation", "node", "character", "participant", "activity", "tag", "key", "mode", "quest", "recipient", "district", "area", "outcome"]:
+	for key: String in ["conversation", "node", "character", "participant", "activity", "tag", "key", "mode", "quest", "recipient", "district", "area", "outcome", "thread", "message", "reply"]:
 		if condition.has(key) and str(condition[key]) != str(payload.get(key, "")):
 			return false
 	if condition.has("location"):

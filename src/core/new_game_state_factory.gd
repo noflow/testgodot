@@ -217,10 +217,21 @@ func _apply_relationship_defaults(state: Dictionary) -> void:
 			relationship["unlocked_chapter_level"] = 1
 			relationship["dating_agreement"] = {"status": "none", "type": "none"}
 			relationship["invitation_history"] = []
+			relationship["social_invitation_history"] = []
 			relationship["dating_history"] = []
+			relationship["social_history"] = []
 			relationship["agreement_history"] = []
 			relationship["conflict_history"] = []
 			relationship["chapter_notifications"] = []
+			relationship["pending_milestones"] = []
+			relationship["milestone_history"] = [{
+				"level": 1,
+				"chapter_id": str(character.get("relationship_chapters", [{}])[0].get("id", "")) if not character.get("relationship_chapters", []).is_empty() else "",
+				"status": "started",
+				"unlocked_on": "Y1-08-20",
+				"started_on": "Y1-08-20",
+				"route": "opening",
+			}]
 			relationship["pending_agreement_proposal"] = null
 			relationship["romantic_interest_known"] = false
 			relationship["memories"] = []

@@ -28,6 +28,7 @@
   "connections": [{"character": "elena_reyes_hale", "relation": "mother"}, {"character": "daniel_hale", "relation": "father"}, {"character": "emma_rowan", "relation": "friendly_acquaintance"}, {"character": "chloe_bennett", "relation": "campus_friend"}],
   "relationship_defaults": {"friendship": 60, "love": 76, "attraction": 0, "lust": 0, "trust": 58, "respect": 45, "resentment": 8, "jealousy": 0, "comfort": 72, "commitment": 82, "compatibility": 60, "satisfaction": 61},
   "boundaries": {"family_only": true, "alcohol_consent": "never_when_impaired", "hard_limits": ["romance_with_player", "sexual_content_with_player"]},
+  "social_preferences": {"invitation_threshold": 19, "preferred_activities": ["galleria_browse", "cafe_catchup"]},
   "private_profile": {"fertility_tier": "high", "reproductive_capability": "can_become_pregnant", "knowledge": "hidden_until_relevant"},
   "relationship_chapters": [{"level": 1, "id": "one_year_ahead", "title": "One Year Ahead"}, {"level": 2, "id": "borrowed_clothes", "title": "Borrowed Clothes"}, {"level": 3, "id": "the_program_change", "title": "The Program Change"}, {"level": 4, "id": "rooms_of_our_own", "title": "Rooms of Our Own"}, {"level": 5, "id": "adult_siblings", "title": "Adult Siblings"}],
   "quest_hooks": ["program_change", "campus_orientation", "sibling_secret", "moving_day"],

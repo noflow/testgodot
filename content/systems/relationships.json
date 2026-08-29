@@ -9,11 +9,11 @@
     {"level": 5, "name": "Defining", "minimum": 85}
   ],
   "chapter_due_diligence": [
-    {"level": 1, "completed_dates": 0, "bond": 0, "trust": 0, "agreement_required": false},
-    {"level": 2, "completed_dates": 1, "bond": 20, "trust": 15, "agreement_required": false},
-    {"level": 3, "completed_dates": 3, "bond": 40, "trust": 40, "agreement_required": false},
-    {"level": 4, "completed_dates": 6, "bond": 65, "trust": 60, "agreement_required": true},
-    {"level": 5, "completed_dates": 10, "bond": 85, "trust": 80, "agreement_required": true}
+    {"level": 1, "shared_activities": 0, "bond": 0, "trust": 0, "agreement_required_on_romantic_route": false},
+    {"level": 2, "shared_activities": 1, "bond": 20, "trust": 15, "agreement_required_on_romantic_route": false},
+    {"level": 3, "shared_activities": 3, "bond": 40, "trust": 40, "agreement_required_on_romantic_route": false},
+    {"level": 4, "shared_activities": 6, "bond": 65, "trust": 60, "agreement_required_on_romantic_route": true},
+    {"level": 5, "shared_activities": 10, "bond": 85, "trust": 80, "agreement_required_on_romantic_route": true}
   ],
   "agreement_types": [
     {"id": "casual", "name": "Casual Dating", "other_dates_allowed": true, "disclosure_required": false},
@@ -24,6 +24,68 @@
     {"id": "attentive", "name": "Be Attentive", "minimum_comfort": 0, "meter_effects": {"friendship": 2, "love": 2, "trust": 4, "respect": 3, "comfort": 2, "compatibility": 2, "satisfaction": 3}},
     {"id": "playful", "name": "Keep It Playful", "minimum_comfort": 10, "meter_effects": {"friendship": 4, "attraction": 2, "trust": 1, "comfort": 4, "compatibility": 2, "satisfaction": 3}},
     {"id": "flirty", "name": "Lean Into the Chemistry", "minimum_comfort": 25, "meter_effects": {"love": 1, "attraction": 5, "lust": 3, "comfort": 1, "commitment": 1, "satisfaction": 2}}
+  ],
+  "social_approaches": [
+    {"id": "listen", "name": "Listen and Check In", "minimum_trust": 0, "meter_effects": {"friendship": 3, "trust": 3, "respect": 2, "comfort": 2, "satisfaction": 2}},
+    {"id": "playful", "name": "Keep It Light", "minimum_trust": 0, "meter_effects": {"friendship": 4, "comfort": 3, "compatibility": 2, "satisfaction": 2}},
+    {"id": "open_up", "name": "Open Up Personally", "minimum_trust": 20, "meter_effects": {"friendship": 2, "trust": 4, "comfort": 2, "compatibility": 3, "satisfaction": 3}}
+  ],
+  "social_activities": [
+    {
+      "id": "waterfront_hangout",
+      "name": "Waterfront Hangout",
+      "description": "Walk the bay and catch up without treating the outing as a date.",
+      "location": "alder_bay_park.waterfront_path",
+      "allowed_blocks": ["afternoon", "evening"],
+      "duration_minutes": 75,
+      "cost": 0,
+      "tags": ["outdoors", "quiet", "conversation"],
+      "need_effects": {"loneliness": -12, "mood": 6, "energy": -3}
+    },
+    {
+      "id": "cafe_catchup",
+      "name": "Café Catch-Up",
+      "description": "Share drinks and an unhurried conversation at Bayview Café.",
+      "location": "bayview_cafe.dining_room",
+      "allowed_blocks": ["morning", "lunch", "afternoon", "evening"],
+      "duration_minutes": 60,
+      "cost": 18,
+      "tags": ["coffee", "quiet", "conversation", "public"],
+      "need_effects": {"loneliness": -10, "mood": 5, "energy": 1, "hydration": -5}
+    },
+    {
+      "id": "movie_hangout",
+      "name": "Movie Hangout",
+      "description": "Watch a Harborlight screening together as friends.",
+      "location": "harborlight_cinema.auditorium",
+      "allowed_blocks": ["afternoon", "evening", "late_evening"],
+      "duration_minutes": 150,
+      "cost": 32,
+      "tags": ["movies", "public", "entertainment"],
+      "need_effects": {"loneliness": -11, "mood": 8, "energy": -5}
+    },
+    {
+      "id": "galleria_browse",
+      "name": "Browse the Galleria",
+      "description": "Wander the mall, window-shop, and talk along the way.",
+      "location": "port_alder_galleria.main_atrium",
+      "allowed_blocks": ["morning", "lunch", "afternoon", "evening"],
+      "duration_minutes": 90,
+      "cost": 8,
+      "tags": ["shopping", "public", "casual"],
+      "need_effects": {"loneliness": -10, "mood": 7, "energy": -5}
+    },
+    {
+      "id": "nightclub_hangout",
+      "name": "Nightclub Hangout",
+      "description": "Meet at Undertow for music and dancing without assuming romance.",
+      "location": "undertow_nightclub.dance_floor",
+      "allowed_blocks": ["evening", "late_evening", "night"],
+      "duration_minutes": 150,
+      "cost": 36,
+      "tags": ["nightlife", "dancing", "public", "loud"],
+      "need_effects": {"loneliness": -13, "mood": 10, "energy": -8, "hydration": 8}
+    }
   ],
   "date_activities": [
     {
@@ -93,6 +155,13 @@
     "preferred_block_bonus": 4,
     "repeat_rejection_penalty": 5,
     "maximum_options_per_activity": 3
+  },
+  "social_invitation_defaults": {
+    "minimum_score": 20,
+    "preferred_activity_bonus": 7,
+    "preferred_block_bonus": 3,
+    "repeat_rejection_penalty": 4,
+    "maximum_options_per_activity": 2
   },
   "conflict_rules": {
     "severe_jealousy": 65,

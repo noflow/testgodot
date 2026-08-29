@@ -24,6 +24,9 @@ func get_all(collection_name: String) -> Array:
 
 
 func get_character(character_id: String) -> Variant:
+	var characters: Dictionary = _fixtures.get("characters", {})
+	if characters.has(character_id):
+		return characters[character_id]
 	return _base_registry.get_character(character_id)
 
 

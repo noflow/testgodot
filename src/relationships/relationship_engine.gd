@@ -1,6 +1,8 @@
 extends RefCounted
 class_name PortAlderRelationshipEngine
 
+const QuestEngineScript: GDScript = preload("res://src/quests/quest_engine.gd")
+
 const PACKAGE_ID: String = "port_alder_relationship_system"
 const BLOCKS: PackedStringArray = [
 	"early_morning", "morning", "lunch", "afternoon", "evening", "late_evening", "night",
@@ -12,36 +14,46 @@ const PRIMARY_METERS: PackedStringArray = ["friendship", "love", "attraction", "
 
 var _registry: Node
 var _simulation: RefCounted
+var _quests: RefCounted
 
 
 func _init(content_registry: Node, simulation_engine: RefCounted) -> void:
 	_registry = content_registry
 	_simulation = simulation_engine
+	_quests = QuestEngineScript.new(content_registry, simulation_engine)
 
 
 func synchronize(state: Dictionary) -> Dictionary:
 	var working: Dictionary = state.duplicate(true)
 	_ensure_runtime_shape(working)
 	var notices: PackedStringArray = []
+	var milestone_updates: Array = []
 	var events: Array = []
 	var now_value: int = _clock_moment_value(working["clock"])
 	for event_value: Variant in working["calendar_state"].get("events", []):
 		if not event_value is Dictionary:
 			continue
 		var calendar_event: Dictionary = event_value
-		if not bool(calendar_event.get("relationship_date", false)) or str(calendar_event.get("status", "scheduled")) != "scheduled":
+		var is_date: bool = bool(calendar_event.get("relationship_date", false))
+		var is_social: bool = bool(calendar_event.get("relationship_social_activity", false))
+		if (not is_date and not is_social) or str(calendar_event.get("status", "scheduled")) != "scheduled":
 			continue
 		if _event_moment_value(calendar_event) >= now_value:
 			continue
-		var missed: Dictionary = _resolve_missed_date(working, calendar_event, events)
+		var missed: Dictionary = (
+			_resolve_missed_date(working, calendar_event, events)
+			if is_date else _resolve_missed_social_activity(working, calendar_event, events)
+		)
 		if not missed.get("ok", false):
 			return missed
 		working = missed["state"]
 		notices.append("%s noticed that you missed %s." % [
 			_character_name(str(calendar_event.get("relationship_character_id", ""))),
-			calendar_event.get("title", "your date"),
+			calendar_event.get("title", "your plan"),
 		])
-	return _success(working, events, {"notices": notices})
+	for character_id_value: Variant in working.get("relationships", {}):
+		milestone_updates.append_array(_update_chapter_progress(working, str(character_id_value)))
+	return _success(working, events, {"notices": notices, "milestone_updates": milestone_updates})
 
 
 func candidates(state: Dictionary) -> Array:
@@ -63,6 +75,7 @@ func relationship_profile(state: Dictionary, character_id: String) -> Dictionary
 		return {}
 	var relationship: Dictionary = _relationship_snapshot(state, character_id)
 	var completed_dates: int = _completed_date_count(relationship)
+	var completed_social_activities: int = _completed_social_activity_count(relationship)
 	var agreement: Dictionary = relationship.get("dating_agreement", {"status": "none", "type": "none"})
 	var chapter_level: int = int(relationship.get("unlocked_chapter_level", 1))
 	var chapter: Dictionary = _chapter_definition(character, chapter_level)
@@ -78,7 +91,12 @@ func relationship_profile(state: Dictionary, character_id: String) -> Dictionary
 		"chapter": chapter,
 		"agreement": agreement,
 		"completed_dates": completed_dates,
+		"completed_social_activities": completed_social_activities,
+		"shared_activities": completed_dates + completed_social_activities,
 		"pending_date": pending_date,
+		"pending_social_activity": _scheduled_social_activity_for_character(state, character_id),
+		"pending_milestones": relationship.get("pending_milestones", []).duplicate(true),
+		"next_milestone": _next_milestone_progress(relationship),
 		"pending_agreement_proposal": relationship.get("pending_agreement_proposal"),
 		"romance_compatible": _romance_compatible(character),
 		"agreement_options": _agreement_options(character),
@@ -89,6 +107,8 @@ func invitation_options(state: Dictionary, character_id: String, activity_id: St
 	var character: Variant = _registry.get_character(character_id)
 	var activity: Variant = _registry.get_content("date_activities", activity_id)
 	if not character is Dictionary or not activity is Dictionary:
+		return []
+	if not _activity_destination_available(state, activity):
 		return []
 	if not _basic_invitation_error(state, character_id).is_empty():
 		return []
@@ -126,6 +146,169 @@ func invitation_options(state: Dictionary, character_id: String, activity_id: St
 	return options
 
 
+func social_invitation_options(state: Dictionary, character_id: String, activity_id: String, maximum: int = 2) -> Array:
+	var character: Variant = _registry.get_character(character_id)
+	var activity: Variant = _registry.get_content("social_activities", activity_id)
+	if not character is Dictionary or not activity is Dictionary:
+		return []
+	if not _activity_destination_available(state, activity):
+		return []
+	if not _basic_social_invitation_error(state, character_id).is_empty():
+		return []
+	var configured_maximum: int = int(_package().get("social_invitation_defaults", {}).get("maximum_options_per_activity", 2))
+	maximum = clampi(maximum, 1, configured_maximum)
+	var options: Array = []
+	for offset: int in 14:
+		var date_parts: Dictionary = _date_after_days(state["clock"], offset)
+		for block_value: Variant in activity.get("allowed_blocks", []):
+			var block: String = str(block_value)
+			if offset == 0 and BLOCKS.find(block) <= BLOCKS.find(str(state["clock"]["block"])):
+				continue
+			if _npc_busy(character, _date_string_from_parts(date_parts), str(date_parts["weekday"]), block):
+				continue
+			if not _location_open(activity, str(date_parts["weekday"]), block):
+				continue
+			var option: Dictionary = {
+				"date": _date_string_from_parts(date_parts),
+				"weekday": date_parts["weekday"],
+				"block": block,
+				"activity_id": activity_id,
+				"activity_name": activity.get("name", activity_id),
+				"location": activity.get("location", ""),
+				"preferred": _preferred_social_activity(character, activity_id, str(date_parts["weekday"]), block),
+			}
+			if _calendar_slot_available(state, character_id, option):
+				options.append(option)
+	options.sort_custom(func(left: Dictionary, right: Dictionary) -> bool:
+		if bool(left.get("preferred", false)) != bool(right.get("preferred", false)):
+			return bool(left.get("preferred", false))
+		return _option_moment_value(left) < _option_moment_value(right)
+	)
+	if options.size() > maximum:
+		options.resize(maximum)
+	return options
+
+
+func invite_to_social_activity(
+	state: Dictionary,
+	character_id: String,
+	activity_id: String,
+	date: String,
+	weekday: String,
+	block: String
+) -> Dictionary:
+	var invitation_error: String = _basic_social_invitation_error(state, character_id)
+	if not invitation_error.is_empty():
+		return _failure(invitation_error)
+	var character: Dictionary = _registry.get_character(character_id)
+	var activity: Variant = _registry.get_content("social_activities", activity_id)
+	if not activity is Dictionary:
+		return _failure("Unknown social activity: %s" % activity_id)
+	var schedule_error: String = _planned_time_error(state, character, activity, character_id, date, weekday, block)
+	if not schedule_error.is_empty():
+		return _failure(schedule_error)
+
+	var working: Dictionary = state.duplicate(true)
+	_ensure_runtime_shape(working)
+	var events: Array = []
+	var result: Dictionary = _apply(working, "time.advance", {"minutes": 5}, "relationship.social_invitation", events)
+	if not result.get("ok", false):
+		return result
+	working = result["state"]
+	var invitation_id: String = "social-invite-%s-%08d" % [character_id, int(working["simulation"].get("next_event_sequence", 1))]
+	result = _apply(working, "phone.append_message", {
+		"character_id": character_id,
+		"message": {
+			"id": invitation_id,
+			"sender": "player",
+			"text": "Would you like to %s with me on %s %s?" % [
+				str(activity.get("name", activity_id)).to_lower(), weekday.capitalize(), block.replace("_", " "),
+			],
+			"tone": ["friendly", "direct"],
+		},
+	}, "relationship.social_invitation", events)
+	if not result.get("ok", false):
+		return result
+	working = result["state"]
+
+	var score: float = _social_invitation_score(working, character, activity, weekday, block)
+	var threshold: float = float(_social_preferences(character).get(
+		"invitation_threshold",
+		_package().get("social_invitation_defaults", {}).get("minimum_score", 20)
+	))
+	var accepted: bool = score >= threshold
+	var invitation_record: Dictionary = {
+		"id": invitation_id,
+		"activity_id": activity_id,
+		"date": date,
+		"weekday": weekday,
+		"block": block,
+		"score": snappedf(score, 0.1),
+		"threshold": threshold,
+		"accepted": accepted,
+		"asked_on": _date_string(working["clock"]),
+	}
+	working["relationships"][character_id]["social_invitation_history"].append(invitation_record)
+	if not accepted:
+		result = _apply(working, "phone.append_message", {
+			"character_id": character_id,
+			"message": {
+				"id": "%s-response" % invitation_id,
+				"sender": character_id,
+				"text": "Thanks for asking, but I cannot make plans right now.",
+				"reply_to": invitation_id,
+			},
+		}, "relationship.social_invitation_response", events)
+		if not result.get("ok", false):
+			return result
+		return _success(result["state"], events, {
+			"accepted": false,
+			"score": score,
+			"threshold": threshold,
+			"response": "%s declined the invitation." % character.get("display_name", character_id),
+		})
+
+	var calendar_event_id: String = "social-%s-%08d" % [character_id, int(working["simulation"].get("next_event_sequence", 1))]
+	var calendar_event: Dictionary = {
+		"id": calendar_event_id,
+		"title": "%s with %s" % [activity.get("name", "Hangout"), character.get("display_name", character_id)],
+		"type": "hangout",
+		"relationship_social_activity": true,
+		"relationship_character_id": character_id,
+		"activity_id": activity_id,
+		"date": date,
+		"weekday": weekday,
+		"block": block,
+		"participants": [character_id],
+		"location": activity.get("location", ""),
+		"source": "relationship.social_invitation",
+		"required": false,
+	}
+	result = _apply(working, "calendar.schedule", {"calendar_event": calendar_event}, "relationship.social_invitation", events)
+	if not result.get("ok", false):
+		return result
+	working = result["state"]
+	result = _apply(working, "phone.append_message", {
+		"character_id": character_id,
+		"message": {
+			"id": "%s-response" % invitation_id,
+			"sender": character_id,
+			"text": "That works for me. I added it to my calendar.",
+			"reply_to": invitation_id,
+		},
+	}, "relationship.social_invitation_response", events)
+	if not result.get("ok", false):
+		return result
+	return _success(result["state"], events, {
+		"accepted": true,
+		"score": score,
+		"threshold": threshold,
+		"event_id": calendar_event_id,
+		"calendar_event": _event_by_id(result["state"], calendar_event_id),
+		"response": "%s accepted. The hangout is on your calendar." % character.get("display_name", character_id),
+	})
+
+
 func ask_out(
 	state: Dictionary,
 	character_id: String,
@@ -142,6 +325,8 @@ func ask_out(
 	var activity: Variant = _registry.get_content("date_activities", activity_id)
 	if not activity is Dictionary:
 		return _failure("Unknown date activity: %s" % activity_id)
+	if not _activity_destination_available(state, activity):
+		return _failure("Discover this date location before making plans there.")
 	if block not in activity.get("allowed_blocks", []):
 		return _failure("%s is unavailable during %s." % [activity.get("name", "That date"), block.replace("_", " ")])
 	if not _valid_date_string(date) or weekday not in WEEKDAYS:
@@ -296,6 +481,177 @@ func date_status(state: Dictionary, character_id: String) -> Dictionary:
 			"reason": "The date is now. Meet at %s." % _location_name(str(event.get("location", ""))),
 		}
 	return {"scheduled": true, "ready": true, "event": event, "reason": "Both of you are here. Choose how to approach the date."}
+
+
+func social_activity_status(state: Dictionary, character_id: String) -> Dictionary:
+	var event: Dictionary = _scheduled_social_activity_for_character(state, character_id)
+	if event.is_empty():
+		return {"scheduled": false, "ready": false, "reason": "No social activity is scheduled."}
+	var now: int = _clock_moment_value(state["clock"])
+	var scheduled: int = _event_moment_value(event)
+	var location_matches: bool = str(state["world_state"].get("current_location", "")) == str(event.get("location", ""))
+	if scheduled > now:
+		return {
+			"scheduled": true, "ready": false, "event": event,
+			"reason": "Scheduled for %s • %s at %s." % [
+				event.get("date", ""), str(event.get("block", "")).replace("_", " ").capitalize(), _location_name(str(event.get("location", ""))),
+			],
+		}
+	if scheduled < now:
+		return {"scheduled": true, "ready": false, "event": event, "reason": "This hangout is overdue and will resolve as a missed plan."}
+	if not location_matches:
+		return {
+			"scheduled": true, "ready": false, "event": event,
+			"reason": "The hangout is now. Meet at %s." % _location_name(str(event.get("location", ""))),
+		}
+	return {"scheduled": true, "ready": true, "event": event, "reason": "Both of you are here. Choose how to spend the time together."}
+
+
+func complete_social_activity(state: Dictionary, event_id: String, approach_id: String) -> Dictionary:
+	var event: Dictionary = _event_by_id(state, event_id)
+	if event.is_empty() or not bool(event.get("relationship_social_activity", false)):
+		return _failure("Unknown scheduled social activity: %s" % event_id)
+	if str(event.get("status", "")) != "scheduled":
+		return _failure("This social activity is no longer scheduled.")
+	if _event_moment_value(event) != _clock_moment_value(state["clock"]):
+		return _failure("The social activity can only begin during its scheduled activity block.")
+	if str(state["world_state"].get("current_location", "")) != str(event.get("location", "")):
+		return _failure("Meet at %s before starting the activity." % _location_name(str(event.get("location", ""))))
+	var character_id: String = str(event.get("relationship_character_id", ""))
+	var character: Variant = _registry.get_character(character_id)
+	var activity: Variant = _registry.get_content("social_activities", str(event.get("activity_id", "")))
+	var approach: Dictionary = _definition_by_id(_package().get("social_approaches", []), approach_id)
+	if not character is Dictionary or not activity is Dictionary or approach.is_empty():
+		return _failure("The social activity content is unavailable.")
+	var current_relationship: Dictionary = _relationship_snapshot(state, character_id)
+	if float(current_relationship.get("trust", 0.0)) < float(approach.get("minimum_trust", 0.0)):
+		return _failure("More trust is needed before opening up that way.")
+
+	var working: Dictionary = state.duplicate(true)
+	_ensure_runtime_shape(working)
+	var events: Array = []
+	var cost: float = float(activity.get("cost", 0.0))
+	if cost > 0.0:
+		var account_id: String = _payment_account(working, cost)
+		if account_id.is_empty():
+			return _failure("You need $%.2f available before this activity can begin." % cost)
+		var payment: Dictionary = _apply(working, "economy.transaction", {
+			"account": account_id,
+			"amount": -cost,
+			"type": "debit",
+			"category": "social",
+			"description": "%s with %s" % [activity.get("name", "Social activity"), character.get("display_name", character_id)],
+		}, "relationship.social_activity:%s" % event_id, events)
+		if not payment.get("ok", false):
+			return payment
+		working = payment["state"]
+	var result: Dictionary = _apply(working, "calendar.arrival", {"event_id": event_id}, "relationship.social_activity:%s" % event_id, events)
+	if not result.get("ok", false):
+		return result
+	working = result["state"]
+	result = _apply(working, "time.advance", {"minutes": int(activity.get("duration_minutes", 60))}, "relationship.social_activity:%s" % event_id, events)
+	if not result.get("ok", false):
+		return result
+	working = result["state"]
+	for need_id: Variant in activity.get("need_effects", {}):
+		result = _apply(working, "need.adjust", {
+			"need": str(need_id), "amount": activity["need_effects"][need_id],
+		}, "relationship.social_activity:%s" % event_id, events)
+		if not result.get("ok", false):
+			return result
+		working = result["state"]
+	var meter_effects: Dictionary = approach.get("meter_effects", {}).duplicate(true)
+	if str(activity.get("id", "")) in _social_preferences(character).get("preferred_activities", []):
+		meter_effects["compatibility"] = float(meter_effects.get("compatibility", 0.0)) + 2.0
+		meter_effects["satisfaction"] = float(meter_effects.get("satisfaction", 0.0)) + 2.0
+	if _preferred_social_time(character, str(event.get("weekday", "")), str(event.get("block", ""))):
+		meter_effects["comfort"] = float(meter_effects.get("comfort", 0.0)) + 1.0
+	for meter: Variant in meter_effects:
+		result = _apply(working, "relationship.adjust_meter", {
+			"character_id": character_id,
+			"meter": str(meter),
+			"amount": meter_effects[meter],
+			"reason": "completed_social_activity",
+		}, "relationship.social_activity:%s" % event_id, events)
+		if not result.get("ok", false):
+			return result
+		working = result["state"]
+	var activity_record: Dictionary = {
+		"id": event_id,
+		"calendar_event_id": event_id,
+		"activity_id": activity.get("id", ""),
+		"approach_id": approach_id,
+		"date": event.get("date", ""),
+		"block": event.get("block", ""),
+		"location": event.get("location", ""),
+		"cost": cost,
+		"outcome": "completed",
+	}
+	result = _apply(working, "relationship.record_activity", {
+		"character_id": character_id, "activity_record": activity_record,
+	}, "relationship.social_activity:%s" % event_id, events)
+	if not result.get("ok", false):
+		return result
+	working = result["state"]
+	result = _apply(working, "memory.create", {
+		"character_id": character_id,
+		"memory_id": "completed_%s" % event_id,
+		"importance": 40,
+		"tags": ["social_activity", str(activity.get("id", "")), approach_id],
+	}, "relationship.social_activity:%s" % event_id, events)
+	if not result.get("ok", false):
+		return result
+	working = result["state"]
+	var chapter_updates: Array = _update_chapter_progress(working, character_id)
+	return _success(working, events, {
+		"activity_record": activity_record,
+		"chapter_updates": chapter_updates,
+		"summary": "%s went well. You and %s grew closer." % [activity.get("name", "The hangout"), character.get("display_name", character_id)],
+	})
+
+
+func cancel_social_activity(state: Dictionary, event_id: String) -> Dictionary:
+	var event: Dictionary = _event_by_id(state, event_id)
+	if event.is_empty() or not bool(event.get("relationship_social_activity", false)):
+		return _failure("Unknown scheduled social activity.")
+	if str(event.get("status", "")) != "scheduled":
+		return _failure("That social activity cannot be cancelled now.")
+	var character_id: String = str(event.get("relationship_character_id", ""))
+	var working: Dictionary = state.duplicate(true)
+	_ensure_runtime_shape(working)
+	var events: Array = []
+	var notice_blocks: int = _event_moment_value(event) - _clock_moment_value(working["clock"])
+	var result: Dictionary = _apply(working, "calendar.cancel_or_reschedule", {
+		"event_id": event_id, "cancel": true, "notice_blocks": notice_blocks,
+	}, "relationship.cancel_social_activity", events)
+	if not result.get("ok", false):
+		return result
+	working = result["state"]
+	var late: bool = notice_blocks <= 1
+	for effect: Dictionary in (
+		[{"meter": "trust", "amount": -4}, {"meter": "resentment", "amount": 2}]
+		if late else [{"meter": "trust", "amount": -1}]
+	):
+		result = _apply(working, "relationship.adjust_meter", {
+			"character_id": character_id, "meter": effect["meter"], "amount": effect["amount"], "reason": "cancelled_social_activity",
+		}, "relationship.cancel_social_activity", events)
+		if not result.get("ok", false):
+			return result
+		working = result["state"]
+	result = _apply(working, "relationship.record_activity", {
+		"character_id": character_id,
+		"activity_record": {
+			"id": event_id, "calendar_event_id": event_id, "activity_id": event.get("activity_id", ""),
+			"date": event.get("date", ""), "block": event.get("block", ""), "outcome": "cancelled",
+			"late_notice": late,
+		},
+	}, "relationship.cancel_social_activity", events)
+	if not result.get("ok", false):
+		return result
+	return _success(result["state"], events, {
+		"late_notice": late,
+		"message": "The late cancellation damaged trust." if late else "The hangout was cancelled with reasonable notice.",
+	})
 
 
 func complete_date(
@@ -556,9 +912,71 @@ func respond_to_npc_proposal(state: Dictionary, character_id: String, accept: bo
 	})
 
 
+func begin_milestone(state: Dictionary, character_id: String, level: int) -> Dictionary:
+	var character: Variant = _registry.get_character(character_id)
+	if not character is Dictionary or not state.get("relationships", {}).has(character_id):
+		return _failure("Unknown relationship character.")
+	var working: Dictionary = state.duplicate(true)
+	_ensure_runtime_shape(working)
+	_update_chapter_progress(working, character_id)
+	var relationship: Dictionary = working["relationships"][character_id]
+	if not relationship["pending_milestones"].is_empty():
+		var earliest: Variant = relationship["pending_milestones"][0]
+		if earliest is Dictionary and int(earliest.get("level", 0)) != level:
+			return _failure("Begin the earlier relationship chapter first.")
+	var pending_index: int = -1
+	var milestone: Dictionary = {}
+	for index: int in relationship["pending_milestones"].size():
+		var candidate: Variant = relationship["pending_milestones"][index]
+		if candidate is Dictionary and int(candidate.get("level", 0)) == level:
+			pending_index = index
+			milestone = candidate
+			break
+	if pending_index < 0:
+		return _failure("That relationship story milestone is not waiting to begin.")
+	milestone["status"] = "started"
+	milestone["started_on"] = _date_string(working["clock"])
+	relationship["pending_milestones"].remove_at(pending_index)
+	for history_value: Variant in relationship["milestone_history"]:
+		if history_value is Dictionary and int(history_value.get("level", 0)) == level:
+			history_value["status"] = "started"
+			history_value["started_on"] = milestone["started_on"]
+			break
+	var events: Array = []
+	var chapter_id: String = str(milestone.get("chapter_id", ""))
+	var quest_started: bool = false
+	if (
+		not chapter_id.is_empty()
+		and _registry.get_content("quests", chapter_id) is Dictionary
+		and chapter_id not in working["quest_state"].get("active", [])
+		and chapter_id not in working["quest_state"].get("completed", [])
+	):
+		var gate_report: Dictionary = _quests.gate_report(working, chapter_id)
+		if not bool(gate_report.get("met", false)):
+			var failures: PackedStringArray = PackedStringArray(gate_report.get("visible_failures", []))
+			return _failure(failures[0] if not failures.is_empty() else "This story arc has additional requirements.")
+		var quest_result: Dictionary = _apply(working, "quest.start", {
+			"quest_id": chapter_id, "discovery_source": "relationship_milestone",
+		}, "relationship.milestone", events)
+		if not quest_result.get("ok", false):
+			return quest_result
+		working = quest_result["state"]
+		quest_started = true
+	return _success(working, events, {
+		"milestone": milestone,
+		"quest_started": quest_started,
+		"message": "%s has begun." % milestone.get("title", "The relationship story chapter"),
+	})
+
+
 func is_date_event(state: Dictionary, event_id: String) -> bool:
 	var event: Dictionary = _event_by_id(state, event_id)
 	return not event.is_empty() and bool(event.get("relationship_date", false))
+
+
+func is_social_event(state: Dictionary, event_id: String) -> bool:
+	var event: Dictionary = _event_by_id(state, event_id)
+	return not event.is_empty() and bool(event.get("relationship_social_activity", false))
 
 
 func active_partner_ids(state: Dictionary, excluding_character: String = "") -> Array:
@@ -598,6 +1016,40 @@ func _resolve_missed_date(state: Dictionary, calendar_event: Dictionary, events:
 		},
 	}, "relationship.missed_date", events)
 	return result
+
+
+func _resolve_missed_social_activity(state: Dictionary, calendar_event: Dictionary, events: Array) -> Dictionary:
+	var working: Dictionary = state.duplicate(true)
+	var character_id: String = str(calendar_event.get("relationship_character_id", ""))
+	for event_value: Variant in working["calendar_state"]["events"]:
+		if event_value is Dictionary and str(event_value.get("id", "")) == str(calendar_event.get("id", "")):
+			event_value["status"] = "missed"
+			event_value["missed_at"] = _date_string(working["clock"])
+			break
+	var result: Dictionary
+	for effect: Dictionary in [
+		{"meter": "trust", "amount": -5}, {"meter": "resentment", "amount": 3}, {"meter": "satisfaction", "amount": -4},
+	]:
+		result = _apply(working, "relationship.adjust_meter", {
+			"character_id": character_id, "meter": effect["meter"], "amount": effect["amount"], "reason": "social_activity_no_show",
+		}, "relationship.missed_social_activity", events)
+		if not result.get("ok", false):
+			return result
+		working = result["state"]
+	result = _apply(working, "attribute.adjust", {
+		"attribute": "reliability", "amount": -1,
+	}, "relationship.missed_social_activity", events)
+	if not result.get("ok", false):
+		return result
+	working = result["state"]
+	return _apply(working, "relationship.record_activity", {
+		"character_id": character_id,
+		"activity_record": {
+			"id": calendar_event.get("id", ""), "calendar_event_id": calendar_event.get("id", ""),
+			"activity_id": calendar_event.get("activity_id", ""), "date": calendar_event.get("date", ""),
+			"block": calendar_event.get("block", ""), "outcome": "no_show",
+		},
+	}, "relationship.missed_social_activity", events)
 
 
 func _resolve_witnesses(
@@ -779,10 +1231,15 @@ func _establish_agreement(
 
 func _update_chapter_progress(state: Dictionary, character_id: String) -> Array:
 	var relationship: Dictionary = state["relationships"][character_id]
+	if not relationship.get("pending_milestones", []).is_empty():
+		return []
 	var character: Dictionary = _registry.get_character(character_id)
 	var completed_dates: int = _completed_date_count(relationship)
+	var completed_social_activities: int = _completed_social_activity_count(relationship)
+	var shared_activities: int = completed_dates + completed_social_activities
 	var bond: float = maxf(float(relationship.get("friendship", 0.0)), float(relationship.get("love", 0.0)))
 	var agreement_active: bool = str(relationship.get("dating_agreement", {}).get("status", "none")) == "active"
+	var romantic_route: bool = str(relationship.get("relationship_stage", "")) in ["dating", "committed"] or completed_dates > 0
 	var current_level: int = int(relationship.get("unlocked_chapter_level", 1))
 	var updates: Array = []
 	for requirement_value: Variant in _package().get("chapter_due_diligence", []):
@@ -792,11 +1249,15 @@ func _update_chapter_progress(state: Dictionary, character_id: String) -> Array:
 		var level: int = int(requirement.get("level", 1))
 		if level <= current_level:
 			continue
-		if completed_dates < int(requirement.get("completed_dates", 0)):
+		var required_shared: int = int(requirement.get("shared_activities", requirement.get("completed_dates", 0)))
+		if shared_activities < required_shared:
 			continue
 		if bond < float(requirement.get("bond", 0.0)) or float(relationship.get("trust", 0.0)) < float(requirement.get("trust", 0.0)):
 			continue
-		if bool(requirement.get("agreement_required", false)) and not agreement_active:
+		var agreement_required: bool = bool(requirement.get(
+			"agreement_required_on_romantic_route", requirement.get("agreement_required", false)
+		))
+		if agreement_required and romantic_route and not agreement_active:
 			continue
 		var chapter: Dictionary = _chapter_definition(character, level)
 		var notification: Dictionary = {
@@ -804,12 +1265,17 @@ func _update_chapter_progress(state: Dictionary, character_id: String) -> Array:
 			"chapter_id": chapter.get("id", ""),
 			"title": chapter.get("title", "Relationship Chapter %d" % level),
 			"unlocked_on": _date_string(state["clock"]),
+			"status": "ready",
+			"route": "romantic" if romantic_route else "platonic",
 		}
 		relationship["unlocked_chapter_level"] = level
 		relationship["relationship_level"] = level
 		relationship["chapter_notifications"].append(notification)
+		relationship["pending_milestones"].append(notification.duplicate(true))
+		relationship["milestone_history"].append(notification.duplicate(true))
 		updates.append(notification)
 		current_level = level
+		break
 	return updates
 
 
@@ -834,6 +1300,87 @@ func _maybe_create_npc_proposal(state: Dictionary, character_id: String) -> Vari
 	}
 	relationship["pending_agreement_proposal"] = proposal
 	return proposal
+
+
+func _planned_time_error(
+	state: Dictionary,
+	character: Dictionary,
+	activity: Dictionary,
+	character_id: String,
+	date: String,
+	weekday: String,
+	block: String
+) -> String:
+	if not _activity_destination_available(state, activity):
+		return "Discover this activity location before making plans there."
+	if block not in activity.get("allowed_blocks", []):
+		return "%s is unavailable during %s." % [activity.get("name", "That activity"), block.replace("_", " ")]
+	if not _valid_date_string(date) or weekday not in WEEKDAYS:
+		return "Choose a valid calendar date."
+	var date_parts: PackedStringArray = date.trim_prefix("Y").split("-")
+	var target_day: int = _date_serial_days(int(date_parts[0]), int(date_parts[1]), int(date_parts[2]))
+	var current_day: int = _date_serial_days(int(state["clock"]["year"]), int(state["clock"]["month"]), int(state["clock"]["day"]))
+	var day_offset: int = target_day - current_day
+	if day_offset < 0 or day_offset >= 14:
+		return "Invitations can be planned up to fourteen days ahead."
+	var expected_weekday: String = WEEKDAYS[posmod(WEEKDAYS.find(str(state["clock"]["weekday"])) + day_offset, WEEKDAYS.size())]
+	if weekday != expected_weekday:
+		return "The selected date and weekday do not match."
+	if _date_moment_value(date, block) <= _clock_moment_value(state["clock"]):
+		return "Choose a future date and activity block."
+	if _npc_busy(character, date, weekday, block):
+		return "%s is working, studying, or otherwise unavailable then." % character.get("display_name", character_id)
+	if not _location_open(activity, weekday, block):
+		return "The activity location is closed at that time."
+	if not _calendar_slot_available(state, character_id, {"date": date, "weekday": weekday, "block": block}):
+		return "That time conflicts with an existing calendar commitment."
+	return ""
+
+
+func _social_invitation_score(
+	state: Dictionary,
+	character: Dictionary,
+	activity: Dictionary,
+	weekday: String,
+	block: String
+) -> float:
+	var character_id: String = str(character.get("id", ""))
+	var relationship: Dictionary = _relationship_snapshot(state, character_id)
+	var attributes: Dictionary = state["player"].get("attributes", {})
+	var score: float = (
+		float(relationship.get("friendship", 0.0)) * 0.45
+		+ float(relationship.get("trust", 0.0)) * 0.20
+		+ float(relationship.get("comfort", 0.0)) * 0.15
+		+ float(relationship.get("respect", 0.0)) * 0.10
+		+ float(attributes.get("charisma", 0.0)) * 0.05
+		+ float(attributes.get("reliability", 0.0)) * 0.05
+		- float(relationship.get("resentment", 0.0)) * 0.45
+	)
+	var defaults: Dictionary = _package().get("social_invitation_defaults", {})
+	if str(activity.get("id", "")) in _social_preferences(character).get("preferred_activities", []):
+		score += float(defaults.get("preferred_activity_bonus", 7))
+	if _preferred_social_time(character, weekday, block):
+		score += float(defaults.get("preferred_block_bonus", 3))
+	var rejected_count: int = 0
+	for record: Variant in relationship.get("social_invitation_history", []):
+		if record is Dictionary and not bool(record.get("accepted", false)):
+			rejected_count += 1
+	score -= float(rejected_count) * float(defaults.get("repeat_rejection_penalty", 4))
+	return score
+
+
+func _basic_social_invitation_error(state: Dictionary, character_id: String) -> String:
+	var character: Variant = _registry.get_character(character_id)
+	if not character is Dictionary or int(character.get("profile", {}).get("age", 0)) < 18:
+		return "A social invitation is unavailable with this character."
+	if character_id not in state["player"]["phone"].get("known_contacts", []):
+		return "Meet this person and exchange contact information first."
+	var relationship: Dictionary = _relationship_snapshot(state, character_id)
+	if str(relationship.get("relationship_stage", "")) == "ended":
+		return "This relationship has ended."
+	if not _scheduled_social_activity_for_character(state, character_id).is_empty():
+		return "You already have a hangout scheduled together."
+	return ""
 
 
 func _invitation_score(state: Dictionary, character: Dictionary, activity: Dictionary, block: String) -> float:
@@ -946,7 +1493,13 @@ func _calendar_slot_available(state: Dictionary, character_id: String, option: D
 		var event: Dictionary = event_value
 		if str(event.get("date", "")) != str(option.get("date", "")) or str(event.get("block", "")) != str(option.get("block", "")):
 			continue
-		if str(event.get("type", "")) in ["class", "exam", "work", "interview"] or character_id in event.get("participants", []):
+		if (
+			str(event.get("type", "")) in ["class", "exam", "work", "interview"]
+			or bool(event.get("required", false))
+			or bool(event.get("relationship_date", false))
+			or bool(event.get("relationship_social_activity", false))
+			or character_id in event.get("participants", [])
+		):
 			return false
 	return true
 
@@ -988,9 +1541,18 @@ func _location_open(activity: Dictionary, weekday: String, block: String) -> boo
 	return true
 
 
+func _activity_destination_available(state: Dictionary, activity: Dictionary) -> bool:
+	var location_id: String = str(activity.get("location", "")).get_slice(".", 0)
+	return not location_id.is_empty() and location_id in state.get("world_state", {}).get("unlocked_locations", [])
+
+
 func _preferred_social_time(character: Dictionary, weekday: String, block: String) -> bool:
 	var preferences: Array = character.get("schedule", {}).get("preferred_social_blocks", [])
 	return block in preferences or (not weekday.is_empty() and "%s_%s" % [weekday, block] in preferences)
+
+
+func _preferred_social_activity(character: Dictionary, activity_id: String, weekday: String, block: String) -> bool:
+	return activity_id in _social_preferences(character).get("preferred_activities", []) or _preferred_social_time(character, weekday, block)
 
 
 func _payment_account(state: Dictionary, amount: float) -> String:
@@ -1008,6 +1570,23 @@ func _scheduled_date_for_character(state: Dictionary, character_id: String) -> D
 			continue
 		var event: Dictionary = event_value
 		if not bool(event.get("relationship_date", false)) or str(event.get("relationship_character_id", "")) != character_id or str(event.get("status", "scheduled")) != "scheduled":
+			continue
+		if found.is_empty() or _event_moment_value(event) < _event_moment_value(found):
+			found = event
+	return found
+
+
+func _scheduled_social_activity_for_character(state: Dictionary, character_id: String) -> Dictionary:
+	var found: Dictionary = {}
+	for event_value: Variant in state.get("calendar_state", {}).get("events", []):
+		if not event_value is Dictionary:
+			continue
+		var event: Dictionary = event_value
+		if (
+			not bool(event.get("relationship_social_activity", false))
+			or str(event.get("relationship_character_id", "")) != character_id
+			or str(event.get("status", "scheduled")) != "scheduled"
+		):
 			continue
 		if found.is_empty() or _event_moment_value(event) < _event_moment_value(found):
 			found = event
@@ -1036,12 +1615,47 @@ func _ensure_runtime_shape(state: Dictionary) -> void:
 		relationship["relationship_level"] = int(relationship.get("relationship_level", 1))
 		relationship["unlocked_chapter_level"] = int(relationship.get("unlocked_chapter_level", 1))
 		relationship["dating_agreement"] = relationship.get("dating_agreement", {"status": "none", "type": "none"})
-		for collection: String in ["invitation_history", "dating_history", "agreement_history", "conflict_history", "chapter_notifications"]:
+		for collection: String in [
+			"invitation_history", "social_invitation_history", "dating_history", "social_history",
+			"agreement_history", "conflict_history", "chapter_notifications", "pending_milestones", "milestone_history",
+		]:
 			if not relationship.get(collection) is Array:
 				relationship[collection] = []
+		if relationship["milestone_history"].is_empty():
+			var opening_chapter: Dictionary = _chapter_definition(character, 1) if character is Dictionary else {}
+			relationship["milestone_history"].append({
+				"level": 1, "chapter_id": opening_chapter.get("id", ""),
+				"title": opening_chapter.get("title", "Relationship Chapter 1"),
+				"status": "started", "route": "opening",
+			})
+		_reconcile_authored_chapter_unlock(state, str(character_id), character if character is Dictionary else {})
 		if not relationship.has("pending_agreement_proposal"):
 			relationship["pending_agreement_proposal"] = null
 		relationship["romantic_interest_known"] = bool(relationship.get("romantic_interest_known", false))
+
+
+func _reconcile_authored_chapter_unlock(state: Dictionary, character_id: String, character: Dictionary) -> void:
+	var relationship: Dictionary = state["relationships"][character_id]
+	var recorded_levels: Array = []
+	for history_value: Variant in relationship.get("milestone_history", []):
+		if history_value is Dictionary:
+			recorded_levels.append(int(history_value.get("level", 0)))
+	var unlocked_level: int = int(relationship.get("unlocked_chapter_level", 1))
+	for level: int in range(2, unlocked_level + 1):
+		if level in recorded_levels:
+			continue
+		var chapter: Dictionary = _chapter_definition(character, level)
+		var milestone: Dictionary = {
+			"level": level,
+			"chapter_id": chapter.get("id", ""),
+			"title": chapter.get("title", "Relationship Chapter %d" % level),
+			"unlocked_on": _date_string(state["clock"]),
+			"status": "ready",
+			"route": "authored",
+		}
+		relationship["chapter_notifications"].append(milestone.duplicate(true))
+		relationship["pending_milestones"].append(milestone.duplicate(true))
+		relationship["milestone_history"].append(milestone.duplicate(true))
 
 
 func _relationship_snapshot(state: Dictionary, character_id: String) -> Dictionary:
@@ -1054,7 +1668,10 @@ func _relationship_snapshot(state: Dictionary, character_id: String) -> Dictiona
 		stage = "family"
 	relationship["relationship_stage"] = relationship.get("relationship_stage", stage)
 	relationship["dating_agreement"] = relationship.get("dating_agreement", {"status": "none", "type": "none"})
-	for collection: String in ["invitation_history", "dating_history", "agreement_history", "conflict_history", "chapter_notifications"]:
+	for collection: String in [
+		"invitation_history", "social_invitation_history", "dating_history", "social_history",
+		"agreement_history", "conflict_history", "chapter_notifications", "pending_milestones", "milestone_history",
+	]:
 		relationship[collection] = relationship.get(collection, [])
 	relationship["pending_agreement_proposal"] = relationship.get("pending_agreement_proposal")
 	relationship["unlocked_chapter_level"] = int(relationship.get("unlocked_chapter_level", 1))
@@ -1067,6 +1684,48 @@ func _completed_date_count(relationship: Dictionary) -> int:
 		if record is Dictionary and str(record.get("outcome", "")) == "completed":
 			count += 1
 	return count
+
+
+func _completed_social_activity_count(relationship: Dictionary) -> int:
+	var count: int = 0
+	for record: Variant in relationship.get("social_history", []):
+		if record is Dictionary and str(record.get("outcome", "")) == "completed":
+			count += 1
+	return count
+
+
+func _next_milestone_progress(relationship: Dictionary) -> Dictionary:
+	var current_level: int = int(relationship.get("unlocked_chapter_level", 1))
+	var next_level: int = current_level + 1
+	var requirement: Dictionary = {}
+	for requirement_value: Variant in _package().get("chapter_due_diligence", []):
+		if requirement_value is Dictionary and int(requirement_value.get("level", 0)) == next_level:
+			requirement = requirement_value
+			break
+	if requirement.is_empty():
+		return {"complete": true, "level": current_level}
+	var completed_dates: int = _completed_date_count(relationship)
+	var completed_social: int = _completed_social_activity_count(relationship)
+	var shared: int = completed_dates + completed_social
+	var bond: float = maxf(float(relationship.get("friendship", 0.0)), float(relationship.get("love", 0.0)))
+	var trust: float = float(relationship.get("trust", 0.0))
+	var romantic_route: bool = str(relationship.get("relationship_stage", "")) in ["dating", "committed"] or completed_dates > 0
+	var agreement_required: bool = bool(requirement.get(
+		"agreement_required_on_romantic_route", requirement.get("agreement_required", false)
+	)) and romantic_route
+	var agreement_active: bool = str(relationship.get("dating_agreement", {}).get("status", "none")) == "active"
+	return {
+		"complete": false,
+		"level": next_level,
+		"shared_activities": shared,
+		"required_shared_activities": int(requirement.get("shared_activities", requirement.get("completed_dates", 0))),
+		"bond": bond,
+		"required_bond": float(requirement.get("bond", 0.0)),
+		"trust": trust,
+		"required_trust": float(requirement.get("trust", 0.0)),
+		"agreement_required": agreement_required,
+		"agreement_met": not agreement_required or agreement_active,
+	}
 
 
 func _dating_preferences(character: Dictionary) -> Dictionary:
@@ -1082,6 +1741,16 @@ func _dating_preferences(character: Dictionary) -> Dictionary:
 		"conflict_style": "direct" if jealousy >= 50 else "calm",
 		"openness_reaction": "uneasy" if jealousy >= 40 else "supportive",
 		"reaction_lines": {},
+	}
+
+
+func _social_preferences(character: Dictionary) -> Dictionary:
+	var preferences: Variant = character.get("social_preferences")
+	if preferences is Dictionary:
+		return preferences
+	return {
+		"invitation_threshold": _package().get("social_invitation_defaults", {}).get("minimum_score", 20),
+		"preferred_activities": [],
 	}
 
 

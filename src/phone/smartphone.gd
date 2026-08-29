@@ -275,6 +275,7 @@ func _render_messages() -> void:
 		lines.append("[color=%s]%s • %s[/color]\n%s" % [color, speaker, _friendly_timestamp(str(message.get("timestamp", ""))), message.get("text", "")])
 	app_content.text = "\n\n".join(lines) if lines.size() > 1 else "%s\n\nNo messages yet." % lines[0]
 	_add_pending_reply_buttons(thread)
+	_add_outgoing_message_buttons()
 	for character_id_value: Variant in contacts:
 		var character_id: String = str(character_id_value)
 		var character: Dictionary = ContentRegistry.get_character(character_id)
@@ -1188,7 +1189,10 @@ func _render_relationship_detail(character_id: String) -> void:
 		agreement_label = str(agreement.get("name", agreement.get("type", "Dating agreement")))
 	var lines: PackedStringArray = [
 		"[font_size=26]%s[/font_size]" % profile.get("display_name", character_id),
-		"%s • %d completed date(s)" % [str(profile.get("relationship_stage", "acquaintance")).replace("_", " ").capitalize(), int(profile.get("completed_dates", 0))],
+		"%s • %d date(s) • %d hangout(s)" % [
+			str(profile.get("relationship_stage", "acquaintance")).replace("_", " ").capitalize(),
+			int(profile.get("completed_dates", 0)), int(profile.get("completed_social_activities", 0)),
+		],
 		"Agreement: [color=#e9a86c]%s[/color]" % agreement_label,
 		"",
 		"PRIMARY METERS",
@@ -1209,8 +1213,18 @@ func _render_relationship_detail(character_id: String) -> void:
 		"STORY ARC — CHAPTER %d OF 5" % int(profile.get("chapter_level", 1)),
 		str(chapter.get("title", "This chapter has not been authored yet.")),
 	]
+	var next_milestone: Dictionary = profile.get("next_milestone", {})
+	if profile.get("pending_milestones", []).is_empty() and not bool(next_milestone.get("complete", false)):
+		lines.append("Next chapter: shared time %d/%d • bond %d/%d • trust %d/%d%s" % [
+			int(next_milestone.get("shared_activities", 0)), int(next_milestone.get("required_shared_activities", 0)),
+			int(next_milestone.get("bond", 0)), int(next_milestone.get("required_bond", 0)),
+			int(next_milestone.get("trust", 0)), int(next_milestone.get("required_trust", 0)),
+			" • agreement needed" if bool(next_milestone.get("agreement_required", false)) and not bool(next_milestone.get("agreement_met", false)) else "",
+		])
 	var date_status: Dictionary = RelationshipService.date_status(character_id)
 	lines.append("\nDATE PLAN\n%s" % date_status.get("reason", "No date is scheduled."))
+	var social_status: Dictionary = RelationshipService.social_activity_status(character_id)
+	lines.append("\nSOCIAL PLAN\n%s" % social_status.get("reason", "No social activity is scheduled."))
 	var conflicts: Array = meters.get("conflict_history", [])
 	if not conflicts.is_empty() and conflicts.back() is Dictionary:
 		var latest_conflict: Dictionary = conflicts.back()
@@ -1222,6 +1236,12 @@ func _render_relationship_detail(character_id: String) -> void:
 	if pending_proposal is Dictionary:
 		_add_action_button("Accept %s proposal" % str(pending_proposal.get("type", "relationship")).capitalize(), _respond_relationship_proposal.bind(character_id, true))
 		_add_action_button("Decline proposal honestly", _respond_relationship_proposal.bind(character_id, false))
+	for milestone_value: Variant in profile.get("pending_milestones", []):
+		if milestone_value is Dictionary:
+			_add_action_button(
+				"Begin Story Arc — %s" % milestone_value.get("title", "Relationship Chapter"),
+				_begin_relationship_milestone.bind(character_id, int(milestone_value.get("level", 0)))
+			)
 
 	if bool(date_status.get("scheduled", false)):
 		var date_event: Dictionary = date_status.get("event", {})
@@ -1236,6 +1256,20 @@ func _render_relationship_detail(character_id: String) -> void:
 				_add_action_button("Plan route to date", _open_route_planner.bind(destination))
 	else:
 		_render_date_invitation_actions(character_id, bool(profile.get("romance_compatible", false)))
+
+	if bool(social_status.get("scheduled", false)):
+		var social_event: Dictionary = social_status.get("event", {})
+		if bool(social_status.get("ready", false)):
+			for approach_value: Variant in ContentRegistry.get_package("port_alder_relationship_system").get("social_approaches", []):
+				if approach_value is Dictionary:
+					var approach: Dictionary = approach_value
+					_add_action_button(str(approach.get("name", "Begin Hangout")), _complete_social_activity.bind(str(social_event.get("id", "")), str(approach.get("id", ""))))
+		elif not social_event.is_empty():
+			var social_destination: String = str(social_event.get("location", "")).get_slice(".", 0)
+			if not social_destination.is_empty():
+				_add_action_button("Plan route to hangout", _open_route_planner.bind(social_destination))
+	else:
+		_render_social_invitation_actions(character_id)
 
 	var readiness: Dictionary = RelationshipService.can_propose_agreement(character_id)
 	if bool(readiness.get("ok", false)):
@@ -1264,6 +1298,24 @@ func _render_date_invitation_actions(character_id: String, romance_compatible: b
 				_add_action_button("Private invite — %s" % label.trim_prefix("Invite — "), _invite_on_date.bind(character_id, str(activity.get("id", "")), option, false))
 
 
+func _render_social_invitation_actions(character_id: String) -> void:
+	for activity_value: Variant in ContentRegistry.get_package("port_alder_relationship_system").get("social_activities", []):
+		if not activity_value is Dictionary:
+			continue
+		var activity: Dictionary = activity_value
+		var options: Array = RelationshipService.social_invitation_options(character_id, str(activity.get("id", "")), 1)
+		if options.is_empty() or not options[0] is Dictionary:
+			continue
+		var option: Dictionary = options[0]
+		_add_action_button(
+			"Hang out — %s • %s %s" % [
+				activity.get("name", "Activity"), str(option.get("weekday", "")).left(3).capitalize(),
+				str(option.get("block", "")).replace("_", " ").capitalize(),
+			],
+			_invite_to_social_activity.bind(character_id, str(activity.get("id", "")), option)
+		)
+
+
 func _open_relationship_detail(character_id: String) -> void:
 	_selected_relationship_contact = character_id
 	_render_relationships()
@@ -1288,6 +1340,17 @@ func _invite_on_date(character_id: String, activity_id: String, option: Dictiona
 		phone_status.text = str(result.get("errors", ["The invitation could not be sent."])[0])
 
 
+func _invite_to_social_activity(character_id: String, activity_id: String, option: Dictionary) -> void:
+	var result: Dictionary = RelationshipService.invite_to_social_activity(
+		character_id, activity_id, str(option.get("date", "")), str(option.get("weekday", "")), str(option.get("block", ""))
+	)
+	_render_relationships()
+	phone_status.text = (
+		str(result.get("data", {}).get("response", "Invitation sent."))
+		if result.get("ok", false) else str(result.get("errors", ["The invitation could not be sent."])[0])
+	)
+
+
 func _complete_relationship_date(event_id: String, approach_id: String) -> void:
 	var result: Dictionary = RelationshipService.complete_date(event_id, approach_id)
 	_render_relationships()
@@ -1305,6 +1368,27 @@ func _complete_relationship_date(event_id: String, approach_id: String) -> void:
 	for reaction_value: Variant in data.get("witness_reactions", []):
 		if reaction_value is Dictionary:
 			phone_status.text += " %s" % reaction_value.get("line", "")
+
+
+func _complete_social_activity(event_id: String, approach_id: String) -> void:
+	var result: Dictionary = RelationshipService.complete_social_activity(event_id, approach_id)
+	_render_relationships()
+	if not result.get("ok", false):
+		phone_status.text = str(result.get("errors", ["The social activity could not begin."])[0])
+		return
+	phone_status.text = str(result.get("data", {}).get("summary", "Hangout completed."))
+	for chapter_value: Variant in result.get("data", {}).get("chapter_updates", []):
+		if chapter_value is Dictionary:
+			phone_status.text += " New story arc: %s." % chapter_value.get("title", "Relationship story")
+
+
+func _begin_relationship_milestone(character_id: String, level: int) -> void:
+	var result: Dictionary = RelationshipService.begin_milestone(character_id, level)
+	_render_relationships()
+	phone_status.text = (
+		str(result.get("data", {}).get("message", "Relationship story started."))
+		if result.get("ok", false) else str(result.get("errors", ["The story arc could not begin."])[0])
+	)
 
 
 func _propose_relationship_agreement(character_id: String, agreement_type: String) -> void:
@@ -1629,11 +1713,38 @@ func _add_pending_reply_buttons(thread: Dictionary) -> void:
 		var message_id: String = str(message.get("id", ""))
 		if _thread_has_reply(thread, message_id):
 			continue
-		var definition: Dictionary = _message_definition(_selected_contact, message_id)
-		for reply_index: int in definition.get("quick_replies", []).size():
-			var reply: Dictionary = definition["quick_replies"][reply_index]
-			_add_action_button("Reply: %s" % reply.get("text", ""), _reply_to_message.bind(message_id, reply_index))
+		for reply_value: Variant in PhoneService.available_replies(_selected_contact, message_id):
+			if not reply_value is Dictionary:
+				continue
+			var reply: Dictionary = reply_value
+			_add_action_button("Reply: %s" % reply.get("text", ""), _reply_to_message.bind(message_id, int(reply.get("index", -1))))
 		return
+
+
+func _add_outgoing_message_buttons() -> void:
+	for definition_value: Variant in PhoneService.available_outgoing_messages(_selected_contact):
+		if not definition_value is Dictionary:
+			continue
+		var definition: Dictionary = definition_value
+		var message_text: String = str(definition.get("text", ""))
+		var label: String = "%s…" % message_text.left(64) if message_text.length() > 64 else message_text
+		_add_action_button("Send: %s" % label, _send_outgoing_message.bind(str(definition.get("id", ""))))
+
+
+func _send_outgoing_message(message_id: String) -> void:
+	var result: Dictionary = PhoneService.send_outgoing_message(_selected_contact, message_id)
+	if not result.get("ok", false):
+		phone_status.text = str(result.get("errors", ["Message failed."])[0])
+		return
+	phone_status.text = "Message sent. Five in-game minutes passed."
+	_render_messages()
+	var participant: String = str(result.get("scheduler_participant", ""))
+	if not participant.is_empty():
+		_open_scheduler(participant)
+	var rescheduler_event: String = str(result.get("rescheduler_event", ""))
+	if not rescheduler_event.is_empty():
+		_show_app("calendar")
+		phone_status.text = "Choose a replacement time for %s." % rescheduler_event.replace("_", " ").capitalize()
 
 
 func _reply_to_message(message_id: String, reply_index: int) -> void:
@@ -1646,6 +1757,10 @@ func _reply_to_message(message_id: String, reply_index: int) -> void:
 	var participant: String = str(result.get("scheduler_participant", ""))
 	if not participant.is_empty():
 		_open_scheduler(participant)
+	var rescheduler_event: String = str(result.get("rescheduler_event", ""))
+	if not rescheduler_event.is_empty():
+		_show_app("calendar")
+		phone_status.text = "Choose a replacement time for %s." % rescheduler_event.replace("_", " ").capitalize()
 
 
 func _open_scheduler(preselected_contact: String = "") -> void:
@@ -1734,6 +1849,11 @@ func _cancel_calendar_event(event_id: String) -> void:
 	if RelationshipService.is_date_event(event_id):
 		var date_result: Dictionary = RelationshipService.cancel_date(event_id)
 		phone_status.text = str(date_result.get("data", {}).get("message", "Date cancelled.")) if date_result.get("ok", false) else str(date_result.get("errors", ["Cancellation failed."])[0])
+		_render_calendar()
+		return
+	if RelationshipService.is_social_event(event_id):
+		var social_result: Dictionary = RelationshipService.cancel_social_activity(event_id)
+		phone_status.text = str(social_result.get("data", {}).get("message", "Hangout cancelled.")) if social_result.get("ok", false) else str(social_result.get("errors", ["Cancellation failed."])[0])
 		_render_calendar()
 		return
 	var result: Dictionary = SimulationService.apply_operation(

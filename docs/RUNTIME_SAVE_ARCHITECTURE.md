@@ -52,6 +52,12 @@ school commitments. Required work/class/interview/exam overlaps are rejected; op
 overlaps are preserved with explicit conflict records. Weather advances from the
 authored opening-week forecast whenever the game date changes.
 
+Relationship dates and non-romantic hangouts use calendar-backed plans that require
+the player to reach the authored room. Saves retain invitation responses,
+completed/cancelled/missed activity histories, and player-paced story milestones.
+Relationship synchronization adds these collections to older snapshots and turns
+authored chapter unlocks into pending milestones without rewriting character files.
+
 Travel is state-backed as an atomic begin/complete pair. Planning is read-only;
 confirmation records a pending trip only in the working transaction, then validates
 the arrival room, advances exact minutes, charges the selected account, discovers
@@ -106,7 +112,7 @@ The root state contains:
 - Health, reproductive health, education, employment, money, inventory, and housing
 - Phone apps, contacts, messages, quests, and calendar
 - One runtime entry for every persistent NPC
-- Relationship meters, agreements, memories, and relationship chapters
+- Relationship meters, agreements, memories, dates, hangouts, and story milestones
 - Quest, conversation, world, household, pregnancy, child, and custody state
 - Pending simulation events and a bounded recent event log
 - Pending and completed weekly reflections, selected priorities, and weekly totals

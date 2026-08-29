@@ -28,6 +28,7 @@
   "connections": [{"character": "daniel_hale", "relation": "spouse"}, {"character": "lily_hale", "relation": "daughter"}, {"character": "hannah_brooks", "relation": "coworker"}],
   "relationship_defaults": {"friendship": 58, "love": 82, "attraction": 0, "lust": 0, "trust": 70, "respect": 62, "resentment": 4, "jealousy": 0, "comfort": 66, "commitment": 95, "compatibility": 58, "satisfaction": 70},
   "boundaries": {"family_only": true, "alcohol_consent": "never_when_impaired", "hard_limits": ["romance_with_player", "sexual_content_with_player"]},
+  "social_preferences": {"invitation_threshold": 18, "preferred_activities": ["cafe_catchup", "galleria_browse"]},
   "private_profile": {"fertility_tier": "low", "reproductive_capability": "can_become_pregnant", "knowledge": "hidden_until_relevant"},
   "relationship_chapters": [{"level": 1, "id": "under_this_roof", "title": "Under This Roof"}, {"level": 2, "id": "learning_to_listen", "title": "Learning to Listen"}, {"level": 3, "id": "the_family_ledger", "title": "The Family Ledger"}, {"level": 4, "id": "letting_go", "title": "Letting Go"}, {"level": 5, "id": "home_changes_shape", "title": "Home Changes Shape"}],
   "quest_hooks": ["opening_future_choice", "household_rent", "weekly_allowance", "family_rules", "clinic_job_referral"],

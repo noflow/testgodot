@@ -1,4 +1,4 @@
-# Relationship and Dating Playbook
+# Relationship, Social Activity, and Dating Playbook
 
 Status: first playable milestone
 
@@ -14,6 +14,14 @@ personal schedule; location hours; the player's required class, work, exam, and
 interview commitments; and any date already scheduled with that NPC. Sending an
 invitation consumes five minutes and stores both sides of the exchange in the
 character's phone thread.
+
+The same contact view offers non-romantic social plans to every known adult
+contact, including friends and family. Waterfront hangouts, café catch-ups,
+movies, Galleria browsing, and Undertow outings use the NPC's real schedule and
+the player's calendar. A hangout never silently becomes a date. At the scheduled
+room and time, the player chooses whether to listen, keep things playful, or open
+up personally. Activities at undiscovered destinations remain hidden until the
+player unlocks that part of the city.
 
 An accepted invitation becomes a calendar event. The player must arrive at the
 activity's exact room during its scheduled block. The phone can open the route
@@ -31,10 +39,17 @@ Resentment.
 
 ## Progression
 
-Each major character retains five authored `relationship_chapters`. A chapter
-unlocks only after its configured combination of completed dates, bond, Trust, and,
-for the later chapters, an active agreement. This due-diligence gate prevents meter
-grinding alone from skipping relationship stories.
+Each major character retains five authored `relationship_chapters`. Dates and
+completed hangouts both count as shared activity. A chapter unlocks only after
+its configured combination of shared activities, bond, and Trust. Levels four
+and five also require an active agreement when the relationship is following a
+romantic route; family and friendship routes never require a dating agreement.
+This due-diligence gate prevents meter grinding alone from skipping stories.
+
+Unlocking a chapter places a visible story-arc milestone in the Relationships app
+instead of forcing a scene immediately. The player chooses when to begin it. If
+the chapter id matches an authored character quest, beginning the milestone starts
+that quest; otherwise it remains a durable hook for a later Screenwriter export.
 
 A completed date changes the stage to `dating`. After at least two completed dates
 and sufficient Trust, either side may discuss an agreement. The first milestone
@@ -63,7 +78,9 @@ Reusable rules live in `content/systems/relationships.json`:
 - agreement definitions;
 - approaches and meter effects;
 - date activities, rooms, times, duration, costs, and witness chance; and
-- invitation and conflict tuning.
+- invitation and conflict tuning;
+- social activities, approaches, and friendship-invitation tuning; and
+- shared-activity requirements for five player-paced story milestones.
 
 Character-specific behavior stays in the character's single `.character` file.
 The optional `dating_preferences` object owns invitation threshold, favorite date
@@ -72,9 +89,17 @@ conflict style, openness response, and authored reaction lines. Characters witho
 this section receive safe defaults derived from their existing boundaries and
 Jealousy personality value.
 
+Characters may also define an optional `social_preferences` object with an
+`invitation_threshold` and `preferred_activities`. Missing preferences use safe
+global defaults, so existing and modded character files remain compatible.
+
 Runtime histories and agreements belong to the save state. Source character files
 are never rewritten during play, which keeps new character packages importable and
 mod-friendly.
+
+Social invitation history, completed/cancelled/missed hangouts, pending
+milestones, and milestone history are also save-owned. Old saves receive these
+collections during relationship synchronization.
 
 ## Safety and scope
 

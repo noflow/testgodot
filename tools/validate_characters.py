@@ -44,6 +44,20 @@ SCREENWRITER_DIALOGUE_EFFECTS = {
     "complete_activity", "spend_money", "schedule_event", "create_debt",
     "create_calendar_from_class_schedule", "complete_conversation",
 }
+SCREENWRITER_PHONE_EFFECTS = {
+    "add_meter", "start_quest", "complete_objective", "complete_quest",
+    "set_quest_state", "set_flag", "set_value", "open_calendar_scheduler",
+    "open_calendar_rescheduler",
+}
+SCREENWRITER_PHONE_TRIGGERS = {
+    "sandbox_activated", "quest_started", "objective_completed",
+    "hours_after_quest", "hours_before_calendar_event", "message_sent",
+    "message_replied", "reply_selected", "days", "blocks", "flag",
+    "flag_not", "meter_at_least", "meter_at_most",
+}
+SCREENWRITER_PHONE_CONDITIONS = {
+    "meter_at_least", "meter_at_most", "flag", "flag_not", "value_equals",
+}
 
 
 def fail(errors: list[str], path: Path, message: str) -> None:
@@ -83,6 +97,42 @@ def validate_dialogue_effects(
         operation = effect.get("operation") if isinstance(effect, dict) else None
         if operation not in SCREENWRITER_DIALOGUE_EFFECTS:
             fail(errors, path, f"conversation {conversation_id} {owner} uses unsupported dialogue effect: {operation}")
+
+
+def validate_phone_conditions(
+    errors: list[str], path: Path, message_id: str, owner: str, conditions: object
+) -> None:
+    if conditions is None:
+        return
+    if not isinstance(conditions, list):
+        fail(errors, path, f"phone message {message_id} {owner} conditions must be a list")
+        return
+    for condition in conditions:
+        if not isinstance(condition, dict) or not condition:
+            fail(errors, path, f"phone message {message_id} {owner} has an invalid condition")
+            continue
+        unknown = sorted(set(condition) - SCREENWRITER_PHONE_CONDITIONS)
+        if unknown:
+            fail(errors, path, f"phone message {message_id} {owner} uses unsupported conditions: {', '.join(unknown)}")
+        if "value_equals" in condition and (not isinstance(condition["value_equals"], list) or len(condition["value_equals"]) != 2):
+            fail(errors, path, f"phone message {message_id} {owner} has malformed value_equals")
+        for key in ("meter_at_least", "meter_at_most"):
+            if key in condition and (not isinstance(condition[key], list) or len(condition[key]) not in (2, 3)):
+                fail(errors, path, f"phone message {message_id} {owner} has malformed {key}")
+
+
+def validate_phone_effects(
+    errors: list[str], path: Path, message_id: str, owner: str, effects: object
+) -> None:
+    if effects is None:
+        return
+    if not isinstance(effects, list):
+        fail(errors, path, f"phone message {message_id} {owner} effects must be a list")
+        return
+    for effect in effects:
+        operation = effect.get("operation") if isinstance(effect, dict) else None
+        if operation not in SCREENWRITER_PHONE_EFFECTS:
+            fail(errors, path, f"phone message {message_id} {owner} uses unsupported effect: {operation}")
 
 
 def validate_file(path: Path, known_ids: set[str]) -> list[str]:
@@ -217,6 +267,20 @@ def validate_file(path: Path, known_ids: set[str]) -> list[str]:
             if not isinstance(reaction_lines, dict) or any(not isinstance(line, str) or not line for line in reaction_lines.values()):
                 fail(errors, path, "dating reaction lines must contain non-empty text")
 
+    social_preferences = data.get("social_preferences")
+    if social_preferences is not None:
+        if not isinstance(social_preferences, dict):
+            fail(errors, path, "social_preferences must be an object")
+        else:
+            threshold = social_preferences.get("invitation_threshold", 20)
+            if not isinstance(threshold, (int, float)) or not 0 <= threshold <= 100:
+                fail(errors, path, "social invitation threshold must be from 0 to 100")
+            preferred = social_preferences.get("preferred_activities", [])
+            if not isinstance(preferred, list) or any(not isinstance(item, str) or not item for item in preferred):
+                fail(errors, path, "social preferred activities must be a list of ids")
+            elif len(preferred) != len(set(preferred)):
+                fail(errors, path, "social preferred activities must be unique")
+
     quests = data["quests"]
     quest_ids = [quest.get("id") for quest in quests]
     if len(quest_ids) != len(set(quest_ids)):
@@ -281,6 +345,113 @@ def validate_file(path: Path, known_ids: set[str]) -> list[str]:
                 if target not in nodes:
                     fail(errors, path, f"conversation {conversation_id} links to missing node {target}")
 
+    # Screenwriter phone definitions share the same character package but execute
+    # through a separate runtime contract from VN dialogue.
+    message_ids: list[str] = []
+    for message in data.get("text_messages", []):
+        if not isinstance(message, dict):
+            fail(errors, path, "phone messages must be objects")
+            continue
+        message_id = message.get("id")
+        if not isinstance(message_id, str) or not message_id or not message.get("text"):
+            fail(errors, path, "each phone message needs an id and text")
+            continue
+        message_ids.append(message_id)
+        direction = message.get("direction", "outgoing" if message.get("sender") == "player" else "incoming")
+        if direction not in {"incoming", "outgoing"}:
+            fail(errors, path, f"phone message {message_id} has an invalid direction")
+        expected_sender = "player" if direction == "outgoing" else data["id"]
+        if message.get("sender", expected_sender) != expected_sender:
+            fail(errors, path, f"phone message {message_id} sender conflicts with its direction")
+        trigger = message.get("trigger", {})
+        if not isinstance(trigger, dict):
+            fail(errors, path, f"phone message {message_id} trigger must be an object")
+            trigger = {}
+        unknown_triggers = sorted(set(trigger) - SCREENWRITER_PHONE_TRIGGERS)
+        if unknown_triggers:
+            fail(errors, path, f"phone message {message_id} uses unsupported triggers: {', '.join(unknown_triggers)}")
+        for block in trigger.get("blocks", []) if isinstance(trigger.get("blocks", []), list) else [trigger.get("blocks")]:
+            if block not in VALID_BLOCKS:
+                fail(errors, path, f"phone message {message_id} uses invalid block {block}")
+        for day in trigger.get("days", []) if isinstance(trigger.get("days", []), list) else [trigger.get("days")]:
+            if day not in {"monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"}:
+                fail(errors, path, f"phone message {message_id} uses invalid weekday {day}")
+        validate_phone_conditions(errors, path, message_id, "message", message.get("conditions"))
+        validate_phone_effects(errors, path, message_id, "message", message.get("effects"))
+        replies = message.get("quick_replies", [])
+        if not isinstance(replies, list):
+            fail(errors, path, f"phone message {message_id} quick_replies must be a list")
+            continue
+        reply_ids: list[str] = []
+        for index, reply in enumerate(replies):
+            if not isinstance(reply, dict) or not reply.get("text"):
+                fail(errors, path, f"phone message {message_id} has an invalid reply")
+                continue
+            reply_id = str(reply.get("id", f"reply_{index}"))
+            reply_ids.append(reply_id)
+            validate_phone_conditions(errors, path, message_id, f"reply {reply_id}", reply.get("conditions"))
+            validate_phone_effects(errors, path, message_id, f"reply {reply_id}", reply.get("effects"))
+        if len(reply_ids) != len(set(reply_ids)):
+            fail(errors, path, f"phone message {message_id} has duplicate reply ids")
+        if direction == "outgoing" and replies:
+            fail(errors, path, f"outgoing phone message {message_id} cannot contain quick replies")
+    if len(message_ids) != len(set(message_ids)):
+        fail(errors, path, "phone message ids must be unique within a package")
+
+    return errors
+
+
+def validate_phone_registry(paths: list[Path]) -> list[str]:
+    errors: list[str] = []
+    messages: dict[str, tuple[str, dict, Path]] = {}
+    for path in paths:
+        try:
+            sheet = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        owner = sheet.get("id", path.stem)
+        for message in sheet.get("text_messages", []):
+            if not isinstance(message, dict) or not message.get("id"):
+                continue
+            message_id = str(message["id"])
+            if message_id in messages:
+                other_owner = messages[message_id][0]
+                errors.append(f"phone message id {message_id} is used by both {other_owner} and {owner}")
+            else:
+                messages[message_id] = (owner, message, path)
+
+    for message_id, (owner, message, path) in messages.items():
+        trigger = message.get("trigger", {})
+        if not isinstance(trigger, dict):
+            continue
+        for key in ("message_sent", "message_replied"):
+            if key not in trigger:
+                continue
+            reference = trigger[key]
+            target_owner, target_id = (owner, reference) if isinstance(reference, str) else (
+                (reference[0], reference[1]) if isinstance(reference, list) and len(reference) == 2 else (None, None)
+            )
+            target = messages.get(str(target_id))
+            if target is None:
+                fail(errors, path, f"phone message {message_id} {key} references unknown message {target_id}")
+            elif target[0] != target_owner:
+                fail(errors, path, f"phone message {message_id} {key} points to the wrong contact thread")
+        if "reply_selected" in trigger:
+            reference = trigger["reply_selected"]
+            if not isinstance(reference, list) or len(reference) != 2:
+                fail(errors, path, f"phone message {message_id} has malformed reply_selected")
+                continue
+            source = messages.get(str(reference[0]))
+            if source is None or source[0] != owner:
+                fail(errors, path, f"phone message {message_id} reply_selected references an unknown same-thread message")
+                continue
+            reply_ids = {
+                str(reply.get("id", f"reply_{index}"))
+                for index, reply in enumerate(source[1].get("quick_replies", []))
+                if isinstance(reply, dict)
+            }
+            if str(reference[1]) not in reply_ids:
+                fail(errors, path, f"phone message {message_id} reply_selected references unknown reply {reference[1]}")
     return errors
 
 
@@ -621,6 +792,27 @@ def validate_global_content(
             if not activity.get("allowed_blocks") or any(block not in valid_blocks for block in activity.get("allowed_blocks", [])):
                 errors.append(f"{path.relative_to(ROOT)}: date activity {activity.get('id')} uses invalid blocks")
 
+        social_activities = data.get("social_activities", [])
+        social_activity_ids = [activity.get("id") for activity in social_activities]
+        if any(not item for item in social_activity_ids) or len(social_activity_ids) != len(set(social_activity_ids)):
+            errors.append(f"{path.relative_to(ROOT)}: social activities contain missing or duplicate ids")
+        for activity in social_activities:
+            if not activity.get("name") or not activity.get("location"):
+                errors.append(f"{path.relative_to(ROOT)}: social activity {activity.get('id')} is incomplete")
+            if not isinstance(activity.get("duration_minutes"), int) or activity.get("duration_minutes", 0) <= 0:
+                errors.append(f"{path.relative_to(ROOT)}: social activity {activity.get('id')} has invalid duration")
+            if activity.get("cost", -1) < 0:
+                errors.append(f"{path.relative_to(ROOT)}: social activity {activity.get('id')} has invalid cost")
+            if not activity.get("allowed_blocks") or any(block not in valid_blocks for block in activity.get("allowed_blocks", [])):
+                errors.append(f"{path.relative_to(ROOT)}: social activity {activity.get('id')} uses invalid blocks")
+
+        chapter_requirements = data.get("chapter_due_diligence", [])
+        if chapter_requirements and [entry.get("level") for entry in chapter_requirements] != [1, 2, 3, 4, 5]:
+            errors.append(f"{path.relative_to(ROOT)}: relationship due-diligence rules must define levels 1 through 5")
+        for requirement in chapter_requirements:
+            if any(requirement.get(key, -1) < 0 for key in ("shared_activities", "bond", "trust")):
+                errors.append(f"{path.relative_to(ROOT)}: relationship level {requirement.get('level')} has invalid milestone requirements")
+
         operations = data.get("operations", [])
         operation_ids = [operation.get("id") for operation in operations]
         if any(not item or "." not in item for item in operation_ids) or len(operation_ids) != len(set(operation_ids)):
@@ -711,6 +903,7 @@ def main() -> int:
                 character_home_locations[character_data["id"]] = home_location
         except (OSError, json.JSONDecodeError):
             pass
+    errors.extend(validate_phone_registry(paths))
     errors.extend(
         validate_global_content(
             known_ids,

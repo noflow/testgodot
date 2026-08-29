@@ -13,6 +13,7 @@
   "connections": [{"character": "claire_donovan", "relation": "store_contact"}, {"character": "olivia_price", "relation": "training_client"}, {"character": "hannah_brooks", "relation": "health_referral_contact"}],
   "relationship_defaults": {"friendship": 0, "love": 0, "attraction": 4, "lust": 2, "trust": 0, "respect": 1, "resentment": 0, "jealousy": 0, "comfort": 0, "commitment": 0, "compatibility": 0, "satisfaction": 50},
   "boundaries": {"dating_agreement_preference": "exclusive_when_committed", "protection_policy": "requires_protection_until_mutual_testing", "alcohol_consent": "never_when_impaired", "hard_limits": ["trainer_client_pressure", "body_shaming", "dishonesty"]},
+  "social_preferences": {"invitation_threshold": 25, "preferred_activities": ["waterfront_hangout", "nightclub_hangout"]},
   "private_profile": {"fertility_tier": "exceptionally_fertile", "reproductive_capability": "can_become_pregnant", "knowledge": "hidden_until_discovered", "adult_preferences": {"established": ["athletic_playfulness"], "discoverable": ["light_competition"], "hard_limits": ["body_degradation", "unsafe_exertion"]}},
   "relationship_chapters": [{"level": 1, "id": "first_rep", "title": "First Rep"}, {"level": 2, "id": "spotter", "title": "Spotter"}, {"level": 3, "id": "personal_best", "title": "Personal Best"}, {"level": 4, "id": "recovery_week", "title": "Recovery Week"}, {"level": 5, "id": "stronger_together", "title": "Stronger Together"}],
   "quest_hooks": ["gym_orientation", "fitness_assessment", "coastal_run", "management_promotion"],

@@ -13,6 +13,7 @@
   "connections": [{"character": "chloe_bennett", "relation": "trusted_friend"}, {"character": "marcus_lee", "relation": "film_project_collaborator"}, {"character": "olivia_price", "relation": "future_client_contact"}],
   "relationship_defaults": {"friendship": 1, "love": 0, "attraction": 4, "lust": 2, "trust": 0, "respect": 2, "resentment": 0, "jealousy": 0, "comfort": 0, "commitment": 0, "compatibility": 0, "satisfaction": 50},
   "boundaries": {"dating_agreement_preference": "open_to_negotiation", "protection_policy": "requires_explicit_health_discussion", "alcohol_consent": "never_when_impaired", "hard_limits": ["outing", "body_assumptions", "privacy_violations"]},
+  "social_preferences": {"invitation_threshold": 28, "preferred_activities": ["movie_hangout", "cafe_catchup"]},
   "private_profile": {"fertility_tier": "low", "reproductive_capability": "can_become_pregnant", "knowledge": "private_until_shared", "adult_preferences": {"established": ["clear_negotiation"], "discoverable": ["light_power_exchange"], "hard_limits": ["identity_degradation", "surprise_recording"]}},
   "relationship_chapters": [{"level": 1, "id": "ticket_open", "title": "Ticket Open"}, {"level": 2, "id": "after_hours_patch", "title": "After-Hours Patch"}, {"level": 3, "id": "private_repository", "title": "Private Repository"}, {"level": 4, "id": "system_restore", "title": "System Restore"}, {"level": 5, "id": "shared_access", "title": "Shared Access"}],
   "quest_hooks": ["broken_phone", "campus_app_project", "internship_interview", "privacy_breach"],

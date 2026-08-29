@@ -53,6 +53,8 @@ func _apply_to_working_state(state: Dictionary, operation: String, payload: Dict
 			return _set_relationship_agreement(state, payload)
 		"relationship.record_date":
 			return _record_relationship_date(state, payload)
+		"relationship.record_activity":
+			return _record_relationship_activity(state, payload)
 		"relationship.record_conflict":
 			return _record_relationship_conflict(state, payload)
 		"economy.transaction":
@@ -69,6 +71,8 @@ func _apply_to_working_state(state: Dictionary, operation: String, payload: Dict
 			return _clean_inventory_container(state, payload)
 		"phone.append_message":
 			return _append_phone_message(state, payload)
+		"phone.add_contact":
+			return _add_phone_contact(state, payload)
 		"phone.mark_thread_read":
 			return _mark_phone_thread_read(state, payload)
 		"npc.meet":
@@ -295,6 +299,36 @@ func _record_relationship_date(state: Dictionary, payload: Dictionary) -> String
 	return ""
 
 
+func _record_relationship_activity(state: Dictionary, payload: Dictionary) -> String:
+	var character_id: String = str(payload.get("character_id", ""))
+	if not state["relationships"].has(character_id):
+		return "Unknown relationship character: %s" % character_id
+	var character: Variant = _registry.get_character(character_id)
+	if not character is Dictionary or int(character.get("profile", {}).get("age", 0)) < 18:
+		return "Social activity history is unavailable with this character."
+	var record_value: Variant = payload.get("activity_record")
+	if not record_value is Dictionary:
+		return "Social activity history requires a record."
+	var record: Dictionary = record_value.duplicate(true)
+	var record_id: String = str(record.get("id", ""))
+	if record_id.is_empty():
+		return "Social activity history requires a unique id."
+	var relationship: Dictionary = state["relationships"][character_id]
+	if not relationship.has("social_history"):
+		relationship["social_history"] = []
+	for existing: Variant in relationship["social_history"]:
+		if existing is Dictionary and str(existing.get("id", "")) == record_id:
+			return "Social activity history already contains %s." % record_id
+	relationship["social_history"].append(record)
+	if (
+		str(record.get("outcome", "")) == "completed"
+		and str(relationship.get("relationship_stage", "")) not in ["family", "dating", "committed", "ended"]
+		and float(relationship.get("friendship", 0.0)) >= 35.0
+	):
+		relationship["relationship_stage"] = "friend"
+	return ""
+
+
 func _record_relationship_conflict(state: Dictionary, payload: Dictionary) -> String:
 	var character_id: String = str(payload.get("character_id", ""))
 	if not state["relationships"].has(character_id):
@@ -467,6 +501,29 @@ func _append_phone_message(state: Dictionary, payload: Dictionary) -> String:
 	thread["messages"].append(stored)
 	if sender != "player" and character_id not in phone["unread_threads"]:
 		phone["unread_threads"].append(character_id)
+	return ""
+
+
+func _add_phone_contact(state: Dictionary, payload: Dictionary) -> String:
+	var character_id: String = str(payload.get("character_id", ""))
+	if not _registry.get_character(character_id) is Dictionary:
+		return "Unknown phone contact: %s" % character_id
+	var phone: Dictionary = state["player"]["phone"]
+	if character_id not in phone.get("known_contacts", []):
+		phone["known_contacts"].append(character_id)
+	if not phone.get("message_threads") is Dictionary:
+		phone["message_threads"] = {}
+	if not phone["message_threads"].has(character_id):
+		phone["message_threads"][character_id] = {
+			"character_id": character_id, "messages": [], "last_read_sequence": 0,
+		}
+	for npc_state: Variant in state.get("npc_states", []):
+		if npc_state is Dictionary and str(npc_state.get("character_id", "")) == character_id:
+			npc_state["phone_contact"] = true
+			if not npc_state.has("contact_added_on"):
+				npc_state["contact_added_on"] = _clock.timestamp(state["clock"])
+				npc_state["contact_source"] = str(payload.get("source", "authored_message"))
+			break
 	return ""
 
 

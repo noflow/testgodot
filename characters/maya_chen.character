@@ -13,6 +13,7 @@
   "connections": [{"character": "nadia_flores", "relation": "study_acquaintance"}, {"character": "hannah_brooks", "relation": "volunteer_supervisor"}, {"character": "emma_rowan", "relation": "dorm_acquaintance"}],
   "relationship_defaults": {"friendship": 4, "love": 0, "attraction": 6, "lust": 1, "trust": 2, "respect": 5, "resentment": 0, "jealousy": 0, "comfort": 1, "commitment": 0, "compatibility": 0, "satisfaction": 50},
   "boundaries": {"dating_agreement_preference": "exclusive", "protection_policy": "requires_protection_and_testing", "alcohol_consent": "never_when_impaired", "hard_limits": ["academic_sabotage", "dishonesty", "public_scenes"]},
+  "social_preferences": {"invitation_threshold": 26, "preferred_activities": ["cafe_catchup", "galleria_browse"]},
   "private_profile": {"fertility_tier": "low", "reproductive_capability": "can_become_pregnant", "knowledge": "hidden_until_discovered", "adult_preferences": {"established": ["slow_trust_building"], "discoverable": ["structured_roleplay"], "hard_limits": ["risk_without_planning", "humiliation"]}},
   "relationship_chapters": [{"level": 1, "id": "lab_partners", "title": "Lab Partners"}, {"level": 2, "id": "the_impossible_standard", "title": "The Impossible Standard"}, {"level": 3, "id": "white_coat_dreams", "title": "White-Coat Dreams"}, {"level": 4, "id": "results_pending", "title": "Results Pending"}, {"level": 5, "id": "a_life_beyond_grades", "title": "A Life Beyond Grades"}],
   "quest_hooks": ["campus_lab_partner", "scholarship_pressure", "hospital_volunteer_shift", "exam_crisis"],

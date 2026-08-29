@@ -60,6 +60,7 @@ func _run_all() -> void:
 	_test_housing_qualification_contracts_and_moving()
 	_test_save_round_trip_rotation_recovery_and_migration()
 	_test_phone_messages_and_calendar()
+	_test_screenwriter_phone_bridge()
 	_test_relationship_dating_agreements_and_conflicts()
 	_test_sandbox_quest_progression_and_tracking()
 	_test_opening_dialogue_branches()
@@ -1465,8 +1466,9 @@ func _test_content_registry() -> void:
 	_expect(str(westshore_rooms.get("courtyard", {}).get("navigation", {}).get("left", "")) == "westshore_administration_office.reception" and str(westshore_rooms.get("courtyard", {}).get("navigation", {}).get("right", "")) == "cafeteria", "The campus courtyard connects Administration and the Cafeteria through directional paths.")
 	_expect(str(westshore_rooms.get("cafeteria", {}).get("navigation", {}).get("right", "")) == "westshore_bookshop.sales_floor" and str(westshore_rooms.get("transit_loop", {}).get("navigation", {}).get("left", "")) == "cypress_hall_dorm.lobby", "Westshore arrows reach the Bookshop and Cypress Hall lobby.")
 	_expect(_registry.get_content("quests", "opening_future_choice") is Dictionary, "Quests can be retrieved by id.")
-	_expect(_registry.get_all("operations").size() == 67, "Registry indexes all 67 simulation operations.")
+	_expect(_registry.get_all("operations").size() == 69, "Registry indexes all 69 simulation operations.")
 	_expect(_registry.get_all("date_activities").size() == 5, "Registry indexes all five opening date activities, including Undertow and Crown Point dinner.")
+	_expect(_registry.get_all("social_activities").size() == 5, "Registry indexes five reusable friendship and family hangouts.")
 	_expect(_registry.get_all("vn_backgrounds").size() == 17, "Registry indexes the initial seventeen VN background assignments, including the Hale landing and entryway.")
 	var emma_assets: Dictionary = _registry.get_character("emma_rowan").get("asset_refs", {})
 	_expect(not emma_assets.get("portraits", []).is_empty() and str(emma_assets["portraits"][0].get("id", "")) == "default", "Character packages declare their own default portrait artwork.")
@@ -2056,6 +2058,125 @@ func _test_phone_messages_and_calendar() -> void:
 	_expect(state["world_state"]["weather"]["condition"] == "rain", "Day advancement loads Wednesday's authored rain forecast into live state.")
 
 
+func _test_screenwriter_phone_bridge() -> void:
+	var maya: Dictionary = _registry.get_character("maya_chen").duplicate(true)
+	maya["text_messages"] = [
+		{
+			"id": "maya_bridge_offer",
+			"direction": "incoming",
+			"sender": "maya_chen",
+			"introduces_contact": true,
+			"trigger": {"sandbox_activated": true, "days": ["tuesday"], "blocks": ["morning"]},
+			"conditions": [{"meter_at_least": ["maya_chen", "trust", 0]}],
+			"text": "Could you help me test the message bridge?",
+			"quick_replies": [
+				{"id": "locked", "text": "Use a locked reply.", "conditions": [{"flag": "phone.bridge_locked"}]},
+				{
+					"id": "accept",
+					"text": "Yes, I can help.",
+					"tone": ["supportive"],
+					"effects": [
+						{"operation": "start_quest", "quest": "screenwriter_phone_quest"},
+						{"operation": "complete_objective", "quest": "screenwriter_phone_quest", "objective": "accept_offer"},
+						{"operation": "set_flag", "key": "phone.maya_accepted", "value": true},
+						{"operation": "add_meter", "character": "maya_chen", "meter": "trust", "value": 2},
+					],
+				},
+			],
+		},
+		{
+			"id": "maya_reply_selected_followup",
+			"direction": "incoming",
+			"sender": "maya_chen",
+			"trigger": {"reply_selected": ["maya_bridge_offer", "accept"]},
+			"text": "I knew I could count on that answer.",
+			"quick_replies": [],
+		},
+		{
+			"id": "maya_any_reply_followup",
+			"direction": "incoming",
+			"sender": "maya_chen",
+			"trigger": {"message_replied": ["maya_chen", "maya_bridge_offer"]},
+			"text": "Your reply came through clearly.",
+			"quick_replies": [],
+		},
+		{
+			"id": "maya_player_update",
+			"direction": "outgoing",
+			"sender": "player",
+			"trigger": {"quest_started": "screenwriter_phone_quest"},
+			"conditions": [{"flag": "phone.maya_accepted"}],
+			"text": "The outgoing-message test is complete.",
+			"effects": [
+				{"operation": "complete_objective", "quest": "screenwriter_phone_quest", "objective": "send_update"},
+				{"operation": "complete_quest", "quest": "screenwriter_phone_quest"},
+				{"operation": "set_value", "key": "phone.bridge_result", "value": "passed"},
+			],
+		},
+		{
+			"id": "maya_sent_followup",
+			"direction": "incoming",
+			"sender": "maya_chen",
+			"trigger": {"message_sent": "maya_player_update"},
+			"text": "I received your update.",
+			"quick_replies": [],
+		},
+	]
+	var quest: Dictionary = {
+		"id": "screenwriter_phone_quest",
+		"category": "character_story",
+		"title": "Screenwriter Phone Bridge",
+		"summary": "Exercise every authored phone direction.",
+		"discovery": {"source": "phone_message", "policy": "auto_start"},
+		"activation": {},
+		"objectives": [
+			{"id": "accept_offer", "text": "Accept Maya's offer.", "completion": {"event": "text_replied", "thread": "maya_bridge_offer", "reply": "accept"}},
+			{"id": "send_update", "text": "Send Maya an update.", "completion": {"event": "text_sent", "character": "maya_chen", "message": "maya_player_update"}},
+		],
+		"branches": [],
+		"completion_effects": [],
+		"failure": {"mode": "retryable"},
+	}
+	var bridge_registry: Node = ScreenwriterFixtureRegistryScript.new(_registry, {
+		"characters": {"maya_chen": maya},
+		"quests": {"screenwriter_phone_quest": quest},
+	})
+	root.add_child(bridge_registry)
+	var factory: RefCounted = NewGameStateFactoryScript.new(bridge_registry)
+	var simulation: RefCounted = SimulationEngineScript.new(bridge_registry)
+	var phone: RefCounted = PhoneEngineScript.new(bridge_registry, simulation)
+	var state: Dictionary = factory.create_new_game({}, {"random_seed": 5150})
+	state["player"]["flags"]["sandbox.active"] = true
+	_expect("maya_chen" not in state["player"]["phone"]["known_contacts"], "Screenwriter phone fixture begins with Maya undiscovered as a contact.")
+	var result: Dictionary = phone.sync_triggered_messages(state)
+	_expect(result.get("ok", false), "Screenwriter incoming phone triggers synchronize.")
+	state = result.get("state", state)
+	_expect("maya_chen" in state["player"]["phone"]["known_contacts"] and _thread_message_count(state, "maya_chen") == 1, "An introducing message creates its contact and thread before delivery.")
+	_expect(phone.available_outgoing_messages(state, "maya_chen").is_empty(), "Quest-gated outgoing text stays hidden before its authored reply effect.")
+	var available_replies: Array = phone.available_replies(state, "maya_chen", "maya_bridge_offer")
+	_expect(available_replies.size() == 1 and str(available_replies[0].get("id", "")) == "accept" and int(available_replies[0].get("index", -1)) == 1, "Reply conditions hide locked choices while preserving their authored indexes.")
+	var minute_before_locked_reply: int = int(state["clock"]["minute_within_block"])
+	result = phone.reply_to_message(state, "maya_chen", "maya_bridge_offer", 0)
+	_expect(not result.get("ok", true) and int(state["clock"]["minute_within_block"]) == minute_before_locked_reply, "A locked phone reply fails without consuming time.")
+	var trust_before: float = float(state["relationships"]["maya_chen"]["trust"])
+	result = phone.reply_to_message(state, "maya_chen", "maya_bridge_offer", 1)
+	_expect(result.get("ok", false), "A visible Screenwriter reply applies its authored effects.")
+	state = result.get("state", state)
+	_expect("screenwriter_phone_quest" in state["quest_state"]["active"] and bool(state["quest_state"]["objectives"]["screenwriter_phone_quest"]["accept_offer"]), "A reply can start a quest and complete its first objective.")
+	_expect(float(state["relationships"]["maya_chen"]["trust"]) == trust_before + 2.0 and bool(state["player"]["flags"].get("phone.maya_accepted", false)), "Reply meter and flag effects persist.")
+	_expect(_thread_message_count(state, "maya_chen") == 4, "Specific-reply and any-reply follow-ups arrive immediately after the player answers.")
+	var outgoing: Array = phone.available_outgoing_messages(state, "maya_chen")
+	_expect(outgoing.size() == 1 and str(outgoing[0].get("id", "")) == "maya_player_update", "A quest-gated player-authored outgoing text becomes available organically.")
+	result = phone.send_outgoing_message(state, "maya_chen", "maya_player_update")
+	_expect(result.get("ok", false), "The player can send a Screenwriter-authored outgoing message.")
+	state = result.get("state", state)
+	_expect("screenwriter_phone_quest" in state["quest_state"]["completed"], "Outgoing message effects can complete objectives and their quest.")
+	_expect(str(state.get("phone", {}).get("bridge_result", "")) == "passed" and _thread_message_count(state, "maya_chen") == 6, "Outgoing state effects persist and message-sent follow-ups arrive in the same synchronization.")
+	result = phone.send_outgoing_message(state, "maya_chen", "maya_player_update")
+	_expect(not result.get("ok", true), "A one-shot authored outgoing message cannot be sent twice.")
+	bridge_registry.queue_free()
+
+
 func _test_relationship_dating_agreements_and_conflicts() -> void:
 	var factory: RefCounted = NewGameStateFactoryScript.new(_registry)
 	var simulation: RefCounted = SimulationEngineScript.new(_registry)
@@ -2153,6 +2274,65 @@ func _test_relationship_dating_agreements_and_conflicts() -> void:
 			missed_state = result.get("state", missed_state)
 			_expect(result.get("ok", false) and _calendar_event_status(missed_state, str(missed_event["id"])) == "missed", "An overdue scheduled date resolves as a no-show.")
 			_expect(float(missed_state["relationships"]["emma_rowan"]["trust"]) == trust_before_no_show - 7.0, "Missing a date applies the authored trust consequence.")
+
+	var social_state: Dictionary = factory.create_new_game({}, {"random_seed": 224, "save_id": "social-activity-test"})
+	_expect(relationships.social_invitation_options(social_state, "emma_rowan", "cafe_catchup", 1).is_empty(), "Hangout locations stay hidden until their destination is unlocked.")
+	social_state["world_state"]["unlocked_locations"].append("bayview_cafe")
+	_expect(not relationships.social_invitation_options(social_state, "emma_rowan", "cafe_catchup", 1).is_empty(), "Discovering a destination makes its social activity available.")
+	var social_options: Array = relationships.social_invitation_options(social_state, "emma_rowan", "waterfront_hangout", 2)
+	_expect(not social_options.is_empty(), "Known contacts offer social times outside their authored commitments.")
+	_expect(not relationships.social_invitation_options(social_state, "elena_reyes_hale", "waterfront_hangout", 1).is_empty(), "Family and non-romantic relationships can use the hangout system.")
+	if not social_options.is_empty():
+		var social_option: Dictionary = social_options[0]
+		result = relationships.invite_to_social_activity(
+			social_state, "emma_rowan", "waterfront_hangout",
+			str(social_option["date"]), str(social_option["weekday"]), str(social_option["block"])
+		)
+		_expect(result.get("ok", false) and result.get("data", {}).get("accepted", false), "A friendship invitation can be accepted without being treated as a date.")
+		if result.get("ok", false) and result.get("data", {}).get("accepted", false):
+			social_state = result["state"]
+			var social_event: Dictionary = result["data"]["calendar_event"]
+			_expect(bool(social_event.get("relationship_social_activity", false)) and not bool(social_event.get("relationship_date", false)), "Accepted hangouts receive their own calendar-event identity.")
+			var conflicting_options: Array = relationships.social_invitation_options(social_state, "marcus_lee", "waterfront_hangout", 2)
+			var reused_relationship_slot: bool = false
+			for conflicting_value: Variant in conflicting_options:
+				if conflicting_value is Dictionary and str(conflicting_value.get("date", "")) == str(social_event.get("date", "")) and str(conflicting_value.get("block", "")) == str(social_event.get("block", "")):
+					reused_relationship_slot = true
+			_expect(not reused_relationship_slot, "A date or hangout reserves that player calendar block against other relationship plans.")
+			_set_test_date(social_state, str(social_event["date"]), str(social_event["weekday"]), str(social_event["block"]))
+			social_state["world_state"]["current_location"] = str(social_event["location"])
+			var friendship_before_hangout: float = float(social_state["relationships"]["emma_rowan"]["friendship"])
+			result = relationships.complete_social_activity(social_state, str(social_event["id"]), "listen")
+			_expect(result.get("ok", false), "A scheduled hangout can begin at its authored room and time.")
+			if result.get("ok", false):
+				social_state = result["state"]
+				_expect(_calendar_event_status(social_state, str(social_event["id"])) == "completed", "Completing a hangout closes its calendar event.")
+				_expect(social_state["relationships"]["emma_rowan"]["social_history"].size() == 1, "Completed hangouts persist separately from romantic date history.")
+				_expect(float(social_state["relationships"]["emma_rowan"]["friendship"]) > friendship_before_hangout, "The chosen social approach changes relationship support meters.")
+				_expect(int(social_state["relationships"]["emma_rowan"]["unlocked_chapter_level"]) == 2, "Shared social time can unlock a due-diligence relationship chapter.")
+				_expect(social_state["relationships"]["emma_rowan"]["pending_milestones"].size() == 1, "A newly unlocked relationship chapter waits for the player to begin it.")
+				result = relationships.begin_milestone(social_state, "emma_rowan", 2)
+				_expect(result.get("ok", false), "The player can begin a ready relationship story arc at their own pace.")
+				social_state = result.get("state", social_state)
+				_expect(social_state["relationships"]["emma_rowan"]["pending_milestones"].is_empty(), "Beginning a story arc clears its pending milestone without erasing history.")
+
+	var missed_social_state: Dictionary = factory.create_new_game({}, {"random_seed": 225})
+	social_options = relationships.social_invitation_options(missed_social_state, "emma_rowan", "waterfront_hangout", 1)
+	if not social_options.is_empty():
+		var missed_social_option: Dictionary = social_options[0]
+		result = relationships.invite_to_social_activity(
+			missed_social_state, "emma_rowan", "waterfront_hangout",
+			str(missed_social_option["date"]), str(missed_social_option["weekday"]), str(missed_social_option["block"])
+		)
+		if result.get("ok", false) and result.get("data", {}).get("accepted", false):
+			missed_social_state = result["state"]
+			var missed_social_event: Dictionary = result["data"]["calendar_event"]
+			var social_trust_before: float = float(missed_social_state["relationships"]["emma_rowan"]["trust"])
+			_set_test_date(missed_social_state, str(missed_social_event["date"]), str(missed_social_event["weekday"]), "night")
+			result = relationships.synchronize(missed_social_state)
+			missed_social_state = result.get("state", missed_social_state)
+			_expect(result.get("ok", false) and _calendar_event_status(missed_social_state, str(missed_social_event["id"])) == "missed", "An overdue social activity resolves as a no-show.")
+			_expect(float(missed_social_state["relationships"]["emma_rowan"]["trust"]) == social_trust_before - 5.0, "Missing a hangout applies its own authored trust consequence.")
 
 
 func _test_sandbox_quest_progression_and_tracking() -> void:

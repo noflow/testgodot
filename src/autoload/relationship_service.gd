@@ -30,6 +30,10 @@ func invitation_options(character_id: String, activity_id: String, maximum: int 
 	return _engine.invitation_options(GameState.current_state, character_id, activity_id, maximum)
 
 
+func social_invitation_options(character_id: String, activity_id: String, maximum: int = 2) -> Array:
+	return _engine.social_invitation_options(GameState.current_state, character_id, activity_id, maximum)
+
+
 func ask_out(
 	character_id: String,
 	activity_id: String,
@@ -43,16 +47,44 @@ func ask_out(
 	))
 
 
+func invite_to_social_activity(
+	character_id: String,
+	activity_id: String,
+	date: String,
+	weekday: String,
+	block: String
+) -> Dictionary:
+	return _commit(_engine.invite_to_social_activity(
+		GameState.current_state, character_id, activity_id, date, weekday, block
+	))
+
+
 func date_status(character_id: String) -> Dictionary:
 	return _engine.date_status(GameState.current_state, character_id)
+
+
+func social_activity_status(character_id: String) -> Dictionary:
+	return _engine.social_activity_status(GameState.current_state, character_id)
 
 
 func complete_date(event_id: String, approach_id: String) -> Dictionary:
 	return _commit(_engine.complete_date(GameState.current_state, event_id, approach_id))
 
 
+func complete_social_activity(event_id: String, approach_id: String) -> Dictionary:
+	return _commit(_engine.complete_social_activity(GameState.current_state, event_id, approach_id))
+
+
 func cancel_date(event_id: String) -> Dictionary:
 	return _commit(_engine.cancel_date(GameState.current_state, event_id))
+
+
+func cancel_social_activity(event_id: String) -> Dictionary:
+	return _commit(_engine.cancel_social_activity(GameState.current_state, event_id))
+
+
+func begin_milestone(character_id: String, level: int) -> Dictionary:
+	return _commit(_engine.begin_milestone(GameState.current_state, character_id, level))
 
 
 func can_propose_agreement(character_id: String) -> Dictionary:
@@ -69,6 +101,10 @@ func respond_to_npc_proposal(character_id: String, accept: bool) -> Dictionary:
 
 func is_date_event(event_id: String) -> bool:
 	return _engine.is_date_event(GameState.current_state, event_id)
+
+
+func is_social_event(event_id: String) -> bool:
+	return _engine.is_social_event(GameState.current_state, event_id)
 
 
 func active_partner_ids(excluding_character: String = "") -> Array:

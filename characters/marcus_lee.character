@@ -26,6 +26,7 @@
       "open_disclosed": "Marcus grins, says the honesty is working exactly as intended, and asks whether everyone had a good time."
     }
   },
+  "social_preferences": {"invitation_threshold": 19, "preferred_activities": ["movie_hangout", "nightclub_hangout"]},
   "private_profile": {"fertility_tier": "high", "reproductive_capability": "can_impregnate", "knowledge": "hidden_until_discovered", "adult_preferences": {"established": ["spontaneity"], "discoverable": ["costume_roleplay"], "hard_limits": ["degradation", "coercion"]}},
   "relationship_chapters": [{"level": 1, "id": "one_last_summer_movie", "title": "One Last Summer Movie"}, {"level": 2, "id": "after_the_credits", "title": "After the Credits"}, {"level": 3, "id": "missing_scene", "title": "The Missing Scene"}, {"level": 4, "id": "festival_cut", "title": "Festival Cut"}, {"level": 5, "id": "picture_lock", "title": "Picture Lock"}],
   "quest_hooks": ["free_movie_pass", "student_film", "missed_shift", "festival_premiere"],

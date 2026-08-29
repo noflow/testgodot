@@ -91,6 +91,10 @@
     "alcohol_consent": "never_when_impaired",
     "hard_limits": ["romance_with_player", "sexual_content_with_player"]
   },
+  "social_preferences": {
+    "invitation_threshold": 18,
+    "preferred_activities": ["waterfront_hangout", "movie_hangout"]
+  },
   "private_profile": {
     "fertility_tier": "average",
     "reproductive_capability": "can_impregnate",

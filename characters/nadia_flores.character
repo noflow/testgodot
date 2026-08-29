@@ -13,6 +13,7 @@
   "connections": [{"character": "maya_chen", "relation": "study_acquaintance"}, {"character": "hannah_brooks", "relation": "mentor"}, {"character": "sofia_alvarez", "relation": "cousin_friend"}],
   "relationship_defaults": {"friendship": 2, "love": 0, "attraction": 0, "lust": 0, "trust": 1, "respect": 3, "resentment": 0, "jealousy": 0, "comfort": 1, "commitment": 0, "compatibility": 0, "satisfaction": 50},
   "boundaries": {"dating_agreement_preference": "exclusive", "protection_policy": "requires_testing_and_discussion", "alcohol_consent": "never_when_impaired", "hard_limits": ["romance_with_player", "pressure", "mocking_care_work"]},
+  "social_preferences": {"invitation_threshold": 22, "preferred_activities": ["cafe_catchup", "waterfront_hangout"]},
   "private_profile": {"fertility_tier": "high", "reproductive_capability": "can_become_pregnant", "knowledge": "hidden_until_relevant"},
   "relationship_chapters": [{"level": 1, "id": "steady_hands", "title": "Steady Hands"}, {"level": 2, "id": "the_only_day_off", "title": "The Only Day Off"}, {"level": 3, "id": "caregiver_down", "title": "Caregiver Down"}, {"level": 4, "id": "asking_for_help", "title": "Asking for Help"}, {"level": 5, "id": "room_to_breathe", "title": "Room to Breathe"}],
   "quest_hooks": ["first_aid_lesson", "clinical_practice", "family_grocery_run", "nursing_exam_support"],
