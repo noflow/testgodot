@@ -55,7 +55,8 @@
         "forge_fitness",
         "westshore_campus",
         "bayview_cafe",
-        "port_alder_marina"
+        "port_alder_marina",
+        "alder_bay_beach"
       ]
     },
     "audio_in_scope": false,
@@ -157,6 +158,17 @@
           {"kind": "background", "id": "port_alder_marina.dock_gate", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain"], "reason": "Supports dock access, marina events, and the route to the operations office."},
           {"kind": "background", "id": "port_alder_marina.marina_office", "status": "in_progress", "required_variants": ["day", "sunset"], "reason": "Supports employee, appointment, and waterfront-event conversations."}
         ]
+      },
+      {
+        "id": "alder_bay_beach_route",
+        "title": "Alder Bay Beach Route",
+        "priority": 6,
+        "goal": "Complete the beach route between the park and marina, including its shoreline and private changing facility.",
+        "assets": [
+          {"kind": "background", "id": "alder_bay_beach.boardwalk", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain"], "reason": "Connects the park, beach facilities, shoreline, and marina waterfront."},
+          {"kind": "background", "id": "alder_bay_beach.shoreline", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain"], "reason": "Supports beach walks, safe swimming, dates, and weather-sensitive scenes."},
+          {"kind": "background", "id": "alder_bay_beach.changing_room", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports private changing and hygiene interactions beside the beach."}
+        ]
       }
     ]
   },
@@ -218,6 +230,9 @@
     {"id": "bayview_cafe.patio", "location": "bayview_cafe", "room": "patio", "path": "res://assets/art/backgrounds/bayview_cafe/patio.png", "variants": {"day": "res://assets/art/backgrounds/bayview_cafe/patio.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "port_alder_marina.promenade", "location": "port_alder_marina", "room": "promenade", "path": "res://assets/art/backgrounds/port_alder_marina/promenade.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_marina/promenade.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "port_alder_marina.dock_gate", "location": "port_alder_marina", "room": "dock_gate", "path": "res://assets/art/backgrounds/port_alder_marina/dock_gate.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_marina/dock_gate.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "port_alder_marina.marina_office", "location": "port_alder_marina", "room": "marina_office", "path": "res://assets/art/backgrounds/port_alder_marina/marina_office.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_marina/marina_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "port_alder_marina.marina_office", "location": "port_alder_marina", "room": "marina_office", "path": "res://assets/art/backgrounds/port_alder_marina/marina_office.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_marina/marina_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "alder_bay_beach.shoreline", "location": "alder_bay_beach", "room": "shoreline", "path": "res://assets/art/backgrounds/alder_bay_beach/shoreline.png", "variants": {"day": "res://assets/art/backgrounds/alder_bay_beach/shoreline.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "alder_bay_beach.boardwalk", "location": "alder_bay_beach", "room": "boardwalk", "path": "res://assets/art/backgrounds/alder_bay_beach/boardwalk.png", "variants": {"day": "res://assets/art/backgrounds/alder_bay_beach/boardwalk.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "alder_bay_beach.changing_room", "location": "alder_bay_beach", "room": "changing_room", "path": "res://assets/art/backgrounds/alder_bay_beach/changing_room.png", "variants": {"day": "res://assets/art/backgrounds/alder_bay_beach/changing_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }

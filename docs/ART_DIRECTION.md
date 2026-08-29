@@ -41,10 +41,10 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The eleven completed base-art locations are the Hale Home, Alder Heights Residential
+The twelve completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
-Bayview Café, plus Port Alder Marina. Together they provide 57 unique base-day PNG
+Bayview Café, plus Port Alder Marina and Alder Bay Beach. Together they provide 60 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -205,6 +205,25 @@ Destination-specific briefs:
 | Dock Gate | `port_alder_marina/dock_gate.png` | Accessible secured transition to the floating docks with safe railings, tied boats, a promenade return, and the Marina Office on the right. |
 | Marina Office | `port_alder_marina/marina_office.png` | Warm practical operations office with blank workstations, reception counter, consultation table, dock windows, and one return door. |
 
+### Alder Bay Beach batch prompt set
+
+This batch completes the three mapped beach destinations. The Port Alder Marina
+Promenade and Alder Bay Park Waterfront Path jointly anchored the Boardwalk so its
+east and west connections share one shoreline. The Boardwalk then established the
+geography for the Shoreline and the architecture of the Changing Room.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped Alder Bay Beach destination in grounded cinematic contemporary-drama realism. Match the supplied reference's late-August Pacific Northwest bay, cedar boardwalk, charcoal stone, dark metal fixtures, evergreen landscaping, natural sand and pebbles, calm steel-blue water, and wet overcast atmosphere. Preserve clear believable routes to connected rooms, open character staging, an uncluttered lower region for dialogue UI, accessibility, coastal safety, and full privacy inside the changing facility. No people or reflections of people, character sprites, navigation arrows, interface, readable signs, locker numbers, screens, letters, numbers, logos, trademarks, captions, or watermark.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Boardwalk | `alder_bay_beach/boardwalk.png` | Broad wet cedar junction linking the park, marina, shoreline access, and changing facility. |
+| Shoreline | `alder_bay_beach/shoreline.png` | Quiet sand-and-pebble waterline with calm bay water, an accessible mat, and one clear return route to the Boardwalk. |
+| Changing Room | `alder_bay_beach/changing_room.png` | Privacy-conscious all-gender facility with enclosed cubicles and rinse stalls, lockers, benches, accessible circulation, and one Boardwalk exit. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -225,7 +244,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all six room batches were generated with the built-in
+The baseline assets and all seven room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the
