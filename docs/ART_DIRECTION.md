@@ -41,9 +41,11 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The first completed location is the Hale Home. Its 14 mapped destinations now have
-unique base-day PNG backgrounds. Each base image is marked ready in the art
-registry, while its backlog task remains in progress until every listed variant is
+The completed base-art locations are the Hale Home, Alder Heights Residential
+Street, Alder Heights Bus Stop, Westshore Administration Office, and Harbor
+Employment Centre. Together they provide 25 unique base-day PNG backgrounds. Each
+base image is marked ready in the art registry, while backlog tasks with additional
+time, weather, or season requirements remain in progress until those variants are
 finished.
 
 ### Hale Home batch prompt set
@@ -78,6 +80,34 @@ All files are saved under
 `res://assets/art/backgrounds/hale_home/`. The existing player bedroom completes
 the 14-destination set.
 
+### Opening routes batch prompt set
+
+This batch completes the walk from the Hale property to the bus and every room at
+the player's first college and employment destinations. The Hale front yard was
+used as the neighborhood continuity reference. Each building's reception or main
+floor was generated first and then used as the architectural reference for its
+connected rooms.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped destination with grounded semi-realistic contemporary-drama digital illustration, painterly materials, and restrained clean detail. Use believable navigable geometry, clear connected entrances and exits, open character staging space, and a calm darker lower region for dialogue UI. Soft late-August weekday coastal light with slate blue, muted teal, warm cedar, cream, charcoal, and restrained rust. Preserve the architecture, palette, weather, and rendering style of the supplied location reference. No people, character sprites, navigation arrows, interface, readable notices or screens, text, logos, trademarks, or watermark.
+
+Destination-specific briefs:
+
+| Location | Destination | Production file | Brief |
+| --- | --- | --- | --- |
+| Alder Heights Residential Street | Hale Block | `alder_heights_residential_street/hale_block.png` | Same Hale house seen from across the wet residential street, with routes continuing both ways and back to the property. |
+| Alder Heights Residential Street | Neighborhood Corner | `alder_heights_residential_street/neighborhood_corner.png` | Four-way neighborhood junction toward Hale Block, the bus shelter, Alder Bay Park, and Forge Fitness. |
+| Alder Heights Bus Stop | Bus Shelter | `alder_heights_bus_stop/shelter.png` | Cedar-and-glass shelter, bench, abstract route panels, bay view, and pedestrian return path. |
+| Westshore Administration | Reception | `westshore_administration_office/reception.png` | College service lobby with reception counter, courtyard exit, and advisor-office continuation. |
+| Westshore Administration | Enrollment Advisor Office | `westshore_administration_office/advisor_office.png` | Private enrollment consultation room connected between Reception and Financial Aid. |
+| Westshore Administration | Financial Aid Office | `westshore_administration_office/financial_aid.png` | Consultation counter and semi-private desks connecting the advisor and Records rooms. |
+| Westshore Administration | Student Records | `westshore_administration_office/records.png` | Secure service counter, closed files, archive storage, and one return doorway. |
+| Harbor Employment Centre | Job Search Floor | `harbor_employment_centre/job_floor.png` | Open public-service floor with blank job boards, work tables, harbor windows, counseling route, and downtown exit. |
+| Harbor Employment Centre | Career Counselor Desk | `harbor_employment_centre/counselor_desk.png` | Semi-private two-chair counseling office between the Job Search Floor and computers. |
+| Harbor Employment Centre | Application Computers | `harbor_employment_centre/computer_area.png` | Two rows of blank workstations, printer station, and connections to counseling and interview practice. |
+| Harbor Employment Centre | Practice Interview Room | `harbor_employment_centre/interview_room.png` | Small two-seat mock-interview room with an observation window and one return doorway. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -98,8 +128,8 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and complete Hale Home room batch were generated with the
-built-in OpenAI image-generation tool on 2026-08-29 for the Port Alder project.
-They are original project assets intended for redistribution and modification with
-the game. Source generations remain in the local Codex generated-image store; the
-checked-in PNG files are the canonical game copies.
+The baseline assets, Hale Home room batch, and opening-routes batch were generated
+with the built-in OpenAI image-generation tool on 2026-08-29 for the Port Alder
+project. They are original project assets intended for redistribution and
+modification with the game. Source generations remain in the local Codex
+generated-image store; the checked-in PNG files are the canonical game copies.

@@ -755,6 +755,7 @@ def validate_global_content(
 
     location_ids: set[str] = set()
     room_ids: set[str] = set()
+    location_room_ids: dict[str, set[str]] = {}
     for path, data in packages:
         for location in data.get("locations", []):
             location_id = location.get("id")
@@ -762,6 +763,7 @@ def validate_global_content(
                 errors.append(f"{path.relative_to(ROOT)}: missing or duplicate location id {location_id}")
                 continue
             location_ids.add(location_id)
+            location_room_ids[location_id] = set()
             if location.get("district") not in district_ids:
                 errors.append(
                     f"{path.relative_to(ROOT)}: location {location_id} references unknown district "
@@ -773,6 +775,7 @@ def validate_global_content(
                 if not room_id or full_room_id in room_ids:
                     errors.append(f"{path.relative_to(ROOT)}: missing or duplicate room id {full_room_id}")
                 room_ids.add(full_room_id)
+                location_room_ids[location_id].add(full_room_id)
             access = location.get("access", {})
             for block in access.get("open_blocks", []) + access.get("closed_blocks", []):
                 if block not in valid_blocks:
@@ -836,18 +839,42 @@ def validate_global_content(
                 if not isinstance(variant_path, str) or not variant_path.startswith("res://") or not (ROOT / variant_path.removeprefix("res://")).is_file():
                     errors.append(f"{path.relative_to(ROOT)}: VN background {background_id} has missing variant file {variant_path}")
 
-        hale_room_ids = {room_id for room_id in room_ids if room_id.startswith("hale_home.")}
-        hale_background_ids = {background_id for background_id in background_registry if background_id.startswith("hale_home.")}
-        if hale_background_ids != hale_room_ids:
-            errors.append(f"{path.relative_to(ROOT)}: every Hale Home room must have a registered production background")
-        for background_id in hale_room_ids:
-            background = background_registry.get(background_id, {})
-            if (
-                background.get("status") != "ready"
-                or not str(background.get("path", "")).endswith(".png")
-                or background.get("variants", {}).get("day") != background.get("path")
-            ):
-                errors.append(f"{path.relative_to(ROOT)}: Hale Home background {background_id} needs ready base-day PNG art")
+        room_scope = backlog.get("room_scope", {})
+        completed_locations = room_scope.get("completed_locations", [])
+        if (
+            not isinstance(completed_locations, list)
+            or not completed_locations
+            or any(not isinstance(location_id, str) or not location_id for location_id in completed_locations)
+            or len(completed_locations) != len(set(completed_locations))
+        ):
+            errors.append(f"{path.relative_to(ROOT)}: room-first scope needs unique completed location ids")
+            completed_locations = []
+        completed_paths: set[str] = set()
+        for location_id in completed_locations:
+            if location_id not in location_room_ids:
+                errors.append(f"{path.relative_to(ROOT)}: completed artwork location {location_id} is unknown")
+                continue
+            for background_id in location_room_ids[location_id]:
+                background = background_registry.get(background_id, {})
+                background_path = str(background.get("path", ""))
+                if (
+                    background.get("status") != "ready"
+                    or not background_path.endswith(".png")
+                    or background.get("variants", {}).get("day") != background_path
+                ):
+                    errors.append(f"{path.relative_to(ROOT)}: completed location background {background_id} needs ready base-day PNG art")
+                if background_path in completed_paths:
+                    errors.append(f"{path.relative_to(ROOT)}: completed location background {background_id} reuses production art {background_path}")
+                completed_paths.add(background_path)
+
+        for phase in backlog.get("phases", []):
+            for asset in phase.get("assets", []) if isinstance(phase, dict) else []:
+                if not isinstance(asset, dict) or asset.get("kind") != "background" or asset.get("status") != "ready":
+                    continue
+                background = background_registry.get(asset.get("id"), {})
+                variants = background.get("variants", {})
+                if any(variant_id not in variants for variant_id in asset.get("required_variants", [])):
+                    errors.append(f"{path.relative_to(ROOT)}: ready background task {asset.get('id')} is missing a required variant")
 
     account_ids: set[str] = set()
     budget_ids: set[str] = set()

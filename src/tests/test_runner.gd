@@ -1471,7 +1471,7 @@ func _test_content_registry() -> void:
 	_expect(_registry.get_all("operations").size() == 69, "Registry indexes all 69 simulation operations.")
 	_expect(_registry.get_all("date_activities").size() == 5, "Registry indexes all five opening date activities, including Undertow and Crown Point dinner.")
 	_expect(_registry.get_all("social_activities").size() == 5, "Registry indexes five reusable friendship and family hangouts.")
-	_expect(_registry.get_all("vn_backgrounds").size() == 17, "Registry indexes the initial seventeen VN background assignments, including the Hale landing and entryway.")
+	_expect(_registry.get_all("vn_backgrounds").size() == 26, "Registry indexes 26 VN background assignments across the completed opening locations and park path.")
 	var vn_art: Dictionary = _registry.get_package("port_alder_vn_art")
 	_expect(vn_art.get("art_vocabulary", {}).get("background_variants", []).size() == 12 and vn_art.get("art_vocabulary", {}).get("portrait_expressions", []).size() == 14, "VN art defines shared background-variant and portrait-expression vocabularies.")
 	var player_bedroom_art: Dictionary = _registry.get_content("vn_backgrounds", "hale_home.player_bedroom")
@@ -1483,15 +1483,20 @@ func _test_content_registry() -> void:
 		if artwork_phase_value is Dictionary:
 			artwork_asset_count += artwork_phase_value.get("assets", []).size()
 	_expect(str(artwork_backlog.get("mode", "")) == "room_art_first" and artwork_backlog.get("active_kinds", []) == ["background"], "VN art uses a room-first, background-only production queue.")
-	_expect(artwork_phases.size() == 4 and artwork_asset_count == 30, "VN art provides four prioritized production phases covering 30 room backgrounds.")
+	_expect(artwork_phases.size() == 4 and artwork_asset_count == 35, "VN art provides four prioritized production phases covering 35 room backgrounds.")
 	_expect(str(artwork_phases[0].get("id", "")) == "opening_morning" and int(artwork_phases[0].get("priority", 0)) == 1, "The Hale home opening is the first artwork production milestone.")
+	_expect(artwork_backlog.get("room_scope", {}).get("completed_locations", []).size() == 5, "Room-first production records five fully completed base-art locations.")
 	var hale_production_backgrounds: int = 0
+	var production_base_backgrounds: int = 0
 	for background_value: Variant in _registry.get_all("vn_backgrounds"):
 		if background_value is Dictionary:
 			var background_id: String = str(background_value.get("id", ""))
 			if background_id.begins_with("hale_home.") and str(background_value.get("path", "")).ends_with(".png") and str(background_value.get("status", "")) == "ready":
 				hale_production_backgrounds += 1
+			if str(background_value.get("path", "")).ends_with(".png") and str(background_value.get("status", "")) == "ready" and background_value.get("variants", {}).get("day", "") == background_value.get("path", ""):
+				production_base_backgrounds += 1
 	_expect(hale_production_backgrounds == 14, "Every Hale Home room and exterior has unique ready base-day production artwork.")
+	_expect(production_base_backgrounds == 25, "Five complete opening locations provide 25 unique ready base-day backgrounds.")
 	_expect(vn_art.get("vn_audio", []).is_empty(), "VN audio remains deliberately disabled while the artwork pipeline is developed.")
 	var elena_assets: Dictionary = _registry.get_character("elena_reyes_hale").get("asset_refs", {})
 	_expect(elena_assets.get("portraits", []).size() == 2 and str(elena_assets["portraits"][0].get("path", "")).ends_with("elena_reyes_hale/default.png"), "Elena provides production default and neutral portraits for the opening scene.")

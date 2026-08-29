@@ -43,7 +43,14 @@
     "room_scope": {
       "policy": "all_mapped_rooms",
       "base_backgrounds_before_variants": true,
-      "production_order": "location_by_location"
+      "production_order": "location_by_location",
+      "completed_locations": [
+        "hale_home",
+        "alder_heights_residential_street",
+        "alder_heights_bus_stop",
+        "westshore_administration_office",
+        "harbor_employment_centre"
+      ]
     },
     "audio_in_scope": false,
     "allowed_statuses": ["missing", "placeholder", "in_progress", "review", "ready"],
@@ -74,14 +81,19 @@
         "id": "first_future_routes",
         "title": "College, Work, and the First Trip Out",
         "priority": 2,
-        "goal": "Give both opening life choices a complete visual path from the front door to their first objective.",
+        "goal": "Complete both opening life-choice destinations and the neighborhood route from the Hale front door.",
         "assets": [
-          {"kind": "background", "id": "alder_heights_residential_street.hale_block", "status": "missing", "required_variants": ["day", "night", "rain", "winter"], "reason": "Neighborhood navigation begins outside the Hale property."},
-          {"kind": "background", "id": "alder_heights_bus_stop.shelter", "status": "missing", "required_variants": ["day", "night", "rain", "winter"], "reason": "The bus stop is the player's first city destination selector."},
-          {"kind": "background", "id": "westshore_administration_office.reception", "status": "placeholder", "required_variants": ["day"], "reason": "Starts the college enrollment route."},
-          {"kind": "background", "id": "westshore_administration_office.advisor_office", "status": "placeholder", "required_variants": ["day"], "reason": "Hosts program selection and academic advising."},
-          {"kind": "background", "id": "harbor_employment_centre.job_floor", "status": "missing", "required_variants": ["day"], "reason": "Starts the employment route and job search loop."},
-          {"kind": "background", "id": "harbor_employment_centre.counselor_desk", "status": "missing", "required_variants": ["day"], "reason": "Supports orientation, applications, and career counseling."}
+          {"kind": "background", "id": "alder_heights_residential_street.hale_block", "status": "in_progress", "required_variants": ["day", "night", "rain", "winter"], "reason": "Neighborhood navigation begins outside the Hale property."},
+          {"kind": "background", "id": "alder_heights_residential_street.neighborhood_corner", "status": "in_progress", "required_variants": ["day", "night", "rain", "winter"], "reason": "Connects the Hale block to the bus, park, and gym routes."},
+          {"kind": "background", "id": "alder_heights_bus_stop.shelter", "status": "in_progress", "required_variants": ["day", "night", "rain", "winter"], "reason": "The bus stop is the player's first city destination selector."},
+          {"kind": "background", "id": "westshore_administration_office.reception", "status": "ready", "required_variants": ["day"], "reason": "Starts the college enrollment route."},
+          {"kind": "background", "id": "westshore_administration_office.advisor_office", "status": "ready", "required_variants": ["day"], "reason": "Hosts program selection and academic advising."},
+          {"kind": "background", "id": "westshore_administration_office.financial_aid", "status": "ready", "required_variants": ["day"], "reason": "Supports tuition, grants, and school-finance decisions."},
+          {"kind": "background", "id": "westshore_administration_office.records", "status": "ready", "required_variants": ["day"], "reason": "Completes the administration suite and student-record services."},
+          {"kind": "background", "id": "harbor_employment_centre.job_floor", "status": "ready", "required_variants": ["day"], "reason": "Starts the employment route and job search loop."},
+          {"kind": "background", "id": "harbor_employment_centre.counselor_desk", "status": "ready", "required_variants": ["day"], "reason": "Supports orientation, applications, and career counseling."},
+          {"kind": "background", "id": "harbor_employment_centre.computer_area", "status": "ready", "required_variants": ["day"], "reason": "Supports job applications and repeatable employment searches."},
+          {"kind": "background", "id": "harbor_employment_centre.interview_room", "status": "ready", "required_variants": ["day"], "reason": "Supports interview practice and career-skill checks."}
         ]
       },
       {
@@ -128,8 +140,17 @@
     {"id": "hale_home.garage", "location": "hale_home", "room": "garage", "path": "res://assets/art/backgrounds/hale_home/garage.png", "variants": {"day": "res://assets/art/backgrounds/hale_home/garage.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "hale_home.front_yard", "location": "hale_home", "room": "front_yard", "path": "res://assets/art/backgrounds/hale_home/front_yard.png", "variants": {"day": "res://assets/art/backgrounds/hale_home/front_yard.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "hale_home.backyard", "location": "hale_home", "room": "backyard", "path": "res://assets/art/backgrounds/hale_home/backyard.png", "variants": {"day": "res://assets/art/backgrounds/hale_home/backyard.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "westshore_administration_office.reception", "location": "westshore_administration_office", "room": "reception", "path": "res://assets/art/backgrounds/westshore_administration_office/advisor_office.svg", "credit": "Original Port Alder placeholder"},
-    {"id": "westshore_administration_office.advisor_office", "location": "westshore_administration_office", "room": "advisor_office", "path": "res://assets/art/backgrounds/westshore_administration_office/advisor_office.svg", "credit": "Original Port Alder placeholder"},
+    {"id": "alder_heights_residential_street.hale_block", "location": "alder_heights_residential_street", "room": "hale_block", "path": "res://assets/art/backgrounds/alder_heights_residential_street/hale_block.png", "variants": {"day": "res://assets/art/backgrounds/alder_heights_residential_street/hale_block.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "alder_heights_residential_street.neighborhood_corner", "location": "alder_heights_residential_street", "room": "neighborhood_corner", "path": "res://assets/art/backgrounds/alder_heights_residential_street/neighborhood_corner.png", "variants": {"day": "res://assets/art/backgrounds/alder_heights_residential_street/neighborhood_corner.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "alder_heights_bus_stop.shelter", "location": "alder_heights_bus_stop", "room": "shelter", "path": "res://assets/art/backgrounds/alder_heights_bus_stop/shelter.png", "variants": {"day": "res://assets/art/backgrounds/alder_heights_bus_stop/shelter.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "westshore_administration_office.reception", "location": "westshore_administration_office", "room": "reception", "path": "res://assets/art/backgrounds/westshore_administration_office/reception.png", "variants": {"day": "res://assets/art/backgrounds/westshore_administration_office/reception.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "westshore_administration_office.advisor_office", "location": "westshore_administration_office", "room": "advisor_office", "path": "res://assets/art/backgrounds/westshore_administration_office/advisor_office.png", "variants": {"day": "res://assets/art/backgrounds/westshore_administration_office/advisor_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "westshore_administration_office.financial_aid", "location": "westshore_administration_office", "room": "financial_aid", "path": "res://assets/art/backgrounds/westshore_administration_office/financial_aid.png", "variants": {"day": "res://assets/art/backgrounds/westshore_administration_office/financial_aid.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "westshore_administration_office.records", "location": "westshore_administration_office", "room": "records", "path": "res://assets/art/backgrounds/westshore_administration_office/records.png", "variants": {"day": "res://assets/art/backgrounds/westshore_administration_office/records.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_employment_centre.job_floor", "location": "harbor_employment_centre", "room": "job_floor", "path": "res://assets/art/backgrounds/harbor_employment_centre/job_floor.png", "variants": {"day": "res://assets/art/backgrounds/harbor_employment_centre/job_floor.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_employment_centre.counselor_desk", "location": "harbor_employment_centre", "room": "counselor_desk", "path": "res://assets/art/backgrounds/harbor_employment_centre/counselor_desk.png", "variants": {"day": "res://assets/art/backgrounds/harbor_employment_centre/counselor_desk.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_employment_centre.computer_area", "location": "harbor_employment_centre", "room": "computer_area", "path": "res://assets/art/backgrounds/harbor_employment_centre/computer_area.png", "variants": {"day": "res://assets/art/backgrounds/harbor_employment_centre/computer_area.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_employment_centre.interview_room", "location": "harbor_employment_centre", "room": "interview_room", "path": "res://assets/art/backgrounds/harbor_employment_centre/interview_room.png", "variants": {"day": "res://assets/art/backgrounds/harbor_employment_centre/interview_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "alder_bay_park.waterfront_path", "location": "alder_bay_park", "room": "waterfront_path", "path": "res://assets/art/backgrounds/alder_bay_park/waterfront_path.svg", "credit": "Original Port Alder placeholder"}
   ]
 }
