@@ -41,12 +41,12 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The completed base-art locations are the Hale Home, Alder Heights Residential
-Street, Alder Heights Bus Stop, Westshore Administration Office, and Harbor
-Employment Centre. Together they provide 25 unique base-day PNG backgrounds. Each
-base image is marked ready in the art registry, while backlog tasks with additional
-time, weather, or season requirements remain in progress until those variants are
-finished.
+The eight completed base-art locations are the Hale Home, Alder Heights Residential
+Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
+Centre, Alder Bay Park, Harborlight Cinema, and Forge Fitness. Together they
+provide 41 unique base-day PNG backgrounds. Each base image is marked ready in the
+art registry, while backlog tasks with additional time, weather, or season
+requirements remain in progress until those variants are finished.
 
 ### Hale Home batch prompt set
 
@@ -108,6 +108,38 @@ Destination-specific briefs:
 | Harbor Employment Centre | Application Computers | `harbor_employment_centre/computer_area.png` | Two rows of blank workstations, printer station, and connections to counseling and interview practice. |
 | Harbor Employment Centre | Practice Interview Room | `harbor_employment_centre/interview_room.png` | Small two-seat mock-interview room with an observation window and one return doorway. |
 
+### Activity circuit batch prompt set
+
+This batch completes the park, cinema, and gym as three fully navigable locations.
+The Waterfront Path, Cinema Lobby, and Fitness Front Desk were generated as anchor
+images; every connected room used its location anchor as the architecture, palette,
+lighting, material, and rendering-style reference.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel background for the Godot game Port Alder. Create the named mapped destination as a grounded semi-realistic contemporary-drama digital illustration that matches the supplied location anchor. Preserve connected architecture, clear entrances and exits, open character staging, and a calm darker lower region for dialogue UI. Use believable practical materials and soft late-August coastal light. No people or reflections of people, character sprites, navigation arrows, interface, readable notices or screens, text, logos, trademarks, or watermark.
+
+Destination-specific briefs:
+
+| Location | Destination | Production file | Brief |
+| --- | --- | --- | --- |
+| Alder Bay Park | Waterfront Path | `alder_bay_park/waterfront_path.png` | Wet landscaped bay path branching toward Alder Heights, the beach, picnic lawn, and restroom pavilion. |
+| Alder Bay Park | Picnic Lawn | `alder_bay_park/picnic_lawn.png` | Open sloped lawn with cedar tables and paths to the waterfront, lookout, and playground. |
+| Alder Bay Park | Bay Lookout | `alder_bay_park/lookout.png` | Sheltered cedar-and-stone overlook with a broad bay view and path toward Bayview Cafe. |
+| Alder Bay Park | Playground | `alder_bay_park/playground.png` | Empty cedar-and-teal play area with routes toward the picnic lawn and restrooms. |
+| Alder Bay Park | Public Restrooms | `alder_bay_park/public_restrooms.png` | Clean slate-and-cedar facility with stalls, sinks, mirrors, and an exterior park doorway. |
+| Harborlight Cinema | Lobby | `harborlight_cinema/lobby.png` | Independent-cinema ticket lobby with abstract posters and routes to the street, concessions, and auditorium. |
+| Harborlight Cinema | Concessions | `harborlight_cinema/concessions.png` | Warm snack counter with blank menus and routes to the lobby, side auditorium, and staff room. |
+| Harborlight Cinema | Auditorium | `harborlight_cinema/auditorium.png` | Medium tiered theater with charcoal-rust seats, aisle lights, and a blank screen. |
+| Harborlight Cinema | Side Auditorium | `harborlight_cinema/side_auditorium.png` | Smaller intimate screening room connected to concessions and the main auditorium. |
+| Harborlight Cinema | Staff Room | `harborlight_cinema/staff_room.png` | Employee break room with lockers, kitchenette, blank notice board, and concessions doorway. |
+| Forge Fitness | Front Desk | `forge_fitness/front_desk.png` | Cedar-and-charcoal reception area opening to the residential street and strength floor. |
+| Forge Fitness | Strength Floor | `forge_fitness/strength_floor.png` | Safe free-weight and resistance area with racks, benches, mirrors, and connected training rooms. |
+| Forge Fitness | Cardio Floor | `forge_fitness/cardio_floor.png` | Windowed treadmill, elliptical, rowing, and cycling area with inactive screens. |
+| Forge Fitness | Group Studio | `forge_fitness/studio.png` | Open mirrored wood-floor studio with neatly stored class equipment. |
+| Forge Fitness | Locker Room | `forge_fitness/locker_room.png` | Inclusive privacy-conscious changing room with lockers, cubicles, sinks, and private showers. |
+| Forge Fitness | Trainer Office | `forge_fitness/trainer_office.png` | Compact two-chair coaching office overlooking the strength floor. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -128,8 +160,8 @@ Prompt:
 
 ## Provenance
 
-The baseline assets, Hale Home room batch, and opening-routes batch were generated
-with the built-in OpenAI image-generation tool on 2026-08-29 for the Port Alder
-project. They are original project assets intended for redistribution and
-modification with the game. Source generations remain in the local Codex
-generated-image store; the checked-in PNG files are the canonical game copies.
+The baseline assets and all three room batches were generated with the built-in
+OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
+original project assets intended for redistribution and modification with the
+game. Source generations remain in the local Codex generated-image store; the
+checked-in PNG files are the canonical game copies.

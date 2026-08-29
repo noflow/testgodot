@@ -49,7 +49,10 @@
         "alder_heights_residential_street",
         "alder_heights_bus_stop",
         "westshore_administration_office",
-        "harbor_employment_centre"
+        "harbor_employment_centre",
+        "alder_bay_park",
+        "harborlight_cinema",
+        "forge_fitness"
       ]
     },
     "audio_in_scope": false,
@@ -98,15 +101,26 @@
       },
       {
         "id": "first_character_stories",
-        "title": "First Character Story Routes",
+        "title": "Park, Cinema, and Fitness Circuit",
         "priority": 3,
-        "goal": "Produce the first repeatable social destinations and the opening arcs for Emma, Marcus, and Rachel.",
+        "goal": "Complete three reusable social and activity locations without returning to placeholders inside them.",
         "assets": [
-          {"kind": "background", "id": "alder_bay_park.waterfront_path", "status": "placeholder", "required_variants": ["day", "sunset", "night", "rain"], "reason": "Emma's first walk and a reusable run and date location."},
-          {"kind": "background", "id": "alder_bay_park.lookout", "status": "missing", "required_variants": ["day", "sunset", "night"], "reason": "A quieter park destination for friendship and romantic scenes."},
-          {"kind": "background", "id": "harborlight_cinema.lobby", "status": "missing", "required_variants": ["day", "night"], "reason": "Marcus's first film route and movie-date arrival scene."},
-          {"kind": "background", "id": "forge_fitness.front_desk", "status": "missing", "required_variants": ["day", "sunset"], "reason": "Introduces Rachel and the gym membership loop."},
-          {"kind": "background", "id": "forge_fitness.strength_floor", "status": "missing", "required_variants": ["day", "sunset"], "reason": "Supports strength training and Rachel's repeatable quest chain."}
+          {"kind": "background", "id": "alder_bay_park.waterfront_path", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain"], "reason": "A reusable walking, running, and date route beside the bay."},
+          {"kind": "background", "id": "alder_bay_park.picnic_lawn", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain"], "reason": "Supports picnics, outdoor meetings, and the route between the waterfront and lookout."},
+          {"kind": "background", "id": "alder_bay_park.lookout", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "A quieter park destination for friendship and romantic scenes."},
+          {"kind": "background", "id": "alder_bay_park.playground", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain"], "reason": "Completes the family recreation side of the park navigation graph."},
+          {"kind": "background", "id": "alder_bay_park.public_restrooms", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Completes the park facilities and its lower navigation route."},
+          {"kind": "background", "id": "harborlight_cinema.lobby", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Movie-date arrival, ticketing, and cinema employment scenes."},
+          {"kind": "background", "id": "harborlight_cinema.concessions", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports cinema food purchases, dates, and employee scenes."},
+          {"kind": "background", "id": "harborlight_cinema.auditorium", "status": "in_progress", "required_variants": ["day", "night"], "reason": "The primary movie-viewing and date auditorium."},
+          {"kind": "background", "id": "harborlight_cinema.side_auditorium", "status": "in_progress", "required_variants": ["day", "night"], "reason": "A smaller screening room for alternate films and quieter scenes."},
+          {"kind": "background", "id": "harborlight_cinema.staff_room", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Completes the employee-only cinema route."},
+          {"kind": "background", "id": "forge_fitness.front_desk", "status": "in_progress", "required_variants": ["day", "sunset"], "reason": "Introduces gym membership and the fitness activity loop."},
+          {"kind": "background", "id": "forge_fitness.strength_floor", "status": "in_progress", "required_variants": ["day", "sunset"], "reason": "Supports strength training and repeatable progression."},
+          {"kind": "background", "id": "forge_fitness.cardio_floor", "status": "in_progress", "required_variants": ["day", "sunset"], "reason": "Supports stamina training and cardio activities."},
+          {"kind": "background", "id": "forge_fitness.studio", "status": "in_progress", "required_variants": ["day", "sunset"], "reason": "Supports classes, stretching, and flexible fitness scenes."},
+          {"kind": "background", "id": "forge_fitness.locker_room", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports changing, showers, and the route to personal training."},
+          {"kind": "background", "id": "forge_fitness.trainer_office", "status": "in_progress", "required_variants": ["day", "sunset"], "reason": "Supports personal-training consultations and skill checks."}
         ]
       },
       {
@@ -151,6 +165,21 @@
     {"id": "harbor_employment_centre.counselor_desk", "location": "harbor_employment_centre", "room": "counselor_desk", "path": "res://assets/art/backgrounds/harbor_employment_centre/counselor_desk.png", "variants": {"day": "res://assets/art/backgrounds/harbor_employment_centre/counselor_desk.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "harbor_employment_centre.computer_area", "location": "harbor_employment_centre", "room": "computer_area", "path": "res://assets/art/backgrounds/harbor_employment_centre/computer_area.png", "variants": {"day": "res://assets/art/backgrounds/harbor_employment_centre/computer_area.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "harbor_employment_centre.interview_room", "location": "harbor_employment_centre", "room": "interview_room", "path": "res://assets/art/backgrounds/harbor_employment_centre/interview_room.png", "variants": {"day": "res://assets/art/backgrounds/harbor_employment_centre/interview_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "alder_bay_park.waterfront_path", "location": "alder_bay_park", "room": "waterfront_path", "path": "res://assets/art/backgrounds/alder_bay_park/waterfront_path.svg", "credit": "Original Port Alder placeholder"}
+    {"id": "alder_bay_park.waterfront_path", "location": "alder_bay_park", "room": "waterfront_path", "path": "res://assets/art/backgrounds/alder_bay_park/waterfront_path.png", "variants": {"day": "res://assets/art/backgrounds/alder_bay_park/waterfront_path.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "alder_bay_park.picnic_lawn", "location": "alder_bay_park", "room": "picnic_lawn", "path": "res://assets/art/backgrounds/alder_bay_park/picnic_lawn.png", "variants": {"day": "res://assets/art/backgrounds/alder_bay_park/picnic_lawn.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "alder_bay_park.lookout", "location": "alder_bay_park", "room": "lookout", "path": "res://assets/art/backgrounds/alder_bay_park/lookout.png", "variants": {"day": "res://assets/art/backgrounds/alder_bay_park/lookout.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "alder_bay_park.playground", "location": "alder_bay_park", "room": "playground", "path": "res://assets/art/backgrounds/alder_bay_park/playground.png", "variants": {"day": "res://assets/art/backgrounds/alder_bay_park/playground.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "alder_bay_park.public_restrooms", "location": "alder_bay_park", "room": "public_restrooms", "path": "res://assets/art/backgrounds/alder_bay_park/public_restrooms.png", "variants": {"day": "res://assets/art/backgrounds/alder_bay_park/public_restrooms.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harborlight_cinema.lobby", "location": "harborlight_cinema", "room": "lobby", "path": "res://assets/art/backgrounds/harborlight_cinema/lobby.png", "variants": {"day": "res://assets/art/backgrounds/harborlight_cinema/lobby.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harborlight_cinema.concessions", "location": "harborlight_cinema", "room": "concessions", "path": "res://assets/art/backgrounds/harborlight_cinema/concessions.png", "variants": {"day": "res://assets/art/backgrounds/harborlight_cinema/concessions.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harborlight_cinema.auditorium", "location": "harborlight_cinema", "room": "auditorium", "path": "res://assets/art/backgrounds/harborlight_cinema/auditorium.png", "variants": {"day": "res://assets/art/backgrounds/harborlight_cinema/auditorium.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harborlight_cinema.side_auditorium", "location": "harborlight_cinema", "room": "side_auditorium", "path": "res://assets/art/backgrounds/harborlight_cinema/side_auditorium.png", "variants": {"day": "res://assets/art/backgrounds/harborlight_cinema/side_auditorium.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harborlight_cinema.staff_room", "location": "harborlight_cinema", "room": "staff_room", "path": "res://assets/art/backgrounds/harborlight_cinema/staff_room.png", "variants": {"day": "res://assets/art/backgrounds/harborlight_cinema/staff_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "forge_fitness.front_desk", "location": "forge_fitness", "room": "front_desk", "path": "res://assets/art/backgrounds/forge_fitness/front_desk.png", "variants": {"day": "res://assets/art/backgrounds/forge_fitness/front_desk.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "forge_fitness.strength_floor", "location": "forge_fitness", "room": "strength_floor", "path": "res://assets/art/backgrounds/forge_fitness/strength_floor.png", "variants": {"day": "res://assets/art/backgrounds/forge_fitness/strength_floor.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "forge_fitness.cardio_floor", "location": "forge_fitness", "room": "cardio_floor", "path": "res://assets/art/backgrounds/forge_fitness/cardio_floor.png", "variants": {"day": "res://assets/art/backgrounds/forge_fitness/cardio_floor.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "forge_fitness.studio", "location": "forge_fitness", "room": "studio", "path": "res://assets/art/backgrounds/forge_fitness/studio.png", "variants": {"day": "res://assets/art/backgrounds/forge_fitness/studio.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "forge_fitness.locker_room", "location": "forge_fitness", "room": "locker_room", "path": "res://assets/art/backgrounds/forge_fitness/locker_room.png", "variants": {"day": "res://assets/art/backgrounds/forge_fitness/locker_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "forge_fitness.trainer_office", "location": "forge_fitness", "room": "trainer_office", "path": "res://assets/art/backgrounds/forge_fitness/trainer_office.png", "variants": {"day": "res://assets/art/backgrounds/forge_fitness/trainer_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }
