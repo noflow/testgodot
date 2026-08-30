@@ -91,7 +91,8 @@
         "cedar_vale_detached_homes",
         "cedar_vale_care_home",
         "cedar_vale_family_centre",
-        "mariner_row_shopping_street"
+        "mariner_row_shopping_street",
+        "mariner_market"
       ]
     },
     "audio_in_scope": false,
@@ -692,6 +693,19 @@
           {"kind": "background", "id": "mariner_row_shopping_street.fashion_block", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Provides the four-way shopping hub with separate routes to Market Block, Northline Outfitters, Home and Auto Block, and Harbor Formalwear."},
           {"kind": "background", "id": "mariner_row_shopping_street.home_and_auto_block", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Provides the three-way endpoint connecting Fashion Block with separate Mariner Home Goods and Port Alder Auto entrances."}
         ]
+      },
+      {
+        "id": "mariner_market_grocery_and_employment_route",
+        "title": "Mariner Market Grocery, Adult Retail, and Employment Route",
+        "priority": 42,
+        "goal": "Complete Mariner Market from its four-way public grocery hub through prepared food, age-controlled beverage retail, checkout, and the employee-only stockroom for shopping, food, household-supply, and employment gameplay.",
+        "assets": [
+          {"kind": "background", "id": "mariner_market.grocery_floor", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Provides the four-way public hub connecting Checkout, Prepared Food, the age-controlled Alcohol Section, and Mariner Row Market Block."},
+          {"kind": "background", "id": "mariner_market.prepared_food", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports simple ready-to-eat food purchases and counter scenes with one clear return to the Grocery Floor."},
+          {"kind": "background", "id": "mariner_market.alcohol_section", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports age-controlled beverage purchases in a restrained retail setting with one clear left return to the Grocery Floor."},
+          {"kind": "background", "id": "mariner_market.checkout", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports purchases and grocery employment through separate routes to the employee Stockroom and public Grocery Floor."},
+          {"kind": "background", "id": "mariner_market.stockroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Provides secure employee-only storage and shift scenes with one clear return to Checkout and no loading-dock shortcut."}
+        ]
       }
     ]
   },
@@ -964,6 +978,11 @@
     {"id": "mariner_row_shopping_street.transit_stop", "location": "mariner_row_shopping_street", "room": "transit_stop", "path": "res://assets/art/backgrounds/mariner_row_shopping_street/transit_stop.png", "variants": {"day": "res://assets/art/backgrounds/mariner_row_shopping_street/transit_stop.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "mariner_row_shopping_street.market_block", "location": "mariner_row_shopping_street", "room": "market_block", "path": "res://assets/art/backgrounds/mariner_row_shopping_street/market_block.png", "variants": {"day": "res://assets/art/backgrounds/mariner_row_shopping_street/market_block.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "mariner_row_shopping_street.fashion_block", "location": "mariner_row_shopping_street", "room": "fashion_block", "path": "res://assets/art/backgrounds/mariner_row_shopping_street/fashion_block.png", "variants": {"day": "res://assets/art/backgrounds/mariner_row_shopping_street/fashion_block.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "mariner_row_shopping_street.home_and_auto_block", "location": "mariner_row_shopping_street", "room": "home_and_auto_block", "path": "res://assets/art/backgrounds/mariner_row_shopping_street/home_and_auto_block.png", "variants": {"day": "res://assets/art/backgrounds/mariner_row_shopping_street/home_and_auto_block.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "mariner_row_shopping_street.home_and_auto_block", "location": "mariner_row_shopping_street", "room": "home_and_auto_block", "path": "res://assets/art/backgrounds/mariner_row_shopping_street/home_and_auto_block.png", "variants": {"day": "res://assets/art/backgrounds/mariner_row_shopping_street/home_and_auto_block.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "mariner_market.grocery_floor", "location": "mariner_market", "room": "grocery_floor", "path": "res://assets/art/backgrounds/mariner_market/grocery_floor.png", "variants": {"day": "res://assets/art/backgrounds/mariner_market/grocery_floor.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "mariner_market.prepared_food", "location": "mariner_market", "room": "prepared_food", "path": "res://assets/art/backgrounds/mariner_market/prepared_food.png", "variants": {"day": "res://assets/art/backgrounds/mariner_market/prepared_food.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "mariner_market.alcohol_section", "location": "mariner_market", "room": "alcohol_section", "path": "res://assets/art/backgrounds/mariner_market/alcohol_section.png", "variants": {"day": "res://assets/art/backgrounds/mariner_market/alcohol_section.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "mariner_market.checkout", "location": "mariner_market", "room": "checkout", "path": "res://assets/art/backgrounds/mariner_market/checkout.png", "variants": {"day": "res://assets/art/backgrounds/mariner_market/checkout.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "mariner_market.stockroom", "location": "mariner_market", "room": "stockroom", "path": "res://assets/art/backgrounds/mariner_market/stockroom.png", "variants": {"day": "res://assets/art/backgrounds/mariner_market/stockroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }

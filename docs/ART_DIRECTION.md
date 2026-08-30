@@ -41,7 +41,7 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The forty-seven completed base-art locations are the Hale Home, Alder Heights Residential
+The forty-eight completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
@@ -53,7 +53,7 @@ Tideglass Club, Harbor Companion Cooperative, the Rowan Family Home, Jade's Down
 Condo, Greyport Main Street, the Lee Family Apartment, the Flores Family Townhouse, and the
 Greyport Shared Apartment, the Donovan Family Apartment, Greyport Distribution, and the
 Port Alder Transit Depot, Greyport Studios, Undertow Nightclub, Cedar Vale Residential
-Street, Rachel's Townhouse, Cedar Vale Townhouses, Cedar Vale Detached Homes, Cedar Vale Care Home, Cedar Vale Family Centre, and Mariner Row Shopping Street. Together they provide 268 unique base-day PNG
+Street, Rachel's Townhouse, Cedar Vale Townhouses, Cedar Vale Detached Homes, Cedar Vale Care Home, Cedar Vale Family Centre, Mariner Row Shopping Street, and Mariner Market. Together they provide 273 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -1092,6 +1092,31 @@ Destination-specific briefs:
 | Fashion Block | `mariner_row_shopping_street/fashion_block.png` | Four-way pedestrian plaza with left Market Block and right Home and Auto Block continuations, a rear Northline Outfitters entrance identified by neutral outerwear, and a fully separate foreground Harbor Formalwear entrance in dark wood and brass. |
 | Home and Auto Block | `mariner_row_shopping_street/home_and_auto_block.png` | Three-way endpoint with left Fashion Block continuation, centered Mariner Home Goods entrance identified by practical furniture displays, and a separate right Port Alder Auto showroom containing only modest unbranded display cars behind glass. |
 
+### Mariner Market batch prompt set
+
+This batch carries Mariner Row's converted-warehouse language into an attainable
+five-room neighborhood grocery supporting everyday shopping, basic prepared food,
+age-controlled beverage purchases, checkout scenes, and part-time employment. Warm
+brick, weathered cedar, pale sandstone, deep navy, seafoam, rust orange, warm oak,
+dark metal, polished grey flooring, and restrained amber light keep the interior tied
+to the shopping street. Generic, blank product packaging preserves the text-free art
+policy while produce, food, checkout equipment, bottles, and storage distinguish each
+room by function.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped destination inside Mariner Market in polished painterly semi-realistic grounded mature contemporary cinematic realism. Continue Mariner Row's converted coastal warehouse architecture with warm brick, weathered cedar, pale sandstone, deep navy metal, seafoam green, rust orange, warm oak, matte grey flooring, and restrained amber practical light. Make the independent neighborhood grocery maintained, attainable, clean, organized, and useful for both shopping and employment rather than luxurious, enormous, branded, or mall-like. Preserve exactly the authored public, age-controlled, and employee-only routes with every doorway visibly separate. Keep the lower center clear enough for dialogue UI. No people, staff, customers, figures, silhouettes, reflections of figures, navigation arrows, interface, readable words, letters, numbers, store names, aisle markers, prices, menus, schedules, receipts, shipping labels, advertisements, trademarks, brands, logos, package labels, active screens, money left out, tobacco, weapons, clutter piles, extra routes, stairs, dereliction, or watermark; all products, containers, cartons, papers, panels, and screens must be blank, generic, turned away, closed, dark, or too indistinct to read.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Grocery Floor | `mariner_market/grocery_floor.png` | Four-way public hub with left Checkout, rear Prepared Food, right age-controlled Alcohol Section, foreground glazed Market Block return, produce islands, basic aisles, and exactly those routes. |
+| Prepared Food Counter | `mariner_market/prepared_food.png` | Compact counter alcove with plain sandwiches, salads, fruit, soup, and baked items in a clean refrigerated display, a closed preparation workspace, and one foreground Grocery Floor return. |
+| Alcohol Section | `mariner_market/alcohol_section.png` | Restrained retail room with unopened generic bottles on dark-walnut shelving, no tasting or drinking area, continuous rear and right boundaries, and one broad left Grocery Floor return. |
+| Checkout | `mariner_market/checkout.png` | Three modest staffed checkout counters with blank screens and payment terminals, a rear employee Stockroom doorway, broad right Grocery Floor opening, and no street exit. |
+| Stockroom | `mariner_market/stockroom.png` | Orderly employee-only storage with navy shelving, plain cartons, closed supply cabinet, safe step stool, parked manual pallet jack, one Checkout return, and no loading-dock shortcut. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -1112,7 +1137,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all forty-two room batches were generated with the built-in
+The baseline assets and all forty-three room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the
