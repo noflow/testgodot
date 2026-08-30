@@ -75,7 +75,8 @@
         "tideglass_club",
         "harbor_companion_cooperative",
         "rowan_family_home",
-        "jade_downtown_condo"
+        "jade_downtown_condo",
+        "greyport_street"
       ]
     },
     "audio_in_scope": false,
@@ -447,6 +448,20 @@
           {"kind": "background", "id": "jade_downtown_condo.bathroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Completes the condo's hygiene space with one clear return to the kitchen."},
           {"kind": "background", "id": "jade_downtown_condo.office", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports budgeting, administration, worker-safety planning, business development, and Jade's long-term financial exit plan."}
         ]
+      },
+      {
+        "id": "greyport_street_district_route",
+        "title": "Greyport Main Street Housing, Work, Transit, and Nightlife Route",
+        "priority": 26,
+        "goal": "Complete Greyport's discoverable outdoor district spine from its bus exchange through affordable residential lanes, industrial employment, transit work, and the Undertow nightlife approach.",
+        "assets": [
+          {"kind": "background", "id": "greyport_street.bus_exchange", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Provides Greyport's bus, route-planning, taxi, and neighborhood arrival point with one clear continuation into the district."},
+          {"kind": "background", "id": "greyport_street.apartment_block", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Forms the four-way district hub connecting transit, north and south housing lanes, affordable studio discovery, and the industrial route."},
+          {"kind": "background", "id": "greyport_street.north_residences", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Supports neighborhood encounters and invitation-gated discovery of the Lee and Donovan family apartments."},
+          {"kind": "background", "id": "greyport_street.south_residences", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Supports neighborhood encounters, the Flores townhouse, and the invitation-or-housing route into Greyport's shared apartment."},
+          {"kind": "background", "id": "greyport_street.industrial_corner", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Connects the housing district to warehouse employment, the transit depot, and nightlife while preserving four distinct outdoor routes."},
+          {"kind": "background", "id": "greyport_street.nightlife_alley", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Provides the safe converted-warehouse approach to Undertow Nightclub and a clear return to Industrial Corner."}
+        ]
       }
     ]
   },
@@ -618,6 +633,12 @@
     {"id": "jade_downtown_condo.kitchen", "location": "jade_downtown_condo", "room": "kitchen", "path": "res://assets/art/backgrounds/jade_downtown_condo/kitchen.png", "variants": {"day": "res://assets/art/backgrounds/jade_downtown_condo/kitchen.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "jade_downtown_condo.bedroom", "location": "jade_downtown_condo", "room": "bedroom", "path": "res://assets/art/backgrounds/jade_downtown_condo/bedroom.png", "variants": {"day": "res://assets/art/backgrounds/jade_downtown_condo/bedroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "jade_downtown_condo.bathroom", "location": "jade_downtown_condo", "room": "bathroom", "path": "res://assets/art/backgrounds/jade_downtown_condo/bathroom.png", "variants": {"day": "res://assets/art/backgrounds/jade_downtown_condo/bathroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "jade_downtown_condo.office", "location": "jade_downtown_condo", "room": "office", "path": "res://assets/art/backgrounds/jade_downtown_condo/office.png", "variants": {"day": "res://assets/art/backgrounds/jade_downtown_condo/office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "jade_downtown_condo.office", "location": "jade_downtown_condo", "room": "office", "path": "res://assets/art/backgrounds/jade_downtown_condo/office.png", "variants": {"day": "res://assets/art/backgrounds/jade_downtown_condo/office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "greyport_street.bus_exchange", "location": "greyport_street", "room": "bus_exchange", "path": "res://assets/art/backgrounds/greyport_street/bus_exchange.png", "variants": {"day": "res://assets/art/backgrounds/greyport_street/bus_exchange.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "greyport_street.apartment_block", "location": "greyport_street", "room": "apartment_block", "path": "res://assets/art/backgrounds/greyport_street/apartment_block.png", "variants": {"day": "res://assets/art/backgrounds/greyport_street/apartment_block.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "greyport_street.north_residences", "location": "greyport_street", "room": "north_residences", "path": "res://assets/art/backgrounds/greyport_street/north_residences.png", "variants": {"day": "res://assets/art/backgrounds/greyport_street/north_residences.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "greyport_street.south_residences", "location": "greyport_street", "room": "south_residences", "path": "res://assets/art/backgrounds/greyport_street/south_residences.png", "variants": {"day": "res://assets/art/backgrounds/greyport_street/south_residences.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "greyport_street.industrial_corner", "location": "greyport_street", "room": "industrial_corner", "path": "res://assets/art/backgrounds/greyport_street/industrial_corner.png", "variants": {"day": "res://assets/art/backgrounds/greyport_street/industrial_corner.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "greyport_street.nightlife_alley", "location": "greyport_street", "room": "nightlife_alley", "path": "res://assets/art/backgrounds/greyport_street/nightlife_alley.png", "variants": {"day": "res://assets/art/backgrounds/greyport_street/nightlife_alley.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }

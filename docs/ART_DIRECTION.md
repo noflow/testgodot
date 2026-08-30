@@ -41,7 +41,7 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The thirty-one completed base-art locations are the Hale Home, Alder Heights Residential
+The thirty-two completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
@@ -49,8 +49,8 @@ Downtown, Harbor Centre Apartments, Harbor View Condominiums, Port Alder Credit
 Union, Port Alder City Hall, Port Alder Realty, Harbor Centre Business Services,
 Cypress Hall Dorm, Maple Hall Dorm, the Westshore Shared Student Apartment, and the
 Westshore Bookshop, Lantern Gallery, Lantern District Street, La Brisa Kitchen,
-Tideglass Club, Harbor Companion Cooperative, the Rowan Family Home, and Jade's Downtown
-Condo. Together they provide 167 unique base-day PNG
+Tideglass Club, Harbor Companion Cooperative, the Rowan Family Home, Jade's Downtown
+Condo, and Greyport Main Street. Together they provide 173 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -676,6 +676,33 @@ Destination-specific briefs:
 | Bathroom | `jade_downtown_condo/bathroom.png` | Practical cream, charcoal, and walnut room with fluted-glass tub-shower, ordinary fixtures, folded towels, and one Kitchen return. |
 | Home Office | `jade_downtown_condo/office.png` | Confidential planning room with practical desk, equal visitor chairs, dark screens, secure records, blank planning board, and one Living Room return. |
 
+### Greyport Main Street batch prompt set
+
+This batch establishes Greyport's discoverable outdoor district spine and its identity as
+an affordable, industrial, transit-oriented working waterfront with long-standing housing
+and late-night music. The Apartment Block anchors the four-way hub between the Bus
+Exchange, two residential lanes, and Industrial Corner. Unmarked family and shared-housing
+doors remain visible without revealing invitation-gated residents, while Industrial Corner
+separates the distribution warehouse, transit depot, and Undertow approach. Weathered
+brick, faded blue-gray, muted industrial green, galvanized steel, dark cedar, repaired wet
+paving, restrained rust, amber practical light, and resident-tended greenery keep Greyport
+grounded, resilient, safe, and cared for rather than luxurious, dystopian, or stereotyped.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped destination along Greyport Main Street in grounded mature cinematic contemporary realism. Greyport is a safe, lived-in Pacific Northwest coastal working district where affordable brick housing, practical transit infrastructure, warehouses, repair work, and independent late-night music coexist. Keep it slightly gritty but cared for, resilient, accessible, communal, and attainable rather than a slum, dystopia, luxury district, abandoned zone, or crime stereotype. Use weathered red and umber brick, faded blue-gray paint, muted industrial green, galvanized steel, charcoal asphalt and concrete, dark cedar, restrained rust, mossy resident-tended greenery, rain-softened late-August light, and warm practical amber fixtures. Preserve exactly the authored outdoor routes through distinct building masses, curbs, paving, sightlines, entrances, and lighting, with a generous uncluttered lower and central staging area for character sprites. Private residences remain unmarked for discovery gating. No people or reflections of people, character sprites, vehicles, navigation arrows, interface, readable transit information, employer or venue names, addresses, signs, notices, schedules, prices, advertisements, posters, graffiti words, words, letters, numbers, logos, trademarks, brands, screen content, weapons, drugs, visible crime, hazardous spills, broken windows, garbage piles, stereotypes, sexualized imagery, or watermark; all signs, panels, awnings, doors, windows, and poster cases must be blank, closed, dark, abstract, or too indistinct to read.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Greyport Bus Exchange | `greyport_street/bus_exchange.png` | Modest waterfront bus bays, blank shelters and route panels, benches, tactile paving, taxi curb, and one right continuation toward the Apartment Block. |
+| Apartment Block | `greyport_street/apartment_block.png` | Four-way neighborhood hub with left Bus Exchange route, rear North Residential Lane, right Industrial Corner street, foreground South Residential Lane, and an unmarked studio-building entrance. |
+| North Residential Lane | `greyport_street/north_residences.png` | Narrow cared-for brick lane with one upper Lee-family entrance, one right Donovan-family entrance, resident planters, and foreground return to the Apartment Block. |
+| South Residential Lane | `greyport_street/south_residences.png` | Mixed-density lane with one left Flores-townhouse entrance, one right shared-apartment entrance, and rear return to the Apartment Block. |
+| Industrial Corner | `greyport_street/industrial_corner.png` | Four-way working junction with left housing return, rear controlled warehouse entry, right transit-depot public entrance, and foreground descent into Nightlife Alley. |
+| Nightlife Alley | `greyport_street/nightlife_alley.png` | Safe blue-hour converted-warehouse alley with rear Industrial Corner return and one right Undertow entrance using abstract teal-and-plum accents. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -696,7 +723,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all twenty-six room batches were generated with the built-in
+The baseline assets and all twenty-seven room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the
