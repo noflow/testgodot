@@ -41,7 +41,7 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The twenty-nine completed base-art locations are the Hale Home, Alder Heights Residential
+The thirty completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
@@ -49,7 +49,8 @@ Downtown, Harbor Centre Apartments, Harbor View Condominiums, Port Alder Credit
 Union, Port Alder City Hall, Port Alder Realty, Harbor Centre Business Services,
 Cypress Hall Dorm, Maple Hall Dorm, the Westshore Shared Student Apartment, and the
 Westshore Bookshop, Lantern Gallery, Lantern District Street, La Brisa Kitchen,
-Tideglass Club, and Harbor Companion Cooperative. Together they provide 155 unique base-day PNG
+Tideglass Club, Harbor Companion Cooperative, and the Rowan Family Home. Together they
+provide 161 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -623,6 +624,30 @@ Destination-specific briefs:
 | Staff Lounge | `harbor_companion_cooperative/staff_lounge.png` | Ordinary licensed-worker break and peer-support room with kitchenette, seating, unmarked lockers, charging shelf, and one left return. |
 | Private Suite | `harbor_companion_cooperative/private_suite.png` | Neutral hospitality suite with opaque made bed, equal seating, water, closed storage, unmarked controls, and one left return to Consultation. |
 
+### Rowan Family Home batch prompt set
+
+This batch establishes the invitation-only neighboring home shared by Emma Rowan and her
+parents. The older pale craftsman bungalow visible beside the Hale property anchors an
+interior built around honey oak, cream, moss, muted navy, dusty rose, books, and long-kept
+family furnishings. The Living Room provides the four-way hub; Emma's attic-level bedroom
+remains relationship-permission-only; and the Kitchen, Bathroom, Porch, and enclosed
+Backyard preserve the authored routes without shortcuts.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped Rowan Family Home destination in grounded mature cinematic contemporary realism. Continue the older pale craftsman bungalow already visible beside the Hale home, giving the cared-for middle-class residence a cozy slightly eclectic identity through warm cream, soft moss, honey oak, muted navy, dusty rose, charcoal stone, aged brass, plants, well-used books, and rain-softened late-August light. Preserve the authored room-to-room route and invitation or relationship-permission access, give character sprites a clear lower and central staging area, and distinguish shared family spaces from Emma's private room. No people or reflections of people, character sprites, navigation arrows, interface, readable book titles, manuscripts, labels, names, words, letters, numbers, logos, trademarks, brands, screen content, photo faces, sexualized imagery, alcohol, drugs, weapons, or watermark; all books, screens, papers, photos, cards, containers, controls, and signs must be blank, closed, dark, abstract, spine-away, face-down, or too indistinct to read.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Front Porch | `rowan_family_home/porch.png` | Covered older-craftsman porch with garden, bench, right front door to the Living Room, and central steps returning to Hale Block. |
+| Living Room | `rowan_family_home/living_room.png` | Cozy four-way family hub with porch return, compact staircase to Emma's room, right Kitchen opening, rear Backyard door, books, and fireplace. |
+| Kitchen | `rowan_family_home/kitchen.png` | Gradually renovated family kitchen with moss tile, mixed cabinets, left Living Room opening, and one rear Bathroom doorway. |
+| Emma's Bedroom | `rowan_family_home/emma_bedroom.png` | Permission-gated attic room expressing Emma's literature, writing, photography, anxiety, and creativity through unmarked books, desk, reading chair, and one landing return. |
+| Bathroom | `rowan_family_home/bathroom.png` | Compact shared bathroom with tub-shower, vanity, ordinary fixtures, folded family towels, and one return to the Kitchen. |
+| Backyard | `rowan_family_home/backyard.png` | Enclosed rain-softened garden with patio, reading chairs, raised beds, closed shed, and one rear-door return to the Living Room. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -643,7 +668,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all twenty-four room batches were generated with the built-in
+The baseline assets and all twenty-five room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the
