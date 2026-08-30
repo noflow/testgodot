@@ -98,7 +98,8 @@
         "mariner_home_goods",
         "port_alder_auto",
         "st_maren_medical_center",
-        "st_maren_community_clinic"
+        "st_maren_community_clinic",
+        "st_maren_doctors_office"
       ]
     },
     "audio_in_scope": false,
@@ -795,6 +796,18 @@
           {"kind": "background", "id": "st_maren_community_clinic.records_office", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports secure health-record coordination and clinic employment with one downward return to Reception."},
           {"kind": "background", "id": "st_maren_community_clinic.administrator_office", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports Elena's clinic work, staffing, referrals, and private conversations with one downward return to the Waiting Room."}
         ]
+      },
+      {
+        "id": "st_maren_doctors_office_primary_care_and_referral_route",
+        "title": "St. Maren Family Doctors Primary Care, Walk-In, and Referral Route",
+        "priority": 49,
+        "goal": "Complete the family-doctors practice from its Clinic Walk entrance through reception and public waiting into two distinct private examination and consultation rooms.",
+        "assets": [
+          {"kind": "background", "id": "st_maren_doctors_office.reception", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Provides the practice's public arrival hub with separate routes to Clinic Walk and the Waiting Room."},
+          {"kind": "background", "id": "st_maren_doctors_office.waiting_room", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports walk-in and scheduled arrivals while connecting Reception with both private exam rooms."},
+          {"kind": "background", "id": "st_maren_doctors_office.exam_room_1", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports routine physical assessment and primary-care appointments with one downward return to the Waiting Room."},
+          {"kind": "background", "id": "st_maren_doctors_office.exam_room_2", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports seated medication, records, fertility-referral, and follow-up conversations with one left return to the Waiting Room."}
+        ]
       }
     ]
   },
@@ -1107,6 +1120,10 @@
     {"id": "st_maren_community_clinic.waiting_room", "location": "st_maren_community_clinic", "room": "waiting_room", "path": "res://assets/art/backgrounds/st_maren_community_clinic/waiting_room.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_community_clinic/waiting_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "st_maren_community_clinic.exam_room", "location": "st_maren_community_clinic", "room": "exam_room", "path": "res://assets/art/backgrounds/st_maren_community_clinic/exam_room.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_community_clinic/exam_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "st_maren_community_clinic.records_office", "location": "st_maren_community_clinic", "room": "records_office", "path": "res://assets/art/backgrounds/st_maren_community_clinic/records_office.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_community_clinic/records_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "st_maren_community_clinic.administrator_office", "location": "st_maren_community_clinic", "room": "administrator_office", "path": "res://assets/art/backgrounds/st_maren_community_clinic/administrator_office.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_community_clinic/administrator_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "st_maren_community_clinic.administrator_office", "location": "st_maren_community_clinic", "room": "administrator_office", "path": "res://assets/art/backgrounds/st_maren_community_clinic/administrator_office.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_community_clinic/administrator_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "st_maren_doctors_office.reception", "location": "st_maren_doctors_office", "room": "reception", "path": "res://assets/art/backgrounds/st_maren_doctors_office/reception.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_doctors_office/reception.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "st_maren_doctors_office.waiting_room", "location": "st_maren_doctors_office", "room": "waiting_room", "path": "res://assets/art/backgrounds/st_maren_doctors_office/waiting_room.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_doctors_office/waiting_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "st_maren_doctors_office.exam_room_1", "location": "st_maren_doctors_office", "room": "exam_room_1", "path": "res://assets/art/backgrounds/st_maren_doctors_office/exam_room_1.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_doctors_office/exam_room_1.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "st_maren_doctors_office.exam_room_2", "location": "st_maren_doctors_office", "room": "exam_room_2", "path": "res://assets/art/backgrounds/st_maren_doctors_office/exam_room_2.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_doctors_office/exam_room_2.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }
