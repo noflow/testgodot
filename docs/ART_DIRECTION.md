@@ -41,7 +41,7 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The fifty-two completed base-art locations are the Hale Home, Alder Heights Residential
+The fifty-three completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
@@ -53,7 +53,7 @@ Tideglass Club, Harbor Companion Cooperative, the Rowan Family Home, Jade's Down
 Condo, Greyport Main Street, the Lee Family Apartment, the Flores Family Townhouse, and the
 Greyport Shared Apartment, the Donovan Family Apartment, Greyport Distribution, and the
 Port Alder Transit Depot, Greyport Studios, Undertow Nightclub, Cedar Vale Residential
-Street, Rachel's Townhouse, Cedar Vale Townhouses, Cedar Vale Detached Homes, Cedar Vale Care Home, Cedar Vale Family Centre, Mariner Row Shopping Street, Mariner Market, Northline Outfitters, Harbor Formalwear, Mariner Home Goods, and Port Alder Auto. Together they provide 290 unique base-day PNG
+Street, Rachel's Townhouse, Cedar Vale Townhouses, Cedar Vale Detached Homes, Cedar Vale Care Home, Cedar Vale Family Centre, Mariner Row Shopping Street, Mariner Market, Northline Outfitters, Harbor Formalwear, Mariner Home Goods, Port Alder Auto, and St. Maren Medical Center. Together they provide 303 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -1208,6 +1208,38 @@ Destination-specific briefs:
 | Finance Office | `port_alder_auto/finance_office.png` | Private brick-and-glass customer office with oak desk, three chairs, blank dark monitor, closed files, face-down paperwork, and one clear downward return to the Showroom. |
 | Service Desk | `port_alder_auto/service_desk.png` | Navy-and-oak service reception with blank dark terminals, waiting chairs, sealed workshop observation glass, and one clear upward return to the Showroom. |
 
+### St. Maren Medical Center batch prompt set
+
+This batch establishes the medical district's central 13-room hospital campus from
+transit arrival and outpatient walks through emergency care, inpatient family health,
+diagnostics, staff work, and the cafeteria. Pale limestone, soft blue-grey glazing,
+weathered cedar, sea-green privacy glass, warm white walls, navy service counters,
+charcoal resilient flooring, coastal planting, and warm practical lighting create a
+calm, accessible, inclusive institution. Every clinical room remains non-graphic,
+private, maintained, and appropriate for a mature dramatic visual novel.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped destination at St. Maren Medical Center in polished painterly semi-realistic grounded mature contemporary cinematic realism. Use pale limestone, soft blue-grey glass, weathered cedar, sea-green privacy glazing and upholstery, warm off-white walls, navy-and-oak service counters, charcoal and light-grey resilient flooring, warm practical lamps, cool coastal daylight, rain-darkened exterior paving, and restrained native planting. Make the public hospital modern, maintained, human-scaled, accessible, inclusive, private, clinically believable, and reassuring rather than luxurious, futuristic, institutional, frightening, or crowded. Preserve exactly the authored routes, distinguish public and staff-only connections, keep every path level and accessible, and leave the lower center useful for dialogue UI. No people, staff, patients, visitors, children, infants, figures, silhouettes, reflections of figures, photographic faces, navigation arrows, interface, readable words, letters, numbers, hospital or department names, directories, room numbers, patient names, charts, forms, labels, schedules, menus, maps, signs, logos, brands, active screens, blood, injuries, birth in progress, anatomy, bodily fluids, needles, sharps, exposed medication, biohazard symbols, weapons, panic, clutter, extra routes, stairs, dereliction, fisheye distortion, or watermark; all equipment, paperwork, clocks, panels, screens, cabinets, menus, maps, signs, and labels must be blank, dark, closed, face-down, abstract, generic, or too indistinct to read.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| St. Maren Transit Stop | `st_maren_medical_center/campus_transit_stop.png` | Accessible glass-and-cedar bus shelter, wet roadway, native planting, blank route panel, and one covered rightward path to the Campus Plaza. |
+| Medical Campus Plaza | `st_maren_medical_center/campus_plaza.png` | Four-way exterior hub with left Transit path, central Reception doors, right Clinic Walk, and a distinct level covered Emergency approach. |
+| Clinic Walk | `st_maren_medical_center/clinic_walk.png` | Accessible outpatient promenade connecting left Campus Plaza, rear Community Clinic, right Wellness Walk, and separate foreground Family Doctors entrance. |
+| Wellness Walk | `st_maren_medical_center/wellness_walk.png` | Quiet landscaped court connecting left Clinic Walk, rear Therapy, right Pharmacy, and a discreet separately screened Sexual Health entrance. |
+| Emergency Department | `st_maren_medical_center/emergency.png` | Calm triage reception and waiting area with rear Plaza doors, right Main Reception corridor, blank terminals, and no emergency in progress. |
+| Main Reception | `st_maren_medical_center/reception.png` | Four-way hospital lobby with left Emergency, rear Inpatient lift, right Cafeteria, foreground Plaza doors, and blank information counter. |
+| Inpatient Ward | `st_maren_medical_center/inpatient_ward.png` | Upper-floor hub with left Maternity corridor, right Pediatrics corridor, central Reception lift, family seating, and closed subordinate patient rooms. |
+| Maternity Ward | `st_maren_medical_center/maternity.png` | Private non-graphic maternity room with one prepared bed, empty bassinet, support seating, inactive blank monitors, and one right Ward return. |
+| Pediatrics | `st_maren_medical_center/pediatrics.png` | Reassuring family assessment room with clean bed, caregiver seating, simple generic toys, blank monitor, and one left Ward return. |
+| Laboratory | `st_maren_medical_center/laboratory.png` | Hygienic clinical collection room with empty chairs, closed supplies, idle generic analyzers, right Imaging route, and foreground Cafeteria return. |
+| Imaging | `st_maren_medical_center/imaging.png` | Quiet diagnostic suite with generic CT-style scanner, sealed control window, left Laboratory return, and separate rear Staff Station route. |
+| Nursing Station | `st_maren_medical_center/staff_station.png` | Secure employee work hub with navy-and-oak desk, blank monitors, closed records and supplies, sealed window, and one Imaging return. |
+| Cafeteria | `st_maren_medical_center/cafeteria.png` | Accessible public dining room with generic prepared foods, blank menu panels, left Reception corridor, and separate Laboratory lift. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -1228,7 +1260,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all forty-seven room batches were generated with the built-in
+The baseline assets and all forty-eight room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the

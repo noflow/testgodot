@@ -96,7 +96,8 @@
         "northline_outfitters",
         "harbor_formalwear",
         "mariner_home_goods",
-        "port_alder_auto"
+        "port_alder_auto",
+        "st_maren_medical_center"
       ]
     },
     "audio_in_scope": false,
@@ -759,6 +760,27 @@
           {"kind": "background", "id": "port_alder_auto.finance_office", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports private vehicle purchase and financing conversations with one clear downward return to the Showroom."},
           {"kind": "background", "id": "port_alder_auto.service_desk", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports arranging vehicle maintenance and repairs with one clear upward return to the Showroom."}
         ]
+      },
+      {
+        "id": "st_maren_medical_center_hospital_campus_and_care_route",
+        "title": "St. Maren Medical Center Campus, Hospital Care, Diagnostics, and Family Health Route",
+        "priority": 47,
+        "goal": "Complete St. Maren Medical Center from its transit-connected outdoor campus through emergency and reception, inpatient family care, diagnostics, staff work, and cafeteria services.",
+        "assets": [
+          {"kind": "background", "id": "st_maren_medical_center.campus_transit_stop", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Establishes the district's accessible bus arrival point with one clear rightward route to the Medical Campus Plaza."},
+          {"kind": "background", "id": "st_maren_medical_center.campus_plaza", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Provides the four-way exterior hub linking transit, Main Reception, Clinic Walk, and the level covered Emergency route."},
+          {"kind": "background", "id": "st_maren_medical_center.clinic_walk", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Connects the hospital plaza with the community clinic, family doctors, and Wellness Walk through an accessible outpatient promenade."},
+          {"kind": "background", "id": "st_maren_medical_center.wellness_walk", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Connects Clinic Walk with therapy, pharmacy, and the privately screened sexual-health centre through a quiet landscaped court."},
+          {"kind": "background", "id": "st_maren_medical_center.emergency", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports always-open emergency intake and triage with separate routes to the Campus Plaza and Main Reception."},
+          {"kind": "background", "id": "st_maren_medical_center.reception", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Provides the four-way hospital lobby linking Emergency, the Inpatient Ward lifts, Cafeteria, and Campus Plaza."},
+          {"kind": "background", "id": "st_maren_medical_center.inpatient_ward", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Provides the secure upper-floor hub connecting Maternity, Pediatrics, and the lift return to Main Reception."},
+          {"kind": "background", "id": "st_maren_medical_center.maternity", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports pregnancy care, birth, recovery, and family scenes in a private non-graphic care room with one right return to the Inpatient Ward."},
+          {"kind": "background", "id": "st_maren_medical_center.pediatrics", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports child and family hospital care in a reassuring assessment room with one left return to the Inpatient Ward."},
+          {"kind": "background", "id": "st_maren_medical_center.laboratory", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports clinical testing and specimen collection with separate routes to Imaging and the Cafeteria."},
+          {"kind": "background", "id": "st_maren_medical_center.imaging", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports diagnostic imaging with separate routes back to the Laboratory and up to the employee Nursing Station."},
+          {"kind": "background", "id": "st_maren_medical_center.staff_station", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports medical employment and staff conversations in a secure work hub with one downward return to Imaging."},
+          {"kind": "background", "id": "st_maren_medical_center.cafeteria", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports meals, breaks, and hospital encounters with separate routes to Main Reception and the Laboratory level."}
+        ]
       }
     ]
   },
@@ -1053,6 +1075,19 @@
     {"id": "port_alder_auto.showroom", "location": "port_alder_auto", "room": "showroom", "path": "res://assets/art/backgrounds/port_alder_auto/showroom.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_auto/showroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "port_alder_auto.used_lot", "location": "port_alder_auto", "room": "used_lot", "path": "res://assets/art/backgrounds/port_alder_auto/used_lot.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_auto/used_lot.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "port_alder_auto.finance_office", "location": "port_alder_auto", "room": "finance_office", "path": "res://assets/art/backgrounds/port_alder_auto/finance_office.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_auto/finance_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "port_alder_auto.service_desk", "location": "port_alder_auto", "room": "service_desk", "path": "res://assets/art/backgrounds/port_alder_auto/service_desk.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_auto/service_desk.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "port_alder_auto.service_desk", "location": "port_alder_auto", "room": "service_desk", "path": "res://assets/art/backgrounds/port_alder_auto/service_desk.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_auto/service_desk.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "st_maren_medical_center.campus_transit_stop", "location": "st_maren_medical_center", "room": "campus_transit_stop", "path": "res://assets/art/backgrounds/st_maren_medical_center/campus_transit_stop.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_medical_center/campus_transit_stop.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "st_maren_medical_center.campus_plaza", "location": "st_maren_medical_center", "room": "campus_plaza", "path": "res://assets/art/backgrounds/st_maren_medical_center/campus_plaza.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_medical_center/campus_plaza.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "st_maren_medical_center.clinic_walk", "location": "st_maren_medical_center", "room": "clinic_walk", "path": "res://assets/art/backgrounds/st_maren_medical_center/clinic_walk.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_medical_center/clinic_walk.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "st_maren_medical_center.wellness_walk", "location": "st_maren_medical_center", "room": "wellness_walk", "path": "res://assets/art/backgrounds/st_maren_medical_center/wellness_walk.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_medical_center/wellness_walk.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "st_maren_medical_center.emergency", "location": "st_maren_medical_center", "room": "emergency", "path": "res://assets/art/backgrounds/st_maren_medical_center/emergency.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_medical_center/emergency.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "st_maren_medical_center.reception", "location": "st_maren_medical_center", "room": "reception", "path": "res://assets/art/backgrounds/st_maren_medical_center/reception.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_medical_center/reception.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "st_maren_medical_center.inpatient_ward", "location": "st_maren_medical_center", "room": "inpatient_ward", "path": "res://assets/art/backgrounds/st_maren_medical_center/inpatient_ward.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_medical_center/inpatient_ward.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "st_maren_medical_center.maternity", "location": "st_maren_medical_center", "room": "maternity", "path": "res://assets/art/backgrounds/st_maren_medical_center/maternity.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_medical_center/maternity.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "st_maren_medical_center.pediatrics", "location": "st_maren_medical_center", "room": "pediatrics", "path": "res://assets/art/backgrounds/st_maren_medical_center/pediatrics.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_medical_center/pediatrics.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "st_maren_medical_center.laboratory", "location": "st_maren_medical_center", "room": "laboratory", "path": "res://assets/art/backgrounds/st_maren_medical_center/laboratory.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_medical_center/laboratory.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "st_maren_medical_center.imaging", "location": "st_maren_medical_center", "room": "imaging", "path": "res://assets/art/backgrounds/st_maren_medical_center/imaging.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_medical_center/imaging.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "st_maren_medical_center.staff_station", "location": "st_maren_medical_center", "room": "staff_station", "path": "res://assets/art/backgrounds/st_maren_medical_center/staff_station.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_medical_center/staff_station.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "st_maren_medical_center.cafeteria", "location": "st_maren_medical_center", "room": "cafeteria", "path": "res://assets/art/backgrounds/st_maren_medical_center/cafeteria.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_medical_center/cafeteria.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }
