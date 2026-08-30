@@ -41,7 +41,7 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The thirty-five completed base-art locations are the Hale Home, Alder Heights Residential
+The thirty-six completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
@@ -51,7 +51,7 @@ Cypress Hall Dorm, Maple Hall Dorm, the Westshore Shared Student Apartment, and 
 Westshore Bookshop, Lantern Gallery, Lantern District Street, La Brisa Kitchen,
 Tideglass Club, Harbor Companion Cooperative, the Rowan Family Home, Jade's Downtown
 Condo, Greyport Main Street, the Lee Family Apartment, the Flores Family Townhouse, and the
-Greyport Shared Apartment. Together they provide 192 unique base-day PNG
+Greyport Shared Apartment, and the Donovan Family Apartment. Together they provide 198 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -784,6 +784,32 @@ Destination-specific briefs:
 | Available Bedroom | `greyport_shared_apartment/available_bedroom.png` | Lease-only move-in-ready room with neutral bed, dresser, closed wardrobe, desk, empty shelf, fixed rainy window, no occupant-specific identity clues, and one Kitchen return. |
 | Bathroom | `greyport_shared_apartment/bathroom.png` | Compact shared cream-and-teal bathroom with tub-shower, ordinary fixtures, two towel colors, closed storage, plain toiletries, radiator, and one Kitchen return. |
 
+### Donovan Family Apartment batch prompt set
+
+This batch carries North Residential Lane's invitation-only entrance into the compact
+apartment shared by Claire Donovan and her unnamed adult mother. The home is tightly
+budgeted, long-lived, private, dignified, resilient, and carefully maintained, using warm
+gray, cream, cool denim blue, smoky lavender, faded dusty rose, restrained rust, honey
+maple, charcoal metal, and aged brass. Claire's room expresses retail and fashion skill,
+beginner photography, paused college plans, careful budgeting, guarded independence, and
+the hope of moving forward without exposing her private relationship preferences. The
+mother's restricted room remains deliberately neutral and free of invented identity.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped destination inside the hidden invitation-only Donovan Family Apartment in grounded mature cinematic contemporary realism. Continue the compact older apartment above Greyport's North Residential Lane and make the two-adult family home feel tightly budgeted, long-lived, private, practical, dignified, resilient, safe, and carefully maintained rather than luxurious, shabby, student-only, stereotyped, or a poverty caricature. Use warm gray and cream plaster, cool denim blue, smoky lavender, faded dusty rose, restrained rust, honey maple, charcoal metal, aged brass, rain-softened late-August daylight, and warm practical lamps. Preserve exactly the authored room-to-room routes and access level with all exits visibly separate and a generous uncluttered central and lower character-staging area. Claire's invitation-only room may express retail, fashion, budgeting, photography, paused college plans, independence, and trust through tasteful everyday outerwear, a dark laptop, simple camera, and closed blank materials without sexual cues; the mother's restricted room must remain dignified, private, and identity-neutral. No people or reflections of people, character sprites, navigation arrows, interface, readable bills, bank papers, schedules, mail, books, college forms, labels, names, addresses, signs, prices, posters, words, letters, numbers, logos, trademarks, brands, photo faces, active screen content, flags, religious symbols, cultural stereotypes, nudity, sexualized imagery, underwear, alcohol, drugs, weapons, garbage piles, broken fixtures, visible financial-distress caricature, luxury finishes, or watermark; all screens must be dark and all papers, storage, containers, and boards must be blank, closed, face-down, plain, abstract, or too indistinct to read.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Apartment Door | `donovan_family_apartment/front_door.png` | Private threshold with one charcoal exterior door returning to North Residential Lane, one right Living Room opening, fixed rainy window, two-person outerwear storage, umbrella stand, radiator, and no extra passage. |
+| Living Room | `donovan_family_apartment/living_room.png` | Three-way family hub with left Front Door, upper-rear Claire Bedroom, right Kitchen, cared-for denim seating, refurbished maple furniture, dark television, and no extra exit. |
+| Kitchen | `donovan_family_apartment/kitchen.png` | Gradually refreshed cream-and-denim kitchen with left Living Room opening, lower-side Bathroom doorway, ordinary appliances, two-person table, and exactly those two routes. |
+| Claire's Bedroom | `donovan_family_apartment/claire_bedroom.png` | Invitation-only adult room with denim and smoky-lavender bedding, tasteful everyday clothing rail, dark laptop, simple camera, closed blank college and budget materials, mirror, closed wardrobe, and one Living Room return. |
+| Mother's Bedroom | `donovan_family_apartment/mother_bedroom.png` | Restricted neutral adult room with made bed, comfortable chair, closed storage, fixed rainy window, restrained abstract art, one closed privacy door, and no invented identity or health clues. |
+| Bathroom | `donovan_family_apartment/bathroom.png` | Shared cream, denim, and dusty-rose bathroom with tub-shower, ordinary fixtures, closed storage, plain toiletries, radiator, and one clear Kitchen return. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -804,7 +830,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all thirty room batches were generated with the built-in
+The baseline assets and all thirty-one room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the

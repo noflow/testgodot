@@ -79,7 +79,8 @@
         "greyport_street",
         "lee_family_apartment",
         "flores_family_townhouse",
-        "greyport_shared_apartment"
+        "greyport_shared_apartment",
+        "donovan_family_apartment"
       ]
     },
     "audio_in_scope": false,
@@ -508,6 +509,20 @@
           {"kind": "background", "id": "greyport_shared_apartment.available_bedroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Provides a neutral lease-only bedroom that can become the player's affordable Greyport home base and support later wardrobe customization."},
           {"kind": "background", "id": "greyport_shared_apartment.bathroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Completes the shared household hygiene space with one clear return to the kitchen."}
         ]
+      },
+      {
+        "id": "donovan_family_apartment_invitation_route",
+        "title": "Donovan Family Apartment Invitation and Claire Relationship Route",
+        "priority": 30,
+        "goal": "Complete Claire Donovan's invitation-only Greyport family home from its private threshold through shared rooms, her personal bedroom, and her mother's restricted room.",
+        "assets": [
+          {"kind": "background", "id": "donovan_family_apartment.front_door", "status": "in_progress", "required_variants": ["day", "night", "rain"], "reason": "Connects North Residential Lane to the private apartment while supporting invitations, arrivals, family boundaries, and one clear Living Room route."},
+          {"kind": "background", "id": "donovan_family_apartment.living_room", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Provides the shared three-way family hub connecting the entry, kitchen, and invitation-gated route to Claire's bedroom."},
+          {"kind": "background", "id": "donovan_family_apartment.kitchen", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports cost-conscious family meals, household routines, private conversations, and the apartment's only route to its shared bathroom."},
+          {"kind": "background", "id": "donovan_family_apartment.claire_bedroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports Claire's invitation-gated friendship, romance, fashion, retail, photography, college-return, financial-independence, and trust scenes."},
+          {"kind": "background", "id": "donovan_family_apartment.mother_bedroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Preserves complete household geography for restricted or scripted events without exposing the unnamed mother's private room or inventing identity details."},
+          {"kind": "background", "id": "donovan_family_apartment.bathroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Completes the shared household hygiene space with one clear return to the kitchen."}
+        ]
       }
     ]
   },
@@ -704,6 +719,12 @@
     {"id": "greyport_shared_apartment.kitchen", "location": "greyport_shared_apartment", "room": "kitchen", "path": "res://assets/art/backgrounds/greyport_shared_apartment/kitchen.png", "variants": {"day": "res://assets/art/backgrounds/greyport_shared_apartment/kitchen.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "greyport_shared_apartment.sofia_bedroom", "location": "greyport_shared_apartment", "room": "sofia_bedroom", "path": "res://assets/art/backgrounds/greyport_shared_apartment/sofia_bedroom.png", "variants": {"day": "res://assets/art/backgrounds/greyport_shared_apartment/sofia_bedroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "greyport_shared_apartment.available_bedroom", "location": "greyport_shared_apartment", "room": "available_bedroom", "path": "res://assets/art/backgrounds/greyport_shared_apartment/available_bedroom.png", "variants": {"day": "res://assets/art/backgrounds/greyport_shared_apartment/available_bedroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "greyport_shared_apartment.bathroom", "location": "greyport_shared_apartment", "room": "bathroom", "path": "res://assets/art/backgrounds/greyport_shared_apartment/bathroom.png", "variants": {"day": "res://assets/art/backgrounds/greyport_shared_apartment/bathroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "greyport_shared_apartment.bathroom", "location": "greyport_shared_apartment", "room": "bathroom", "path": "res://assets/art/backgrounds/greyport_shared_apartment/bathroom.png", "variants": {"day": "res://assets/art/backgrounds/greyport_shared_apartment/bathroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "donovan_family_apartment.front_door", "location": "donovan_family_apartment", "room": "front_door", "path": "res://assets/art/backgrounds/donovan_family_apartment/front_door.png", "variants": {"day": "res://assets/art/backgrounds/donovan_family_apartment/front_door.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "donovan_family_apartment.living_room", "location": "donovan_family_apartment", "room": "living_room", "path": "res://assets/art/backgrounds/donovan_family_apartment/living_room.png", "variants": {"day": "res://assets/art/backgrounds/donovan_family_apartment/living_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "donovan_family_apartment.kitchen", "location": "donovan_family_apartment", "room": "kitchen", "path": "res://assets/art/backgrounds/donovan_family_apartment/kitchen.png", "variants": {"day": "res://assets/art/backgrounds/donovan_family_apartment/kitchen.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "donovan_family_apartment.claire_bedroom", "location": "donovan_family_apartment", "room": "claire_bedroom", "path": "res://assets/art/backgrounds/donovan_family_apartment/claire_bedroom.png", "variants": {"day": "res://assets/art/backgrounds/donovan_family_apartment/claire_bedroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "donovan_family_apartment.mother_bedroom", "location": "donovan_family_apartment", "room": "mother_bedroom", "path": "res://assets/art/backgrounds/donovan_family_apartment/mother_bedroom.png", "variants": {"day": "res://assets/art/backgrounds/donovan_family_apartment/mother_bedroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "donovan_family_apartment.bathroom", "location": "donovan_family_apartment", "room": "bathroom", "path": "res://assets/art/backgrounds/donovan_family_apartment/bathroom.png", "variants": {"day": "res://assets/art/backgrounds/donovan_family_apartment/bathroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }
