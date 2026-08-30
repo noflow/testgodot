@@ -77,7 +77,8 @@
         "rowan_family_home",
         "jade_downtown_condo",
         "greyport_street",
-        "lee_family_apartment"
+        "lee_family_apartment",
+        "flores_family_townhouse"
       ]
     },
     "audio_in_scope": false,
@@ -477,6 +478,21 @@
           {"kind": "background", "id": "lee_family_apartment.cousin_bedroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Preserves complete household geography for restricted or scripted events without exposing the unnamed adult cousin's private room in ordinary navigation."},
           {"kind": "background", "id": "lee_family_apartment.bathroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Completes the household hygiene space with one clear return to the kitchen."}
         ]
+      },
+      {
+        "id": "flores_family_townhouse_invitation_route",
+        "title": "Flores Family Townhouse Invitation and Nadia Friendship Route",
+        "priority": 28,
+        "goal": "Complete Nadia Flores's invitation-only multigenerational Greyport home, including her private room, the restricted grandmother room, the shared family spaces, and the small yard.",
+        "assets": [
+          {"kind": "background", "id": "flores_family_townhouse.front_door", "status": "in_progress", "required_variants": ["day", "night", "rain"], "reason": "Connects South Residential Lane to the townhouse while supporting invitations, arrivals, housing boundaries, and one clear Living Room route."},
+          {"kind": "background", "id": "flores_family_townhouse.living_room", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Provides the four-way family hub connecting the entry, kitchen, Nadia's invitation-gated bedroom, and the small yard."},
+          {"kind": "background", "id": "flores_family_townhouse.kitchen", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports family meals, cooking, household care, friendship scenes, and the townhouse's only route to its shared bathroom."},
+          {"kind": "background", "id": "flores_family_townhouse.nadia_bedroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports Nadia's friendship, nursing study, care-work, competence, burnout, and rest story scenes after an invitation without implying romance."},
+          {"kind": "background", "id": "flores_family_townhouse.grandmother_room", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Preserves complete multigenerational household geography for restricted or scripted events without exposing a private room through ordinary navigation or inventing health details."},
+          {"kind": "background", "id": "flores_family_townhouse.bathroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Completes the shared household hygiene space with practical universal-design details and one clear return to the kitchen."},
+          {"kind": "background", "id": "flores_family_townhouse.small_yard", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Supports private talks, rest, family scenes, and seasonal moments in a cared-for outdoor space with one clear return to the Living Room."}
+        ]
       }
     ]
   },
@@ -660,6 +676,13 @@
     {"id": "lee_family_apartment.kitchen", "location": "lee_family_apartment", "room": "kitchen", "path": "res://assets/art/backgrounds/lee_family_apartment/kitchen.png", "variants": {"day": "res://assets/art/backgrounds/lee_family_apartment/kitchen.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "lee_family_apartment.marcus_bedroom", "location": "lee_family_apartment", "room": "marcus_bedroom", "path": "res://assets/art/backgrounds/lee_family_apartment/marcus_bedroom.png", "variants": {"day": "res://assets/art/backgrounds/lee_family_apartment/marcus_bedroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "lee_family_apartment.cousin_bedroom", "location": "lee_family_apartment", "room": "cousin_bedroom", "path": "res://assets/art/backgrounds/lee_family_apartment/cousin_bedroom.png", "variants": {"day": "res://assets/art/backgrounds/lee_family_apartment/cousin_bedroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "lee_family_apartment.bathroom", "location": "lee_family_apartment", "room": "bathroom", "path": "res://assets/art/backgrounds/lee_family_apartment/bathroom.png", "variants": {"day": "res://assets/art/backgrounds/lee_family_apartment/bathroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "lee_family_apartment.bathroom", "location": "lee_family_apartment", "room": "bathroom", "path": "res://assets/art/backgrounds/lee_family_apartment/bathroom.png", "variants": {"day": "res://assets/art/backgrounds/lee_family_apartment/bathroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "flores_family_townhouse.front_door", "location": "flores_family_townhouse", "room": "front_door", "path": "res://assets/art/backgrounds/flores_family_townhouse/front_door.png", "variants": {"day": "res://assets/art/backgrounds/flores_family_townhouse/front_door.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "flores_family_townhouse.living_room", "location": "flores_family_townhouse", "room": "living_room", "path": "res://assets/art/backgrounds/flores_family_townhouse/living_room.png", "variants": {"day": "res://assets/art/backgrounds/flores_family_townhouse/living_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "flores_family_townhouse.kitchen", "location": "flores_family_townhouse", "room": "kitchen", "path": "res://assets/art/backgrounds/flores_family_townhouse/kitchen.png", "variants": {"day": "res://assets/art/backgrounds/flores_family_townhouse/kitchen.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "flores_family_townhouse.nadia_bedroom", "location": "flores_family_townhouse", "room": "nadia_bedroom", "path": "res://assets/art/backgrounds/flores_family_townhouse/nadia_bedroom.png", "variants": {"day": "res://assets/art/backgrounds/flores_family_townhouse/nadia_bedroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "flores_family_townhouse.grandmother_room", "location": "flores_family_townhouse", "room": "grandmother_room", "path": "res://assets/art/backgrounds/flores_family_townhouse/grandmother_room.png", "variants": {"day": "res://assets/art/backgrounds/flores_family_townhouse/grandmother_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "flores_family_townhouse.bathroom", "location": "flores_family_townhouse", "room": "bathroom", "path": "res://assets/art/backgrounds/flores_family_townhouse/bathroom.png", "variants": {"day": "res://assets/art/backgrounds/flores_family_townhouse/bathroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "flores_family_townhouse.small_yard", "location": "flores_family_townhouse", "room": "small_yard", "path": "res://assets/art/backgrounds/flores_family_townhouse/small_yard.png", "variants": {"day": "res://assets/art/backgrounds/flores_family_townhouse/small_yard.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }

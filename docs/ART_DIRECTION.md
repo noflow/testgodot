@@ -41,7 +41,7 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The thirty-three completed base-art locations are the Hale Home, Alder Heights Residential
+The thirty-four completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
@@ -50,7 +50,7 @@ Union, Port Alder City Hall, Port Alder Realty, Harbor Centre Business Services,
 Cypress Hall Dorm, Maple Hall Dorm, the Westshore Shared Student Apartment, and the
 Westshore Bookshop, Lantern Gallery, Lantern District Street, La Brisa Kitchen,
 Tideglass Club, Harbor Companion Cooperative, the Rowan Family Home, Jade's Downtown
-Condo, Greyport Main Street, and the Lee Family Apartment. Together they provide 179 unique base-day PNG
+Condo, Greyport Main Street, the Lee Family Apartment, and the Flores Family Townhouse. Together they provide 186 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -730,6 +730,33 @@ Destination-specific briefs:
 | Cousin's Bedroom | `lee_family_apartment/cousin_bedroom.png` | Restricted neutral adult room with made bed, closed storage, closed laptop, abstract art, fixed rainy window, and no invented identity clues. |
 | Bathroom | `lee_family_apartment/bathroom.png` | Shared cream-and-blue bathroom with tub-shower, ordinary fixtures, three towel sets, old radiator, plain toiletries, and one Kitchen return. |
 
+### Flores Family Townhouse batch prompt set
+
+This batch carries South Residential Lane's invitation-only entrance into the narrow
+older brick townhouse shared by Nadia Flores, her mother, and her grandmother. The home
+is safe, affordable, multigenerational, and visibly cared for, using warm cream, soft
+terracotta, sea-glass teal, honey oak, deep olive, charcoal, aged brass, and muted plum.
+Shared rooms support practical family life and Nadia's demanding study-and-care schedule.
+Her room emphasizes nursing study, competence, fatigue, and rest without romance cues.
+The grandmother's restricted room remains dignified, private, identity-neutral, and free
+of invented health, disability, religion, culture, hobby, or biography details.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped destination inside the invitation-only Flores Family Townhouse in grounded mature cinematic contemporary realism. Continue the narrow older Greyport brick townhouse seen on South Residential Lane and make the multigenerational home feel safe, practical, affordable, welcoming, and carefully maintained rather than luxurious, shabby, clinical, culturally stereotyped, or overdecorated. Use warm cream, soft terracotta, sea-glass teal, honey oak, deep olive, charcoal, aged brass, muted plum, warm practical amber light, and rain-softened fixed windows. Preserve exactly the authored room-to-room routes and access level with a generous uncluttered lower and central character-staging area. Nadia's invitation-only bedroom may show nursing study and care-work demands with dark screens and closed blank materials; the grandmother's restricted room must remain dignified, private, neutral, and free of invented health or identity clues. No people or reflections of people, character sprites, navigation arrows, interface, readable books, study cards, calendars, labels, names, addresses, medical diagrams, prescriptions, medication, medical equipment, blood, diagnoses, copyrighted art or characters, words, letters, numbers, logos, trademarks, brands, photo faces, active screen content, religious or cultural stereotypes, nudity, sexualized imagery, underwear, alcohol, drugs, weapons, garbage piles, broken fixtures, or watermark; all screens must be dark and all papers, storage, containers, and boards must be blank, closed, face-down, plain, abstract, or too indistinct to read.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Front Door | `flores_family_townhouse/front_door.png` | Shallow townhouse threshold with left/down exterior return to South Residential Lane, right Living Room opening, practical coat-and-shoe storage, and exactly those two routes. |
+| Living Room | `flores_family_townhouse/living_room.png` | Four-way family hub with left Front Door, upper stairs toward Nadia's Bedroom, right Kitchen, rear glazed Small Yard door, cared-for seating, and quiet multigenerational details. |
+| Kitchen | `flores_family_townhouse/kitchen.png` | Practical honey-oak family kitchen with left Living Room opening, rear/right Bathroom door, shared table, ordinary appliances, and exactly those two routes. |
+| Nadia's Bedroom | `flores_family_townhouse/nadia_bedroom.png` | Invitation-only nursing student's room balancing study and rest, with dark laptop, closed blank study materials, practical work bag, bed, storage, and one Living Room return. |
+| Grandmother's Room | `flores_family_townhouse/grandmother_room.png` | Restricted dignified older adult's room with comfortable bed and chair, closed storage, abstract art, fixed rainy window, closed privacy door, and no invented identity or health clues. |
+| Bathroom | `flores_family_townhouse/bathroom.png` | Shared cream-and-teal family bathroom with tub-shower, ordinary fixtures, subtle universal-design grab rail, practical storage, and one Kitchen return. |
+| Small Yard | `flores_family_townhouse/small_yard.png` | Compact enclosed rain-softened yard with tended containers, simple seating, brick boundary, and one rear door returning to the Living Room. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -750,7 +777,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all twenty-eight room batches were generated with the built-in
+The baseline assets and all twenty-nine room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the
