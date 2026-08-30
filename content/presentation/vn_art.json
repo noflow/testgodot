@@ -60,7 +60,8 @@
         "port_alder_galleria",
         "harbor_centre_downtown",
         "harbor_centre_apartments",
-        "harbor_view_condos"
+        "harbor_view_condos",
+        "port_alder_credit_union"
       ]
     },
     "audio_in_scope": false,
@@ -240,6 +241,18 @@
           {"kind": "background", "id": "harbor_view_condos.balcony", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain"], "reason": "A private bay-view outdoor destination for quiet scenes and dates."},
           {"kind": "background", "id": "harbor_view_condos.parking", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports secure vehicle access, EV charging, bicycle storage, and resident arrivals."}
         ]
+      },
+      {
+        "id": "port_alder_credit_union_banking",
+        "title": "Port Alder Credit Union Banking",
+        "priority": 11,
+        "goal": "Complete the physical banking route from self-service access through teller, financial-planning, loan, and mortgage services.",
+        "assets": [
+          {"kind": "background", "id": "port_alder_credit_union.atm_lobby", "status": "in_progress", "required_variants": ["day", "night", "rain"], "reason": "Connects the Financial Block to self-service deposits, withdrawals, and the staffed branch."},
+          {"kind": "background", "id": "port_alder_credit_union.teller_counter", "status": "ready", "required_variants": ["day"], "reason": "Supports checking, savings, deposits, withdrawals, and routine branch services."},
+          {"kind": "background", "id": "port_alder_credit_union.advisor_office", "status": "ready", "required_variants": ["day"], "reason": "Supports budgeting, credit, savings, and long-term financial-planning conversations."},
+          {"kind": "background", "id": "port_alder_credit_union.loan_office", "status": "ready", "required_variants": ["day"], "reason": "Supports personal loans, vehicle financing, mortgages, and approval decisions."}
+        ]
       }
     ]
   },
@@ -339,6 +352,10 @@
     {"id": "harbor_view_condos.bathroom", "location": "harbor_view_condos", "room": "bathroom", "path": "res://assets/art/backgrounds/harbor_view_condos/bathroom.png", "variants": {"day": "res://assets/art/backgrounds/harbor_view_condos/bathroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "harbor_view_condos.laundry", "location": "harbor_view_condos", "room": "laundry", "path": "res://assets/art/backgrounds/harbor_view_condos/laundry.png", "variants": {"day": "res://assets/art/backgrounds/harbor_view_condos/laundry.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "harbor_view_condos.balcony", "location": "harbor_view_condos", "room": "balcony", "path": "res://assets/art/backgrounds/harbor_view_condos/balcony.png", "variants": {"day": "res://assets/art/backgrounds/harbor_view_condos/balcony.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "harbor_view_condos.parking", "location": "harbor_view_condos", "room": "parking", "path": "res://assets/art/backgrounds/harbor_view_condos/parking.png", "variants": {"day": "res://assets/art/backgrounds/harbor_view_condos/parking.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "harbor_view_condos.parking", "location": "harbor_view_condos", "room": "parking", "path": "res://assets/art/backgrounds/harbor_view_condos/parking.png", "variants": {"day": "res://assets/art/backgrounds/harbor_view_condos/parking.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "port_alder_credit_union.atm_lobby", "location": "port_alder_credit_union", "room": "atm_lobby", "path": "res://assets/art/backgrounds/port_alder_credit_union/atm_lobby.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_credit_union/atm_lobby.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "port_alder_credit_union.teller_counter", "location": "port_alder_credit_union", "room": "teller_counter", "path": "res://assets/art/backgrounds/port_alder_credit_union/teller_counter.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_credit_union/teller_counter.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "port_alder_credit_union.advisor_office", "location": "port_alder_credit_union", "room": "advisor_office", "path": "res://assets/art/backgrounds/port_alder_credit_union/advisor_office.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_credit_union/advisor_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "port_alder_credit_union.loan_office", "location": "port_alder_credit_union", "room": "loan_office", "path": "res://assets/art/backgrounds/port_alder_credit_union/loan_office.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_credit_union/loan_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }

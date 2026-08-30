@@ -41,11 +41,12 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The sixteen completed base-art locations are the Hale Home, Alder Heights Residential
+The seventeen completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
-Downtown, Harbor Centre Apartments, and Harbor View Condominiums. Together they provide 95 unique base-day PNG
+Downtown, Harbor Centre Apartments, Harbor View Condominiums, and Port Alder Credit
+Union. Together they provide 99 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -329,6 +330,27 @@ Destination-specific briefs:
 | Balcony | `harbor_view_condos/balcony.png` | Moderate covered private terrace with safe glass railing, two-seat furniture, planters, and a rain-darkened bay panorama. |
 | Secure Parking | `harbor_view_condos/parking.png` | Clean controlled garage with blank access gate, EV chargers, bicycle storage, peripheral unbranded cars, and one Lobby return. |
 
+### Port Alder Credit Union batch prompt set
+
+This batch completes all four mapped Credit Union destinations. The downtown
+Financial Block anchored the ATM Lobby and its wet street-facing entrance. The ATM
+Lobby established the branch materials for the Teller Counter, which in turn anchors
+the private Financial Advisor and Loan offices. The route supports the economy system
+without displaying readable account data, rates, forms, or personal information.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped Port Alder Credit Union destination in grounded mature cinematic contemporary realism. Match the supplied reference's welcoming community-financial design, wet late-August Pacific Northwest atmosphere where exterior glass is visible, charcoal stone, muted teal, warm cedar, cream walls, dark metal, restrained abstract art, safe practical lighting, privacy features, secure storage, and accessible circulation. Preserve the authored route, clear character staging, floating-arrow placement, and an uncluttered lower region for dialogue UI. No people or reflections of people, character sprites, navigation arrows, interface, readable bank names, account data, interest rates, currency amounts, forms, approval text, queue numbers, ATM or appliance labels, letters, numbers, logos, trademarks, captions, or watermark; all forms, screens and signs must be blank or abstract.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| ATM Lobby | `port_alder_credit_union/atm_lobby.png` | Secure street-facing vestibule with blank-screen ATMs, privacy dividers, deposit counter, exterior return, and entry to the staffed branch. |
+| Teller Counter | `port_alder_credit_union/teller_counter.png` | Accessible community branch floor with protected teller stations, queue posts, writing counter, seating, and an advisor corridor. |
+| Financial Advisor Office | `port_alder_credit_union/advisor_office.png` | Confidential planning office with desk, visitor seating, round planning table, blank monitor, locked cabinets, and two branch routes. |
+| Loan Office | `port_alder_credit_union/loan_office.png` | Private loan and mortgage consultation room with oval meeting desk, three visitor chairs, blank documents, locked storage, and one return. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -349,7 +371,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all eleven room batches were generated with the built-in
+The baseline assets and all twelve room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the
