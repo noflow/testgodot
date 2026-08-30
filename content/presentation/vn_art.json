@@ -92,7 +92,8 @@
         "cedar_vale_care_home",
         "cedar_vale_family_centre",
         "mariner_row_shopping_street",
-        "mariner_market"
+        "mariner_market",
+        "northline_outfitters"
       ]
     },
     "audio_in_scope": false,
@@ -706,6 +707,20 @@
           {"kind": "background", "id": "mariner_market.checkout", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports purchases and grocery employment through separate routes to the employee Stockroom and public Grocery Floor."},
           {"kind": "background", "id": "mariner_market.stockroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Provides secure employee-only storage and shift scenes with one clear return to Checkout and no loading-dock shortcut."}
         ]
+      },
+      {
+        "id": "northline_outfitters_clothing_and_employment_route",
+        "title": "Northline Outfitters Clothing, Wardrobe, and Employment Route",
+        "priority": 43,
+        "goal": "Complete Northline Outfitters from its four-way sales hub through inclusive everyday basics, outerwear, private fitting rooms, checkout, and the employee-only stockroom for wardrobe, shopping, advice, and employment gameplay.",
+        "assets": [
+          {"kind": "background", "id": "northline_outfitters.sales_floor", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Provides the four-way public hub connecting Underwear, Fitting Rooms, Outerwear, and Mariner Row Fashion Block."},
+          {"kind": "background", "id": "northline_outfitters.underwear_section", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports inclusive non-sexual shopping for practical undergarments, socks, and sleepwear with one clear right return to the Sales Floor."},
+          {"kind": "background", "id": "northline_outfitters.outerwear_section", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Supports weather-appropriate wardrobe shopping through the two-route public link between the Sales Floor and Checkout."},
+          {"kind": "background", "id": "northline_outfitters.fitting_rooms", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Provides private, accessible, gender-neutral fitting booths and one clear return to the Sales Floor without exposing changing interiors."},
+          {"kind": "background", "id": "northline_outfitters.checkout", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports purchases and clothing-store employment through separate routes to Outerwear and the employee Stockroom."},
+          {"kind": "background", "id": "northline_outfitters.stockroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Provides secure employee-only clothing storage and shift scenes with one return to Checkout and no exterior or loading shortcut."}
+        ]
       }
     ]
   },
@@ -983,6 +998,12 @@
     {"id": "mariner_market.prepared_food", "location": "mariner_market", "room": "prepared_food", "path": "res://assets/art/backgrounds/mariner_market/prepared_food.png", "variants": {"day": "res://assets/art/backgrounds/mariner_market/prepared_food.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "mariner_market.alcohol_section", "location": "mariner_market", "room": "alcohol_section", "path": "res://assets/art/backgrounds/mariner_market/alcohol_section.png", "variants": {"day": "res://assets/art/backgrounds/mariner_market/alcohol_section.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "mariner_market.checkout", "location": "mariner_market", "room": "checkout", "path": "res://assets/art/backgrounds/mariner_market/checkout.png", "variants": {"day": "res://assets/art/backgrounds/mariner_market/checkout.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "mariner_market.stockroom", "location": "mariner_market", "room": "stockroom", "path": "res://assets/art/backgrounds/mariner_market/stockroom.png", "variants": {"day": "res://assets/art/backgrounds/mariner_market/stockroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "mariner_market.stockroom", "location": "mariner_market", "room": "stockroom", "path": "res://assets/art/backgrounds/mariner_market/stockroom.png", "variants": {"day": "res://assets/art/backgrounds/mariner_market/stockroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "northline_outfitters.sales_floor", "location": "northline_outfitters", "room": "sales_floor", "path": "res://assets/art/backgrounds/northline_outfitters/sales_floor.png", "variants": {"day": "res://assets/art/backgrounds/northline_outfitters/sales_floor.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "northline_outfitters.underwear_section", "location": "northline_outfitters", "room": "underwear_section", "path": "res://assets/art/backgrounds/northline_outfitters/underwear_section.png", "variants": {"day": "res://assets/art/backgrounds/northline_outfitters/underwear_section.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "northline_outfitters.outerwear_section", "location": "northline_outfitters", "room": "outerwear_section", "path": "res://assets/art/backgrounds/northline_outfitters/outerwear_section.png", "variants": {"day": "res://assets/art/backgrounds/northline_outfitters/outerwear_section.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "northline_outfitters.fitting_rooms", "location": "northline_outfitters", "room": "fitting_rooms", "path": "res://assets/art/backgrounds/northline_outfitters/fitting_rooms.png", "variants": {"day": "res://assets/art/backgrounds/northline_outfitters/fitting_rooms.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "northline_outfitters.checkout", "location": "northline_outfitters", "room": "checkout", "path": "res://assets/art/backgrounds/northline_outfitters/checkout.png", "variants": {"day": "res://assets/art/backgrounds/northline_outfitters/checkout.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "northline_outfitters.stockroom", "location": "northline_outfitters", "room": "stockroom", "path": "res://assets/art/backgrounds/northline_outfitters/stockroom.png", "variants": {"day": "res://assets/art/backgrounds/northline_outfitters/stockroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }
