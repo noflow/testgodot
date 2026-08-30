@@ -41,15 +41,15 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The twenty-six completed base-art locations are the Hale Home, Alder Heights Residential
+The twenty-seven completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
 Downtown, Harbor Centre Apartments, Harbor View Condominiums, Port Alder Credit
 Union, Port Alder City Hall, Port Alder Realty, Harbor Centre Business Services,
 Cypress Hall Dorm, Maple Hall Dorm, the Westshore Shared Student Apartment, and the
-Westshore Bookshop, Lantern Gallery, and Lantern District Street. Together they provide
-140 unique base-day PNG
+Westshore Bookshop, Lantern Gallery, Lantern District Street, and La Brisa Kitchen. Together they provide
+145 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -556,6 +556,28 @@ Destination-specific briefs:
 | Restaurant Lane | `lantern_district_street/restaurant_lane.png` | Central four-way dining hub with empty covered patios, prominent La Brisa entrance, discreet safe Tideglass entrance, and clear left/right street continuations. |
 | Gallery Walk | `lantern_district_street/gallery_walk.png` | Quieter arts-focused route with Lantern Gallery storefront, abstract display windows, benches, and right-side continuation toward the cooperative's secure reception. |
 
+### La Brisa Kitchen batch prompt set
+
+This batch carries Restaurant Lane's prominent restaurant entrance into a complete
+public dining-and-date route and a believable employee path. The Dining Room anchors
+the interior architecture, its Bar leads into the commercial Kitchen, and the Kitchen
+provides the only route to the Manager Office. The sheltered Patio returns directly to
+the Dining Room without introducing an exterior shortcut.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped La Brisa Kitchen destination in grounded mature cinematic contemporary realism. Continue the polished but attainable coastal Latin restaurant established by Restaurant Lane and the Dining Room: terracotta, deep ocean blue, cream plaster, dark walnut, black metal, aged brick, patterned ceramic accents, greenery, warm amber practical light, and rain-softened late-afternoon coastal daylight. Preserve the authored room-to-room route and access level, give character sprites a clear lower and central staging area, and keep public, employee, and private spaces visibly distinct. No people or reflections of people, character sprites, navigation arrows, interface, readable menus, labels, schedules, receipts, prices, names, words, letters, numbers, logos, trademarks, brands, cultural stereotypes, sexualized imagery, or watermark; all screens, papers, boards, bottles, containers, binder spines, and signs must be blank, unmarked, closed, dark, or abstract.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Dining Room | `la_brisa_kitchen/dining_room.png` | Public restaurant hub with generous date and meal seating, street return, right-side Bar route, rear Patio route, and clear central staging. |
+| Bar | `la_brisa_kitchen/bar.png` | Warm social and service room with unmarked bottles, Dining Room return on the left, Kitchen route at the rear, and space for server scenes. |
+| Kitchen | `la_brisa_kitchen/kitchen.png` | Credible commercial line, prep, pass, and dishwashing workspace with a Bar opening and right-side Manager Office route. |
+| Manager Office | `la_brisa_kitchen/manager_office.png` | Compact private supervisor workspace with blank planning board and screen, secure storage, visitor chair, and one left return to the Kitchen. |
+| Patio | `la_brisa_kitchen/patio.png` | Sheltered brick-and-plaster courtyard with pergola, awning, greenery, date seating, district rooftops, and one return to the Dining Room. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -576,7 +598,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all twenty-one room batches were generated with the built-in
+The baseline assets and all twenty-two room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the

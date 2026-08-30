@@ -70,7 +70,8 @@
         "westshore_shared_student_apartment",
         "westshore_bookshop",
         "lantern_gallery",
-        "lantern_district_street"
+        "lantern_district_street",
+        "la_brisa_kitchen"
       ]
     },
     "audio_in_scope": false,
@@ -375,6 +376,19 @@
           {"kind": "background", "id": "lantern_district_street.restaurant_lane", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain"], "reason": "The central four-way hub connects dining, the nightclub, Cinema Block, and Gallery Walk."},
           {"kind": "background", "id": "lantern_district_street.gallery_walk", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain"], "reason": "Connects Restaurant Lane with Lantern Gallery and the cooperative's secure public reception route."}
         ]
+      },
+      {
+        "id": "la_brisa_kitchen_restaurant_route",
+        "title": "La Brisa Kitchen Restaurant and Employment Route",
+        "priority": 21,
+        "goal": "Complete La Brisa Kitchen's public dining and date spaces plus its connected employee route through the bar, kitchen, and manager office.",
+        "assets": [
+          {"kind": "background", "id": "la_brisa_kitchen.dining_room", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain"], "reason": "Provides the public arrival hub for meals, dates, restaurant conversations, and every internal route."},
+          {"kind": "background", "id": "la_brisa_kitchen.bar", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports alcohol service, casual social scenes, server work, and the controlled route into the employee kitchen."},
+          {"kind": "background", "id": "la_brisa_kitchen.kitchen", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports dishwasher, prep-cook, line-cook, and supervisor employment scenes while connecting the bar to management."},
+          {"kind": "background", "id": "la_brisa_kitchen.manager_office", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Provides a private employee-only setting for interviews, scheduling, promotions, discipline, and management conversations."},
+          {"kind": "background", "id": "la_brisa_kitchen.patio", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain"], "reason": "Supports outdoor dining, dates, private conversations, and weather-sensitive restaurant scenes."}
+        ]
       }
     ]
   },
@@ -519,6 +533,11 @@
     {"id": "lantern_gallery.office", "location": "lantern_gallery", "room": "office", "path": "res://assets/art/backgrounds/lantern_gallery/office.png", "variants": {"day": "res://assets/art/backgrounds/lantern_gallery/office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "lantern_district_street.cinema_block", "location": "lantern_district_street", "room": "cinema_block", "path": "res://assets/art/backgrounds/lantern_district_street/cinema_block.png", "variants": {"day": "res://assets/art/backgrounds/lantern_district_street/cinema_block.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "lantern_district_street.restaurant_lane", "location": "lantern_district_street", "room": "restaurant_lane", "path": "res://assets/art/backgrounds/lantern_district_street/restaurant_lane.png", "variants": {"day": "res://assets/art/backgrounds/lantern_district_street/restaurant_lane.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "lantern_district_street.gallery_walk", "location": "lantern_district_street", "room": "gallery_walk", "path": "res://assets/art/backgrounds/lantern_district_street/gallery_walk.png", "variants": {"day": "res://assets/art/backgrounds/lantern_district_street/gallery_walk.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "lantern_district_street.gallery_walk", "location": "lantern_district_street", "room": "gallery_walk", "path": "res://assets/art/backgrounds/lantern_district_street/gallery_walk.png", "variants": {"day": "res://assets/art/backgrounds/lantern_district_street/gallery_walk.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "la_brisa_kitchen.dining_room", "location": "la_brisa_kitchen", "room": "dining_room", "path": "res://assets/art/backgrounds/la_brisa_kitchen/dining_room.png", "variants": {"day": "res://assets/art/backgrounds/la_brisa_kitchen/dining_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "la_brisa_kitchen.bar", "location": "la_brisa_kitchen", "room": "bar", "path": "res://assets/art/backgrounds/la_brisa_kitchen/bar.png", "variants": {"day": "res://assets/art/backgrounds/la_brisa_kitchen/bar.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "la_brisa_kitchen.kitchen", "location": "la_brisa_kitchen", "room": "kitchen", "path": "res://assets/art/backgrounds/la_brisa_kitchen/kitchen.png", "variants": {"day": "res://assets/art/backgrounds/la_brisa_kitchen/kitchen.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "la_brisa_kitchen.manager_office", "location": "la_brisa_kitchen", "room": "manager_office", "path": "res://assets/art/backgrounds/la_brisa_kitchen/manager_office.png", "variants": {"day": "res://assets/art/backgrounds/la_brisa_kitchen/manager_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "la_brisa_kitchen.patio", "location": "la_brisa_kitchen", "room": "patio", "path": "res://assets/art/backgrounds/la_brisa_kitchen/patio.png", "variants": {"day": "res://assets/art/backgrounds/la_brisa_kitchen/patio.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }
