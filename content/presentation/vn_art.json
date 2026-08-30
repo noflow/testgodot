@@ -72,7 +72,8 @@
         "lantern_gallery",
         "lantern_district_street",
         "la_brisa_kitchen",
-        "tideglass_club"
+        "tideglass_club",
+        "harbor_companion_cooperative"
       ]
     },
     "audio_in_scope": false,
@@ -403,6 +404,19 @@
           {"kind": "background", "id": "tideglass_club.lounge", "status": "in_progress", "required_variants": ["night"], "reason": "Supports quieter friendship, romance, companion-safety, and private conversation scenes beside the dance floor."},
           {"kind": "background", "id": "tideglass_club.restrooms", "status": "in_progress", "required_variants": ["night"], "reason": "Completes the lounge route with clean, accessible, inclusive facilities and one clear return."}
         ]
+      },
+      {
+        "id": "harbor_companion_cooperative_safety_route",
+        "title": "Harbor Companion Cooperative Licensed Workplace and Safety Route",
+        "priority": 23,
+        "goal": "Complete the cooperative's privacy-conscious adult workplace route from public reception through consent consultation, health and safety support, licensed-worker rest, and strictly non-graphic private appointments.",
+        "assets": [
+          {"kind": "background", "id": "harbor_companion_cooperative.secure_reception", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain"], "reason": "Provides the public safety and licensing contact point while visibly controlling access to every private area."},
+          {"kind": "background", "id": "harbor_companion_cooperative.consultation_room", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports appointment-only conversations about boundaries, consent, services, safety expectations, and the right to refuse."},
+          {"kind": "background", "id": "harbor_companion_cooperative.health_and_safety_office", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports confidential safety planning, health compliance, referrals, incident reporting, and worker advocacy."},
+          {"kind": "background", "id": "harbor_companion_cooperative.staff_lounge", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Provides licensed workers with a dignified private break, peer-support, storage, and recovery space."},
+          {"kind": "background", "id": "harbor_companion_cooperative.private_suite", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports consenting-adult appointments and mature fade-to-black scenes in a safe, neutral, strictly non-graphic environment."}
+        ]
       }
     ]
   },
@@ -557,6 +571,11 @@
     {"id": "tideglass_club.dance_floor", "location": "tideglass_club", "room": "dance_floor", "path": "res://assets/art/backgrounds/tideglass_club/dance_floor.png", "variants": {"day": "res://assets/art/backgrounds/tideglass_club/dance_floor.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "tideglass_club.bar", "location": "tideglass_club", "room": "bar", "path": "res://assets/art/backgrounds/tideglass_club/bar.png", "variants": {"day": "res://assets/art/backgrounds/tideglass_club/bar.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "tideglass_club.lounge", "location": "tideglass_club", "room": "lounge", "path": "res://assets/art/backgrounds/tideglass_club/lounge.png", "variants": {"day": "res://assets/art/backgrounds/tideglass_club/lounge.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "tideglass_club.restrooms", "location": "tideglass_club", "room": "restrooms", "path": "res://assets/art/backgrounds/tideglass_club/restrooms.png", "variants": {"day": "res://assets/art/backgrounds/tideglass_club/restrooms.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "tideglass_club.restrooms", "location": "tideglass_club", "room": "restrooms", "path": "res://assets/art/backgrounds/tideglass_club/restrooms.png", "variants": {"day": "res://assets/art/backgrounds/tideglass_club/restrooms.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_companion_cooperative.secure_reception", "location": "harbor_companion_cooperative", "room": "secure_reception", "path": "res://assets/art/backgrounds/harbor_companion_cooperative/secure_reception.png", "variants": {"day": "res://assets/art/backgrounds/harbor_companion_cooperative/secure_reception.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_companion_cooperative.consultation_room", "location": "harbor_companion_cooperative", "room": "consultation_room", "path": "res://assets/art/backgrounds/harbor_companion_cooperative/consultation_room.png", "variants": {"day": "res://assets/art/backgrounds/harbor_companion_cooperative/consultation_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_companion_cooperative.health_and_safety_office", "location": "harbor_companion_cooperative", "room": "health_and_safety_office", "path": "res://assets/art/backgrounds/harbor_companion_cooperative/health_and_safety_office.png", "variants": {"day": "res://assets/art/backgrounds/harbor_companion_cooperative/health_and_safety_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_companion_cooperative.staff_lounge", "location": "harbor_companion_cooperative", "room": "staff_lounge", "path": "res://assets/art/backgrounds/harbor_companion_cooperative/staff_lounge.png", "variants": {"day": "res://assets/art/backgrounds/harbor_companion_cooperative/staff_lounge.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_companion_cooperative.private_suite", "location": "harbor_companion_cooperative", "room": "private_suite", "path": "res://assets/art/backgrounds/harbor_companion_cooperative/private_suite.png", "variants": {"day": "res://assets/art/backgrounds/harbor_companion_cooperative/private_suite.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }

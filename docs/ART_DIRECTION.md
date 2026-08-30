@@ -41,15 +41,15 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The twenty-eight completed base-art locations are the Hale Home, Alder Heights Residential
+The twenty-nine completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
 Downtown, Harbor Centre Apartments, Harbor View Condominiums, Port Alder Credit
 Union, Port Alder City Hall, Port Alder Realty, Harbor Centre Business Services,
 Cypress Hall Dorm, Maple Hall Dorm, the Westshore Shared Student Apartment, and the
-Westshore Bookshop, Lantern Gallery, Lantern District Street, La Brisa Kitchen, and
-Tideglass Club. Together they provide 150 unique base-day PNG
+Westshore Bookshop, Lantern Gallery, Lantern District Street, La Brisa Kitchen,
+Tideglass Club, and Harbor Companion Cooperative. Together they provide 155 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -600,6 +600,29 @@ Destination-specific briefs:
 | Lounge | `tideglass_club/lounge.png` | Quieter plum-and-teal conversation room with open Dance Floor return on the left and a short rear route to the Restrooms. |
 | Restrooms | `tideglass_club/restrooms.png` | Clean inclusive restroom suite with accessible vanity, closed unmarked privacy compartments, and one visible return to the Lounge. |
 
+### Harbor Companion Cooperative batch prompt set
+
+This batch completes the cooperative's access-controlled adults-only workplace route.
+Secure Reception remains a public licensing and safety contact point; the Consultation
+Room and Health and Safety Office require appointments; the Staff Lounge is reserved for
+licensed workers; and the Private Suite supports only consenting-adult appointments and
+strictly non-graphic fade-to-black scenes. Targeted cleanup edits removed generated
+symbols and markings from the safety cabinet and private-suite controls.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped Harbor Companion Cooperative destination in grounded mature cinematic contemporary realism. Continue Gallery Walk's restored-brick shell while giving this dignified licensed workplace a calm privacy-conscious identity through cream plaster, warm walnut, deep ink blue, muted clay, sage, frosted and fluted glass, brushed bronze, charcoal stone, plants, abstract art, and warm late-afternoon light. Preserve the authored room-to-room route and access level, clear lower and central character staging, accessible circulation, consent, health compliance, confidentiality, worker safety, and the right to refuse. No people or reflections of people, character sprites, navigation arrows, interface, readable service lists, licenses, forms, names, prices, schedules, words, letters, numbers, logos, trademarks, brands, screen content, nudity, sexual activity, suggestive imagery, lingerie, condoms, sex toys, restraints, alcohol, drugs, weapons, or watermark; all screens, papers, boards, cabinets, controls, containers, and signs must be blank, closed, dark, plain, or abstract. Adult-only but strictly non-graphic environmental storytelling.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Secure Reception | `harbor_companion_cooperative/secure_reception.png` | Public privacy-conscious reception with blank desk and document drop, Gallery Walk return, forward Safety Office route, and controlled right Consultation route. |
+| Consultation Room | `harbor_companion_cooperative/consultation_room.png` | Neutral three-chair boundary and consent conversation room with Reception return on the left and controlled Private Suite route on the right. |
+| Health and Safety Office | `harbor_companion_cooperative/health_and_safety_office.png` | Confidential worker-support office with blank screens and records, unmarked safety storage, Reception return, and right Staff Lounge route. |
+| Staff Lounge | `harbor_companion_cooperative/staff_lounge.png` | Ordinary licensed-worker break and peer-support room with kitchenette, seating, unmarked lockers, charging shelf, and one left return. |
+| Private Suite | `harbor_companion_cooperative/private_suite.png` | Neutral hospitality suite with opaque made bed, equal seating, water, closed storage, unmarked controls, and one left return to Consultation. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -620,7 +643,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all twenty-three room batches were generated with the built-in
+The baseline assets and all twenty-four room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the
