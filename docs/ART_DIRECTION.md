@@ -41,7 +41,7 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The thirty-eight completed base-art locations are the Hale Home, Alder Heights Residential
+The thirty-nine completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
@@ -52,7 +52,7 @@ Westshore Bookshop, Lantern Gallery, Lantern District Street, La Brisa Kitchen,
 Tideglass Club, Harbor Companion Cooperative, the Rowan Family Home, Jade's Downtown
 Condo, Greyport Main Street, the Lee Family Apartment, the Flores Family Townhouse, and the
 Greyport Shared Apartment, the Donovan Family Apartment, Greyport Distribution, and the
-Port Alder Transit Depot. Together they provide 208 unique base-day PNG
+Port Alder Transit Depot and Greyport Studios. Together they provide 214 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -859,6 +859,32 @@ Destination-specific briefs:
 | Break Room | `port_alder_transit_depot/break_room.png` | Dignified staff recovery space with durable tables, seating, kitchenette, closed cabinets, dark screen, blank pinboard, and exactly one left Repair Bays return. |
 | Foreman Office | `port_alder_transit_depot/foreman_office.png` | Appointment-or-employee office for interviews, training, scheduling, performance, and promotion with visitor chairs, blank planner, closed files, dark monitor, and exactly one left Public Counter return. |
 
+### Greyport Studios batch prompt set
+
+This batch continues Greyport Apartment Block into a compact affordable studio-rental
+building supporting viewings, lease requirements, the player's first independent home,
+sleep, wardrobe, cooking, hygiene, laundry, mail, budgeting, relationships, and household
+customization. The carefully maintained older building uses aged red brick, warm cream,
+faded teal, honey oak, charcoal metal, restrained mustard, aged brass, rain-grey blue,
+old terrazzo, repaired plaster, and warm practical fixtures. It feels modest, secure,
+neighborly, and hopeful rather than luxurious, shabby, unsafe, institutional, or like a
+poverty caricature.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped destination inside Greyport Studios in polished painterly semi-realistic grounded mature contemporary realism. Continue Greyport Apartment Block's rainy coastal brick architecture and use aged red brick, warm cream, faded teal, honey oak, charcoal metal, restrained mustard, aged brass, smoky rain-grey blue, repaired plaster, old terrazzo or wood floors, durable upholstery, and warm practical lights. Make the affordable studio building carefully maintained, compact, secure, neighborly, functional, dignified, and suitable for both rental viewing and long-term player residence. Preserve exactly the authored room-to-room routes and access level with every exit visibly separate and a generous uncluttered central and lower area for floating navigation UI and character staging. No people or reflections of people, character sprites, navigation arrows, interface, readable rent notices, bills, mail, addresses, tenant names, unit numbers, appliance labels, advertisements, words, letters, numbers, logos, trademarks, brands, photo faces, active screen content, readable paperwork, alcohol displays, drugs, weapons, intimate clutter, underwear, broken fixtures, exposed hazards, luxury styling, shabby decay, poverty caricature, institutional gloom, or watermark; all screens must be dark and all papers, boards, mailbox faces, parcel lockers, containers, and labels must be blank, closed, turned away, abstract, or too indistinct to read.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Lobby | `greyport_studios/lobby.png` | Four-way rental and resident hub with left Laundry Room, central rear stairs to the Studio Unit, right Mail Room, foreground Apartment Block exit, modest seating, blank notice board, dark intercom, umbrella stand, and no other route. |
+| Studio Unit | `greyport_studios/studio_unit.png` | Compact furnished adult living-and-sleeping room with double bed, sofa, desk, dresser, closed wardrobe, dining table, rainy brick view, right Kitchen doorway, foreground stair return to the Lobby, and no kitchenette or extra exit. |
+| Private Kitchen | `greyport_studios/kitchen.png` | Practical older galley kitchen with left Studio Unit, right Bathroom, maintained cream cabinetry, honey-oak counters, safe compact appliances, fixed rainy window, and exactly those two routes. |
+| Private Bathroom | `greyport_studios/bathroom.png` | Clean cream-and-faded-teal bathroom with tub-shower, toilet, vanity, closed storage, radiator, frosted rainy window, plain toiletries, and exactly one left Kitchen return. |
+| Laundry Room | `greyport_studios/laundry.png` | Resident-and-guest shared laundry with abstract-panel machines, folding counter, utility sink, cart, closed storage, blank board, fixed high rain window, and exactly one right Lobby return. |
+| Mail Room | `greyport_studios/mail_room.png` | Lease-only secure mail room with blank brass-and-charcoal mailboxes and parcel lockers, sorting shelf, bench, blank board, dark intercom, fixed rainy window, and exactly one left Lobby return. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -879,7 +905,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all thirty-three room batches were generated with the built-in
+The baseline assets and all thirty-four room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the

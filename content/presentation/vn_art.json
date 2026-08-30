@@ -82,7 +82,8 @@
         "greyport_shared_apartment",
         "donovan_family_apartment",
         "greyport_distribution",
-        "port_alder_transit_depot"
+        "port_alder_transit_depot",
+        "greyport_studios"
       ]
     },
     "audio_in_scope": false,
@@ -551,6 +552,20 @@
           {"kind": "background", "id": "port_alder_transit_depot.break_room", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Provides a dignified employee recovery and coworker-conversation space with one clear return to the Repair Bays."},
           {"kind": "background", "id": "port_alder_transit_depot.foreman_office", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports appointments, interviews, mechanics training discussions, scheduling, performance reviews, and promotions with one clear return to the Public Counter."}
         ]
+      },
+      {
+        "id": "greyport_studios_affordable_housing_route",
+        "title": "Greyport Studios Affordable Housing and Independence Route",
+        "priority": 33,
+        "goal": "Complete Greyport's affordable studio rental from viewing and lease access through the player's private living space, kitchen, bathroom, laundry, and mail routines.",
+        "assets": [
+          {"kind": "background", "id": "greyport_studios.lobby", "status": "in_progress", "required_variants": ["day", "night", "rain"], "reason": "Connects Apartment Block to rental viewings and resident access while separating the Studio Unit, shared Laundry Room, and lease-only Mail Room routes."},
+          {"kind": "background", "id": "greyport_studios.studio_unit", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Provides the player's affordable independent home base for sleep, wardrobe, study, relaxation, relationships, and household customization with routes to the Lobby and private Kitchen."},
+          {"kind": "background", "id": "greyport_studios.kitchen", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports private cooking, food storage, meals, budgeting, and household routines between the Studio Unit and Bathroom."},
+          {"kind": "background", "id": "greyport_studios.bathroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Completes the private hygiene space for showers, baths, health, and daily readiness with one clear return to the Kitchen."},
+          {"kind": "background", "id": "greyport_studios.laundry", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports resident and guest laundry, clothing care, neighbor encounters, and household routines with one clear return to the Lobby."},
+          {"kind": "background", "id": "greyport_studios.mail_room", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports lease-only mail, bills, deliveries, housing notices, and story triggers while preserving resident privacy and one clear Lobby return."}
+        ]
       }
     ]
   },
@@ -763,6 +778,12 @@
     {"id": "port_alder_transit_depot.repair_bays", "location": "port_alder_transit_depot", "room": "repair_bays", "path": "res://assets/art/backgrounds/port_alder_transit_depot/repair_bays.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_transit_depot/repair_bays.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "port_alder_transit_depot.parts_room", "location": "port_alder_transit_depot", "room": "parts_room", "path": "res://assets/art/backgrounds/port_alder_transit_depot/parts_room.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_transit_depot/parts_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "port_alder_transit_depot.break_room", "location": "port_alder_transit_depot", "room": "break_room", "path": "res://assets/art/backgrounds/port_alder_transit_depot/break_room.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_transit_depot/break_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "port_alder_transit_depot.foreman_office", "location": "port_alder_transit_depot", "room": "foreman_office", "path": "res://assets/art/backgrounds/port_alder_transit_depot/foreman_office.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_transit_depot/foreman_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "port_alder_transit_depot.foreman_office", "location": "port_alder_transit_depot", "room": "foreman_office", "path": "res://assets/art/backgrounds/port_alder_transit_depot/foreman_office.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_transit_depot/foreman_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "greyport_studios.lobby", "location": "greyport_studios", "room": "lobby", "path": "res://assets/art/backgrounds/greyport_studios/lobby.png", "variants": {"day": "res://assets/art/backgrounds/greyport_studios/lobby.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "greyport_studios.studio_unit", "location": "greyport_studios", "room": "studio_unit", "path": "res://assets/art/backgrounds/greyport_studios/studio_unit.png", "variants": {"day": "res://assets/art/backgrounds/greyport_studios/studio_unit.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "greyport_studios.kitchen", "location": "greyport_studios", "room": "kitchen", "path": "res://assets/art/backgrounds/greyport_studios/kitchen.png", "variants": {"day": "res://assets/art/backgrounds/greyport_studios/kitchen.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "greyport_studios.bathroom", "location": "greyport_studios", "room": "bathroom", "path": "res://assets/art/backgrounds/greyport_studios/bathroom.png", "variants": {"day": "res://assets/art/backgrounds/greyport_studios/bathroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "greyport_studios.laundry", "location": "greyport_studios", "room": "laundry", "path": "res://assets/art/backgrounds/greyport_studios/laundry.png", "variants": {"day": "res://assets/art/backgrounds/greyport_studios/laundry.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "greyport_studios.mail_room", "location": "greyport_studios", "room": "mail_room", "path": "res://assets/art/backgrounds/greyport_studios/mail_room.png", "variants": {"day": "res://assets/art/backgrounds/greyport_studios/mail_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }
