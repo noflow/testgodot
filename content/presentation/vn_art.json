@@ -63,7 +63,8 @@
         "harbor_view_condos",
         "port_alder_credit_union",
         "port_alder_city_hall",
-        "port_alder_realty"
+        "port_alder_realty",
+        "harbor_business_services"
       ]
     },
     "audio_in_scope": false,
@@ -278,6 +279,18 @@
           {"kind": "background", "id": "port_alder_realty.agent_office", "status": "ready", "required_variants": ["day"], "reason": "Supports private housing consultations, affordability discussions, applications, and viewing arrangements."},
           {"kind": "background", "id": "port_alder_realty.closing_room", "status": "ready", "required_variants": ["day"], "reason": "Supports appointment-only leases, purchases, mortgage meetings, key handovers, and housing commitments."}
         ]
+      },
+      {
+        "id": "harbor_business_services_workplace",
+        "title": "Harbor Centre Business Services Workplace",
+        "priority": 14,
+        "goal": "Complete the workplace route from public reception through controlled office, meeting, and employee-break spaces.",
+        "assets": [
+          {"kind": "background", "id": "harbor_business_services.lobby", "status": "in_progress", "required_variants": ["day", "night", "rain"], "reason": "Connects the downtown Employment Block to interviews, appointments, employment, and the controlled workplace interior."},
+          {"kind": "background", "id": "harbor_business_services.open_office", "status": "ready", "required_variants": ["day"], "reason": "Supports regular employment shifts, coworker encounters, office tasks, and progression toward meetings."},
+          {"kind": "background", "id": "harbor_business_services.meeting_room", "status": "ready", "required_variants": ["day"], "reason": "Supports interviews, team meetings, reviews, client appointments, and consequential workplace conversations."},
+          {"kind": "background", "id": "harbor_business_services.break_room", "status": "ready", "required_variants": ["day"], "reason": "Supports employee-only breaks, meals, coworker relationships, and informal workplace scenes."}
+        ]
       }
     ]
   },
@@ -388,6 +401,10 @@
     {"id": "port_alder_city_hall.hearing_room", "location": "port_alder_city_hall", "room": "hearing_room", "path": "res://assets/art/backgrounds/port_alder_city_hall/hearing_room.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_city_hall/hearing_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "port_alder_realty.listing_gallery", "location": "port_alder_realty", "room": "listing_gallery", "path": "res://assets/art/backgrounds/port_alder_realty/listing_gallery.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_realty/listing_gallery.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "port_alder_realty.agent_office", "location": "port_alder_realty", "room": "agent_office", "path": "res://assets/art/backgrounds/port_alder_realty/agent_office.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_realty/agent_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "port_alder_realty.closing_room", "location": "port_alder_realty", "room": "closing_room", "path": "res://assets/art/backgrounds/port_alder_realty/closing_room.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_realty/closing_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "port_alder_realty.closing_room", "location": "port_alder_realty", "room": "closing_room", "path": "res://assets/art/backgrounds/port_alder_realty/closing_room.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_realty/closing_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_business_services.lobby", "location": "harbor_business_services", "room": "lobby", "path": "res://assets/art/backgrounds/harbor_business_services/lobby.png", "variants": {"day": "res://assets/art/backgrounds/harbor_business_services/lobby.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_business_services.open_office", "location": "harbor_business_services", "room": "open_office", "path": "res://assets/art/backgrounds/harbor_business_services/open_office.png", "variants": {"day": "res://assets/art/backgrounds/harbor_business_services/open_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_business_services.meeting_room", "location": "harbor_business_services", "room": "meeting_room", "path": "res://assets/art/backgrounds/harbor_business_services/meeting_room.png", "variants": {"day": "res://assets/art/backgrounds/harbor_business_services/meeting_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_business_services.break_room", "location": "harbor_business_services", "room": "break_room", "path": "res://assets/art/backgrounds/harbor_business_services/break_room.png", "variants": {"day": "res://assets/art/backgrounds/harbor_business_services/break_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }

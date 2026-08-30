@@ -41,12 +41,13 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The nineteen completed base-art locations are the Hale Home, Alder Heights Residential
+The twenty completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
 Downtown, Harbor Centre Apartments, Harbor View Condominiums, Port Alder Credit
-Union, Port Alder City Hall, and Port Alder Realty. Together they provide 106 unique base-day PNG
+Union, Port Alder City Hall, Port Alder Realty, and Harbor Centre Business Services.
+Together they provide 110 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -393,6 +394,27 @@ Destination-specific briefs:
 | Agent Office | `port_alder_realty/agent_office.png` | Confidential consultation office with desk, visitor chairs, discussion table, secure records and keys, abstract displays, and routes between Gallery and Closing. |
 | Closing Room | `port_alder_realty/closing_room.png` | Private conference room with six seats, blank documents, signature tablet, display, secure storage, water counter, and one Agent Office return. |
 
+### Harbor Centre Business Services batch prompt set
+
+This batch completes all four mapped workplace destinations. The downtown Employment
+Block anchors the public Lobby and rainy street entrance. The Lobby establishes the
+company's practical commercial palette and controlled-access design for the Open
+Office, Meeting Room, and employee-only Break Room. The route supports interviews,
+regular shifts, promotions, coworker relationships, and workplace story arcs.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped Harbor Centre Business Services destination in grounded mature cinematic contemporary realism. Match the supplied reference's credible mid-sized Pacific Northwest workplace, rain-softened late-August daylight, charcoal stone and flooring, warm cedar, muted teal, cream acoustic surfaces, dark metal, clear and frosted glass, restrained rust accents, warm practical lighting, durable commercial furniture, privacy features, and accessible circulation. Preserve the authored route, access level, clear character staging, floating-arrow placement, and an uncluttered lower region for dialogue UI. Keep the workplace professional and comfortable without corporate luxury. No people or reflections of people, character sprites, navigation arrows, interface, readable company names, directories, client or employee data, schedules, notices, badges, documents, labels, letters, numbers, logos, trademarks, captions, portraits, or watermark; all signs, screens, boards, folders, papers, parcels, packages, calendars, and panels must be blank or abstract.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Lobby | `harbor_business_services/lobby.png` | Employment Block-facing public reception with waiting seats, blank check-in tablet and directory panels, access gates, parcel shelf, and Open Office route. |
+| Open Office | `harbor_business_services/open_office.png` | Controlled-access workspace with clustered desks, blank monitors, acoustic dividers, collaboration table, printer, storage, and routes between Lobby and Meeting Room. |
+| Meeting Room | `harbor_business_services/meeting_room.png` | Glass-walled eight-seat conference room with powered-off display, blank presentation panels, video camera, storage, and routes between Open Office and Break Room. |
+| Break Room | `harbor_business_services/break_room.png` | Employee-only kitchenette and lounge with dining tables, soft seating, lockers, blank vending machine, waste station, rainy window, and one Meeting Room return. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -413,7 +435,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all fourteen room batches were generated with the built-in
+The baseline assets and all fifteen room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the
