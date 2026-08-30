@@ -65,7 +65,8 @@
         "port_alder_city_hall",
         "port_alder_realty",
         "harbor_business_services",
-        "cypress_hall_dorm"
+        "cypress_hall_dorm",
+        "maple_hall_dorm"
       ]
     },
     "audio_in_scope": false,
@@ -307,6 +308,21 @@
           {"kind": "background", "id": "cypress_hall_dorm.maya_room", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Maya's invitation-only residence for friendship, study, and relationship scenes."},
           {"kind": "background", "id": "cypress_hall_dorm.available_room", "status": "in_progress", "required_variants": ["day", "night"], "reason": "A leasable private student room that can become the player's college home base."}
         ]
+      },
+      {
+        "id": "maple_hall_dorm_student_housing",
+        "title": "Maple Hall Dorm Student Housing",
+        "priority": 16,
+        "goal": "Complete Maple Hall's social student-housing route from campus entry through games, cooking, hygiene, laundry, and private dorm rooms.",
+        "assets": [
+          {"kind": "background", "id": "maple_hall_dorm.lobby", "status": "in_progress", "required_variants": ["day", "night", "rain"], "reason": "Connects the Westshore Transit Loop to dorm access, visitors, housing, and the residence interior."},
+          {"kind": "background", "id": "maple_hall_dorm.game_lounge", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Central social hub for games, resident encounters, and routes to every shared facility."},
+          {"kind": "background", "id": "maple_hall_dorm.shared_kitchen", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports simple cooking, meals, chores, and social encounters among adult student residents."},
+          {"kind": "background", "id": "maple_hall_dorm.laundry", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports wardrobe care, recurring chores, and incidental resident encounters."},
+          {"kind": "background", "id": "maple_hall_dorm.shared_bathroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports private hygiene routines with fully enclosed facilities and routes between housing and the lounge."},
+          {"kind": "background", "id": "maple_hall_dorm.theo_room", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Theo's invitation-only residence for friendship, technology, gaming, and relationship scenes."},
+          {"kind": "background", "id": "maple_hall_dorm.available_room", "status": "in_progress", "required_variants": ["day", "night"], "reason": "A leasable private student room that can become the player's college home base."}
+        ]
       }
     ]
   },
@@ -428,6 +444,13 @@
     {"id": "cypress_hall_dorm.shared_bathroom", "location": "cypress_hall_dorm", "room": "shared_bathroom", "path": "res://assets/art/backgrounds/cypress_hall_dorm/shared_bathroom.png", "variants": {"day": "res://assets/art/backgrounds/cypress_hall_dorm/shared_bathroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "cypress_hall_dorm.laundry", "location": "cypress_hall_dorm", "room": "laundry", "path": "res://assets/art/backgrounds/cypress_hall_dorm/laundry.png", "variants": {"day": "res://assets/art/backgrounds/cypress_hall_dorm/laundry.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "cypress_hall_dorm.study_lounge", "location": "cypress_hall_dorm", "room": "study_lounge", "path": "res://assets/art/backgrounds/cypress_hall_dorm/study_lounge.png", "variants": {"day": "res://assets/art/backgrounds/cypress_hall_dorm/study_lounge.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "cypress_hall_dorm.shared_kitchen", "location": "cypress_hall_dorm", "room": "shared_kitchen", "path": "res://assets/art/backgrounds/cypress_hall_dorm/shared_kitchen.png", "variants": {"day": "res://assets/art/backgrounds/cypress_hall_dorm/shared_kitchen.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "cypress_hall_dorm.shared_kitchen", "location": "cypress_hall_dorm", "room": "shared_kitchen", "path": "res://assets/art/backgrounds/cypress_hall_dorm/shared_kitchen.png", "variants": {"day": "res://assets/art/backgrounds/cypress_hall_dorm/shared_kitchen.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "maple_hall_dorm.lobby", "location": "maple_hall_dorm", "room": "lobby", "path": "res://assets/art/backgrounds/maple_hall_dorm/lobby.png", "variants": {"day": "res://assets/art/backgrounds/maple_hall_dorm/lobby.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "maple_hall_dorm.theo_room", "location": "maple_hall_dorm", "room": "theo_room", "path": "res://assets/art/backgrounds/maple_hall_dorm/theo_room.png", "variants": {"day": "res://assets/art/backgrounds/maple_hall_dorm/theo_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "maple_hall_dorm.available_room", "location": "maple_hall_dorm", "room": "available_room", "path": "res://assets/art/backgrounds/maple_hall_dorm/available_room.png", "variants": {"day": "res://assets/art/backgrounds/maple_hall_dorm/available_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "maple_hall_dorm.shared_bathroom", "location": "maple_hall_dorm", "room": "shared_bathroom", "path": "res://assets/art/backgrounds/maple_hall_dorm/shared_bathroom.png", "variants": {"day": "res://assets/art/backgrounds/maple_hall_dorm/shared_bathroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "maple_hall_dorm.laundry", "location": "maple_hall_dorm", "room": "laundry", "path": "res://assets/art/backgrounds/maple_hall_dorm/laundry.png", "variants": {"day": "res://assets/art/backgrounds/maple_hall_dorm/laundry.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "maple_hall_dorm.game_lounge", "location": "maple_hall_dorm", "room": "game_lounge", "path": "res://assets/art/backgrounds/maple_hall_dorm/game_lounge.png", "variants": {"day": "res://assets/art/backgrounds/maple_hall_dorm/game_lounge.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "maple_hall_dorm.shared_kitchen", "location": "maple_hall_dorm", "room": "shared_kitchen", "path": "res://assets/art/backgrounds/maple_hall_dorm/shared_kitchen.png", "variants": {"day": "res://assets/art/backgrounds/maple_hall_dorm/shared_kitchen.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }
