@@ -97,7 +97,8 @@
         "harbor_formalwear",
         "mariner_home_goods",
         "port_alder_auto",
-        "st_maren_medical_center"
+        "st_maren_medical_center",
+        "st_maren_community_clinic"
       ]
     },
     "audio_in_scope": false,
@@ -781,6 +782,19 @@
           {"kind": "background", "id": "st_maren_medical_center.staff_station", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports medical employment and staff conversations in a secure work hub with one downward return to Imaging."},
           {"kind": "background", "id": "st_maren_medical_center.cafeteria", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports meals, breaks, and hospital encounters with separate routes to Main Reception and the Laboratory level."}
         ]
+      },
+      {
+        "id": "st_maren_community_clinic_outpatient_and_admin_route",
+        "title": "St. Maren Community Clinic Outpatient Care, Records, and Administration Route",
+        "priority": 48,
+        "goal": "Complete the community clinic from its campus-connected reception through public waiting and examination care into its secure records and administrator workspaces.",
+        "assets": [
+          {"kind": "background", "id": "st_maren_community_clinic.reception", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Provides the clinic's three-way hub connecting Clinic Walk, the Waiting Room, and the employee Records Office."},
+          {"kind": "background", "id": "st_maren_community_clinic.waiting_room", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports outpatient arrivals and conversations through separate routes to Reception, the Administrator Office, and Exam Room."},
+          {"kind": "background", "id": "st_maren_community_clinic.exam_room", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports checkups, illness assessment, and referrals in a private non-graphic room with one left return to the Waiting Room."},
+          {"kind": "background", "id": "st_maren_community_clinic.records_office", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports secure health-record coordination and clinic employment with one downward return to Reception."},
+          {"kind": "background", "id": "st_maren_community_clinic.administrator_office", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports Elena's clinic work, staffing, referrals, and private conversations with one downward return to the Waiting Room."}
+        ]
       }
     ]
   },
@@ -1088,6 +1102,11 @@
     {"id": "st_maren_medical_center.laboratory", "location": "st_maren_medical_center", "room": "laboratory", "path": "res://assets/art/backgrounds/st_maren_medical_center/laboratory.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_medical_center/laboratory.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "st_maren_medical_center.imaging", "location": "st_maren_medical_center", "room": "imaging", "path": "res://assets/art/backgrounds/st_maren_medical_center/imaging.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_medical_center/imaging.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "st_maren_medical_center.staff_station", "location": "st_maren_medical_center", "room": "staff_station", "path": "res://assets/art/backgrounds/st_maren_medical_center/staff_station.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_medical_center/staff_station.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "st_maren_medical_center.cafeteria", "location": "st_maren_medical_center", "room": "cafeteria", "path": "res://assets/art/backgrounds/st_maren_medical_center/cafeteria.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_medical_center/cafeteria.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "st_maren_medical_center.cafeteria", "location": "st_maren_medical_center", "room": "cafeteria", "path": "res://assets/art/backgrounds/st_maren_medical_center/cafeteria.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_medical_center/cafeteria.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "st_maren_community_clinic.reception", "location": "st_maren_community_clinic", "room": "reception", "path": "res://assets/art/backgrounds/st_maren_community_clinic/reception.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_community_clinic/reception.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "st_maren_community_clinic.waiting_room", "location": "st_maren_community_clinic", "room": "waiting_room", "path": "res://assets/art/backgrounds/st_maren_community_clinic/waiting_room.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_community_clinic/waiting_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "st_maren_community_clinic.exam_room", "location": "st_maren_community_clinic", "room": "exam_room", "path": "res://assets/art/backgrounds/st_maren_community_clinic/exam_room.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_community_clinic/exam_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "st_maren_community_clinic.records_office", "location": "st_maren_community_clinic", "room": "records_office", "path": "res://assets/art/backgrounds/st_maren_community_clinic/records_office.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_community_clinic/records_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "st_maren_community_clinic.administrator_office", "location": "st_maren_community_clinic", "room": "administrator_office", "path": "res://assets/art/backgrounds/st_maren_community_clinic/administrator_office.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_community_clinic/administrator_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }

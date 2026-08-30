@@ -41,7 +41,7 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The fifty-three completed base-art locations are the Hale Home, Alder Heights Residential
+The fifty-four completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
@@ -53,7 +53,7 @@ Tideglass Club, Harbor Companion Cooperative, the Rowan Family Home, Jade's Down
 Condo, Greyport Main Street, the Lee Family Apartment, the Flores Family Townhouse, and the
 Greyport Shared Apartment, the Donovan Family Apartment, Greyport Distribution, and the
 Port Alder Transit Depot, Greyport Studios, Undertow Nightclub, Cedar Vale Residential
-Street, Rachel's Townhouse, Cedar Vale Townhouses, Cedar Vale Detached Homes, Cedar Vale Care Home, Cedar Vale Family Centre, Mariner Row Shopping Street, Mariner Market, Northline Outfitters, Harbor Formalwear, Mariner Home Goods, Port Alder Auto, and St. Maren Medical Center. Together they provide 303 unique base-day PNG
+Street, Rachel's Townhouse, Cedar Vale Townhouses, Cedar Vale Detached Homes, Cedar Vale Care Home, Cedar Vale Family Centre, Mariner Row Shopping Street, Mariner Market, Northline Outfitters, Harbor Formalwear, Mariner Home Goods, Port Alder Auto, St. Maren Medical Center, and St. Maren Community Clinic. Together they provide 308 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -1240,6 +1240,29 @@ Destination-specific briefs:
 | Nursing Station | `st_maren_medical_center/staff_station.png` | Secure employee work hub with navy-and-oak desk, blank monitors, closed records and supplies, sealed window, and one Imaging return. |
 | Cafeteria | `st_maren_medical_center/cafeteria.png` | Accessible public dining room with generic prepared foods, blank menu panels, left Reception corridor, and separate Laboratory lift. |
 
+### St. Maren Community Clinic batch prompt set
+
+This five-room batch extends the medical center's calm palette into a smaller weekday
+outpatient clinic supporting Elena's work, general checkups, illness care, referrals,
+records administration, and private workplace conversations. It retains St. Maren's
+pale limestone, sea-green privacy glass, warm off-white walls, weathered cedar, navy
+service counters, charcoal resilient flooring, coastal art, and soft practical light
+while feeling more personal and less institutional than the hospital.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped destination inside St. Maren Community Clinic in polished painterly semi-realistic grounded mature contemporary cinematic realism. Match the medical campus through warm off-white walls, pale limestone trim, sea-green privacy glass and upholstery, weathered cedar furniture and handrails, navy-and-oak service surfaces, charcoal and light-grey resilient flooring or carpet tile, abstract coastal art without faces, indoor plants, cool coastal daylight, and warm practical lamps. Make the weekday outpatient clinic maintained, human-scaled, accessible, inclusive, private, clinically believable, and reassuring rather than luxurious, futuristic, crowded, or hospital-sized. Preserve exactly the authored routes, clearly distinguish public, appointment, and employee spaces, and keep the lower center useful for dialogue UI. No people, staff, patients, figures, silhouettes, reflections of figures, photographic faces, navigation arrows, interface, readable words, letters, numbers, clinic names, patient names, notices, schedules, charts, forms, prescriptions, folder labels, calendars, signs, logos, brands, active screens, blood, injuries, anatomy posters, bodily fluids, needles, exposed medicine, loose keys, weapons, clutter, extra routes, stairs, dereliction, fisheye distortion, or watermark; all screens, papers, planners, files, folders, cabinets, equipment, clocks, panels, signs, and labels must be blank, dark, closed, capped, face-down, locked, abstract, or too indistinct to read.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Reception | `st_maren_community_clinic/reception.png` | Three-way public hub with rear Records Office door, right Waiting Room, foreground Clinic Walk doors, navy counter, and blank terminals. |
+| Waiting Room | `st_maren_community_clinic/waiting_room.png` | Accessible sea-green seating room with left Reception, rear Administrator Office, right Exam Room, water station, and blank screen. |
+| Exam Room | `st_maren_community_clinic/exam_room.png` | Private general-practice room with exam table, visitor seating, blank monitor, closed clinical storage, and one left Waiting Room return. |
+| Records Office | `st_maren_community_clinic/records_office.png` | Secure employee workspace with locked closed record cabinets, blank scanning station, face-down folders, and one Reception return. |
+| Administrator Office | `st_maren_community_clinic/administrator_office.png` | Elena's private cedar office with conversational seating, blank monitor, closed planner and files, campus window, and one Waiting Room return. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -1260,7 +1283,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all forty-eight room batches were generated with the built-in
+The baseline assets and all forty-nine room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the
