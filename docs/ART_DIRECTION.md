@@ -41,7 +41,7 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The sixty completed base-art locations are the Hale Home, Alder Heights Residential
+The sixty-one completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
@@ -53,7 +53,7 @@ Tideglass Club, Harbor Companion Cooperative, the Rowan Family Home, Jade's Down
 Condo, Greyport Main Street, the Lee Family Apartment, the Flores Family Townhouse, and the
 Greyport Shared Apartment, the Donovan Family Apartment, Greyport Distribution, and the
 Port Alder Transit Depot, Greyport Studios, Undertow Nightclub, Cedar Vale Residential
-Street, Rachel's Townhouse, Cedar Vale Townhouses, Cedar Vale Detached Homes, Cedar Vale Care Home, Cedar Vale Family Centre, Mariner Row Shopping Street, Mariner Market, Northline Outfitters, Harbor Formalwear, Mariner Home Goods, Port Alder Auto, St. Maren Medical Center, St. Maren Community Clinic, St. Maren Family Doctors, Harbor Wellness Therapy, St. Maren Sexual Health Centre, Bay Pharmacy, Hannah's Medical District Apartment, and Crown Point Boulevard. Together they provide 336 unique base-day PNG
+Street, Rachel's Townhouse, Cedar Vale Townhouses, Cedar Vale Detached Homes, Cedar Vale Care Home, Cedar Vale Family Centre, Mariner Row Shopping Street, Mariner Market, Northline Outfitters, Harbor Formalwear, Mariner Home Goods, Port Alder Auto, St. Maren Medical Center, St. Maren Community Clinic, St. Maren Family Doctors, Harbor Wellness Therapy, St. Maren Sexual Health Centre, Bay Pharmacy, Hannah's Medical District Apartment, Crown Point Boulevard, and Price & Caldwell Law. Together they provide 341 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -1396,6 +1396,29 @@ Destination-specific briefs:
 | Hotel Block | `crown_point_boulevard/hotel_block.png` | Formal warm-lit hotel frontage with left Penthouse Towers, centered rear hotel-lobby entrance, and right Harbor Overlook promenade. |
 | Crown Point Harbor Overlook | `crown_point_boulevard/harbor_overlook.png` | Elevated panoramic terrace with benches, safe bronze-and-glass railings, harbor view, closed scenic edges, and one level left return to the Hotel Block. |
 
+### Price & Caldwell Law batch prompt set
+
+This five-room batch moves Crown Point's pale limestone, charcoal glass, bronze, and
+harbor views into an elite legal workplace. Dark walnut, cream seating, smoked privacy
+glass, and restrained muted-violet accents distinguish the firm from other Port Alder
+offices while reflecting Olivia Price's controlled, polished character. Public,
+appointment, and employee-only routes remain visually distinct. The Associate Floor's
+initial recessed foreground route was corrected to a completely flush level return.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped room inside Price & Caldwell Law in polished painterly semi-realistic grounded mature contemporary cinematic realism. Continue Crown Point's pale limestone, charcoal, brushed bronze, dark walnut, smoked blue-grey glass, tailored cream seating, harbor views, warm controlled task lighting, and restrained muted-violet abstract coastal art. Make the firm elite, discreet, exacting, expensive, heavily used, and intimidatingly competent rather than theatrical or ostentatious. Preserve exactly the authored public, appointment, employee, left, right, upward, and foreground/down routes; keep every threshold flat and accessible and reserve useful lower-center space for dialogue UI. No people, Olivia, staff, clients, figures, silhouettes, faces, reflections of people, portraits, family photographs, navigation arrows, interface, readable words, letters, numbers, firm name, plaques, directories, case files, client names, contracts, calendars, certificates, diplomas, mail, notices, signs, brands, logos, active screens, clocks, flags, gavels, scales-of-justice symbols, statues, alcohol, visible keys, weapons, clutter, open confidential storage, extra routes, stairs, steps, ramps, pits, hatches, recessed floors, raised thresholds, fisheye distortion, corner marks, signatures, or watermark; all papers, binders, screens, labels, artwork, and storage must be blank, closed, abstract, turned away, or too indistinct to read.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Reception | `price_caldwell_law/reception.png` | Sculptural reception desk and cream waiting area with foreground Boulevard doors, centered rear Associate Floor elevator, and right Conference Room doorway. |
+| Associate Floor | `price_caldwell_law/associate_floor.png` | Employee work hub with harbor-facing desks, secure left Records door, right Olivia Office door, and corrected flush foreground Reception return. |
+| Conference Room | `price_caldwell_law/conference_room.png` | Eight-seat walnut meeting table with blank presentation screen, left Reception doorway, and direct right Olivia Office doorway. |
+| Olivia's Office | `price_caldwell_law/olivia_office.png` | Commanding but restrained harbor-view corner office with client seating, left Conference Room doorway, and open level foreground Associate Floor return. |
+| Records Room | `price_caldwell_law/records_room.png` | Secure closed legal archive with review table, locked filing walls, high frosted glass, and one right Associate Floor return. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -1416,7 +1439,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all fifty-five room batches were generated with the built-in
+The baseline assets and all fifty-six room batches were generated with the built-in
 OpenAI image-generation tool during 2026-08-29 and 2026-08-30 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the

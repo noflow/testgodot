@@ -104,7 +104,8 @@
         "st_maren_sexual_health",
         "bay_pharmacy",
         "hannah_medical_district_apartment",
-        "crown_point_boulevard"
+        "crown_point_boulevard",
+        "price_caldwell_law"
       ]
     },
     "audio_in_scope": false,
@@ -877,6 +878,19 @@
           {"kind": "background", "id": "crown_point_boulevard.hotel_block", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Connects the penthouse frontage and harbor overlook through the Crown Point Hotel lobby entrance."},
           {"kind": "background", "id": "crown_point_boulevard.harbor_overlook", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Supports public sightseeing and dates at the boulevard terminus with one leftward return to the Hotel Block."}
         ]
+      },
+      {
+        "id": "price_caldwell_law_corporate_legal_route",
+        "title": "Price & Caldwell Law Reception, Associate, Conference, and Executive Route",
+        "priority": 55,
+        "goal": "Complete the Crown Point law firm from its public reception and appointment conference room into the secure associate floor, Olivia's office, and employee-only records archive.",
+        "assets": [
+          {"kind": "background", "id": "price_caldwell_law.reception", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Provides the public arrival hub connecting Crown Point Boulevard, the secure Associate Floor, and the appointment Conference Room."},
+          {"kind": "background", "id": "price_caldwell_law.associate_floor", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Provides the employee-only work hub linking Records, Olivia's Office, and the flush foreground return to Reception."},
+          {"kind": "background", "id": "price_caldwell_law.conference_room", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports client meetings and professional events with distinct routes to Reception and Olivia's Office."},
+          {"kind": "background", "id": "price_caldwell_law.olivia_office", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports Olivia's work, legal consultation, and private conversations while connecting the Conference Room and Associate Floor."},
+          {"kind": "background", "id": "price_caldwell_law.records_room", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports secure employee-only legal record work with one rightward return to the Associate Floor."}
+        ]
       }
     ]
   },
@@ -1217,6 +1231,11 @@
     {"id": "crown_point_boulevard.residential_towers", "location": "crown_point_boulevard", "room": "residential_towers", "path": "res://assets/art/backgrounds/crown_point_boulevard/residential_towers.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_boulevard/residential_towers.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "crown_point_boulevard.penthouse_towers", "location": "crown_point_boulevard", "room": "penthouse_towers", "path": "res://assets/art/backgrounds/crown_point_boulevard/penthouse_towers.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_boulevard/penthouse_towers.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "crown_point_boulevard.hotel_block", "location": "crown_point_boulevard", "room": "hotel_block", "path": "res://assets/art/backgrounds/crown_point_boulevard/hotel_block.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_boulevard/hotel_block.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "crown_point_boulevard.harbor_overlook", "location": "crown_point_boulevard", "room": "harbor_overlook", "path": "res://assets/art/backgrounds/crown_point_boulevard/harbor_overlook.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_boulevard/harbor_overlook.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "crown_point_boulevard.harbor_overlook", "location": "crown_point_boulevard", "room": "harbor_overlook", "path": "res://assets/art/backgrounds/crown_point_boulevard/harbor_overlook.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_boulevard/harbor_overlook.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "price_caldwell_law.reception", "location": "price_caldwell_law", "room": "reception", "path": "res://assets/art/backgrounds/price_caldwell_law/reception.png", "variants": {"day": "res://assets/art/backgrounds/price_caldwell_law/reception.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "price_caldwell_law.associate_floor", "location": "price_caldwell_law", "room": "associate_floor", "path": "res://assets/art/backgrounds/price_caldwell_law/associate_floor.png", "variants": {"day": "res://assets/art/backgrounds/price_caldwell_law/associate_floor.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "price_caldwell_law.conference_room", "location": "price_caldwell_law", "room": "conference_room", "path": "res://assets/art/backgrounds/price_caldwell_law/conference_room.png", "variants": {"day": "res://assets/art/backgrounds/price_caldwell_law/conference_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "price_caldwell_law.olivia_office", "location": "price_caldwell_law", "room": "olivia_office", "path": "res://assets/art/backgrounds/price_caldwell_law/olivia_office.png", "variants": {"day": "res://assets/art/backgrounds/price_caldwell_law/olivia_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "price_caldwell_law.records_room", "location": "price_caldwell_law", "room": "records_room", "path": "res://assets/art/backgrounds/price_caldwell_law/records_room.png", "variants": {"day": "res://assets/art/backgrounds/price_caldwell_law/records_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }
