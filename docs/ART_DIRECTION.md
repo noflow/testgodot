@@ -41,7 +41,7 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The thirty-four completed base-art locations are the Hale Home, Alder Heights Residential
+The thirty-five completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
@@ -50,7 +50,8 @@ Union, Port Alder City Hall, Port Alder Realty, Harbor Centre Business Services,
 Cypress Hall Dorm, Maple Hall Dorm, the Westshore Shared Student Apartment, and the
 Westshore Bookshop, Lantern Gallery, Lantern District Street, La Brisa Kitchen,
 Tideglass Club, Harbor Companion Cooperative, the Rowan Family Home, Jade's Downtown
-Condo, Greyport Main Street, the Lee Family Apartment, and the Flores Family Townhouse. Together they provide 186 unique base-day PNG
+Condo, Greyport Main Street, the Lee Family Apartment, the Flores Family Townhouse, and the
+Greyport Shared Apartment. Together they provide 192 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -757,6 +758,32 @@ Destination-specific briefs:
 | Bathroom | `flores_family_townhouse/bathroom.png` | Shared cream-and-teal family bathroom with tub-shower, ordinary fixtures, subtle universal-design grab rail, practical storage, and one Kitchen return. |
 | Small Yard | `flores_family_townhouse/small_yard.png` | Compact enclosed rain-softened yard with tended containers, simple seating, brick boundary, and one rear door returning to the Living Room. |
 
+### Greyport Shared Apartment batch prompt set
+
+This batch carries South Residential Lane's hidden shared-apartment entrance into an
+affordable two-bedroom rental accessible by Sofia's invitation or the player's lease.
+The converted older brick-and-corrugated-metal building is warm, social, practical, and
+carefully maintained, using warm cream, selective weathered brick, paprika, muted wine
+red, deep teal, mustard, dark walnut, charcoal metal, and aged brass. Sofia's private room
+expresses restaurant leadership, business ambition, playful confidence, and the need for
+rest without using her surname, orientation, relationships, or private preferences as
+visual shorthand. The rentable bedroom remains neutral and ready for player customization.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped destination inside the hidden invitation-or-lease Greyport Shared Apartment in grounded mature cinematic contemporary realism. Continue the affordable converted older brick-and-corrugated-metal building on South Residential Lane and make the two-bedroom rental feel safe, energetic, practical, attainable, welcoming, and carefully maintained rather than luxurious, shabby, student-dorm-like, culturally themed, or overdecorated. Use warm cream, selective weathered red brick, paprika, muted wine red, deep teal, mustard, dark walnut, charcoal metal, aged brass, rain-softened late-August daylight, and warm practical amber light. Preserve exactly the authored room-to-room routes and access level with all exits visibly separate and a generous uncluttered central and lower character-staging area. Sofia's invitation-only room may express restaurant leadership, cooking, dancing, business ambition, and rest through dark screens and closed blank materials without sexual or cultural cues; the lease-only available bedroom must remain neutral and customizable. No people or reflections of people, character sprites, navigation arrows, interface, readable schedules, mail, books, menus, recipes, labels, names, addresses, signs, prices, posters, words, letters, numbers, logos, trademarks, brands, photo faces, active screen content, flags, religious symbols, cultural stereotypes, nudity, sexualized imagery, underwear, alcohol, drugs, weapons, garbage piles, broken fixtures, luxury finishes, or watermark; all screens must be dark and all papers, storage, containers, and boards must be blank, closed, face-down, plain, abstract, or too indistinct to read.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Apartment Entry | `greyport_shared_apartment/entry.png` | Shallow private threshold with one charcoal exterior door returning to South Residential Lane, one right Living Room opening, fixed rain window, shoe bench, coat hooks, umbrella stand, and no extra exterior passage. |
+| Living Room | `greyport_shared_apartment/living_room.png` | Three-way shared social hub with left Entry, upper-rear Sofia Bedroom, right Kitchen, modest seating and dining furniture, dark television, and no extra exit. |
+| Kitchen | `greyport_shared_apartment/kitchen.png` | Practical deep-teal kitchen with three visibly separate routes: left Living Room, far-right Available Bedroom, near-right Bathroom, plus ordinary appliances and a two-person breakfast surface. |
+| Sofia's Bedroom | `greyport_shared_apartment/sofia_bedroom.png` | Invitation-only personal room with wine-red and teal bedding, dark laptop, closed blank hospitality and business-planning materials, plain apron, stored dance shoes, closed wardrobe, and one Living Room return. |
+| Available Bedroom | `greyport_shared_apartment/available_bedroom.png` | Lease-only move-in-ready room with neutral bed, dresser, closed wardrobe, desk, empty shelf, fixed rainy window, no occupant-specific identity clues, and one Kitchen return. |
+| Bathroom | `greyport_shared_apartment/bathroom.png` | Compact shared cream-and-teal bathroom with tub-shower, ordinary fixtures, two towel colors, closed storage, plain toiletries, radiator, and one Kitchen return. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -777,7 +804,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all twenty-nine room batches were generated with the built-in
+The baseline assets and all thirty room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the

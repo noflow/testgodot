@@ -78,7 +78,8 @@
         "jade_downtown_condo",
         "greyport_street",
         "lee_family_apartment",
-        "flores_family_townhouse"
+        "flores_family_townhouse",
+        "greyport_shared_apartment"
       ]
     },
     "audio_in_scope": false,
@@ -493,6 +494,20 @@
           {"kind": "background", "id": "flores_family_townhouse.bathroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Completes the shared household hygiene space with practical universal-design details and one clear return to the kitchen."},
           {"kind": "background", "id": "flores_family_townhouse.small_yard", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Supports private talks, rest, family scenes, and seasonal moments in a cared-for outdoor space with one clear return to the Living Room."}
         ]
+      },
+      {
+        "id": "greyport_shared_apartment_housing_route",
+        "title": "Greyport Shared Apartment Housing and Sofia Relationship Route",
+        "priority": 29,
+        "goal": "Complete the hidden invitation-or-lease Greyport shared apartment from its South Residential Lane entry through Sofia's private room, the player's rentable bedroom, and every shared household space.",
+        "assets": [
+          {"kind": "background", "id": "greyport_shared_apartment.entry", "status": "in_progress", "required_variants": ["day", "night", "rain"], "reason": "Provides the private transition between South Residential Lane and the invitation-or-lease-only apartment while preserving one clear Living Room route."},
+          {"kind": "background", "id": "greyport_shared_apartment.living_room", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Serves as the shared three-way social hub connecting the entry, kitchen, and invitation-gated route to Sofia's bedroom."},
+          {"kind": "background", "id": "greyport_shared_apartment.kitchen", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports cooking, meals, roommate routines, and three distinct routes to the Living Room, rentable bedroom, and shared bathroom."},
+          {"kind": "background", "id": "greyport_shared_apartment.sofia_bedroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports Sofia's invitation-gated friendship, romance, restaurant leadership, business ambition, rest, and relationship-agreement scenes."},
+          {"kind": "background", "id": "greyport_shared_apartment.available_bedroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Provides a neutral lease-only bedroom that can become the player's affordable Greyport home base and support later wardrobe customization."},
+          {"kind": "background", "id": "greyport_shared_apartment.bathroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Completes the shared household hygiene space with one clear return to the kitchen."}
+        ]
       }
     ]
   },
@@ -683,6 +698,12 @@
     {"id": "flores_family_townhouse.nadia_bedroom", "location": "flores_family_townhouse", "room": "nadia_bedroom", "path": "res://assets/art/backgrounds/flores_family_townhouse/nadia_bedroom.png", "variants": {"day": "res://assets/art/backgrounds/flores_family_townhouse/nadia_bedroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "flores_family_townhouse.grandmother_room", "location": "flores_family_townhouse", "room": "grandmother_room", "path": "res://assets/art/backgrounds/flores_family_townhouse/grandmother_room.png", "variants": {"day": "res://assets/art/backgrounds/flores_family_townhouse/grandmother_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "flores_family_townhouse.bathroom", "location": "flores_family_townhouse", "room": "bathroom", "path": "res://assets/art/backgrounds/flores_family_townhouse/bathroom.png", "variants": {"day": "res://assets/art/backgrounds/flores_family_townhouse/bathroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "flores_family_townhouse.small_yard", "location": "flores_family_townhouse", "room": "small_yard", "path": "res://assets/art/backgrounds/flores_family_townhouse/small_yard.png", "variants": {"day": "res://assets/art/backgrounds/flores_family_townhouse/small_yard.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "flores_family_townhouse.small_yard", "location": "flores_family_townhouse", "room": "small_yard", "path": "res://assets/art/backgrounds/flores_family_townhouse/small_yard.png", "variants": {"day": "res://assets/art/backgrounds/flores_family_townhouse/small_yard.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "greyport_shared_apartment.entry", "location": "greyport_shared_apartment", "room": "entry", "path": "res://assets/art/backgrounds/greyport_shared_apartment/entry.png", "variants": {"day": "res://assets/art/backgrounds/greyport_shared_apartment/entry.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "greyport_shared_apartment.living_room", "location": "greyport_shared_apartment", "room": "living_room", "path": "res://assets/art/backgrounds/greyport_shared_apartment/living_room.png", "variants": {"day": "res://assets/art/backgrounds/greyport_shared_apartment/living_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "greyport_shared_apartment.kitchen", "location": "greyport_shared_apartment", "room": "kitchen", "path": "res://assets/art/backgrounds/greyport_shared_apartment/kitchen.png", "variants": {"day": "res://assets/art/backgrounds/greyport_shared_apartment/kitchen.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "greyport_shared_apartment.sofia_bedroom", "location": "greyport_shared_apartment", "room": "sofia_bedroom", "path": "res://assets/art/backgrounds/greyport_shared_apartment/sofia_bedroom.png", "variants": {"day": "res://assets/art/backgrounds/greyport_shared_apartment/sofia_bedroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "greyport_shared_apartment.available_bedroom", "location": "greyport_shared_apartment", "room": "available_bedroom", "path": "res://assets/art/backgrounds/greyport_shared_apartment/available_bedroom.png", "variants": {"day": "res://assets/art/backgrounds/greyport_shared_apartment/available_bedroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "greyport_shared_apartment.bathroom", "location": "greyport_shared_apartment", "room": "bathroom", "path": "res://assets/art/backgrounds/greyport_shared_apartment/bathroom.png", "variants": {"day": "res://assets/art/backgrounds/greyport_shared_apartment/bathroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }
