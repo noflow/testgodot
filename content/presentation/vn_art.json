@@ -89,7 +89,8 @@
         "rachel_cedar_vale_townhouse",
         "cedar_vale_townhouses",
         "cedar_vale_detached_homes",
-        "cedar_vale_care_home"
+        "cedar_vale_care_home",
+        "cedar_vale_family_centre"
       ]
     },
     "audio_in_scope": false,
@@ -665,6 +666,19 @@
           {"kind": "background", "id": "cedar_vale_care_home.care_station", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Provides a secure employee-only support workspace with blank screens, closed storage, and one unmistakable walkable return to Reception."},
           {"kind": "background", "id": "cedar_vale_care_home.garden", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Supports accessible outdoor visits, quiet conversation, gardening, and care activities in a fully enclosed courtyard with one clear return to the Resident Lounge."}
         ]
+      },
+      {
+        "id": "cedar_vale_family_centre_support_route",
+        "title": "Cedar Vale Family Centre Childcare, Parenting, and Support Route",
+        "priority": 40,
+        "goal": "Complete Cedar Vale's community family-support setting from its public threshold through appointment childcare, parenting groups, private counseling, and the enclosed accessible playground for workshops, services, visits, and family-life scenes.",
+        "assets": [
+          {"kind": "background", "id": "cedar_vale_family_centre.reception", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Provides the accessible three-way threshold connecting Family Block, the appointment-controlled Childcare Room, and the public Parent Group Room."},
+          {"kind": "background", "id": "cedar_vale_family_centre.childcare_room", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports supervised appointment childcare in an age-flexible, identity-neutral, text-free room with one clear return to Reception."},
+          {"kind": "background", "id": "cedar_vale_family_centre.parent_group_room", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Provides the three-way public hub for parenting classes, family-skills workshops, peer support, and routes to Reception, private Counseling, and the Playground."},
+          {"kind": "background", "id": "cedar_vale_family_centre.counselor_office", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports private appointment conversations for individuals, couples, parents, and families without exposed records or clinical framing and with one return to the Parent Group Room."},
+          {"kind": "background", "id": "cedar_vale_family_centre.playground", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Supports inclusive outdoor childcare, parenting programs, visits, and family events in a fully enclosed accessible play space with one clear return to the Parent Group Room."}
+        ]
       }
     ]
   },
@@ -928,6 +942,11 @@
     {"id": "cedar_vale_care_home.resident_lounge", "location": "cedar_vale_care_home", "room": "resident_lounge", "path": "res://assets/art/backgrounds/cedar_vale_care_home/resident_lounge.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_care_home/resident_lounge.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "cedar_vale_care_home.dining_room", "location": "cedar_vale_care_home", "room": "dining_room", "path": "res://assets/art/backgrounds/cedar_vale_care_home/dining_room.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_care_home/dining_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "cedar_vale_care_home.care_station", "location": "cedar_vale_care_home", "room": "care_station", "path": "res://assets/art/backgrounds/cedar_vale_care_home/care_station.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_care_home/care_station.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "cedar_vale_care_home.garden", "location": "cedar_vale_care_home", "room": "garden", "path": "res://assets/art/backgrounds/cedar_vale_care_home/garden.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_care_home/garden.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "cedar_vale_care_home.garden", "location": "cedar_vale_care_home", "room": "garden", "path": "res://assets/art/backgrounds/cedar_vale_care_home/garden.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_care_home/garden.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cedar_vale_family_centre.reception", "location": "cedar_vale_family_centre", "room": "reception", "path": "res://assets/art/backgrounds/cedar_vale_family_centre/reception.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_family_centre/reception.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cedar_vale_family_centre.childcare_room", "location": "cedar_vale_family_centre", "room": "childcare_room", "path": "res://assets/art/backgrounds/cedar_vale_family_centre/childcare_room.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_family_centre/childcare_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cedar_vale_family_centre.parent_group_room", "location": "cedar_vale_family_centre", "room": "parent_group_room", "path": "res://assets/art/backgrounds/cedar_vale_family_centre/parent_group_room.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_family_centre/parent_group_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cedar_vale_family_centre.counselor_office", "location": "cedar_vale_family_centre", "room": "counselor_office", "path": "res://assets/art/backgrounds/cedar_vale_family_centre/counselor_office.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_family_centre/counselor_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cedar_vale_family_centre.playground", "location": "cedar_vale_family_centre", "room": "playground", "path": "res://assets/art/backgrounds/cedar_vale_family_centre/playground.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_family_centre/playground.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }

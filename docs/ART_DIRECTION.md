@@ -41,7 +41,7 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The forty-five completed base-art locations are the Hale Home, Alder Heights Residential
+The forty-six completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
@@ -53,7 +53,7 @@ Tideglass Club, Harbor Companion Cooperative, the Rowan Family Home, Jade's Down
 Condo, Greyport Main Street, the Lee Family Apartment, the Flores Family Townhouse, and the
 Greyport Shared Apartment, the Donovan Family Apartment, Greyport Distribution, and the
 Port Alder Transit Depot, Greyport Studios, Undertow Nightclub, Cedar Vale Residential
-Street, Rachel's Townhouse, Cedar Vale Townhouses, Cedar Vale Detached Homes, and Cedar Vale Care Home. Together they provide 259 unique base-day PNG
+Street, Rachel's Townhouse, Cedar Vale Townhouses, Cedar Vale Detached Homes, Cedar Vale Care Home, and Cedar Vale Family Centre. Together they provide 264 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -1046,6 +1046,29 @@ Destination-specific briefs:
 | Care Station | `cedar_vale_care_home/care_station.png` | Secure employee-only support office with two blank dark monitors, closed oak and sage storage, fixed rainy window, no exposed records or medicine, and one full-height walkable doorway returning to Reception. |
 | Garden | `cedar_vale_care_home/garden.png` | Fully enclosed accessible courtyard with level wet paving, raised planters, supportive benches, internal returning garden loop, covered seating, continuous boundaries, and one centered glazed Resident Lounge return. |
 
+### Cedar Vale Family Centre batch prompt set
+
+This batch continues the warmer public entrance on Cedar Vale Family Block into a
+five-room community support centre for childcare, parenting workshops, counseling,
+and inclusive outdoor play. The centre is friendlier and more energetic than the Care
+Home without becoming overstimulating or childish. Light birch, warm cream, pale aqua,
+sage, soft coral, sunshine ochre, muted navy, river stone, and rain-grey blue unify the
+rooms while appointment-controlled spaces remain private and free of client records.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped destination inside or immediately behind Cedar Vale Family Centre in polished painterly semi-realistic grounded mature contemporary cinematic realism. Continue the residential cedar, warm-cream brick, and river-stone Family Block building after light late-August rain with warm cream, light birch, pale aqua, sage green, soft coral, sunshine ochre, muted navy, river stone, rain-grey blue, and restrained amber practical light. Make the centre accessible, family-friendly, maintained, attainable, inclusive, welcoming, privacy-conscious, and dignified rather than clinical, institutional, luxurious, classroom-like, commercial-daycare-branded, cartoon-heavy, overstimulating, or gloomy. Preserve exactly the authored room-to-room routes, appointment boundaries, and fully enclosed playground, with every exit visibly separate and generous clear circulation. No people, children, parents, staff, parked strollers, reflections of figures, silhouettes, character sprites, navigation arrows, interface, readable words, letters, numbers, room names, signs, labels, schedules, worksheets, schoolwork, client records, mail, paperwork, logos, trademarks, brands, photo faces, active screens, medication, medical devices, alcohol, drugs, weapons, sexual cues, alphabet blocks or panels, realistic dolls, clutter piles, broken fixtures, extra routes, or watermark; all screens, panels, containers, documents, books, art paper, and storage must be dark, blank, plain, closed, face-down, or too indistinct to read.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Reception | `cedar_vale_family_centre/reception.png` | Three-way accessible public threshold with front doors returning to Family Block, discreet rear appointment-controlled Childcare door, broad right Parent Group Room opening, curved birch desk, blank dark monitor, and child-safe waiting table. |
+| Childcare Room | `cedar_vale_family_centre/childcare_room.png` | Empty supervised activity room with rounded tables, age-flexible text-free wooden toys, blank art paper, plain closed storage replacing the generated book rack, fixed rainy windows, and one lower Reception return. |
+| Parent Group Room | `cedar_vale_family_centre/parent_group_room.png` | Public workshop and support hub with left Reception, rear private Counselor Office door, right glazed Playground doors, ten flexible adult chairs, dark blank display, closed storage, and exactly those three routes. |
+| Family Counselor Office | `cedar_vale_family_centre/counselor_office.png` | Calm private appointment room with inclusive family seating, closed lockable storage, fixed rainy window, no desk barrier or records, and one lower Parent Group Room return. |
+| Family Centre Playground | `cedar_vale_family_centre/playground.png` | Fully enclosed wet-weather accessible play space with ramped structure, basket swing, text-free sensory panels, broad turning space, supportive adult seating, continuous boundaries, and one left glazed Parent Group Room return. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -1066,7 +1089,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all forty room batches were generated with the built-in
+The baseline assets and all forty-one room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the
