@@ -105,7 +105,8 @@
         "bay_pharmacy",
         "hannah_medical_district_apartment",
         "crown_point_boulevard",
-        "price_caldwell_law"
+        "price_caldwell_law",
+        "olivia_crown_point_penthouse"
       ]
     },
     "audio_in_scope": false,
@@ -891,6 +892,22 @@
           {"kind": "background", "id": "price_caldwell_law.olivia_office", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports Olivia's work, legal consultation, and private conversations while connecting the Conference Room and Associate Floor."},
           {"kind": "background", "id": "price_caldwell_law.records_room", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports secure employee-only legal record work with one rightward return to the Associate Floor."}
         ]
+      },
+      {
+        "id": "olivia_crown_point_penthouse_invitation_and_private_life_route",
+        "title": "Olivia's Crown Point Penthouse Invitation, Private Life, and Relationship Route",
+        "priority": 56,
+        "goal": "Complete Olivia's invitation-only penthouse from its private elevator through controlled social and work rooms into relationship-gated and quietly vulnerable private spaces.",
+        "assets": [
+          {"kind": "background", "id": "olivia_crown_point_penthouse.private_elevator", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Provides the invitation-controlled arrival with separate routes to Crown Point's Residential Towers and the Living Room."},
+          {"kind": "background", "id": "olivia_crown_point_penthouse.living_room", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Provides the four-way social hub linking the Private Elevator, relationship-gated Bedroom, Dining Room, and Terrace."},
+          {"kind": "background", "id": "olivia_crown_point_penthouse.kitchen", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports private meals and home routines with routes to the Dining Room and Bathroom."},
+          {"kind": "background", "id": "olivia_crown_point_penthouse.dining_room", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Provides the three-way entertaining hub connecting Living Room, Kitchen, and Olivia's Home Office."},
+          {"kind": "background", "id": "olivia_crown_point_penthouse.bedroom", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports relationship-gated private and vulnerable scenes with one downward return to the Living Room."},
+          {"kind": "background", "id": "olivia_crown_point_penthouse.bathroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports private hygiene and recovery with one upward return to the Kitchen."},
+          {"kind": "background", "id": "olivia_crown_point_penthouse.office", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports secluded home work and private conversations with one upward return to the Dining Room."},
+          {"kind": "background", "id": "olivia_crown_point_penthouse.terrace", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Supports private harbor-view conversations and dates with one upward return to the Living Room."}
+        ]
       }
     ]
   },
@@ -1236,6 +1253,14 @@
     {"id": "price_caldwell_law.associate_floor", "location": "price_caldwell_law", "room": "associate_floor", "path": "res://assets/art/backgrounds/price_caldwell_law/associate_floor.png", "variants": {"day": "res://assets/art/backgrounds/price_caldwell_law/associate_floor.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "price_caldwell_law.conference_room", "location": "price_caldwell_law", "room": "conference_room", "path": "res://assets/art/backgrounds/price_caldwell_law/conference_room.png", "variants": {"day": "res://assets/art/backgrounds/price_caldwell_law/conference_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "price_caldwell_law.olivia_office", "location": "price_caldwell_law", "room": "olivia_office", "path": "res://assets/art/backgrounds/price_caldwell_law/olivia_office.png", "variants": {"day": "res://assets/art/backgrounds/price_caldwell_law/olivia_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "price_caldwell_law.records_room", "location": "price_caldwell_law", "room": "records_room", "path": "res://assets/art/backgrounds/price_caldwell_law/records_room.png", "variants": {"day": "res://assets/art/backgrounds/price_caldwell_law/records_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "price_caldwell_law.records_room", "location": "price_caldwell_law", "room": "records_room", "path": "res://assets/art/backgrounds/price_caldwell_law/records_room.png", "variants": {"day": "res://assets/art/backgrounds/price_caldwell_law/records_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "olivia_crown_point_penthouse.private_elevator", "location": "olivia_crown_point_penthouse", "room": "private_elevator", "path": "res://assets/art/backgrounds/olivia_crown_point_penthouse/private_elevator.png", "variants": {"day": "res://assets/art/backgrounds/olivia_crown_point_penthouse/private_elevator.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "olivia_crown_point_penthouse.living_room", "location": "olivia_crown_point_penthouse", "room": "living_room", "path": "res://assets/art/backgrounds/olivia_crown_point_penthouse/living_room.png", "variants": {"day": "res://assets/art/backgrounds/olivia_crown_point_penthouse/living_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "olivia_crown_point_penthouse.kitchen", "location": "olivia_crown_point_penthouse", "room": "kitchen", "path": "res://assets/art/backgrounds/olivia_crown_point_penthouse/kitchen.png", "variants": {"day": "res://assets/art/backgrounds/olivia_crown_point_penthouse/kitchen.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "olivia_crown_point_penthouse.dining_room", "location": "olivia_crown_point_penthouse", "room": "dining_room", "path": "res://assets/art/backgrounds/olivia_crown_point_penthouse/dining_room.png", "variants": {"day": "res://assets/art/backgrounds/olivia_crown_point_penthouse/dining_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "olivia_crown_point_penthouse.bedroom", "location": "olivia_crown_point_penthouse", "room": "bedroom", "path": "res://assets/art/backgrounds/olivia_crown_point_penthouse/bedroom.png", "variants": {"day": "res://assets/art/backgrounds/olivia_crown_point_penthouse/bedroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "olivia_crown_point_penthouse.bathroom", "location": "olivia_crown_point_penthouse", "room": "bathroom", "path": "res://assets/art/backgrounds/olivia_crown_point_penthouse/bathroom.png", "variants": {"day": "res://assets/art/backgrounds/olivia_crown_point_penthouse/bathroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "olivia_crown_point_penthouse.office", "location": "olivia_crown_point_penthouse", "room": "office", "path": "res://assets/art/backgrounds/olivia_crown_point_penthouse/office.png", "variants": {"day": "res://assets/art/backgrounds/olivia_crown_point_penthouse/office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "olivia_crown_point_penthouse.terrace", "location": "olivia_crown_point_penthouse", "room": "terrace", "path": "res://assets/art/backgrounds/olivia_crown_point_penthouse/terrace.png", "variants": {"day": "res://assets/art/backgrounds/olivia_crown_point_penthouse/terrace.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }

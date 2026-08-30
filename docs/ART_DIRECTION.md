@@ -41,7 +41,7 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The sixty-one completed base-art locations are the Hale Home, Alder Heights Residential
+The sixty-two completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
@@ -53,7 +53,7 @@ Tideglass Club, Harbor Companion Cooperative, the Rowan Family Home, Jade's Down
 Condo, Greyport Main Street, the Lee Family Apartment, the Flores Family Townhouse, and the
 Greyport Shared Apartment, the Donovan Family Apartment, Greyport Distribution, and the
 Port Alder Transit Depot, Greyport Studios, Undertow Nightclub, Cedar Vale Residential
-Street, Rachel's Townhouse, Cedar Vale Townhouses, Cedar Vale Detached Homes, Cedar Vale Care Home, Cedar Vale Family Centre, Mariner Row Shopping Street, Mariner Market, Northline Outfitters, Harbor Formalwear, Mariner Home Goods, Port Alder Auto, St. Maren Medical Center, St. Maren Community Clinic, St. Maren Family Doctors, Harbor Wellness Therapy, St. Maren Sexual Health Centre, Bay Pharmacy, Hannah's Medical District Apartment, Crown Point Boulevard, and Price & Caldwell Law. Together they provide 341 unique base-day PNG
+Street, Rachel's Townhouse, Cedar Vale Townhouses, Cedar Vale Detached Homes, Cedar Vale Care Home, Cedar Vale Family Centre, Mariner Row Shopping Street, Mariner Market, Northline Outfitters, Harbor Formalwear, Mariner Home Goods, Port Alder Auto, St. Maren Medical Center, St. Maren Community Clinic, St. Maren Family Doctors, Harbor Wellness Therapy, St. Maren Sexual Health Centre, Bay Pharmacy, Hannah's Medical District Apartment, Crown Point Boulevard, Price & Caldwell Law, and Olivia's Crown Point Penthouse. Together they provide 349 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -1419,6 +1419,33 @@ Destination-specific briefs:
 | Olivia's Office | `price_caldwell_law/olivia_office.png` | Commanding but restrained harbor-view corner office with client seating, left Conference Room doorway, and open level foreground Associate Floor return. |
 | Records Room | `price_caldwell_law/records_room.png` | Secure closed legal archive with review table, locked filing walls, high frosted glass, and one right Associate Floor return. |
 
+### Olivia's Crown Point Penthouse batch prompt set
+
+This eight-room batch creates Olivia Price's invitation-only penthouse as the private
+counterpart to her law office. Pale limestone, charcoal, dark walnut, brushed bronze,
+cream upholstery, smoked glass, muted violet, and continuous harbor views preserve her
+controlled public identity, while reading chairs, softer lighting, and quieter private
+rooms suggest the life she keeps guarded. The Bedroom remains relationship-gated. The
+Kitchen's initial right-wall bathroom doorway was moved to the authored flush foreground
+route before the final asset was saved.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped room inside Olivia Price's Crown Point penthouse in polished painterly semi-realistic grounded mature contemporary cinematic realism. Continue Crown Point and Olivia's established palette through pale limestone, charcoal, dark walnut, brushed bronze, cream, smoked blue-grey glass, restrained muted-violet art and textiles, precise planting, cool harbor daylight, warm concealed task lighting, and panoramic water and forested-hill views. Make the home luxurious, invitation-only, immaculate, guarded, intelligently composed, and quieter than her workplace, with subtle private softness rather than sterile staging or ostentation. Preserve exactly the authored left, right, centered rear/up, and foreground/down routes and the relationship-gated Bedroom; use flat accessible thresholds and reserve useful lower-center space for dialogue UI. No people, Olivia, visitors, figures, silhouettes, faces, reflections of people, portraits, photographs, navigation arrows, interface, readable words, letters, numbers, apartment number, mail, case files, contracts, calendars, certificates, signs, brands, logos, active screens, clocks, visible keys, alcohol, cigarettes, lingerie, exposed underwear, sexual objects, blood, bodily fluids, weapons, clutter, extra routes, stairs, steps, ramps, pits, hatches, raised thresholds, unsafe railings, fisheye distortion, corner marks, signatures, or watermark; all papers, books, screens, labels, artwork, cabinetry, and personal items must be blank, closed, abstract, folded, turned away, generic, or too indistinct to read.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Private Elevator | `olivia_crown_point_penthouse/private_elevator.png` | Limestone-and-bronze invitation-controlled foyer with elevator return to Residential Towers and one broad right Living Room opening. |
+| Living Room | `olivia_crown_point_penthouse/living_room.png` | Four-way social hub with left Elevator, centered rear relationship-gated Bedroom, right Dining Room, foreground Terrace threshold, harbor windows, and quieter reading chair. |
+| Kitchen | `olivia_crown_point_penthouse/kitchen.png` | Functional dark-walnut luxury kitchen with island, left Dining Room opening, and corrected flat bottom-center Bathroom return. |
+| Dining Room | `olivia_crown_point_penthouse/dining_room.png` | Eight-seat harbor-view room with left Living Room, right Kitchen, and centered foreground Home Office route. |
+| Bedroom | `olivia_crown_point_penthouse/bedroom.png` | Relationship-gated king bedroom with closed wardrobe, blackout drapery, reading chair, harbor view, and one flat foreground Living Room return. |
+| Bathroom | `olivia_crown_point_penthouse/bathroom.png` | Restorative stone bathroom with walk-in shower, soaking tub, walnut vanity, privacy glass, and one centered rear Kitchen return. |
+| Home Office | `olivia_crown_point_penthouse/office.png` | Quiet residential study with compact desk, conversation chairs, closed bookcases, harbor view, and one centered rear Dining Room return. |
+| Terrace | `olivia_crown_point_penthouse/terrace.png` | Covered private harbor terrace with safe railings, restrained seating and planting, off fire feature, and one centered rear Living Room threshold. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -1439,7 +1466,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all fifty-six room batches were generated with the built-in
+The baseline assets and all fifty-seven room batches were generated with the built-in
 OpenAI image-generation tool during 2026-08-29 and 2026-08-30 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the
