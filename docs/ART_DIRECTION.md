@@ -41,11 +41,12 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The fourteen completed base-art locations are the Hale Home, Alder Heights Residential
+The fifteen completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
-Bayview Café, plus Port Alder Marina, Alder Bay Beach, and Port Alder Galleria. Together
-with Harbor Centre Downtown, they provide 80 unique base-day PNG backgrounds. Each base image is marked ready in the
+Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
+Downtown, and Harbor Centre Apartments. Together they provide 86 unique base-day PNG
+backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
 
@@ -278,6 +279,29 @@ Destination-specific briefs:
 | Civic Square | `harbor_centre_downtown/civic_square.png` | Formal public square connecting City Hall, Port Alder Realty, and Transit Plaza around a rain garden and abstract geometric artwork. |
 | Galleria Entrance | `harbor_centre_downtown/galleria_entrance.png` | Broad exterior approach with the covered Galleria doors on the right and the Transit Plaza route continuing left. |
 
+### Harbor Centre Apartments batch prompt set
+
+This batch completes all six mapped apartment-building destinations. The downtown
+Residential Towers background anchored the practical apartment entrance and Lobby.
+The Lobby then established the building's modest contemporary rental materials for
+three increasingly spacious furnished model units and the communal Laundry Room.
+The Roof Deck combines that interior reference with the established downtown skyline.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped Harbor Centre Apartments destination in grounded mature cinematic contemporary realism. Match the supplied reference's modest Pacific Northwest rental quality, rain-dimmed late-August daylight, warm cedar, muted teal, cream walls, charcoal stone or wood flooring, dark metal, practical warm lighting, ordinary furnishings, and accessible circulation. Keep the building comfortable and well maintained but clearly midmarket rather than luxurious. Preserve the authored route, open character staging, floating-arrow placement, and an uncluttered lower region for dialogue UI. No people or reflections of people, mannequins, statues, human-shaped displays, personal photographs, character sprites, navigation arrows, interface, readable directories, mail labels, unit numbers, instructions, prices, appliance labels, book titles, letters, numbers, logos, trademarks, captions, or watermark; signs and screens must be blank or abstract.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Lobby | `harbor_centre_apartments/lobby.png` | Modest lobby with exterior glass doors, mail and package wall, blank leasing counter, seating, elevator, and routes to unit viewings and Laundry. |
+| Studio Unit | `harbor_centre_apartments/studio_unit.png` | Compact open-plan furnished rental with sleeping alcove, kitchenette, wardrobe, private bathroom door, and bay-facing window. |
+| One-Bedroom Unit | `harbor_centre_apartments/one_bedroom_unit.png` | Mid-tier unit with separate bedroom, practical living room, compact kitchen and dining area, bathroom, storage, and rainy bay view. |
+| Two-Bedroom Unit | `harbor_centre_apartments/two_bedroom_unit.png` | Roommate- or small-family-sized rental with two bedroom doors, shared living/dining space, full kitchen, bathroom, and storage. |
+| Laundry Room | `harbor_centre_apartments/laundry.png` | Clean communal facility with blank-payment washers and dryers, folding counters, utility sink, benches, carts, and two building routes. |
+| Roof Deck | `harbor_centre_apartments/roof_deck.png` | Wet shared terrace with safe railings, cedar pergola and benches, ordinary tables, grill counter, coastal plants, city towers, and bay views. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -298,7 +322,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all nine room batches were generated with the built-in
+The baseline assets and all ten room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the

@@ -58,7 +58,8 @@
         "port_alder_marina",
         "alder_bay_beach",
         "port_alder_galleria",
-        "harbor_centre_downtown"
+        "harbor_centre_downtown",
+        "harbor_centre_apartments"
       ]
     },
     "audio_in_scope": false,
@@ -207,6 +208,20 @@
           {"kind": "background", "id": "harbor_centre_downtown.civic_square", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain"], "reason": "Connects City Hall, the Realty gallery, public events, and the transit plaza."},
           {"kind": "background", "id": "harbor_centre_downtown.galleria_entrance", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain"], "reason": "Completes the immersive street-level transition between downtown and the Galleria."}
         ]
+      },
+      {
+        "id": "harbor_centre_apartments_housing",
+        "title": "Harbor Centre Apartments Housing",
+        "priority": 9,
+        "goal": "Complete the apartment building's public route, rentable unit tiers, resident laundry, and shared roof deck.",
+        "assets": [
+          {"kind": "background", "id": "harbor_centre_apartments.lobby", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Connects the downtown residential block to apartment viewings and resident facilities."},
+          {"kind": "background", "id": "harbor_centre_apartments.studio_unit", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "The entry-level rentable home and compact player-living option."},
+          {"kind": "background", "id": "harbor_centre_apartments.one_bedroom_unit", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "A mid-tier rental supporting solo, couple, and invitation scenes."},
+          {"kind": "background", "id": "harbor_centre_apartments.two_bedroom_unit", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports roommate, couple, and small-family household routes."},
+          {"kind": "background", "id": "harbor_centre_apartments.laundry", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Provides the building's shared clothing-care facility and repeatable resident activity."},
+          {"kind": "background", "id": "harbor_centre_apartments.roof_deck", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain"], "reason": "A resident-only outdoor social, date, and neighborhood-view destination."}
+        ]
       }
     ]
   },
@@ -291,6 +306,12 @@
     {"id": "harbor_centre_downtown.financial_block", "location": "harbor_centre_downtown", "room": "financial_block", "path": "res://assets/art/backgrounds/harbor_centre_downtown/financial_block.png", "variants": {"day": "res://assets/art/backgrounds/harbor_centre_downtown/financial_block.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "harbor_centre_downtown.residential_block", "location": "harbor_centre_downtown", "room": "residential_block", "path": "res://assets/art/backgrounds/harbor_centre_downtown/residential_block.png", "variants": {"day": "res://assets/art/backgrounds/harbor_centre_downtown/residential_block.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "harbor_centre_downtown.civic_square", "location": "harbor_centre_downtown", "room": "civic_square", "path": "res://assets/art/backgrounds/harbor_centre_downtown/civic_square.png", "variants": {"day": "res://assets/art/backgrounds/harbor_centre_downtown/civic_square.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "harbor_centre_downtown.galleria_entrance", "location": "harbor_centre_downtown", "room": "galleria_entrance", "path": "res://assets/art/backgrounds/harbor_centre_downtown/galleria_entrance.png", "variants": {"day": "res://assets/art/backgrounds/harbor_centre_downtown/galleria_entrance.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "harbor_centre_downtown.galleria_entrance", "location": "harbor_centre_downtown", "room": "galleria_entrance", "path": "res://assets/art/backgrounds/harbor_centre_downtown/galleria_entrance.png", "variants": {"day": "res://assets/art/backgrounds/harbor_centre_downtown/galleria_entrance.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_centre_apartments.lobby", "location": "harbor_centre_apartments", "room": "lobby", "path": "res://assets/art/backgrounds/harbor_centre_apartments/lobby.png", "variants": {"day": "res://assets/art/backgrounds/harbor_centre_apartments/lobby.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_centre_apartments.studio_unit", "location": "harbor_centre_apartments", "room": "studio_unit", "path": "res://assets/art/backgrounds/harbor_centre_apartments/studio_unit.png", "variants": {"day": "res://assets/art/backgrounds/harbor_centre_apartments/studio_unit.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_centre_apartments.one_bedroom_unit", "location": "harbor_centre_apartments", "room": "one_bedroom_unit", "path": "res://assets/art/backgrounds/harbor_centre_apartments/one_bedroom_unit.png", "variants": {"day": "res://assets/art/backgrounds/harbor_centre_apartments/one_bedroom_unit.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_centre_apartments.two_bedroom_unit", "location": "harbor_centre_apartments", "room": "two_bedroom_unit", "path": "res://assets/art/backgrounds/harbor_centre_apartments/two_bedroom_unit.png", "variants": {"day": "res://assets/art/backgrounds/harbor_centre_apartments/two_bedroom_unit.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_centre_apartments.laundry", "location": "harbor_centre_apartments", "room": "laundry", "path": "res://assets/art/backgrounds/harbor_centre_apartments/laundry.png", "variants": {"day": "res://assets/art/backgrounds/harbor_centre_apartments/laundry.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_centre_apartments.roof_deck", "location": "harbor_centre_apartments", "room": "roof_deck", "path": "res://assets/art/backgrounds/harbor_centre_apartments/roof_deck.png", "variants": {"day": "res://assets/art/backgrounds/harbor_centre_apartments/roof_deck.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }
