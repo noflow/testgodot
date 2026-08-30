@@ -62,7 +62,8 @@
         "harbor_centre_apartments",
         "harbor_view_condos",
         "port_alder_credit_union",
-        "port_alder_city_hall"
+        "port_alder_city_hall",
+        "port_alder_realty"
       ]
     },
     "audio_in_scope": false,
@@ -266,6 +267,17 @@
           {"kind": "background", "id": "port_alder_city_hall.family_services", "status": "ready", "required_variants": ["day"], "reason": "Supports family assistance, child-support administration, legal records, and private civic appointments."},
           {"kind": "background", "id": "port_alder_city_hall.hearing_room", "status": "ready", "required_variants": ["day"], "reason": "Supports appointment-only administrative hearings, appeals, mediation, and consequential civic scenes."}
         ]
+      },
+      {
+        "id": "port_alder_realty_housing_services",
+        "title": "Port Alder Realty Housing Services",
+        "priority": 13,
+        "goal": "Complete the housing-service route from property discovery through agent consultation and signed rental or purchase agreements.",
+        "assets": [
+          {"kind": "background", "id": "port_alder_realty.listing_gallery", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain"], "reason": "Connects Civic Square to rental and purchase listings, viewings, and housing discovery."},
+          {"kind": "background", "id": "port_alder_realty.agent_office", "status": "ready", "required_variants": ["day"], "reason": "Supports private housing consultations, affordability discussions, applications, and viewing arrangements."},
+          {"kind": "background", "id": "port_alder_realty.closing_room", "status": "ready", "required_variants": ["day"], "reason": "Supports appointment-only leases, purchases, mortgage meetings, key handovers, and housing commitments."}
+        ]
       }
     ]
   },
@@ -373,6 +385,9 @@
     {"id": "port_alder_city_hall.public_lobby", "location": "port_alder_city_hall", "room": "public_lobby", "path": "res://assets/art/backgrounds/port_alder_city_hall/public_lobby.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_city_hall/public_lobby.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "port_alder_city_hall.licenses", "location": "port_alder_city_hall", "room": "licenses", "path": "res://assets/art/backgrounds/port_alder_city_hall/licenses.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_city_hall/licenses.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "port_alder_city_hall.family_services", "location": "port_alder_city_hall", "room": "family_services", "path": "res://assets/art/backgrounds/port_alder_city_hall/family_services.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_city_hall/family_services.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "port_alder_city_hall.hearing_room", "location": "port_alder_city_hall", "room": "hearing_room", "path": "res://assets/art/backgrounds/port_alder_city_hall/hearing_room.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_city_hall/hearing_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "port_alder_city_hall.hearing_room", "location": "port_alder_city_hall", "room": "hearing_room", "path": "res://assets/art/backgrounds/port_alder_city_hall/hearing_room.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_city_hall/hearing_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "port_alder_realty.listing_gallery", "location": "port_alder_realty", "room": "listing_gallery", "path": "res://assets/art/backgrounds/port_alder_realty/listing_gallery.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_realty/listing_gallery.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "port_alder_realty.agent_office", "location": "port_alder_realty", "room": "agent_office", "path": "res://assets/art/backgrounds/port_alder_realty/agent_office.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_realty/agent_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "port_alder_realty.closing_room", "location": "port_alder_realty", "room": "closing_room", "path": "res://assets/art/backgrounds/port_alder_realty/closing_room.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_realty/closing_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }

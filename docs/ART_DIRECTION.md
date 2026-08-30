@@ -41,12 +41,12 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The eighteen completed base-art locations are the Hale Home, Alder Heights Residential
+The nineteen completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
 Downtown, Harbor Centre Apartments, Harbor View Condominiums, Port Alder Credit
-Union, and Port Alder City Hall. Together they provide 103 unique base-day PNG
+Union, Port Alder City Hall, and Port Alder Realty. Together they provide 106 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -373,6 +373,26 @@ Destination-specific briefs:
 | Family Services Desk | `port_alder_city_hall/family_services.png` | Supportive semi-private consultation area with reception, waiting nook, closed records, child-friendly corner, and routes between Licensing and Hearing. |
 | Hearing Room | `port_alder_city_hall/hearing_room.png` | Modest administrative chamber with three-seat panel desk, clerk station, consultation tables, public seating, acoustic panels, and one return route. |
 
+### Port Alder Realty batch prompt set
+
+This batch completes all three mapped Port Alder Realty destinations. Civic Square
+anchors the rain-darkened street entrance and the Harbor View Condominiums art informs
+the attainable residential finish of the Listing Gallery. That gallery establishes a
+consistent independent-agency identity for private consultations in the Agent Office
+and consequential rental or purchase agreements in the appointment-only Closing Room.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped Port Alder Realty destination in grounded mature cinematic contemporary realism. Match the supplied reference's approachable independent housing-agency design, rain-softened late-August Pacific Northwest daylight, warm cedar, muted teal, cream plaster and stone, charcoal slate, dark metal, frosted glass, restrained rust accents, warm practical lighting, quality attainable furnishings, privacy features, and accessible circulation. Preserve the authored route, clear character staging, floating-arrow placement, and an uncluttered lower region for dialogue UI. Keep the business polished and aspirational without luxury excess. No people or reflections of people, character sprites, navigation arrows, interface, readable agency names, property addresses, listings, prices, phone numbers, client names, contracts, floor-plan labels, key tags, calendar dates, mortgage rates, letters, numbers, logos, trademarks, captions, portraits, or watermark; all screens, listings, documents, brochures, folders, tablets, and panels must be blank or abstract.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Listing Gallery | `port_alder_realty/listing_gallery.png` | Civic Square-facing property gallery with reception, consultation seating, blank displays, scale-model and material table, kiosk, and Agent Office route. |
+| Agent Office | `port_alder_realty/agent_office.png` | Confidential consultation office with desk, visitor chairs, discussion table, secure records and keys, abstract displays, and routes between Gallery and Closing. |
+| Closing Room | `port_alder_realty/closing_room.png` | Private conference room with six seats, blank documents, signature tablet, display, secure storage, water counter, and one Agent Office return. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -393,7 +413,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all thirteen room batches were generated with the built-in
+The baseline assets and all fourteen room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the
