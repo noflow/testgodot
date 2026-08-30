@@ -90,7 +90,8 @@
         "cedar_vale_townhouses",
         "cedar_vale_detached_homes",
         "cedar_vale_care_home",
-        "cedar_vale_family_centre"
+        "cedar_vale_family_centre",
+        "mariner_row_shopping_street"
       ]
     },
     "audio_in_scope": false,
@@ -679,6 +680,18 @@
           {"kind": "background", "id": "cedar_vale_family_centre.counselor_office", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports private appointment conversations for individuals, couples, parents, and families without exposed records or clinical framing and with one return to the Parent Group Room."},
           {"kind": "background", "id": "cedar_vale_family_centre.playground", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Supports inclusive outdoor childcare, parenting programs, visits, and family events in a fully enclosed accessible play space with one clear return to the Parent Group Room."}
         ]
+      },
+      {
+        "id": "mariner_row_shopping_street_retail_route",
+        "title": "Mariner Row Shopping Street Retail Discovery and Storefront Route",
+        "priority": 41,
+        "goal": "Complete Mariner Row's discoverable coastal retail spine from transit through grocery, fashion, formalwear, home-goods, and vehicle-shopping entrances while preserving its physical street navigation.",
+        "assets": [
+          {"kind": "background", "id": "mariner_row_shopping_street.transit_stop", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Establishes the discoverable district arrival, bus and taxi pickup point, and one clear rightward route into the Market Block."},
+          {"kind": "background", "id": "mariner_row_shopping_street.market_block", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Provides the three-way grocery and street hub connecting the Transit Stop, Mariner Market entrance, and Fashion Block."},
+          {"kind": "background", "id": "mariner_row_shopping_street.fashion_block", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Provides the four-way shopping hub with separate routes to Market Block, Northline Outfitters, Home and Auto Block, and Harbor Formalwear."},
+          {"kind": "background", "id": "mariner_row_shopping_street.home_and_auto_block", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Provides the three-way endpoint connecting Fashion Block with separate Mariner Home Goods and Port Alder Auto entrances."}
+        ]
       }
     ]
   },
@@ -947,6 +960,10 @@
     {"id": "cedar_vale_family_centre.childcare_room", "location": "cedar_vale_family_centre", "room": "childcare_room", "path": "res://assets/art/backgrounds/cedar_vale_family_centre/childcare_room.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_family_centre/childcare_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "cedar_vale_family_centre.parent_group_room", "location": "cedar_vale_family_centre", "room": "parent_group_room", "path": "res://assets/art/backgrounds/cedar_vale_family_centre/parent_group_room.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_family_centre/parent_group_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "cedar_vale_family_centre.counselor_office", "location": "cedar_vale_family_centre", "room": "counselor_office", "path": "res://assets/art/backgrounds/cedar_vale_family_centre/counselor_office.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_family_centre/counselor_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "cedar_vale_family_centre.playground", "location": "cedar_vale_family_centre", "room": "playground", "path": "res://assets/art/backgrounds/cedar_vale_family_centre/playground.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_family_centre/playground.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "cedar_vale_family_centre.playground", "location": "cedar_vale_family_centre", "room": "playground", "path": "res://assets/art/backgrounds/cedar_vale_family_centre/playground.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_family_centre/playground.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "mariner_row_shopping_street.transit_stop", "location": "mariner_row_shopping_street", "room": "transit_stop", "path": "res://assets/art/backgrounds/mariner_row_shopping_street/transit_stop.png", "variants": {"day": "res://assets/art/backgrounds/mariner_row_shopping_street/transit_stop.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "mariner_row_shopping_street.market_block", "location": "mariner_row_shopping_street", "room": "market_block", "path": "res://assets/art/backgrounds/mariner_row_shopping_street/market_block.png", "variants": {"day": "res://assets/art/backgrounds/mariner_row_shopping_street/market_block.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "mariner_row_shopping_street.fashion_block", "location": "mariner_row_shopping_street", "room": "fashion_block", "path": "res://assets/art/backgrounds/mariner_row_shopping_street/fashion_block.png", "variants": {"day": "res://assets/art/backgrounds/mariner_row_shopping_street/fashion_block.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "mariner_row_shopping_street.home_and_auto_block", "location": "mariner_row_shopping_street", "room": "home_and_auto_block", "path": "res://assets/art/backgrounds/mariner_row_shopping_street/home_and_auto_block.png", "variants": {"day": "res://assets/art/backgrounds/mariner_row_shopping_street/home_and_auto_block.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }

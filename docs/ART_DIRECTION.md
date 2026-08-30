@@ -41,7 +41,7 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The forty-six completed base-art locations are the Hale Home, Alder Heights Residential
+The forty-seven completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
@@ -53,7 +53,7 @@ Tideglass Club, Harbor Companion Cooperative, the Rowan Family Home, Jade's Down
 Condo, Greyport Main Street, the Lee Family Apartment, the Flores Family Townhouse, and the
 Greyport Shared Apartment, the Donovan Family Apartment, Greyport Distribution, and the
 Port Alder Transit Depot, Greyport Studios, Undertow Nightclub, Cedar Vale Residential
-Street, Rachel's Townhouse, Cedar Vale Townhouses, Cedar Vale Detached Homes, Cedar Vale Care Home, and Cedar Vale Family Centre. Together they provide 264 unique base-day PNG
+Street, Rachel's Townhouse, Cedar Vale Townhouses, Cedar Vale Detached Homes, Cedar Vale Care Home, Cedar Vale Family Centre, and Mariner Row Shopping Street. Together they provide 268 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -1069,6 +1069,29 @@ Destination-specific briefs:
 | Family Counselor Office | `cedar_vale_family_centre/counselor_office.png` | Calm private appointment room with inclusive family seating, closed lockable storage, fixed rainy window, no desk barrier or records, and one lower Parent Group Room return. |
 | Family Centre Playground | `cedar_vale_family_centre/playground.png` | Fully enclosed wet-weather accessible play space with ramped structure, basket swing, text-free sensory panels, broad turning space, supportive adult seating, continuous boundaries, and one left glazed Parent Group Room return. |
 
+### Mariner Row Shopping Street batch prompt set
+
+This batch establishes Mariner Row as a discoverable, walkable coastal retail spine in
+converted warehouse storefronts. Store identities are communicated through architecture,
+materials, and window displays instead of text signage, so every destination remains
+legible while preserving the game's text-free background policy. Pale sandstone, warm
+brick, weathered cedar, deep navy, seafoam green, rust orange, dark metal, restrained
+brass, rain-grey blue, and wet-pavement reflections unify the four connected outdoor
+rooms without making the district feel luxurious, tourist-oriented, or mall-like.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped destination on Mariner Row Shopping Street in polished painterly semi-realistic grounded mature contemporary cinematic realism. Establish a maintained, attainable, pedestrian coastal retail district adapted from warm-brick, pale-sandstone, weathered-cedar, and dark-metal warehouse storefronts in bright overcast late-August daylight immediately after light rain. Use deep navy, seafoam green, rust orange, restrained brass, rain-grey blue, native planters, simple benches, and soft reflections on wet paving. Identify stores only through visibly distinct architecture and neutral window displays; preserve exactly the authored street and storefront routes with every entrance and continuation physically separate. No people, animals, moving or parked street vehicles, reflections of figures, character sprites, navigation arrows, interface, readable words, letters, numbers, store names, route names, schedules, signs, labels, prices, advertisements, brands, logos, packaging, license plates, active screens, extra routes, alleys, stairs, side passages, cross streets, open gates, ambiguous gaps, tourist kitsch, dereliction, or watermark.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Mariner Row Transit Stop | `mariner_row_shopping_street/transit_stop.png` | Accessible western arrival with timber-and-glass shelter, blank route panel, bench with armrests, curb ramp, tactile paving, wet bus bay, harbor glimpse, one right Market Block route, and no other exit. |
+| Market Block | `mariner_row_shopping_street/market_block.png` | Three-way grocery hub with left Transit Stop continuation, centered Mariner Market entrance identified by plain produce displays, right Fashion Block continuation, and all neighboring doors closed. |
+| Fashion Block | `mariner_row_shopping_street/fashion_block.png` | Four-way pedestrian plaza with left Market Block and right Home and Auto Block continuations, a rear Northline Outfitters entrance identified by neutral outerwear, and a fully separate foreground Harbor Formalwear entrance in dark wood and brass. |
+| Home and Auto Block | `mariner_row_shopping_street/home_and_auto_block.png` | Three-way endpoint with left Fashion Block continuation, centered Mariner Home Goods entrance identified by practical furniture displays, and a separate right Port Alder Auto showroom containing only modest unbranded display cars behind glass. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -1089,7 +1112,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all forty-one room batches were generated with the built-in
+The baseline assets and all forty-two room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the
