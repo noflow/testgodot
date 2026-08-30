@@ -94,7 +94,8 @@
         "mariner_row_shopping_street",
         "mariner_market",
         "northline_outfitters",
-        "harbor_formalwear"
+        "harbor_formalwear",
+        "mariner_home_goods"
       ]
     },
     "audio_in_scope": false,
@@ -733,6 +734,18 @@
           {"kind": "background", "id": "harbor_formalwear.fitting_room", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports private, accessible, non-sexual fitting for suits, dresses, and interview clothing with one clear left return to the Showroom."},
           {"kind": "background", "id": "harbor_formalwear.tailoring_desk", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports measurements, alterations, repairs, and tailoring conversations in an orderly workroom with one clear return to the Showroom."}
         ]
+      },
+      {
+        "id": "mariner_home_goods_furnishing_and_household_route",
+        "title": "Mariner Home Goods Furniture, Décor, Kitchen, and Household Route",
+        "priority": 45,
+        "goal": "Complete Mariner Home Goods from its three-way furniture hub through décor, kitchenware, appliances, and checkout for furnishing, customizing, and equipping player residences.",
+        "assets": [
+          {"kind": "background", "id": "mariner_home_goods.furniture_floor", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Provides the three-way public hub connecting Décor, Kitchen, and Mariner Row Home and Auto Block through attainable room-setting displays."},
+          {"kind": "background", "id": "mariner_home_goods.kitchen_section", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports cookware, tableware, storage, and basic appliance shopping through the two-route link between Furniture and Checkout."},
+          {"kind": "background", "id": "mariner_home_goods.decor_section", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports residence decoration and customization with practical accessories and one clear return to the Furniture Floor."},
+          {"kind": "background", "id": "mariner_home_goods.checkout", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports household purchases and arranging furniture delivery with one clear left return to the Kitchen Section."}
+        ]
       }
     ]
   },
@@ -1019,6 +1032,10 @@
     {"id": "northline_outfitters.stockroom", "location": "northline_outfitters", "room": "stockroom", "path": "res://assets/art/backgrounds/northline_outfitters/stockroom.png", "variants": {"day": "res://assets/art/backgrounds/northline_outfitters/stockroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "harbor_formalwear.showroom", "location": "harbor_formalwear", "room": "showroom", "path": "res://assets/art/backgrounds/harbor_formalwear/showroom.png", "variants": {"day": "res://assets/art/backgrounds/harbor_formalwear/showroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "harbor_formalwear.fitting_room", "location": "harbor_formalwear", "room": "fitting_room", "path": "res://assets/art/backgrounds/harbor_formalwear/fitting_room.png", "variants": {"day": "res://assets/art/backgrounds/harbor_formalwear/fitting_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "harbor_formalwear.tailoring_desk", "location": "harbor_formalwear", "room": "tailoring_desk", "path": "res://assets/art/backgrounds/harbor_formalwear/tailoring_desk.png", "variants": {"day": "res://assets/art/backgrounds/harbor_formalwear/tailoring_desk.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "harbor_formalwear.tailoring_desk", "location": "harbor_formalwear", "room": "tailoring_desk", "path": "res://assets/art/backgrounds/harbor_formalwear/tailoring_desk.png", "variants": {"day": "res://assets/art/backgrounds/harbor_formalwear/tailoring_desk.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "mariner_home_goods.furniture_floor", "location": "mariner_home_goods", "room": "furniture_floor", "path": "res://assets/art/backgrounds/mariner_home_goods/furniture_floor.png", "variants": {"day": "res://assets/art/backgrounds/mariner_home_goods/furniture_floor.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "mariner_home_goods.kitchen_section", "location": "mariner_home_goods", "room": "kitchen_section", "path": "res://assets/art/backgrounds/mariner_home_goods/kitchen_section.png", "variants": {"day": "res://assets/art/backgrounds/mariner_home_goods/kitchen_section.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "mariner_home_goods.decor_section", "location": "mariner_home_goods", "room": "decor_section", "path": "res://assets/art/backgrounds/mariner_home_goods/decor_section.png", "variants": {"day": "res://assets/art/backgrounds/mariner_home_goods/decor_section.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "mariner_home_goods.checkout", "location": "mariner_home_goods", "room": "checkout", "path": "res://assets/art/backgrounds/mariner_home_goods/checkout.png", "variants": {"day": "res://assets/art/backgrounds/mariner_home_goods/checkout.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }

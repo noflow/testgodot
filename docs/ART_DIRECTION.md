@@ -41,7 +41,7 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The fifty completed base-art locations are the Hale Home, Alder Heights Residential
+The fifty-one completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
@@ -53,7 +53,7 @@ Tideglass Club, Harbor Companion Cooperative, the Rowan Family Home, Jade's Down
 Condo, Greyport Main Street, the Lee Family Apartment, the Flores Family Townhouse, and the
 Greyport Shared Apartment, the Donovan Family Apartment, Greyport Distribution, and the
 Port Alder Transit Depot, Greyport Studios, Undertow Nightclub, Cedar Vale Residential
-Street, Rachel's Townhouse, Cedar Vale Townhouses, Cedar Vale Detached Homes, Cedar Vale Care Home, Cedar Vale Family Centre, Mariner Row Shopping Street, Mariner Market, Northline Outfitters, and Harbor Formalwear. Together they provide 282 unique base-day PNG
+Street, Rachel's Townhouse, Cedar Vale Townhouses, Cedar Vale Detached Homes, Cedar Vale Care Home, Cedar Vale Family Centre, Mariner Row Shopping Street, Mariner Market, Northline Outfitters, Harbor Formalwear, and Mariner Home Goods. Together they provide 286 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -1164,6 +1164,28 @@ Destination-specific briefs:
 | Fitting Room | `harbor_formalwear/fitting_room.png` | Spacious private fitting salon with supportive wine bench, two empty mirrors, closed garment rail, accessible turning area, modest suit and dress, and one left Showroom return. |
 | Tailoring Desk | `harbor_formalwear/tailoring_desk.png` | Orderly alterations workspace with walnut service desk, idle sewing machine, folded fabrics, blank swatches, safely stored tools, covered garments, closed storage, and one rear Showroom return. |
 
+### Mariner Home Goods batch prompt set
+
+This batch extends Mariner Row's converted-warehouse retail language into a practical
+four-room household store supporting furniture purchases, home customization, décor,
+kitchenware, basic appliances, and delivery arrangements. Warm brick, pale sandstone,
+weathered oak, cream linen, muted sage, deep navy, terracotta, dark metal, restrained
+brass, warm wood flooring, and practical lighting make the store inviting and attainable
+rather than luxurious or warehouse-scaled.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped destination inside Mariner Home Goods in polished painterly semi-realistic grounded mature contemporary cinematic realism. Continue Mariner Row's converted coastal warehouse architecture with warm brick, pale sandstone, weathered oak, cream linen, muted sage, deep navy, terracotta, dark metal, restrained brass, warm wood or matte grey flooring, bright overcast window light, and warm practical lamps. Make the independent household store maintained, accessible, organized, attainable, and useful for furnishing, equipping, and customizing player residences rather than luxurious, branded, department-store-like, or a giant warehouse. Preserve exactly the authored routes with every opening physically separate and keep the lower center useful for dialogue UI. No people, staff, customers, figures, silhouettes, reflections of figures, photographic faces, navigation arrows, interface, readable words, letters, numbers, store names, prices, measurements, tags, delivery forms, labels, brands, logos, active screens, money left out, lit candles, weapons, clutter piles, extra routes, stairs, dereliction, or watermark; all products, packages, papers, art, panels, and screens must be blank, generic, abstract, closed, dark, face-down, turned away, or too indistinct to read.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Furniture Floor | `mariner_home_goods/furniture_floor.png` | Three-way public hub with rear Décor, right Kitchen, foreground Home and Auto Block return, attainable living, dining, office and storage displays, broad circulation, and exactly those routes. |
+| Kitchen Section | `mariner_home_goods/kitchen_section.png` | Organized cookware, tableware, storage and unplugged small-appliance displays with separate left Furniture Floor and right Checkout openings. |
+| Décor Section | `mariner_home_goods/decor_section.png` | Practical cushions, throws, rugs, lamps, vases, planters, mirrors, baskets and abstract art with one clear Furniture Floor return. |
+| Checkout | `mariner_home_goods/checkout.png` | Navy-and-oak service counter with blank register and terminal, plain wrapping and delivery supplies, one left Kitchen Section return, and no public or loading shortcut. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -1184,7 +1206,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all forty-five room batches were generated with the built-in
+The baseline assets and all forty-six room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the
