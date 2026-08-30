@@ -64,7 +64,8 @@
         "port_alder_credit_union",
         "port_alder_city_hall",
         "port_alder_realty",
-        "harbor_business_services"
+        "harbor_business_services",
+        "cypress_hall_dorm"
       ]
     },
     "audio_in_scope": false,
@@ -291,6 +292,21 @@
           {"kind": "background", "id": "harbor_business_services.meeting_room", "status": "ready", "required_variants": ["day"], "reason": "Supports interviews, team meetings, reviews, client appointments, and consequential workplace conversations."},
           {"kind": "background", "id": "harbor_business_services.break_room", "status": "ready", "required_variants": ["day"], "reason": "Supports employee-only breaks, meals, coworker relationships, and informal workplace scenes."}
         ]
+      },
+      {
+        "id": "cypress_hall_dorm_student_housing",
+        "title": "Cypress Hall Dorm Student Housing",
+        "priority": 15,
+        "goal": "Complete the daily student-housing route from campus entry through study, cooking, hygiene, laundry, and private dorm rooms.",
+        "assets": [
+          {"kind": "background", "id": "cypress_hall_dorm.lobby", "status": "in_progress", "required_variants": ["day", "night", "rain"], "reason": "Connects the Westshore Transit Loop to dorm access, visitors, housing, and the residence interior."},
+          {"kind": "background", "id": "cypress_hall_dorm.study_lounge", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Central dorm hub for studying, resident encounters, and routes to every shared facility."},
+          {"kind": "background", "id": "cypress_hall_dorm.shared_kitchen", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports simple cooking, meals, chores, and social encounters among adult student residents."},
+          {"kind": "background", "id": "cypress_hall_dorm.laundry", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports wardrobe care, recurring chores, and incidental resident encounters."},
+          {"kind": "background", "id": "cypress_hall_dorm.shared_bathroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports private hygiene routines with fully enclosed facilities and routes between housing and the lounge."},
+          {"kind": "background", "id": "cypress_hall_dorm.maya_room", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Maya's invitation-only residence for friendship, study, and relationship scenes."},
+          {"kind": "background", "id": "cypress_hall_dorm.available_room", "status": "in_progress", "required_variants": ["day", "night"], "reason": "A leasable private student room that can become the player's college home base."}
+        ]
       }
     ]
   },
@@ -405,6 +421,13 @@
     {"id": "harbor_business_services.lobby", "location": "harbor_business_services", "room": "lobby", "path": "res://assets/art/backgrounds/harbor_business_services/lobby.png", "variants": {"day": "res://assets/art/backgrounds/harbor_business_services/lobby.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "harbor_business_services.open_office", "location": "harbor_business_services", "room": "open_office", "path": "res://assets/art/backgrounds/harbor_business_services/open_office.png", "variants": {"day": "res://assets/art/backgrounds/harbor_business_services/open_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "harbor_business_services.meeting_room", "location": "harbor_business_services", "room": "meeting_room", "path": "res://assets/art/backgrounds/harbor_business_services/meeting_room.png", "variants": {"day": "res://assets/art/backgrounds/harbor_business_services/meeting_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "harbor_business_services.break_room", "location": "harbor_business_services", "room": "break_room", "path": "res://assets/art/backgrounds/harbor_business_services/break_room.png", "variants": {"day": "res://assets/art/backgrounds/harbor_business_services/break_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "harbor_business_services.break_room", "location": "harbor_business_services", "room": "break_room", "path": "res://assets/art/backgrounds/harbor_business_services/break_room.png", "variants": {"day": "res://assets/art/backgrounds/harbor_business_services/break_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cypress_hall_dorm.lobby", "location": "cypress_hall_dorm", "room": "lobby", "path": "res://assets/art/backgrounds/cypress_hall_dorm/lobby.png", "variants": {"day": "res://assets/art/backgrounds/cypress_hall_dorm/lobby.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cypress_hall_dorm.maya_room", "location": "cypress_hall_dorm", "room": "maya_room", "path": "res://assets/art/backgrounds/cypress_hall_dorm/maya_room.png", "variants": {"day": "res://assets/art/backgrounds/cypress_hall_dorm/maya_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cypress_hall_dorm.available_room", "location": "cypress_hall_dorm", "room": "available_room", "path": "res://assets/art/backgrounds/cypress_hall_dorm/available_room.png", "variants": {"day": "res://assets/art/backgrounds/cypress_hall_dorm/available_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cypress_hall_dorm.shared_bathroom", "location": "cypress_hall_dorm", "room": "shared_bathroom", "path": "res://assets/art/backgrounds/cypress_hall_dorm/shared_bathroom.png", "variants": {"day": "res://assets/art/backgrounds/cypress_hall_dorm/shared_bathroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cypress_hall_dorm.laundry", "location": "cypress_hall_dorm", "room": "laundry", "path": "res://assets/art/backgrounds/cypress_hall_dorm/laundry.png", "variants": {"day": "res://assets/art/backgrounds/cypress_hall_dorm/laundry.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cypress_hall_dorm.study_lounge", "location": "cypress_hall_dorm", "room": "study_lounge", "path": "res://assets/art/backgrounds/cypress_hall_dorm/study_lounge.png", "variants": {"day": "res://assets/art/backgrounds/cypress_hall_dorm/study_lounge.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cypress_hall_dorm.shared_kitchen", "location": "cypress_hall_dorm", "room": "shared_kitchen", "path": "res://assets/art/backgrounds/cypress_hall_dorm/shared_kitchen.png", "variants": {"day": "res://assets/art/backgrounds/cypress_hall_dorm/shared_kitchen.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }

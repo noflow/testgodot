@@ -41,13 +41,13 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The twenty completed base-art locations are the Hale Home, Alder Heights Residential
+The twenty-one completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
 Downtown, Harbor Centre Apartments, Harbor View Condominiums, Port Alder Credit
-Union, Port Alder City Hall, Port Alder Realty, and Harbor Centre Business Services.
-Together they provide 110 unique base-day PNG
+Union, Port Alder City Hall, Port Alder Realty, Harbor Centre Business Services, and
+Cypress Hall Dorm. Together they provide 117 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -415,6 +415,31 @@ Destination-specific briefs:
 | Meeting Room | `harbor_business_services/meeting_room.png` | Glass-walled eight-seat conference room with powered-off display, blank presentation panels, video camera, storage, and routes between Open Office and Break Room. |
 | Break Room | `harbor_business_services/break_room.png` | Employee-only kitchenette and lounge with dining tables, soft seating, lockers, blank vending machine, waste station, rainy window, and one Meeting Room return. |
 
+### Cypress Hall Dorm batch prompt set
+
+This batch completes all seven mapped Cypress Hall destinations. Westshore Campus's
+Transit Loop anchors the rainy dorm entrance, while the existing Student Lounge
+establishes the college palette. The dorm Lobby defines the residence architecture;
+the Study Lounge becomes its navigation hub for the Kitchen, Laundry, Bathroom, and
+private housing. Maya's room reflects her disciplined pre-med studies, while the
+rentable room remains neutral so it can become the player's college home.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped Cypress Hall Dorm destination in grounded mature cinematic contemporary realism. Match the supplied reference's attainable adult college residence, rain-softened late-August Pacific Northwest daylight, warm cedar, muted teal, cream walls or tile, charcoal resilient flooring and counters, dark metal, glass, acoustic panels, restrained rust accents, warm practical lighting, durable student-grade furniture, privacy features, and accessible circulation. Preserve the authored route and access level, clear character staging, floating-arrow placement, and an uncluttered lower region for dialogue UI. Keep the residence safe, ordinary, social, and well maintained rather than luxurious. No people or reflections of people, character sprites, navigation arrows, interface, readable dorm or resident names, room numbers, notices, schedules, prices, course notes, book titles, package or appliance labels, letters, numbers, logos, trademarks, captions, portraits, or watermark; all signs, boards, books, folders, papers, packages, machines, and screens must be blank or abstract.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Lobby | `cypress_hall_dorm/lobby.png` | Transit-facing secure entrance with reception, waiting seats, blank noticeboards, parcel and mail area, access control, elevator, and Study Lounge route. |
+| Study Lounge | `cypress_hall_dorm/study_lounge.png` | Central study hub with shared tables, carrels, reading chairs, blank boards, storage, and distinct routes to Lobby, Kitchen, Laundry, and Bathroom. |
+| Shared Kitchen | `cypress_hall_dorm/shared_kitchen.png` | Two-station communal kitchen with island, dining table, storage, basic cookware, waste station, rainy window, and one Study Lounge return. |
+| Laundry Room | `cypress_hall_dorm/laundry.png` | Communal washers and dryers with blank displays, folding counters, sink, carts, drying rail, kiosk, storage, and one Study Lounge return. |
+| Shared Bathroom | `cypress_hall_dorm/shared_bathroom.png` | Privacy-conscious all-gender facility with fully enclosed toilet and shower-changing cubicles, accessible fixtures, sinks, benches, and routes to housing and Lounge. |
+| Maya's Shared Room | `cypress_hall_dorm/maya_room.png` | Invitation-only two-student room with beds, desks, wardrobes, organized pre-med study objects, neutral roommate side, and Bathroom route. |
+| Rentable Dorm Room | `cypress_hall_dorm/available_room.png` | Neutral single-occupancy furnished room with bed, desk, wardrobe, storage, mini-fridge, campus window, and right-side Bathroom route. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -435,7 +460,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all fifteen room batches were generated with the built-in
+The baseline assets and all sixteen room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the
