@@ -41,14 +41,14 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The twenty-three completed base-art locations are the Hale Home, Alder Heights Residential
+The twenty-four completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
 Downtown, Harbor Centre Apartments, Harbor View Condominiums, Port Alder Credit
 Union, Port Alder City Hall, Port Alder Realty, Harbor Centre Business Services,
-Cypress Hall Dorm, Maple Hall Dorm, and the Westshore Shared Student Apartment.
-Together they provide 131 unique base-day PNG
+Cypress Hall Dorm, Maple Hall Dorm, the Westshore Shared Student Apartment, and the
+Westshore Bookshop. Together they provide 133 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -493,6 +493,25 @@ Destination-specific briefs:
 | Bathroom | `westshore_shared_student_apartment/bathroom.png` | Full shared bathroom with closed tub-shower, double vanity, toilet, storage, frosted window, and one Kitchen return. |
 | Balcony | `westshore_shared_student_apartment/balcony.png` | Covered rainy balcony with safe railing, shared seating, planters, storage bench, college-district view, and one Living Room return. |
 
+### Westshore Bookshop batch prompt set
+
+This batch completes both mapped daytime destinations in Westshore's weekday campus
+bookshop. The Westshore Campus Cafeteria establishes the adjacent architecture, daylight,
+and left-side arrival route, while the Campus Library anchors believable shelving and the
+book-oriented visual language. The Sales Floor establishes the store palette and leads
+right to the Service Counter, which has one clear route back to the Sales Floor.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped Westshore Bookshop destination in grounded mature cinematic contemporary realism. Match the supplied Westshore Campus references' weekday daylight, dark cedar wood, charcoal slate, muted teal, warm cream, restrained rust accents, matte metal, paper goods, subdued commercial flooring, and practical accessible circulation. Preserve the authored route, clear character staging, and an uncluttered lower and central foreground for dialogue sprites. Keep the campus store compact, welcoming, functional, attainable, and visually continuous with the Cafeteria and Library. No people or reflections of people, character sprites, navigation arrows, interface, readable titles, course codes, prices, receipts, labels, signs, words, letters, numbers, logos, trademarks, brands, mannequins, human-shaped displays, or watermark; all books, papers, products, machines, and screens must be blank, abstract, or powered off.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Sales Floor | `westshore_bookshop/sales_floor.png` | Public textbook and school-supply store with browsing shelves and tables, blank kiosk, left Cafeteria return, and right Service Counter route. |
+| Service Counter | `westshore_bookshop/service_counter.png` | Checkout, returns, pickup, and employee-service area with blank POS, organized cubbies and storage, impulse supplies, and one Sales Floor return. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -513,7 +532,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all eighteen room batches were generated with the built-in
+The baseline assets and all nineteen room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the

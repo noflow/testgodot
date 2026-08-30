@@ -67,7 +67,8 @@
         "harbor_business_services",
         "cypress_hall_dorm",
         "maple_hall_dorm",
-        "westshore_shared_student_apartment"
+        "westshore_shared_student_apartment",
+        "westshore_bookshop"
       ]
     },
     "audio_in_scope": false,
@@ -339,6 +340,16 @@
           {"kind": "background", "id": "westshore_shared_student_apartment.bathroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports private hygiene routines and ordinary shared-household care."},
           {"kind": "background", "id": "westshore_shared_student_apartment.balcony", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain"], "reason": "Provides a private outdoor roommate, quiet-scene, and date destination overlooking the college district."}
         ]
+      },
+      {
+        "id": "westshore_bookshop_campus_retail",
+        "title": "Westshore Bookshop Campus Retail",
+        "priority": 18,
+        "goal": "Complete the weekday campus-retail route for textbooks, school supplies, purchases, returns, and part-time work scenes.",
+        "assets": [
+          {"kind": "background", "id": "westshore_bookshop.sales_floor", "status": "ready", "required_variants": ["day"], "reason": "Provides the public campus store route from the Cafeteria through textbook, school-supply, and browsing displays."},
+          {"kind": "background", "id": "westshore_bookshop.service_counter", "status": "ready", "required_variants": ["day"], "reason": "Supports checkout, returns, pickups, employee conversations, and bookstore job scenes."}
+        ]
       }
     ]
   },
@@ -474,6 +485,8 @@
     {"id": "westshore_shared_student_apartment.chloe_bedroom", "location": "westshore_shared_student_apartment", "room": "chloe_bedroom", "path": "res://assets/art/backgrounds/westshore_shared_student_apartment/chloe_bedroom.png", "variants": {"day": "res://assets/art/backgrounds/westshore_shared_student_apartment/chloe_bedroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "westshore_shared_student_apartment.available_bedroom", "location": "westshore_shared_student_apartment", "room": "available_bedroom", "path": "res://assets/art/backgrounds/westshore_shared_student_apartment/available_bedroom.png", "variants": {"day": "res://assets/art/backgrounds/westshore_shared_student_apartment/available_bedroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "westshore_shared_student_apartment.bathroom", "location": "westshore_shared_student_apartment", "room": "bathroom", "path": "res://assets/art/backgrounds/westshore_shared_student_apartment/bathroom.png", "variants": {"day": "res://assets/art/backgrounds/westshore_shared_student_apartment/bathroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "westshore_shared_student_apartment.balcony", "location": "westshore_shared_student_apartment", "room": "balcony", "path": "res://assets/art/backgrounds/westshore_shared_student_apartment/balcony.png", "variants": {"day": "res://assets/art/backgrounds/westshore_shared_student_apartment/balcony.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "westshore_shared_student_apartment.balcony", "location": "westshore_shared_student_apartment", "room": "balcony", "path": "res://assets/art/backgrounds/westshore_shared_student_apartment/balcony.png", "variants": {"day": "res://assets/art/backgrounds/westshore_shared_student_apartment/balcony.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "westshore_bookshop.sales_floor", "location": "westshore_bookshop", "room": "sales_floor", "path": "res://assets/art/backgrounds/westshore_bookshop/sales_floor.png", "variants": {"day": "res://assets/art/backgrounds/westshore_bookshop/sales_floor.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "westshore_bookshop.service_counter", "location": "westshore_bookshop", "room": "service_counter", "path": "res://assets/art/backgrounds/westshore_bookshop/service_counter.png", "variants": {"day": "res://assets/art/backgrounds/westshore_bookshop/service_counter.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }
