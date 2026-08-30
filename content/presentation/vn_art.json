@@ -83,7 +83,8 @@
         "donovan_family_apartment",
         "greyport_distribution",
         "port_alder_transit_depot",
-        "greyport_studios"
+        "greyport_studios",
+        "undertow_nightclub"
       ]
     },
     "audio_in_scope": false,
@@ -566,6 +567,23 @@
           {"kind": "background", "id": "greyport_studios.laundry", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports resident and guest laundry, clothing care, neighbor encounters, and household routines with one clear return to the Lobby."},
           {"kind": "background", "id": "greyport_studios.mail_room", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports lease-only mail, bills, deliveries, housing notices, and story triggers while preserving resident privacy and one clear Lobby return."}
         ]
+      },
+      {
+        "id": "undertow_nightclub_nightlife_route",
+        "title": "Undertow Nightclub Nightlife, Safety, and Employment Route",
+        "priority": 34,
+        "goal": "Complete Undertow's adults-only converted-warehouse route from safe entry through dancing, drinks, live music, quieter recovery, inclusive facilities, and employee operations.",
+        "assets": [
+          {"kind": "background", "id": "undertow_nightclub.entry", "status": "in_progress", "required_variants": ["night", "rain"], "reason": "Connects Nightlife Alley to age-aware entry, Coat Check, and the Dance Floor while establishing clear safety infrastructure and closing-hour access rules."},
+          {"kind": "background", "id": "undertow_nightclub.coat_check", "status": "in_progress", "required_variants": ["night"], "reason": "Supports arrival, clothing storage, weather recovery, and employment interactions with one clear return to the Entrance."},
+          {"kind": "background", "id": "undertow_nightclub.dance_floor", "status": "in_progress", "required_variants": ["night"], "reason": "Provides the four-way nightlife hub for dancing, dates, friendship events, encounters, live music, and routes to the Bar, DJ Booth, Lounge, and Entrance."},
+          {"kind": "background", "id": "undertow_nightclub.bar", "status": "in_progress", "required_variants": ["night"], "reason": "Supports drink service, alcohol-free choices, hydration, conversation, intoxication-aware decisions, and employee access to the Staff Room."},
+          {"kind": "background", "id": "undertow_nightclub.dj_booth", "status": "in_progress", "required_variants": ["night"], "reason": "Supports employee-or-appointment music, technical skill, event, and performance scenes with one guarded return to the Dance Floor."},
+          {"kind": "background", "id": "undertow_nightclub.lounge", "status": "in_progress", "required_variants": ["night"], "reason": "Provides the quieter three-way social hub for conversation, dates, consent check-ins, and routes to the Dance Floor, Restrooms, and Quiet Room."},
+          {"kind": "background", "id": "undertow_nightclub.restrooms", "status": "in_progress", "required_variants": ["night"], "reason": "Completes the Lounge route with clean, accessible, inclusive private facilities and one clear return."},
+          {"kind": "background", "id": "undertow_nightclub.quiet_room", "status": "in_progress", "required_variants": ["night"], "reason": "Supports sensory decompression, hydration, safe recovery, and calm consent check-ins without turning the room into a private intimacy shortcut."},
+          {"kind": "background", "id": "undertow_nightclub.staff_room", "status": "in_progress", "required_variants": ["night"], "reason": "Supports floor-staff breaks, hospitality learning, shift preparation, performance, and promotion scenes with one clear return to the Bar."}
+        ]
       }
     ]
   },
@@ -784,6 +802,15 @@
     {"id": "greyport_studios.kitchen", "location": "greyport_studios", "room": "kitchen", "path": "res://assets/art/backgrounds/greyport_studios/kitchen.png", "variants": {"day": "res://assets/art/backgrounds/greyport_studios/kitchen.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "greyport_studios.bathroom", "location": "greyport_studios", "room": "bathroom", "path": "res://assets/art/backgrounds/greyport_studios/bathroom.png", "variants": {"day": "res://assets/art/backgrounds/greyport_studios/bathroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "greyport_studios.laundry", "location": "greyport_studios", "room": "laundry", "path": "res://assets/art/backgrounds/greyport_studios/laundry.png", "variants": {"day": "res://assets/art/backgrounds/greyport_studios/laundry.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "greyport_studios.mail_room", "location": "greyport_studios", "room": "mail_room", "path": "res://assets/art/backgrounds/greyport_studios/mail_room.png", "variants": {"day": "res://assets/art/backgrounds/greyport_studios/mail_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "greyport_studios.mail_room", "location": "greyport_studios", "room": "mail_room", "path": "res://assets/art/backgrounds/greyport_studios/mail_room.png", "variants": {"day": "res://assets/art/backgrounds/greyport_studios/mail_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "undertow_nightclub.entry", "location": "undertow_nightclub", "room": "entry", "path": "res://assets/art/backgrounds/undertow_nightclub/entry.png", "variants": {"day": "res://assets/art/backgrounds/undertow_nightclub/entry.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "undertow_nightclub.coat_check", "location": "undertow_nightclub", "room": "coat_check", "path": "res://assets/art/backgrounds/undertow_nightclub/coat_check.png", "variants": {"day": "res://assets/art/backgrounds/undertow_nightclub/coat_check.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "undertow_nightclub.dance_floor", "location": "undertow_nightclub", "room": "dance_floor", "path": "res://assets/art/backgrounds/undertow_nightclub/dance_floor.png", "variants": {"day": "res://assets/art/backgrounds/undertow_nightclub/dance_floor.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "undertow_nightclub.bar", "location": "undertow_nightclub", "room": "bar", "path": "res://assets/art/backgrounds/undertow_nightclub/bar.png", "variants": {"day": "res://assets/art/backgrounds/undertow_nightclub/bar.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "undertow_nightclub.dj_booth", "location": "undertow_nightclub", "room": "dj_booth", "path": "res://assets/art/backgrounds/undertow_nightclub/dj_booth.png", "variants": {"day": "res://assets/art/backgrounds/undertow_nightclub/dj_booth.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "undertow_nightclub.lounge", "location": "undertow_nightclub", "room": "lounge", "path": "res://assets/art/backgrounds/undertow_nightclub/lounge.png", "variants": {"day": "res://assets/art/backgrounds/undertow_nightclub/lounge.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "undertow_nightclub.restrooms", "location": "undertow_nightclub", "room": "restrooms", "path": "res://assets/art/backgrounds/undertow_nightclub/restrooms.png", "variants": {"day": "res://assets/art/backgrounds/undertow_nightclub/restrooms.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "undertow_nightclub.quiet_room", "location": "undertow_nightclub", "room": "quiet_room", "path": "res://assets/art/backgrounds/undertow_nightclub/quiet_room.png", "variants": {"day": "res://assets/art/backgrounds/undertow_nightclub/quiet_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "undertow_nightclub.staff_room", "location": "undertow_nightclub", "room": "staff_room", "path": "res://assets/art/backgrounds/undertow_nightclub/staff_room.png", "variants": {"day": "res://assets/art/backgrounds/undertow_nightclub/staff_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }

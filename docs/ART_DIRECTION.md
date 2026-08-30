@@ -41,7 +41,7 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The thirty-nine completed base-art locations are the Hale Home, Alder Heights Residential
+The forty completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
@@ -52,7 +52,8 @@ Westshore Bookshop, Lantern Gallery, Lantern District Street, La Brisa Kitchen,
 Tideglass Club, Harbor Companion Cooperative, the Rowan Family Home, Jade's Downtown
 Condo, Greyport Main Street, the Lee Family Apartment, the Flores Family Townhouse, and the
 Greyport Shared Apartment, the Donovan Family Apartment, Greyport Distribution, and the
-Port Alder Transit Depot and Greyport Studios. Together they provide 214 unique base-day PNG
+Port Alder Transit Depot, Greyport Studios, and Undertow Nightclub. Together they provide
+223 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -885,6 +886,36 @@ Destination-specific briefs:
 | Laundry Room | `greyport_studios/laundry.png` | Resident-and-guest shared laundry with abstract-panel machines, folding counter, utility sink, cart, closed storage, blank board, fixed high rain window, and exactly one right Lobby return. |
 | Mail Room | `greyport_studios/mail_room.png` | Lease-only secure mail room with blank brass-and-charcoal mailboxes and parcel lockers, sorting shelf, bench, blank board, dark intercom, fixed rainy window, and exactly one left Lobby return. |
 
+### Undertow Nightclub batch prompt set
+
+This batch continues Greyport Nightlife Alley into an adults-only converted-warehouse
+nightclub supporting dancing, live music, public dates, friendship events, alcohol and
+alcohol-free service, hydration, intoxication-aware choices, sensory recovery, inclusive
+facilities, floor-staff employment, and promotion. Undertow is deliberately rawer and more
+affordable than Tideglass Club, using weathered umber brick, soot-black steel, charcoal
+concrete, deep ocean indigo, electric cyan, restrained violet, rust orange, aged copper,
+perforated acoustic metal, and warm practical fixtures. It remains maintained, mature,
+inclusive, high-visibility, and safe rather than dangerous, exploitative, sexually themed,
+abandoned, or dystopian.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped destination inside Undertow Nightclub in polished painterly semi-realistic grounded mature contemporary cinematic realism. Continue Greyport Nightlife Alley's rainy converted-warehouse architecture and use weathered umber brick, soot-black steel, charcoal sealed concrete, deep ocean indigo, electric cyan, restrained violet, rust orange, aged copper, perforated acoustic metal, durable dark upholstery, and warm practical fixtures. Make Undertow energetic, adults-only, inclusive, maintained, affordable, safe, consent-aware, intoxication-aware, and distinctly rawer than the upscale Tideglass Club. Preserve exactly the authored room-to-room routes and access level with every exit visibly separate, clear sightlines, accessible circulation, and a generous uncluttered central and lower area for floating navigation UI and character staging. No people, reflections, or silhouettes of people, character sprites, navigation arrows, interface, readable age notices, menus, prices, drink labels, schedules, tenant or employee names, club name, posters, advertisements, words, letters, numbers, logos, trademarks, brands, photo faces, active screen content, readable paperwork, drugs, weapons, blood, broken glass, spills, intoxicated mess, sexualized imagery, cages, poles, bondage imagery, threatening security, exposed hazards, smoke-obscured visibility, abandoned decay, luxury styling, or watermark; all screens must be dark and all bottles, papers, boards, panels, tickets, containers, and labels must be blank, closed, turned away, abstract, or too indistinct to read.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Club Entrance | `undertow_nightclub/entry.png` | Three-way age-aware foyer with rear Coat Check, right Dance Floor, left rainy Nightlife Alley return, dark check-in podium, bench, bag shelf, water station, acoustic panels, and no extra route. |
+| Coat Check | `undertow_nightclub/coat_check.png` | Organized public coat storage with sturdy counter, empty hangers, closed cubbies, umbrella rack, bench, dark terminal, and exactly one foreground Entrance return. |
+| Dance Floor | `undertow_nightclub/dance_floor.png` | Four-way central hub with left Bar, guarded rear DJ Booth stair, right Lounge, foreground Entrance return, broad safe dancing area, mounted light rig, acoustic treatment, and free-water station. |
+| Bar | `undertow_nightclub/bar.png` | Two-way social and employment space with rear employee Staff Room door, right Dance Floor opening, sturdy copper-and-dark-wood counter, blank generic bottles, water and alcohol-free setup, dark screens, and clear dialogue space. |
+| DJ Booth | `undertow_nightclub/dj_booth.png` | Employee-or-appointment technical booth with professional stationary equipment, dark displays, organized cables, safe rail, empty Dance Floor view, and exactly one foreground guarded return. |
+| Lounge | `undertow_nightclub/lounge.png` | Three-way quieter social hub with left Dance Floor, rear Restrooms, right Quiet Room, durable booths, clear tables, water station, acoustic panels, and public sightlines for dates and consent check-ins. |
+| Restrooms | `undertow_nightclub/restrooms.png` | Clean inclusive shared sink area with fully enclosed private stalls, wider accessible stall, closed storage, mirrors showing no people or extra routes, and exactly one foreground Lounge return. |
+| Quiet Room | `undertow_nightclub/quiet_room.png` | Public sensory-decompression room with upright seating, acoustic panels, clear table, water, dimmable lamps, dark call panel, fixed privacy glass, and exactly one left Lounge return; no private-intimacy cues. |
+| Staff Room | `undertow_nightclub/staff_room.png` | Dignified employee room with table, kitchenette, closed lockers, bench, blank shift board, dark terminal, hydration supplies, closed safety storage, and exactly one foreground Bar return. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -905,7 +936,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all thirty-four room batches were generated with the built-in
+The baseline assets and all thirty-five room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the
