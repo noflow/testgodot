@@ -61,7 +61,8 @@
         "harbor_centre_downtown",
         "harbor_centre_apartments",
         "harbor_view_condos",
-        "port_alder_credit_union"
+        "port_alder_credit_union",
+        "port_alder_city_hall"
       ]
     },
     "audio_in_scope": false,
@@ -253,6 +254,18 @@
           {"kind": "background", "id": "port_alder_credit_union.advisor_office", "status": "ready", "required_variants": ["day"], "reason": "Supports budgeting, credit, savings, and long-term financial-planning conversations."},
           {"kind": "background", "id": "port_alder_credit_union.loan_office", "status": "ready", "required_variants": ["day"], "reason": "Supports personal loans, vehicle financing, mortgages, and approval decisions."}
         ]
+      },
+      {
+        "id": "port_alder_city_hall_civic_services",
+        "title": "Port Alder City Hall Civic Services",
+        "priority": 12,
+        "goal": "Complete the municipal-service route from the public lobby through licensing, family services, and appointment hearings.",
+        "assets": [
+          {"kind": "background", "id": "port_alder_city_hall.public_lobby", "status": "in_progress", "required_variants": ["day", "night", "rain"], "reason": "Connects Civic Square to public information, security, city services, and civic quest lines."},
+          {"kind": "background", "id": "port_alder_city_hall.licenses", "status": "ready", "required_variants": ["day"], "reason": "Supports licenses, permits, business registration, and related employment or housing requirements."},
+          {"kind": "background", "id": "port_alder_city_hall.family_services", "status": "ready", "required_variants": ["day"], "reason": "Supports family assistance, child-support administration, legal records, and private civic appointments."},
+          {"kind": "background", "id": "port_alder_city_hall.hearing_room", "status": "ready", "required_variants": ["day"], "reason": "Supports appointment-only administrative hearings, appeals, mediation, and consequential civic scenes."}
+        ]
       }
     ]
   },
@@ -356,6 +369,10 @@
     {"id": "port_alder_credit_union.atm_lobby", "location": "port_alder_credit_union", "room": "atm_lobby", "path": "res://assets/art/backgrounds/port_alder_credit_union/atm_lobby.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_credit_union/atm_lobby.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "port_alder_credit_union.teller_counter", "location": "port_alder_credit_union", "room": "teller_counter", "path": "res://assets/art/backgrounds/port_alder_credit_union/teller_counter.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_credit_union/teller_counter.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "port_alder_credit_union.advisor_office", "location": "port_alder_credit_union", "room": "advisor_office", "path": "res://assets/art/backgrounds/port_alder_credit_union/advisor_office.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_credit_union/advisor_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "port_alder_credit_union.loan_office", "location": "port_alder_credit_union", "room": "loan_office", "path": "res://assets/art/backgrounds/port_alder_credit_union/loan_office.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_credit_union/loan_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "port_alder_credit_union.loan_office", "location": "port_alder_credit_union", "room": "loan_office", "path": "res://assets/art/backgrounds/port_alder_credit_union/loan_office.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_credit_union/loan_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "port_alder_city_hall.public_lobby", "location": "port_alder_city_hall", "room": "public_lobby", "path": "res://assets/art/backgrounds/port_alder_city_hall/public_lobby.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_city_hall/public_lobby.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "port_alder_city_hall.licenses", "location": "port_alder_city_hall", "room": "licenses", "path": "res://assets/art/backgrounds/port_alder_city_hall/licenses.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_city_hall/licenses.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "port_alder_city_hall.family_services", "location": "port_alder_city_hall", "room": "family_services", "path": "res://assets/art/backgrounds/port_alder_city_hall/family_services.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_city_hall/family_services.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "port_alder_city_hall.hearing_room", "location": "port_alder_city_hall", "room": "hearing_room", "path": "res://assets/art/backgrounds/port_alder_city_hall/hearing_room.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_city_hall/hearing_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }

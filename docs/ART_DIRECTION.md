@@ -41,12 +41,12 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The seventeen completed base-art locations are the Hale Home, Alder Heights Residential
+The eighteen completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
-Downtown, Harbor Centre Apartments, Harbor View Condominiums, and Port Alder Credit
-Union. Together they provide 99 unique base-day PNG
+Downtown, Harbor Centre Apartments, Harbor View Condominiums, Port Alder Credit
+Union, and Port Alder City Hall. Together they provide 103 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -351,6 +351,28 @@ Destination-specific briefs:
 | Financial Advisor Office | `port_alder_credit_union/advisor_office.png` | Confidential planning office with desk, visitor seating, round planning table, blank monitor, locked cabinets, and two branch routes. |
 | Loan Office | `port_alder_credit_union/loan_office.png` | Private loan and mortgage consultation room with oval meeting desk, three visitor chairs, blank documents, locked storage, and one return. |
 
+### Port Alder City Hall batch prompt set
+
+This batch completes all four mapped City Hall destinations. Civic Square anchored
+the public entrance and rainy downtown geography. The Public Lobby established the
+municipal building's civic-stone, cedar, charcoal, and muted-teal interior for the
+Licensing Office, Family Services area, and appointment-only Hearing Room. The route
+supports civic administration and consequential story scenes without exposing legal,
+family, business, or identity records in the background art.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped Port Alder City Hall destination in grounded mature cinematic contemporary realism. Match the supplied reference's practical coastal-city civic architecture, rain-softened late-August daylight, cream civic stone, charcoal slate, warm cedar, muted teal upholstery, dark metal, frosted glass, restrained abstract panels, warm practical lighting, privacy features, and accessible circulation. Preserve the authored route, clear character staging, floating-arrow placement, and an uncluttered lower region for dialogue UI. Keep the building welcoming and serious without ornate governmental grandeur. No people or reflections of people, character sprites, navigation arrows, interface, readable building names, directories, notices, licenses, permits, forms, legal or family records, case or queue numbers, letters, numbers, logos, trademarks, captions, flags, seals, emblems, portraits, statues, or watermark; all screens, signs, forms, folders, and panels must be blank or abstract.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Public Lobby | `port_alder_city_hall/public_lobby.png` | Street-facing civic foyer with reception, waiting seats, blank information panels, accessible security check-in, Civic Square exit, and Licensing route. |
+| Licensing Office | `port_alder_city_hall/licenses.png` | Municipal service room with accessible counters, blank queue displays, writing stations, secure staff storage, and routes between Lobby and Family Services. |
+| Family Services Desk | `port_alder_city_hall/family_services.png` | Supportive semi-private consultation area with reception, waiting nook, closed records, child-friendly corner, and routes between Licensing and Hearing. |
+| Hearing Room | `port_alder_city_hall/hearing_room.png` | Modest administrative chamber with three-seat panel desk, clerk station, consultation tables, public seating, acoustic panels, and one return route. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -371,7 +393,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all twelve room batches were generated with the built-in
+The baseline assets and all thirteen room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the
