@@ -106,7 +106,8 @@
         "hannah_medical_district_apartment",
         "crown_point_boulevard",
         "price_caldwell_law",
-        "olivia_crown_point_penthouse"
+        "olivia_crown_point_penthouse",
+        "crown_point_condos"
       ]
     },
     "audio_in_scope": false,
@@ -908,6 +909,20 @@
           {"kind": "background", "id": "olivia_crown_point_penthouse.office", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports secluded home work and private conversations with one upward return to the Dining Room."},
           {"kind": "background", "id": "olivia_crown_point_penthouse.terrace", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Supports private harbor-view conversations and dates with one upward return to the Living Room."}
         ]
+      },
+      {
+        "id": "crown_point_condos_purchase_and_amenities_route",
+        "title": "Crown Point Condominiums Purchase, Viewing, and Resident Amenities Route",
+        "priority": 57,
+        "goal": "Complete Crown Point's purchasable condominium building from its public lobby through owner-or-viewing model homes into the resident gym, pool, and secure parking loop.",
+        "assets": [
+          {"kind": "background", "id": "crown_point_condos.lobby", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Provides the public building hub linking Crown Point Boulevard, secure parking, and the owner-or-viewing one- and two-bedroom routes."},
+          {"kind": "background", "id": "crown_point_condos.one_bedroom_condo", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports purchase viewings and owner home life in a practical premium one-bedroom unit with one downward return to the Lobby."},
+          {"kind": "background", "id": "crown_point_condos.two_bedroom_condo", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports purchase viewings and owner home life in a larger two-bedroom unit connecting the Lobby and resident Gym."},
+          {"kind": "background", "id": "crown_point_condos.gym", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports owner strength and stamina activities with routes to the Two-Bedroom Condo and resident Pool."},
+          {"kind": "background", "id": "crown_point_condos.pool", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports owner relaxation and private resident events with routes to the Gym and Secure Parking."},
+          {"kind": "background", "id": "crown_point_condos.parking", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports secure owner vehicle access while completing the resident loop between the Pool and Lobby."}
+        ]
       }
     ]
   },
@@ -1261,6 +1276,12 @@
     {"id": "olivia_crown_point_penthouse.bedroom", "location": "olivia_crown_point_penthouse", "room": "bedroom", "path": "res://assets/art/backgrounds/olivia_crown_point_penthouse/bedroom.png", "variants": {"day": "res://assets/art/backgrounds/olivia_crown_point_penthouse/bedroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "olivia_crown_point_penthouse.bathroom", "location": "olivia_crown_point_penthouse", "room": "bathroom", "path": "res://assets/art/backgrounds/olivia_crown_point_penthouse/bathroom.png", "variants": {"day": "res://assets/art/backgrounds/olivia_crown_point_penthouse/bathroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "olivia_crown_point_penthouse.office", "location": "olivia_crown_point_penthouse", "room": "office", "path": "res://assets/art/backgrounds/olivia_crown_point_penthouse/office.png", "variants": {"day": "res://assets/art/backgrounds/olivia_crown_point_penthouse/office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "olivia_crown_point_penthouse.terrace", "location": "olivia_crown_point_penthouse", "room": "terrace", "path": "res://assets/art/backgrounds/olivia_crown_point_penthouse/terrace.png", "variants": {"day": "res://assets/art/backgrounds/olivia_crown_point_penthouse/terrace.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "olivia_crown_point_penthouse.terrace", "location": "olivia_crown_point_penthouse", "room": "terrace", "path": "res://assets/art/backgrounds/olivia_crown_point_penthouse/terrace.png", "variants": {"day": "res://assets/art/backgrounds/olivia_crown_point_penthouse/terrace.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "crown_point_condos.lobby", "location": "crown_point_condos", "room": "lobby", "path": "res://assets/art/backgrounds/crown_point_condos/lobby.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_condos/lobby.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "crown_point_condos.one_bedroom_condo", "location": "crown_point_condos", "room": "one_bedroom_condo", "path": "res://assets/art/backgrounds/crown_point_condos/one_bedroom_condo.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_condos/one_bedroom_condo.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "crown_point_condos.two_bedroom_condo", "location": "crown_point_condos", "room": "two_bedroom_condo", "path": "res://assets/art/backgrounds/crown_point_condos/two_bedroom_condo.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_condos/two_bedroom_condo.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "crown_point_condos.gym", "location": "crown_point_condos", "room": "gym", "path": "res://assets/art/backgrounds/crown_point_condos/gym.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_condos/gym.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "crown_point_condos.pool", "location": "crown_point_condos", "room": "pool", "path": "res://assets/art/backgrounds/crown_point_condos/pool.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_condos/pool.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "crown_point_condos.parking", "location": "crown_point_condos", "room": "parking", "path": "res://assets/art/backgrounds/crown_point_condos/parking.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_condos/parking.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }

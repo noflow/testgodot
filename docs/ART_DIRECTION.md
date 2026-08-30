@@ -41,7 +41,7 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The sixty-two completed base-art locations are the Hale Home, Alder Heights Residential
+The sixty-three completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
@@ -53,7 +53,7 @@ Tideglass Club, Harbor Companion Cooperative, the Rowan Family Home, Jade's Down
 Condo, Greyport Main Street, the Lee Family Apartment, the Flores Family Townhouse, and the
 Greyport Shared Apartment, the Donovan Family Apartment, Greyport Distribution, and the
 Port Alder Transit Depot, Greyport Studios, Undertow Nightclub, Cedar Vale Residential
-Street, Rachel's Townhouse, Cedar Vale Townhouses, Cedar Vale Detached Homes, Cedar Vale Care Home, Cedar Vale Family Centre, Mariner Row Shopping Street, Mariner Market, Northline Outfitters, Harbor Formalwear, Mariner Home Goods, Port Alder Auto, St. Maren Medical Center, St. Maren Community Clinic, St. Maren Family Doctors, Harbor Wellness Therapy, St. Maren Sexual Health Centre, Bay Pharmacy, Hannah's Medical District Apartment, Crown Point Boulevard, Price & Caldwell Law, and Olivia's Crown Point Penthouse. Together they provide 349 unique base-day PNG
+Street, Rachel's Townhouse, Cedar Vale Townhouses, Cedar Vale Detached Homes, Cedar Vale Care Home, Cedar Vale Family Centre, Mariner Row Shopping Street, Mariner Market, Northline Outfitters, Harbor Formalwear, Mariner Home Goods, Port Alder Auto, St. Maren Medical Center, St. Maren Community Clinic, St. Maren Family Doctors, Harbor Wellness Therapy, St. Maren Sexual Health Centre, Bay Pharmacy, Hannah's Medical District Apartment, Crown Point Boulevard, Price & Caldwell Law, Olivia's Crown Point Penthouse, and Crown Point Condominiums. Together they provide 355 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -1446,6 +1446,30 @@ Destination-specific briefs:
 | Home Office | `olivia_crown_point_penthouse/office.png` | Quiet residential study with compact desk, conversation chairs, closed bookcases, harbor view, and one centered rear Dining Room return. |
 | Terrace | `olivia_crown_point_penthouse/terrace.png` | Covered private harbor terrace with safe railings, restrained seating and planting, off fire feature, and one centered rear Living Room threshold. |
 
+### Crown Point Condominiums batch prompt set
+
+This six-room batch creates Crown Point's purchasable condominium building as a premium
+but repeatable residential counterpart to Olivia's bespoke penthouse. Pale limestone,
+warm oak, charcoal metal, brushed bronze, cream upholstery, muted teal, and harbor
+views continue the district language at a more attainable developer-grade tier. The
+public Lobby leads into owner-or-viewing model homes, while the Gym, Pool, and Secure
+Parking complete a private resident amenity loop.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped room inside Crown Point Condominiums in polished cinematic semi-realistic grounded contemporary environment concept art. Continue Crown Point's pale limestone, warm oak and walnut, charcoal metal, brushed bronze, cream upholstery, muted blue-grey and teal, generic abstract art, cool harbor daylight, warm practical lighting, and restrained coastal views. Make the building polished, secure, practical, purchasable, and developer-designed rather than bespoke, palatial, ostentatious, or as exclusive as Olivia's penthouse. Preserve exactly the authored public, owner-or-viewing, left, right, centered rear/up, and foreground/down routes; keep every floor and threshold flat and accessible and reserve clear edge and lower-center space for floating navigation arrows and dialogue UI. No people, residents, staff, figures, silhouettes, faces, reflections of people, navigation arrows, interface, readable words, letters, numbers, unit numbers, signs, directories, advertisements, notices, prices, brands, logos, trademarks, active screens, steps, raised thresholds, extra routes, fisheye distortion, corner marks, signatures, or watermark; all artwork, screens, labels, panels, and vehicle details must be blank, off, abstract, generic, or too indistinct to read.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Lobby | `crown_point_condos/lobby.png` | Public reception-and-lounge hub with left Secure Parking vestibule, centered rear one-bedroom elevator corridor, right two-bedroom viewing corridor, and foreground Boulevard doors. |
+| One-Bedroom Condo | `crown_point_condos/one_bedroom_condo.png` | Compact furnished oak-and-cream model home with open living, kitchen, dining, sleeping alcove, harbor window, and one foreground Lobby return. |
+| Two-Bedroom Condo | `crown_point_condos/two_bedroom_condo.png` | Wider furnished model home with paired occupant niches, left Lobby entry corridor, and centered rear glass resident-Gym passage. |
+| Resident Gym | `crown_point_condos/gym.png` | Compact harbor-view fitness room with generic cardio and strength equipment, right Pool connection, and one foreground Two-Bedroom Condo return. |
+| Resident Pool | `crown_point_condos/pool.png` | Quiet indoor harbor-view pool with pale stone deck, left glass Gym connection, and one foreground Secure Parking return. |
+| Secure Parking | `crown_point_condos/parking.png` | Clean underground resident garage with anonymous vehicles, centered rear Pool elevator vestibule, and warm-lit right Lobby doorway. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -1466,7 +1490,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all fifty-seven room batches were generated with the built-in
+The baseline assets and all fifty-eight room batches were generated with the built-in
 OpenAI image-generation tool during 2026-08-29 and 2026-08-30 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the
