@@ -41,11 +41,11 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The fifteen completed base-art locations are the Hale Home, Alder Heights Residential
+The sixteen completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
-Downtown, and Harbor Centre Apartments. Together they provide 86 unique base-day PNG
+Downtown, Harbor Centre Apartments, and Harbor View Condominiums. Together they provide 95 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -302,6 +302,33 @@ Destination-specific briefs:
 | Laundry Room | `harbor_centre_apartments/laundry.png` | Clean communal facility with blank-payment washers and dryers, folding counters, utility sink, benches, carts, and two building routes. |
 | Roof Deck | `harbor_centre_apartments/roof_deck.png` | Wet shared terrace with safe railings, cedar pergola and benches, ordinary tables, grill counter, coastal plants, city towers, and bay views. |
 
+### Harbor View Condominiums batch prompt set
+
+This batch completes all nine mapped condo destinations. The downtown Residential
+Towers image anchored the polished condo entrance and Lobby. The Lobby established the
+shared-building materials for Secure Parking and the private Condo Entry. From that
+entry, the Living Room became the central reference for the Kitchen, Bedroom, Balcony,
+Bathroom, and connected In-Suite Laundry. The home is deliberately more refined than
+Harbor Centre Apartments while remaining attainable rather than penthouse-level.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped Harbor View Condominiums destination in grounded mature cinematic contemporary realism. Match the supplied reference's refined but attainable Pacific Northwest owner-occupied design, rain-softened late-August light, warm cedar, muted teal, cream limestone, charcoal flooring or stone, dark metal, quality ordinary furnishings, broad bay views, practical warm lighting, and accessible circulation. Preserve the authored route, open character staging, floating-arrow placement, and an uncluttered lower region for dialogue UI. Keep the property clearly more upscale than Harbor Centre Apartments but not a penthouse or luxury resort. No people or reflections of people, mannequins, statues, human-shaped displays, personal photographs, character sprites, navigation arrows, interface, readable directories, unit or parking numbers, access codes, product or appliance labels, book titles, license plates, letters, numbers, logos, trademarks, captions, or watermark; signs and screens must be blank or abstract.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Lobby | `harbor_view_condos/lobby.png` | Refined controlled-access lobby with street-facing glass doors, blank reception console, elevator, parcel lockers, seating, and routes to the private home and parking. |
+| Condo Entry | `harbor_view_condos/entry.png` | Private foyer with secure entry door, coat closet, shoe storage, console, abstract art, and a right-side opening into the Living Room. |
+| Living Room | `harbor_view_condos/living_room.png` | Central bay-facing social room connecting Entry, Bedroom, Kitchen, and Balcony around quality attainable furnishings. |
+| Kitchen | `harbor_view_condos/kitchen.png` | Full cedar-and-stone kitchen with island, appliances, storage, dining nook, Living Room opening, and Bathroom route. |
+| Bedroom | `harbor_view_condos/bedroom.png` | Private queen bedroom with wardrobe, dresser, reading chair, abstract art, bay windows, and one Living Room return. |
+| Bathroom | `harbor_view_condos/bathroom.png` | Full private bathroom with tub, walk-in shower, vanity, storage, Kitchen return, and direct In-Suite Laundry doorway. |
+| In-Suite Laundry | `harbor_view_condos/laundry.png` | Compact utility room with washer, dryer, folding counter, deep sink, cabinets, baskets, and one Bathroom return. |
+| Balcony | `harbor_view_condos/balcony.png` | Moderate covered private terrace with safe glass railing, two-seat furniture, planters, and a rain-darkened bay panorama. |
+| Secure Parking | `harbor_view_condos/parking.png` | Clean controlled garage with blank access gate, EV chargers, bicycle storage, peripheral unbranded cars, and one Lobby return. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -322,7 +349,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all ten room batches were generated with the built-in
+The baseline assets and all eleven room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the

@@ -59,7 +59,8 @@
         "alder_bay_beach",
         "port_alder_galleria",
         "harbor_centre_downtown",
-        "harbor_centre_apartments"
+        "harbor_centre_apartments",
+        "harbor_view_condos"
       ]
     },
     "audio_in_scope": false,
@@ -222,6 +223,23 @@
           {"kind": "background", "id": "harbor_centre_apartments.laundry", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Provides the building's shared clothing-care facility and repeatable resident activity."},
           {"kind": "background", "id": "harbor_centre_apartments.roof_deck", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain"], "reason": "A resident-only outdoor social, date, and neighborhood-view destination."}
         ]
+      },
+      {
+        "id": "harbor_view_condos_home",
+        "title": "Harbor View Condominiums Home",
+        "priority": 10,
+        "goal": "Complete the purchasable condo's building approach, full private-home route, balcony, laundry, and secure parking.",
+        "assets": [
+          {"kind": "background", "id": "harbor_view_condos.lobby", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Connects the downtown residential block to condo viewings, owned homes, and secure parking."},
+          {"kind": "background", "id": "harbor_view_condos.entry", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "The controlled transition from the shared building into the player's private condo."},
+          {"kind": "background", "id": "harbor_view_condos.living_room", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "The condo's central social room connecting every primary private-home area."},
+          {"kind": "background", "id": "harbor_view_condos.kitchen", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports cooking, meals, household scenes, and the route toward the bathroom."},
+          {"kind": "background", "id": "harbor_view_condos.bedroom", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "The owner's private sleeping, wardrobe, and relationship scene destination."},
+          {"kind": "background", "id": "harbor_view_condos.bathroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports hygiene activities and the route into the in-suite laundry."},
+          {"kind": "background", "id": "harbor_view_condos.laundry", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Provides private clothing care and household storage inside the owned condo."},
+          {"kind": "background", "id": "harbor_view_condos.balcony", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain"], "reason": "A private bay-view outdoor destination for quiet scenes and dates."},
+          {"kind": "background", "id": "harbor_view_condos.parking", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports secure vehicle access, EV charging, bicycle storage, and resident arrivals."}
+        ]
       }
     ]
   },
@@ -312,6 +330,15 @@
     {"id": "harbor_centre_apartments.one_bedroom_unit", "location": "harbor_centre_apartments", "room": "one_bedroom_unit", "path": "res://assets/art/backgrounds/harbor_centre_apartments/one_bedroom_unit.png", "variants": {"day": "res://assets/art/backgrounds/harbor_centre_apartments/one_bedroom_unit.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "harbor_centre_apartments.two_bedroom_unit", "location": "harbor_centre_apartments", "room": "two_bedroom_unit", "path": "res://assets/art/backgrounds/harbor_centre_apartments/two_bedroom_unit.png", "variants": {"day": "res://assets/art/backgrounds/harbor_centre_apartments/two_bedroom_unit.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "harbor_centre_apartments.laundry", "location": "harbor_centre_apartments", "room": "laundry", "path": "res://assets/art/backgrounds/harbor_centre_apartments/laundry.png", "variants": {"day": "res://assets/art/backgrounds/harbor_centre_apartments/laundry.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "harbor_centre_apartments.roof_deck", "location": "harbor_centre_apartments", "room": "roof_deck", "path": "res://assets/art/backgrounds/harbor_centre_apartments/roof_deck.png", "variants": {"day": "res://assets/art/backgrounds/harbor_centre_apartments/roof_deck.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "harbor_centre_apartments.roof_deck", "location": "harbor_centre_apartments", "room": "roof_deck", "path": "res://assets/art/backgrounds/harbor_centre_apartments/roof_deck.png", "variants": {"day": "res://assets/art/backgrounds/harbor_centre_apartments/roof_deck.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_view_condos.lobby", "location": "harbor_view_condos", "room": "lobby", "path": "res://assets/art/backgrounds/harbor_view_condos/lobby.png", "variants": {"day": "res://assets/art/backgrounds/harbor_view_condos/lobby.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_view_condos.entry", "location": "harbor_view_condos", "room": "entry", "path": "res://assets/art/backgrounds/harbor_view_condos/entry.png", "variants": {"day": "res://assets/art/backgrounds/harbor_view_condos/entry.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_view_condos.living_room", "location": "harbor_view_condos", "room": "living_room", "path": "res://assets/art/backgrounds/harbor_view_condos/living_room.png", "variants": {"day": "res://assets/art/backgrounds/harbor_view_condos/living_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_view_condos.kitchen", "location": "harbor_view_condos", "room": "kitchen", "path": "res://assets/art/backgrounds/harbor_view_condos/kitchen.png", "variants": {"day": "res://assets/art/backgrounds/harbor_view_condos/kitchen.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_view_condos.bedroom", "location": "harbor_view_condos", "room": "bedroom", "path": "res://assets/art/backgrounds/harbor_view_condos/bedroom.png", "variants": {"day": "res://assets/art/backgrounds/harbor_view_condos/bedroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_view_condos.bathroom", "location": "harbor_view_condos", "room": "bathroom", "path": "res://assets/art/backgrounds/harbor_view_condos/bathroom.png", "variants": {"day": "res://assets/art/backgrounds/harbor_view_condos/bathroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_view_condos.laundry", "location": "harbor_view_condos", "room": "laundry", "path": "res://assets/art/backgrounds/harbor_view_condos/laundry.png", "variants": {"day": "res://assets/art/backgrounds/harbor_view_condos/laundry.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_view_condos.balcony", "location": "harbor_view_condos", "room": "balcony", "path": "res://assets/art/backgrounds/harbor_view_condos/balcony.png", "variants": {"day": "res://assets/art/backgrounds/harbor_view_condos/balcony.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_view_condos.parking", "location": "harbor_view_condos", "room": "parking", "path": "res://assets/art/backgrounds/harbor_view_condos/parking.png", "variants": {"day": "res://assets/art/backgrounds/harbor_view_condos/parking.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }
