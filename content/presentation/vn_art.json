@@ -84,7 +84,8 @@
         "greyport_distribution",
         "port_alder_transit_depot",
         "greyport_studios",
-        "undertow_nightclub"
+        "undertow_nightclub",
+        "cedar_vale_street"
       ]
     },
     "audio_in_scope": false,
@@ -584,6 +585,19 @@
           {"kind": "background", "id": "undertow_nightclub.quiet_room", "status": "in_progress", "required_variants": ["night"], "reason": "Supports sensory decompression, hydration, safe recovery, and calm consent check-ins without turning the room into a private intimacy shortcut."},
           {"kind": "background", "id": "undertow_nightclub.staff_room", "status": "in_progress", "required_variants": ["night"], "reason": "Supports floor-staff breaks, hospitality learning, shift preparation, performance, and promotion scenes with one clear return to the Bar."}
         ]
+      },
+      {
+        "id": "cedar_vale_street_family_district_route",
+        "title": "Cedar Vale Residential Street Housing, Care, and Family Route",
+        "priority": 35,
+        "goal": "Complete Cedar Vale's discoverable outdoor spine from transit through townhouse and detached housing, care employment, family services, and the neighborhood playground.",
+        "assets": [
+          {"kind": "background", "id": "cedar_vale_street.bus_stop", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Establishes Cedar Vale's discoverable transit arrival, taxi pickup, route planning, and the single rightward continuation into the residential district."},
+          {"kind": "background", "id": "cedar_vale_street.townhouse_row", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Provides the four-way housing hub while visually separating Rachel's invitation-gated front door from the generic rentable-or-purchasable townhouse entry and the two public street routes."},
+          {"kind": "background", "id": "cedar_vale_street.family_block", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Provides the four-way community hub with separate entrances for care-home employment and visits, family-centre support, and the adjoining housing lanes."},
+          {"kind": "background", "id": "cedar_vale_street.detached_home_lane", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Connects Family Block, a generic detached-home property viewing and entry, and the Neighborhood Playground through one readable three-way residential junction."},
+          {"kind": "background", "id": "cedar_vale_street.playground", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Supports empty accessible recreation, family encounters, and neighborhood scenes while exposing exactly one return to Detached Home Lane."}
+        ]
       }
     ]
   },
@@ -811,6 +825,11 @@
     {"id": "undertow_nightclub.lounge", "location": "undertow_nightclub", "room": "lounge", "path": "res://assets/art/backgrounds/undertow_nightclub/lounge.png", "variants": {"day": "res://assets/art/backgrounds/undertow_nightclub/lounge.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "undertow_nightclub.restrooms", "location": "undertow_nightclub", "room": "restrooms", "path": "res://assets/art/backgrounds/undertow_nightclub/restrooms.png", "variants": {"day": "res://assets/art/backgrounds/undertow_nightclub/restrooms.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "undertow_nightclub.quiet_room", "location": "undertow_nightclub", "room": "quiet_room", "path": "res://assets/art/backgrounds/undertow_nightclub/quiet_room.png", "variants": {"day": "res://assets/art/backgrounds/undertow_nightclub/quiet_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "undertow_nightclub.staff_room", "location": "undertow_nightclub", "room": "staff_room", "path": "res://assets/art/backgrounds/undertow_nightclub/staff_room.png", "variants": {"day": "res://assets/art/backgrounds/undertow_nightclub/staff_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "undertow_nightclub.staff_room", "location": "undertow_nightclub", "room": "staff_room", "path": "res://assets/art/backgrounds/undertow_nightclub/staff_room.png", "variants": {"day": "res://assets/art/backgrounds/undertow_nightclub/staff_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cedar_vale_street.bus_stop", "location": "cedar_vale_street", "room": "bus_stop", "path": "res://assets/art/backgrounds/cedar_vale_street/bus_stop.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_street/bus_stop.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cedar_vale_street.townhouse_row", "location": "cedar_vale_street", "room": "townhouse_row", "path": "res://assets/art/backgrounds/cedar_vale_street/townhouse_row.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_street/townhouse_row.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cedar_vale_street.family_block", "location": "cedar_vale_street", "room": "family_block", "path": "res://assets/art/backgrounds/cedar_vale_street/family_block.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_street/family_block.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cedar_vale_street.detached_home_lane", "location": "cedar_vale_street", "room": "detached_home_lane", "path": "res://assets/art/backgrounds/cedar_vale_street/detached_home_lane.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_street/detached_home_lane.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cedar_vale_street.playground", "location": "cedar_vale_street", "room": "playground", "path": "res://assets/art/backgrounds/cedar_vale_street/playground.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_street/playground.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }

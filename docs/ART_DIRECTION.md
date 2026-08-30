@@ -41,7 +41,7 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The forty completed base-art locations are the Hale Home, Alder Heights Residential
+The forty-one completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
@@ -52,8 +52,8 @@ Westshore Bookshop, Lantern Gallery, Lantern District Street, La Brisa Kitchen,
 Tideglass Club, Harbor Companion Cooperative, the Rowan Family Home, Jade's Downtown
 Condo, Greyport Main Street, the Lee Family Apartment, the Flores Family Townhouse, and the
 Greyport Shared Apartment, the Donovan Family Apartment, Greyport Distribution, and the
-Port Alder Transit Depot, Greyport Studios, and Undertow Nightclub. Together they provide
-223 unique base-day PNG
+Port Alder Transit Depot, Greyport Studios, Undertow Nightclub, and Cedar Vale Residential
+Street. Together they provide 228 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -916,6 +916,29 @@ Destination-specific briefs:
 | Quiet Room | `undertow_nightclub/quiet_room.png` | Public sensory-decompression room with upright seating, acoustic panels, clear table, water, dimmable lamps, dark call panel, fixed privacy glass, and exactly one left Lounge return; no private-intimacy cues. |
 | Staff Room | `undertow_nightclub/staff_room.png` | Dignified employee room with table, kitchenette, closed lockers, bench, blank shift board, dark terminal, hydration supplies, closed safety storage, and exactly one foreground Bar return. |
 
+### Cedar Vale Residential Street batch prompt set
+
+This batch establishes Cedar Vale as Port Alder's practical, multigenerational family
+district and makes its discoverable travel structure readable without a quick-travel
+overlay. The five outdoor rooms form a continuous route from transit through townhouse
+and detached housing to family services, care work, and recreation. Rachel's private
+townhouse door remains visually separate from the generic property-viewing entrance so
+invitations, quests, and housing discovery can unlock them independently.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped destination in Cedar Vale Residential Street in polished painterly semi-realistic grounded mature contemporary cinematic realism. Use bright overcast late-August daylight immediately after light rain, mature cedars and maples, gentle inland hills, accessible sidewalks and curb ramps, maintained native planting, cedar-red and sage siding, warm cream brick, muted burgundy, honey wood, charcoal slate, moss, rain-grey blue, and restrained golden amber. Make Cedar Vale welcoming, practical, family-oriented, multigenerational, and distinct from Alder Heights without looking luxurious, gated, neglected, or institutional. Preserve exactly the authored room-to-room routes with every destination visibly separate and a generous uncluttered central or lower space for character staging and floating navigation UI. No people, children, reflections, silhouettes, character sprites, navigation arrows, interface, readable words, letters, numbers, addresses, signs, advertisements, logos, brands, trademarks, active screens, paperwork, vehicles blocking routes, or watermark.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Cedar Vale Bus Stop | `cedar_vale_street/bus_stop.png` | Terminal district arrival with timber shelter, dark blank kiosk, wet turnaround, and exactly one rightward street-and-sidewalk continuation into Townhouse Row. |
+| Townhouse Row | `cedar_vale_street/townhouse_row.png` | Four-way housing hub with left Bus Stop return, one rear invitation-gated townhouse door, right Family Block route, and a physically separate foreground generic townhouse-development entry for rental or purchase viewing. |
+| Family Block | `cedar_vale_street/family_block.png` | Four-way community hub with left Townhouse Row, a residential-scale rear Care Home entrance, right Detached Home Lane, and a separate warmer foreground Family Centre entrance for childcare, parenting, support, and employment scenes. |
+| Detached Home Lane | `cedar_vale_street/detached_home_lane.png` | Three-way residential junction with left Family Block return, one centered generic detached-home property entrance, and right Neighborhood Playground continuation; other homes remain non-navigable background texture. |
+| Neighborhood Playground | `cedar_vale_street/playground.png` | Empty inclusive public playground with accessible equipment, benches, picnic table, safety surfacing, continuous planted enclosure, and exactly one left return to Detached Home Lane. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -936,7 +959,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all thirty-five room batches were generated with the built-in
+The baseline assets and all thirty-six room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the
