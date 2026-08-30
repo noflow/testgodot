@@ -100,7 +100,8 @@
         "st_maren_medical_center",
         "st_maren_community_clinic",
         "st_maren_doctors_office",
-        "harbor_wellness_therapy"
+        "harbor_wellness_therapy",
+        "st_maren_sexual_health"
       ]
     },
     "audio_in_scope": false,
@@ -822,6 +823,18 @@
           {"kind": "background", "id": "harbor_wellness_therapy.couples_office", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports relationship counseling in a distinct three-person layout with one leftward return to the Waiting Lounge."},
           {"kind": "background", "id": "harbor_wellness_therapy.group_room", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports facilitated group therapy in an accessible chair circle with one upward return to the Waiting Lounge."}
         ]
+      },
+      {
+        "id": "st_maren_sexual_health_private_care_route",
+        "title": "St. Maren Sexual Health Centre Private Consultation, Testing, and Treatment Route",
+        "priority": 51,
+        "goal": "Complete the privacy-first adult health centre from its screened Wellness Walk reception through confidential consultation into distinct non-graphic testing and treatment rooms.",
+        "assets": [
+          {"kind": "background", "id": "st_maren_sexual_health.private_reception", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Provides a discreet public arrival point with separated seating and distinct routes to Wellness Walk and the Consultation Room."},
+          {"kind": "background", "id": "st_maren_sexual_health.consultation_room", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports confidential contraception, fertility-information, and partner-notification conversations as the three-way hub between Reception, Testing, and Treatment."},
+          {"kind": "background", "id": "st_maren_sexual_health.testing_room", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports private non-graphic STI screening in a collection-focused room with one leftward return to Consultation."},
+          {"kind": "background", "id": "st_maren_sexual_health.treatment_room", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports private non-graphic outpatient care in a distinct exam-table room with one upward return to Consultation."}
+        ]
       }
     ]
   },
@@ -1143,6 +1156,10 @@
     {"id": "harbor_wellness_therapy.waiting_lounge", "location": "harbor_wellness_therapy", "room": "waiting_lounge", "path": "res://assets/art/backgrounds/harbor_wellness_therapy/waiting_lounge.png", "variants": {"day": "res://assets/art/backgrounds/harbor_wellness_therapy/waiting_lounge.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "harbor_wellness_therapy.individual_office", "location": "harbor_wellness_therapy", "room": "individual_office", "path": "res://assets/art/backgrounds/harbor_wellness_therapy/individual_office.png", "variants": {"day": "res://assets/art/backgrounds/harbor_wellness_therapy/individual_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "harbor_wellness_therapy.couples_office", "location": "harbor_wellness_therapy", "room": "couples_office", "path": "res://assets/art/backgrounds/harbor_wellness_therapy/couples_office.png", "variants": {"day": "res://assets/art/backgrounds/harbor_wellness_therapy/couples_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "harbor_wellness_therapy.group_room", "location": "harbor_wellness_therapy", "room": "group_room", "path": "res://assets/art/backgrounds/harbor_wellness_therapy/group_room.png", "variants": {"day": "res://assets/art/backgrounds/harbor_wellness_therapy/group_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "harbor_wellness_therapy.group_room", "location": "harbor_wellness_therapy", "room": "group_room", "path": "res://assets/art/backgrounds/harbor_wellness_therapy/group_room.png", "variants": {"day": "res://assets/art/backgrounds/harbor_wellness_therapy/group_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "st_maren_sexual_health.private_reception", "location": "st_maren_sexual_health", "room": "private_reception", "path": "res://assets/art/backgrounds/st_maren_sexual_health/private_reception.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_sexual_health/private_reception.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "st_maren_sexual_health.consultation_room", "location": "st_maren_sexual_health", "room": "consultation_room", "path": "res://assets/art/backgrounds/st_maren_sexual_health/consultation_room.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_sexual_health/consultation_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "st_maren_sexual_health.testing_room", "location": "st_maren_sexual_health", "room": "testing_room", "path": "res://assets/art/backgrounds/st_maren_sexual_health/testing_room.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_sexual_health/testing_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "st_maren_sexual_health.treatment_room", "location": "st_maren_sexual_health", "room": "treatment_room", "path": "res://assets/art/backgrounds/st_maren_sexual_health/treatment_room.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_sexual_health/treatment_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }
