@@ -41,7 +41,7 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The fifty-nine completed base-art locations are the Hale Home, Alder Heights Residential
+The sixty completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
@@ -53,7 +53,7 @@ Tideglass Club, Harbor Companion Cooperative, the Rowan Family Home, Jade's Down
 Condo, Greyport Main Street, the Lee Family Apartment, the Flores Family Townhouse, and the
 Greyport Shared Apartment, the Donovan Family Apartment, Greyport Distribution, and the
 Port Alder Transit Depot, Greyport Studios, Undertow Nightclub, Cedar Vale Residential
-Street, Rachel's Townhouse, Cedar Vale Townhouses, Cedar Vale Detached Homes, Cedar Vale Care Home, Cedar Vale Family Centre, Mariner Row Shopping Street, Mariner Market, Northline Outfitters, Harbor Formalwear, Mariner Home Goods, Port Alder Auto, St. Maren Medical Center, St. Maren Community Clinic, St. Maren Family Doctors, Harbor Wellness Therapy, St. Maren Sexual Health Centre, Bay Pharmacy, and Hannah's Medical District Apartment. Together they provide 330 unique base-day PNG
+Street, Rachel's Townhouse, Cedar Vale Townhouses, Cedar Vale Detached Homes, Cedar Vale Care Home, Cedar Vale Family Centre, Mariner Row Shopping Street, Mariner Market, Northline Outfitters, Harbor Formalwear, Mariner Home Goods, Port Alder Auto, St. Maren Medical Center, St. Maren Community Clinic, St. Maren Family Doctors, Harbor Wellness Therapy, St. Maren Sexual Health Centre, Bay Pharmacy, Hannah's Medical District Apartment, and Crown Point Boulevard. Together they provide 336 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -1372,6 +1372,30 @@ Destination-specific briefs:
 | Bathroom | `hannah_medical_district_apartment/bathroom.png` | Walk-in shower, vanity, toilet, towels, hamper, high frosted window, and one level centered rear Kitchen return. |
 | Balcony | `hannah_medical_district_apartment/balcony.png` | Covered medical-district balcony with bistro seating, coastal planters, bay-and-campus view, safe railing, and one level rear Living Room return. |
 
+### Crown Point Boulevard batch prompt set
+
+This six-background batch establishes Crown Point as Port Alder's discoverable luxury
+district. Its continuous elevated promenade uses pale limestone, charcoal glass, bronze,
+disciplined evergreen landscaping, rain-bright paving, and open harbor views. The route
+moves left to right from transit through corporate, residential, penthouse, and hotel
+frontages before terminating at the public overlook. Each building entrance remains
+unmarked and spatially distinct so floating navigation controls can carry the labels.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped Crown Point Boulevard destination in polished painterly semi-realistic grounded mature contemporary cinematic realism, matching Port Alder's coastal city continuity while making the district visibly wealthier. Use pale limestone, charcoal and navy glass, restrained brushed bronze, honed rain-bright paving, evergreen landscaping, soft white coastal flowers, cool bay daylight, warm sheltered lighting, and open views toward the harbor and forested hills. Preserve exactly the authored left, right, upward building-entry, or downward foreground routes; keep every threshold level and accessible and reserve useful lower-center space for dialogue UI. No people, characters, figures, silhouettes, faces, reflections of people, vehicles, luggage, navigation arrows, interface, readable words, letters, numbers, building names, signs, maps, directories, advertisements, notices, schedules, flags, brands, logos, active screens, clocks, statues of people, unsafe rail openings, extra routes, stairs, steps, ramps, raised thresholds, blocked walkways, fisheye distortion, corner marks, signatures, or watermark; all panels, plaques, awnings, and glass markings must be blank or abstract.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Crown Point Transit Plaza | `crown_point_boulevard/boulevard_entry.png` | Western arrival forecourt with covered transit and taxi bays, closed left and rear boundaries, and one clear level right route into the district. |
+| Corporate Block | `crown_point_boulevard/corporate_block.png` | Symmetrical legal-and-business frontage with left Transit Plaza, centered rear Price & Caldwell Law entrance, and right Residential Towers corridor. |
+| Residential Towers | `crown_point_boulevard/residential_towers.png` | Four-way residential junction with left Corporate Block, rear Olivia private-tower entrance, right Penthouse Towers, and distinct foreground condominium-lobby threshold. |
+| Penthouse Towers | `crown_point_boulevard/penthouse_towers.png` | Exclusive twin-tower frontage with left Residential Towers, centered rear purchasable-penthouse elevator entrance, and right Hotel Block. |
+| Hotel Block | `crown_point_boulevard/hotel_block.png` | Formal warm-lit hotel frontage with left Penthouse Towers, centered rear hotel-lobby entrance, and right Harbor Overlook promenade. |
+| Crown Point Harbor Overlook | `crown_point_boulevard/harbor_overlook.png` | Elevated panoramic terrace with benches, safe bronze-and-glass railings, harbor view, closed scenic edges, and one level left return to the Hotel Block. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -1392,7 +1416,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all fifty-four room batches were generated with the built-in
+The baseline assets and all fifty-five room batches were generated with the built-in
 OpenAI image-generation tool during 2026-08-29 and 2026-08-30 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the

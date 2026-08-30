@@ -103,7 +103,8 @@
         "harbor_wellness_therapy",
         "st_maren_sexual_health",
         "bay_pharmacy",
-        "hannah_medical_district_apartment"
+        "hannah_medical_district_apartment",
+        "crown_point_boulevard"
       ]
     },
     "audio_in_scope": false,
@@ -862,6 +863,20 @@
           {"kind": "background", "id": "hannah_medical_district_apartment.bathroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports household hygiene in a level private room with one upward return to the Kitchen."},
           {"kind": "background", "id": "hannah_medical_district_apartment.balcony", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Supports decompression, private conversations, and medical-district views with one upward return to the Living Room."}
         ]
+      },
+      {
+        "id": "crown_point_boulevard_luxury_district_route",
+        "title": "Crown Point Boulevard Corporate, Residential, Hotel, and Harbor Route",
+        "priority": 54,
+        "goal": "Complete Crown Point's discoverable luxury boulevard from its transit arrival through corporate and residential towers to the hotel block and public harbor overlook.",
+        "assets": [
+          {"kind": "background", "id": "crown_point_boulevard.boulevard_entry", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Provides the district's discoverable transit arrival with one clear rightward route into the Corporate Block."},
+          {"kind": "background", "id": "crown_point_boulevard.corporate_block", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Connects transit and residential frontage through the level Price & Caldwell Law entrance."},
+          {"kind": "background", "id": "crown_point_boulevard.residential_towers", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Provides the four-way residential junction linking the boulevard, Olivia's private elevator, and Crown Point Condominiums."},
+          {"kind": "background", "id": "crown_point_boulevard.penthouse_towers", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Connects the residential and hotel blocks through the purchasable penthouse private-elevator entrance."},
+          {"kind": "background", "id": "crown_point_boulevard.hotel_block", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Connects the penthouse frontage and harbor overlook through the Crown Point Hotel lobby entrance."},
+          {"kind": "background", "id": "crown_point_boulevard.harbor_overlook", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Supports public sightseeing and dates at the boulevard terminus with one leftward return to the Hotel Block."}
+        ]
       }
     ]
   },
@@ -1196,6 +1211,12 @@
     {"id": "hannah_medical_district_apartment.kitchen", "location": "hannah_medical_district_apartment", "room": "kitchen", "path": "res://assets/art/backgrounds/hannah_medical_district_apartment/kitchen.png", "variants": {"day": "res://assets/art/backgrounds/hannah_medical_district_apartment/kitchen.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "hannah_medical_district_apartment.bedroom", "location": "hannah_medical_district_apartment", "room": "bedroom", "path": "res://assets/art/backgrounds/hannah_medical_district_apartment/bedroom.png", "variants": {"day": "res://assets/art/backgrounds/hannah_medical_district_apartment/bedroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "hannah_medical_district_apartment.bathroom", "location": "hannah_medical_district_apartment", "room": "bathroom", "path": "res://assets/art/backgrounds/hannah_medical_district_apartment/bathroom.png", "variants": {"day": "res://assets/art/backgrounds/hannah_medical_district_apartment/bathroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "hannah_medical_district_apartment.balcony", "location": "hannah_medical_district_apartment", "room": "balcony", "path": "res://assets/art/backgrounds/hannah_medical_district_apartment/balcony.png", "variants": {"day": "res://assets/art/backgrounds/hannah_medical_district_apartment/balcony.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "hannah_medical_district_apartment.balcony", "location": "hannah_medical_district_apartment", "room": "balcony", "path": "res://assets/art/backgrounds/hannah_medical_district_apartment/balcony.png", "variants": {"day": "res://assets/art/backgrounds/hannah_medical_district_apartment/balcony.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "crown_point_boulevard.boulevard_entry", "location": "crown_point_boulevard", "room": "boulevard_entry", "path": "res://assets/art/backgrounds/crown_point_boulevard/boulevard_entry.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_boulevard/boulevard_entry.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "crown_point_boulevard.corporate_block", "location": "crown_point_boulevard", "room": "corporate_block", "path": "res://assets/art/backgrounds/crown_point_boulevard/corporate_block.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_boulevard/corporate_block.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "crown_point_boulevard.residential_towers", "location": "crown_point_boulevard", "room": "residential_towers", "path": "res://assets/art/backgrounds/crown_point_boulevard/residential_towers.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_boulevard/residential_towers.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "crown_point_boulevard.penthouse_towers", "location": "crown_point_boulevard", "room": "penthouse_towers", "path": "res://assets/art/backgrounds/crown_point_boulevard/penthouse_towers.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_boulevard/penthouse_towers.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "crown_point_boulevard.hotel_block", "location": "crown_point_boulevard", "room": "hotel_block", "path": "res://assets/art/backgrounds/crown_point_boulevard/hotel_block.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_boulevard/hotel_block.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "crown_point_boulevard.harbor_overlook", "location": "crown_point_boulevard", "room": "harbor_overlook", "path": "res://assets/art/backgrounds/crown_point_boulevard/harbor_overlook.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_boulevard/harbor_overlook.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }
