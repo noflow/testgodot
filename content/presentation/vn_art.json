@@ -99,7 +99,8 @@
         "port_alder_auto",
         "st_maren_medical_center",
         "st_maren_community_clinic",
-        "st_maren_doctors_office"
+        "st_maren_doctors_office",
+        "harbor_wellness_therapy"
       ]
     },
     "audio_in_scope": false,
@@ -808,6 +809,19 @@
           {"kind": "background", "id": "st_maren_doctors_office.exam_room_1", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports routine physical assessment and primary-care appointments with one downward return to the Waiting Room."},
           {"kind": "background", "id": "st_maren_doctors_office.exam_room_2", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports seated medication, records, fertility-referral, and follow-up conversations with one left return to the Waiting Room."}
         ]
+      },
+      {
+        "id": "harbor_wellness_therapy_counseling_and_support_route",
+        "title": "Harbor Wellness Therapy Counseling, Relationships, and Group Support Route",
+        "priority": 50,
+        "goal": "Complete the therapy practice from its Wellness Walk reception through the central waiting lounge into distinct individual, relationship-counseling, and group-support rooms.",
+        "assets": [
+          {"kind": "background", "id": "harbor_wellness_therapy.reception", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Provides the confidential public arrival point with separate routes to Wellness Walk and the Waiting Lounge."},
+          {"kind": "background", "id": "harbor_wellness_therapy.waiting_lounge", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Provides the practice's four-way interior hub connecting Reception with individual, relationship, and group appointments."},
+          {"kind": "background", "id": "harbor_wellness_therapy.individual_office", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports private one-on-one therapy and stress-treatment scenes with one downward return to the Waiting Lounge."},
+          {"kind": "background", "id": "harbor_wellness_therapy.couples_office", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports relationship counseling in a distinct three-person layout with one leftward return to the Waiting Lounge."},
+          {"kind": "background", "id": "harbor_wellness_therapy.group_room", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports facilitated group therapy in an accessible chair circle with one upward return to the Waiting Lounge."}
+        ]
       }
     ]
   },
@@ -1124,6 +1138,11 @@
     {"id": "st_maren_doctors_office.reception", "location": "st_maren_doctors_office", "room": "reception", "path": "res://assets/art/backgrounds/st_maren_doctors_office/reception.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_doctors_office/reception.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "st_maren_doctors_office.waiting_room", "location": "st_maren_doctors_office", "room": "waiting_room", "path": "res://assets/art/backgrounds/st_maren_doctors_office/waiting_room.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_doctors_office/waiting_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "st_maren_doctors_office.exam_room_1", "location": "st_maren_doctors_office", "room": "exam_room_1", "path": "res://assets/art/backgrounds/st_maren_doctors_office/exam_room_1.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_doctors_office/exam_room_1.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "st_maren_doctors_office.exam_room_2", "location": "st_maren_doctors_office", "room": "exam_room_2", "path": "res://assets/art/backgrounds/st_maren_doctors_office/exam_room_2.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_doctors_office/exam_room_2.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "st_maren_doctors_office.exam_room_2", "location": "st_maren_doctors_office", "room": "exam_room_2", "path": "res://assets/art/backgrounds/st_maren_doctors_office/exam_room_2.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_doctors_office/exam_room_2.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_wellness_therapy.reception", "location": "harbor_wellness_therapy", "room": "reception", "path": "res://assets/art/backgrounds/harbor_wellness_therapy/reception.png", "variants": {"day": "res://assets/art/backgrounds/harbor_wellness_therapy/reception.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_wellness_therapy.waiting_lounge", "location": "harbor_wellness_therapy", "room": "waiting_lounge", "path": "res://assets/art/backgrounds/harbor_wellness_therapy/waiting_lounge.png", "variants": {"day": "res://assets/art/backgrounds/harbor_wellness_therapy/waiting_lounge.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_wellness_therapy.individual_office", "location": "harbor_wellness_therapy", "room": "individual_office", "path": "res://assets/art/backgrounds/harbor_wellness_therapy/individual_office.png", "variants": {"day": "res://assets/art/backgrounds/harbor_wellness_therapy/individual_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_wellness_therapy.couples_office", "location": "harbor_wellness_therapy", "room": "couples_office", "path": "res://assets/art/backgrounds/harbor_wellness_therapy/couples_office.png", "variants": {"day": "res://assets/art/backgrounds/harbor_wellness_therapy/couples_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_wellness_therapy.group_room", "location": "harbor_wellness_therapy", "room": "group_room", "path": "res://assets/art/backgrounds/harbor_wellness_therapy/group_room.png", "variants": {"day": "res://assets/art/backgrounds/harbor_wellness_therapy/group_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }

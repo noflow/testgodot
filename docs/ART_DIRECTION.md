@@ -41,7 +41,7 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The fifty-five completed base-art locations are the Hale Home, Alder Heights Residential
+The fifty-six completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
@@ -53,7 +53,7 @@ Tideglass Club, Harbor Companion Cooperative, the Rowan Family Home, Jade's Down
 Condo, Greyport Main Street, the Lee Family Apartment, the Flores Family Townhouse, and the
 Greyport Shared Apartment, the Donovan Family Apartment, Greyport Distribution, and the
 Port Alder Transit Depot, Greyport Studios, Undertow Nightclub, Cedar Vale Residential
-Street, Rachel's Townhouse, Cedar Vale Townhouses, Cedar Vale Detached Homes, Cedar Vale Care Home, Cedar Vale Family Centre, Mariner Row Shopping Street, Mariner Market, Northline Outfitters, Harbor Formalwear, Mariner Home Goods, Port Alder Auto, St. Maren Medical Center, St. Maren Community Clinic, and St. Maren Family Doctors. Together they provide 312 unique base-day PNG
+Street, Rachel's Townhouse, Cedar Vale Townhouses, Cedar Vale Detached Homes, Cedar Vale Care Home, Cedar Vale Family Centre, Mariner Row Shopping Street, Mariner Market, Northline Outfitters, Harbor Formalwear, Mariner Home Goods, Port Alder Auto, St. Maren Medical Center, St. Maren Community Clinic, St. Maren Family Doctors, and Harbor Wellness Therapy. Together they provide 317 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -1284,6 +1284,28 @@ Destination-specific briefs:
 | Exam Room 1 | `st_maren_doctors_office/exam_room_1.png` | General physical-assessment room with exam bed, clinician stool, visitor chair, sink, closed supplies, blank monitor, and one centered Waiting Room return. |
 | Exam Room 2 | `st_maren_doctors_office/exam_room_2.png` | Consultation-focused room with round table, three chairs, compact exam bed, closed storage, blank records screen, and one left Waiting Room return. |
 
+### Harbor Wellness Therapy batch prompt set
+
+This five-room batch creates a confidential counseling practice that feels warmer and
+more residential than the neighboring medical clinics. Reception preserves the Wellness
+Walk connection, the Waiting Lounge presents all four interior routes, and the three
+appointment rooms use distinct layouts for individual, relationship, and group sessions.
+All rooms use level accessible thresholds and privacy-conscious sightlines.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped destination inside Harbor Wellness Therapy in polished painterly semi-realistic grounded mature contemporary cinematic realism. Continue the St. Maren campus with warm off-white and oatmeal walls, muted sage and dusty-teal upholstery, weathered walnut furniture and acoustic slats, pale stone, soft charcoal carpet, frosted privacy glass, abstract coastal art without faces, indoor plants, cool coastal daylight, and warm shaded or indirect lamps. Make the practice calm, confidential, inclusive, accessible, professionally maintained, residential in warmth, and clearly non-clinical. Preserve exactly the authored routes, distinguish public reception and waiting from appointment-only rooms, and keep the lower center useful for dialogue UI. No people, staff, clients, figures, silhouettes, reflections of figures, photographic faces, navigation arrows, interface, readable words, letters, numbers, room names, patient names, notices, schedules, worksheets, forms, notes, folder labels, calendars, signs, logos, brands, active screens, clocks, medical equipment, medication, anatomy art, blood, injuries, bodily fluids, weapons, clutter, extra routes, stairs, steps, raised thresholds, fisheye distortion, or watermark; all screens, papers, files, folders, cabinets, panels, signs, and labels must be blank, dark, closed, face-down, abstract, or too indistinct to read.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Reception | `harbor_wellness_therapy/reception.png` | Walnut-and-pale-stone desk with two blank monitors, frosted foreground Wellness Walk doors, one right Waiting Lounge route, plants, and clear staging. |
+| Waiting Lounge | `harbor_wellness_therapy/waiting_lounge.png` | Residential seating clusters around a four-way hub: left Reception, rear Individual Office, right Relationship Counseling Office, and foreground Group Room passage. |
+| Individual Therapy Office | `harbor_wellness_therapy/individual_office.png` | Private two-armchair counseling layout with small round table, discreet writing desk, closed records, acoustic treatment, and one lower Waiting Lounge return. |
+| Relationship Counseling Office | `harbor_wellness_therapy/couples_office.png` | Neutral loveseat and separate therapist chair in a three-person arrangement with circular rug, closed storage, and one left Waiting Lounge return. |
+| Group Room | `harbor_wellness_therapy/group_room.png` | Ten upholstered chairs in an open circle, acoustic panels, closed materials cabinet, level floor and threshold, and one centered rear Waiting Lounge return. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -1304,7 +1326,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all fifty room batches were generated with the built-in
+The baseline assets and all fifty-one room batches were generated with the built-in
 OpenAI image-generation tool during 2026-08-29 and 2026-08-30 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the
