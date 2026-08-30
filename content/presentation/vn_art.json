@@ -56,7 +56,8 @@
         "westshore_campus",
         "bayview_cafe",
         "port_alder_marina",
-        "alder_bay_beach"
+        "alder_bay_beach",
+        "port_alder_galleria"
       ]
     },
     "audio_in_scope": false,
@@ -169,6 +170,28 @@
           {"kind": "background", "id": "alder_bay_beach.shoreline", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain"], "reason": "Supports beach walks, safe swimming, dates, and weather-sensitive scenes."},
           {"kind": "background", "id": "alder_bay_beach.changing_room", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports private changing and hygiene interactions beside the beach."}
         ]
+      },
+      {
+        "id": "port_alder_galleria_shopping",
+        "title": "Port Alder Galleria Shopping",
+        "priority": 7,
+        "goal": "Complete the Galleria's two-level shopping route, occupied service areas, flexible event hall, and mod-ready expansion wings.",
+        "assets": [
+          {"kind": "background", "id": "port_alder_galleria.street_entrance", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain"], "reason": "Connects the downtown sidewalk to the mall without skipping the entrance route."},
+          {"kind": "background", "id": "port_alder_galleria.main_atrium", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "The central two-level hub for shopping, employment, and social encounters."},
+          {"kind": "background", "id": "port_alder_galleria.fashion_wing", "status": "ready", "required_variants": ["day"], "reason": "Hosts the apparel route and access to the department store."},
+          {"kind": "background", "id": "port_alder_galleria.department_store", "status": "ready", "required_variants": ["day"], "reason": "Supports the wardrobe shop, fitting rooms, purchases, and retail employment scenes."},
+          {"kind": "background", "id": "port_alder_galleria.lower_court", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Connects the atrium to lifestyle, services, and food destinations."},
+          {"kind": "background", "id": "port_alder_galleria.lifestyle_wing", "status": "ready", "required_variants": ["day"], "reason": "Supports sporting-goods purchases and future fitness-related quests."},
+          {"kind": "background", "id": "port_alder_galleria.services_wing", "status": "ready", "required_variants": ["day"], "reason": "Provides practical health, repair, personal-care, banking, and parcel services."},
+          {"kind": "background", "id": "port_alder_galleria.food_court", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports meals, informal dates, meetings, and food-service jobs."},
+          {"kind": "background", "id": "port_alder_galleria.upper_atrium", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Connects the upper shopping wings, event space, and lower level."},
+          {"kind": "background", "id": "port_alder_galleria.tech_wing", "status": "ready", "required_variants": ["day"], "reason": "Provides a flexible route for future technology stores and quests."},
+          {"kind": "background", "id": "port_alder_galleria.home_wing", "status": "ready", "required_variants": ["day"], "reason": "Supports home-goods shopping and the east-side upper route."},
+          {"kind": "background", "id": "port_alder_galleria.event_space", "status": "ready", "required_variants": ["day"], "reason": "Hosts rotating fairs, markets, showcases, and community story events."},
+          {"kind": "background", "id": "port_alder_galleria.west_expansion", "status": "ready", "required_variants": ["day"], "reason": "Reserves clean modular storefront shells for future game content and mods."},
+          {"kind": "background", "id": "port_alder_galleria.east_expansion", "status": "ready", "required_variants": ["day"], "reason": "Reserves clean modular storefront shells for future game content and mods."}
+        ]
       }
     ]
   },
@@ -233,6 +256,20 @@
     {"id": "port_alder_marina.marina_office", "location": "port_alder_marina", "room": "marina_office", "path": "res://assets/art/backgrounds/port_alder_marina/marina_office.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_marina/marina_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "alder_bay_beach.shoreline", "location": "alder_bay_beach", "room": "shoreline", "path": "res://assets/art/backgrounds/alder_bay_beach/shoreline.png", "variants": {"day": "res://assets/art/backgrounds/alder_bay_beach/shoreline.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "alder_bay_beach.boardwalk", "location": "alder_bay_beach", "room": "boardwalk", "path": "res://assets/art/backgrounds/alder_bay_beach/boardwalk.png", "variants": {"day": "res://assets/art/backgrounds/alder_bay_beach/boardwalk.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "alder_bay_beach.changing_room", "location": "alder_bay_beach", "room": "changing_room", "path": "res://assets/art/backgrounds/alder_bay_beach/changing_room.png", "variants": {"day": "res://assets/art/backgrounds/alder_bay_beach/changing_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "alder_bay_beach.changing_room", "location": "alder_bay_beach", "room": "changing_room", "path": "res://assets/art/backgrounds/alder_bay_beach/changing_room.png", "variants": {"day": "res://assets/art/backgrounds/alder_bay_beach/changing_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "port_alder_galleria.street_entrance", "location": "port_alder_galleria", "room": "street_entrance", "path": "res://assets/art/backgrounds/port_alder_galleria/street_entrance.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_galleria/street_entrance.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "port_alder_galleria.main_atrium", "location": "port_alder_galleria", "room": "main_atrium", "path": "res://assets/art/backgrounds/port_alder_galleria/main_atrium.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_galleria/main_atrium.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "port_alder_galleria.fashion_wing", "location": "port_alder_galleria", "room": "fashion_wing", "path": "res://assets/art/backgrounds/port_alder_galleria/fashion_wing.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_galleria/fashion_wing.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "port_alder_galleria.department_store", "location": "port_alder_galleria", "room": "department_store", "path": "res://assets/art/backgrounds/port_alder_galleria/department_store.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_galleria/department_store.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "port_alder_galleria.lower_court", "location": "port_alder_galleria", "room": "lower_court", "path": "res://assets/art/backgrounds/port_alder_galleria/lower_court.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_galleria/lower_court.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "port_alder_galleria.lifestyle_wing", "location": "port_alder_galleria", "room": "lifestyle_wing", "path": "res://assets/art/backgrounds/port_alder_galleria/lifestyle_wing.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_galleria/lifestyle_wing.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "port_alder_galleria.services_wing", "location": "port_alder_galleria", "room": "services_wing", "path": "res://assets/art/backgrounds/port_alder_galleria/services_wing.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_galleria/services_wing.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "port_alder_galleria.food_court", "location": "port_alder_galleria", "room": "food_court", "path": "res://assets/art/backgrounds/port_alder_galleria/food_court.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_galleria/food_court.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "port_alder_galleria.upper_atrium", "location": "port_alder_galleria", "room": "upper_atrium", "path": "res://assets/art/backgrounds/port_alder_galleria/upper_atrium.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_galleria/upper_atrium.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "port_alder_galleria.tech_wing", "location": "port_alder_galleria", "room": "tech_wing", "path": "res://assets/art/backgrounds/port_alder_galleria/tech_wing.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_galleria/tech_wing.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "port_alder_galleria.home_wing", "location": "port_alder_galleria", "room": "home_wing", "path": "res://assets/art/backgrounds/port_alder_galleria/home_wing.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_galleria/home_wing.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "port_alder_galleria.event_space", "location": "port_alder_galleria", "room": "event_space", "path": "res://assets/art/backgrounds/port_alder_galleria/event_space.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_galleria/event_space.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "port_alder_galleria.west_expansion", "location": "port_alder_galleria", "room": "west_expansion", "path": "res://assets/art/backgrounds/port_alder_galleria/west_expansion.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_galleria/west_expansion.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "port_alder_galleria.east_expansion", "location": "port_alder_galleria", "room": "east_expansion", "path": "res://assets/art/backgrounds/port_alder_galleria/east_expansion.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_galleria/east_expansion.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }

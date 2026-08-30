@@ -41,11 +41,11 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The twelve completed base-art locations are the Hale Home, Alder Heights Residential
+The thirteen completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
-Bayview Café, plus Port Alder Marina and Alder Bay Beach. Together they provide 60 unique base-day PNG
-backgrounds. Each base image is marked ready in the
+Bayview Café, plus Port Alder Marina, Alder Bay Beach, and Port Alder Galleria. Together
+they provide 74 unique base-day PNG backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
 
@@ -224,6 +224,37 @@ Destination-specific briefs:
 | Shoreline | `alder_bay_beach/shoreline.png` | Quiet sand-and-pebble waterline with calm bay water, an accessible mat, and one clear return route to the Boardwalk. |
 | Changing Room | `alder_bay_beach/changing_room.png` | Privacy-conscious all-gender facility with enclosed cubicles and rinse stalls, lockers, benches, accessible circulation, and one Boardwalk exit. |
 
+### Port Alder Galleria batch prompt set
+
+This batch completes all fourteen mapped Galleria destinations. The Main Atrium
+established the two-level architecture and central route. Fashion Wing, Lower Court,
+and Upper Atrium then anchored their connected stores, service wings, event hall, and
+expansion corridors. The empty East and West Expansion storefronts deliberately remain
+clean and modular so future game packages and mods can replace individual units.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped Port Alder Galleria destination in grounded mature cinematic contemporary realism. Match the supplied reference's cedar, charcoal slate, muted teal, cream, warm stone, restrained rust, practical retail lighting, believable two-level mall geometry, and coastal-city atmosphere. Preserve the authored room-to-room route, open character staging, clear floating-arrow placement, and an uncluttered lower region for dialogue UI. No people, reflections of people, mannequins, dress forms, busts, statues, human silhouettes, or other human-shaped display objects. No character sprites, navigation arrows, interface, readable signs, menus, price boards, package labels, letters, numbers, logos, trademarks, captions, or watermark; signs and screens must be blank or abstract.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Street Entrance | `port_alder_galleria/street_entrance.png` | Sheltered rainy downtown entrance with the mall visible through its doors and the Harbor Centre return route. |
+| Main Atrium | `port_alder_galleria/main_atrium.png` | Two-level central hub with escalators, elevator, directory kiosk, and clear routes to Fashion Wing, Lower Court, Upper Atrium, and the street. |
+| Fashion Wing | `port_alder_galleria/fashion_wing.png` | Unbranded apparel corridor connecting the Main Atrium to the Department Store without mannequins or human-shaped displays. |
+| Department Store | `port_alder_galleria/department_store.png` | Wardrobe-focused sales floor with clothing racks, shoes, folded basics, fitting rooms, checkout, and a left-side return. |
+| Lower Court | `port_alder_galleria/lower_court.png` | Lower junction connecting the main atrium stairs, Lifestyle Wing, Services Wing, and Food Court. |
+| Lifestyle Wing | `port_alder_galleria/lifestyle_wing.png` | Sporting, wellness, fitness, and outdoor-goods storefront with a clear right-side return. |
+| Services Wing | `port_alder_galleria/services_wing.png` | Generic health, phone repair, personal care, parcel locker, and banking service fronts with blank displays. |
+| Food Court | `port_alder_galleria/food_court.png` | Warm unbranded food hall with blank menus, varied counters, casual seating, and a centered return route. |
+| Upper Atrium | `port_alder_galleria/upper_atrium.png` | Upper balcony and escalator hub connecting Tech Wing, Home Wing, Event Space, and the lower level. |
+| Tech Wing | `port_alder_galleria/tech_wing.png` | Partly prepared future retail corridor with powered-off screens, unbranded display tables, and access to West Expansion. |
+| Home Wing | `port_alder_galleria/home_wing.png` | Furniture, lighting, linens, cookware, and decor storefronts with access to East Expansion. |
+| Event Space | `port_alder_galleria/event_space.png` | Empty flexible hall with low modular platform, blank panels, stored tables and chairs, and no audio equipment. |
+| West Expansion | `port_alder_galleria/west_expansion.png` | Maintained mod-ready corridor of vacant storefront shells returning to Tech Wing. |
+| East Expansion | `port_alder_galleria/east_expansion.png` | Maintained mod-ready corridor of vacant storefront shells returning to Home Wing. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -244,7 +275,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all seven room batches were generated with the built-in
+The baseline assets and all eight room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the
