@@ -86,7 +86,8 @@
         "greyport_studios",
         "undertow_nightclub",
         "cedar_vale_street",
-        "rachel_cedar_vale_townhouse"
+        "rachel_cedar_vale_townhouse",
+        "cedar_vale_townhouses"
       ]
     },
     "audio_in_scope": false,
@@ -614,6 +615,22 @@
           {"kind": "background", "id": "rachel_cedar_vale_townhouse.bathroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Completes the shared hygiene space with ordinary two-adult storage and exactly one return to the Kitchen."},
           {"kind": "background", "id": "rachel_cedar_vale_townhouse.patio", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Supports private outdoor conversation, recovery, and relationship scenes in an enclosed patio with exactly one return to the Living Room."}
         ]
+      },
+      {
+        "id": "cedar_vale_townhouses_housing_route",
+        "title": "Cedar Vale Townhouses Rental, Purchase, and Player-Home Route",
+        "priority": 37,
+        "goal": "Complete Cedar Vale's representative townhouse from viewing and entry through shared living, private bedrooms, household service rooms, and the enclosed yard for rental, purchase, and player-residence gameplay.",
+        "assets": [
+          {"kind": "background", "id": "cedar_vale_townhouses.entry", "status": "in_progress", "required_variants": ["day", "night", "rain", "winter"], "reason": "Supports property viewing, street arrival, and lease-owner access through a neutral two-route threshold connecting Townhouse Row and the Living Room."},
+          {"kind": "background", "id": "cedar_vale_townhouses.living_room", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Provides the four-way social and player-home hub with visibly separate routes to the Entry, Primary Bedroom, Kitchen, and Yard."},
+          {"kind": "background", "id": "cedar_vale_townhouses.kitchen", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports cooking and household scenes while clearly separating the routes to the Living Room, Second Bedroom, Laundry, and Bathroom."},
+          {"kind": "background", "id": "cedar_vale_townhouses.primary_bedroom", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports player or partner sleep, wardrobe, relationship, and home-customization scenes with one clear return to the Living Room."},
+          {"kind": "background", "id": "cedar_vale_townhouses.second_bedroom", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Provides a flexible adult guest, roommate, study, or customization space with one clear return to the Kitchen."},
+          {"kind": "background", "id": "cedar_vale_townhouses.bathroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports hygiene and household routines with one clear return to the Kitchen."},
+          {"kind": "background", "id": "cedar_vale_townhouses.laundry", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports clothing care and household chores with one clear return to the Kitchen."},
+          {"kind": "background", "id": "cedar_vale_townhouses.yard", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Supports enclosed outdoor home, date, family, and customization scenes with one clear return to the Living Room."}
+        ]
       }
     ]
   },
@@ -853,6 +870,14 @@
     {"id": "rachel_cedar_vale_townhouse.rachel_bedroom", "location": "rachel_cedar_vale_townhouse", "room": "rachel_bedroom", "path": "res://assets/art/backgrounds/rachel_cedar_vale_townhouse/rachel_bedroom.png", "variants": {"day": "res://assets/art/backgrounds/rachel_cedar_vale_townhouse/rachel_bedroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "rachel_cedar_vale_townhouse.roommate_bedroom", "location": "rachel_cedar_vale_townhouse", "room": "roommate_bedroom", "path": "res://assets/art/backgrounds/rachel_cedar_vale_townhouse/roommate_bedroom.png", "variants": {"day": "res://assets/art/backgrounds/rachel_cedar_vale_townhouse/roommate_bedroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "rachel_cedar_vale_townhouse.bathroom", "location": "rachel_cedar_vale_townhouse", "room": "bathroom", "path": "res://assets/art/backgrounds/rachel_cedar_vale_townhouse/bathroom.png", "variants": {"day": "res://assets/art/backgrounds/rachel_cedar_vale_townhouse/bathroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "rachel_cedar_vale_townhouse.patio", "location": "rachel_cedar_vale_townhouse", "room": "patio", "path": "res://assets/art/backgrounds/rachel_cedar_vale_townhouse/patio.png", "variants": {"day": "res://assets/art/backgrounds/rachel_cedar_vale_townhouse/patio.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "rachel_cedar_vale_townhouse.patio", "location": "rachel_cedar_vale_townhouse", "room": "patio", "path": "res://assets/art/backgrounds/rachel_cedar_vale_townhouse/patio.png", "variants": {"day": "res://assets/art/backgrounds/rachel_cedar_vale_townhouse/patio.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cedar_vale_townhouses.entry", "location": "cedar_vale_townhouses", "room": "entry", "path": "res://assets/art/backgrounds/cedar_vale_townhouses/entry.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_townhouses/entry.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cedar_vale_townhouses.living_room", "location": "cedar_vale_townhouses", "room": "living_room", "path": "res://assets/art/backgrounds/cedar_vale_townhouses/living_room.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_townhouses/living_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cedar_vale_townhouses.kitchen", "location": "cedar_vale_townhouses", "room": "kitchen", "path": "res://assets/art/backgrounds/cedar_vale_townhouses/kitchen.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_townhouses/kitchen.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cedar_vale_townhouses.primary_bedroom", "location": "cedar_vale_townhouses", "room": "primary_bedroom", "path": "res://assets/art/backgrounds/cedar_vale_townhouses/primary_bedroom.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_townhouses/primary_bedroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cedar_vale_townhouses.second_bedroom", "location": "cedar_vale_townhouses", "room": "second_bedroom", "path": "res://assets/art/backgrounds/cedar_vale_townhouses/second_bedroom.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_townhouses/second_bedroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cedar_vale_townhouses.bathroom", "location": "cedar_vale_townhouses", "room": "bathroom", "path": "res://assets/art/backgrounds/cedar_vale_townhouses/bathroom.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_townhouses/bathroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cedar_vale_townhouses.laundry", "location": "cedar_vale_townhouses", "room": "laundry", "path": "res://assets/art/backgrounds/cedar_vale_townhouses/laundry.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_townhouses/laundry.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cedar_vale_townhouses.yard", "location": "cedar_vale_townhouses", "room": "yard", "path": "res://assets/art/backgrounds/cedar_vale_townhouses/yard.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_townhouses/yard.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }

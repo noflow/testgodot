@@ -41,7 +41,7 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The forty-two completed base-art locations are the Hale Home, Alder Heights Residential
+The forty-three completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
@@ -53,7 +53,7 @@ Tideglass Club, Harbor Companion Cooperative, the Rowan Family Home, Jade's Down
 Condo, Greyport Main Street, the Lee Family Apartment, the Flores Family Townhouse, and the
 Greyport Shared Apartment, the Donovan Family Apartment, Greyport Distribution, and the
 Port Alder Transit Depot, Greyport Studios, Undertow Nightclub, Cedar Vale Residential
-Street, and Rachel's Townhouse. Together they provide 235 unique base-day PNG
+Street, Rachel's Townhouse, and Cedar Vale Townhouses. Together they provide 243 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -965,6 +965,32 @@ Destination-specific briefs:
 | Bathroom | `rachel_cedar_vale_townhouse/bathroom.png` | Compact cream-and-smoked-teal shared bathroom with tub-shower, ordinary paired storage, fixed frosted rain window, and exactly one rear Kitchen return. |
 | Patio | `rachel_cedar_vale_townhouse/patio.png` | Small enclosed rain-softened patio with cedar privacy fencing, modest two-adult furniture, tended containers, recovery mat, and exactly one glazed Living Room return. |
 
+### Cedar Vale Townhouses batch prompt set
+
+This batch continues the generic property-viewing entrance from Cedar Vale's
+Townhouse Row into a representative townhouse that the player can rent or purchase.
+It is professionally staged, attainable, identity-neutral, and ready for later player
+customization rather than pre-owned by a named character. Its light oak, warm ivory,
+pale sage, coastal blue-grey, muted clay, and charcoal palette keeps it visually
+distinct from Rachel's darker, more athletic shared home.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped destination inside a representative rentable-and-purchasable Cedar Vale townhouse in polished painterly semi-realistic grounded mature contemporary cinematic realism. Continue Cedar Vale's rain-softened late-August architecture with warm ivory, pale sage, coastal blue-grey, light oak, muted clay, charcoal metal, linen, rain-grey blue, and restrained amber practical light. Make the home professionally staged, attainable, maintained, neutral, move-in-ready, and suitable for a property viewing or future player residence rather than luxurious, character-owned, child-coded, student-dorm-like, or clinical. Preserve exactly the authored room-to-room routes, with every exit visibly separate and generous uncluttered central or lower character-staging space. No people, children, reflections, silhouettes, character sprites, navigation arrows, interface, readable words, letters, numbers, addresses, listings, prices, signs, labels, mail, paperwork, logos, trademarks, brands, photo faces, active screens, resident identity, medicine, sexual cues, alcohol, drugs, weapons, clutter piles, broken fixtures, or watermark; all screens and appliance panels must be dark and blank.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Townhouse Entry | `cedar_vale_townhouses/entry.png` | Neutral viewing threshold with a street-facing exterior return and one visibly separate right Living Room opening, compact blank storage, and exactly those two routes. |
+| Living Room | `cedar_vale_townhouses/living_room.png` | Four-way player-home hub with left Entry return, upper stair to the Primary Bedroom, right Kitchen opening, rear glazed Yard door, flexible staged seating, and exactly those four routes. |
+| Kitchen | `cedar_vale_townhouses/kitchen.png` | Practical light-oak kitchen with left Living Room, upper Second Bedroom route, right Laundry opening, lower Bathroom threshold, simple food-preparation space, and exactly those four routes. |
+| Primary Bedroom | `cedar_vale_townhouses/primary_bedroom.png` | Neutral adult bedroom prepared for player, partner, wardrobe, and customization systems, with closed storage and exactly one lower Living Room return. |
+| Second Bedroom | `cedar_vale_townhouses/second_bedroom.png` | Flexible adult guest, roommate, or study room without child or resident cues, with closed storage and exactly one lower Kitchen return. |
+| Bathroom | `cedar_vale_townhouses/bathroom.png` | Clean warm-ivory and pale-sage bathroom with tub-shower, blank storage, fixed rain-softened window, and exactly one rear Kitchen return. |
+| Laundry | `cedar_vale_townhouses/laundry.png` | Compact household service room with blank dark appliance panels, plain closed storage, uncluttered work surface, and exactly one left Kitchen return. |
+| Small Yard | `cedar_vale_townhouses/yard.png` | Modest enclosed rain-softened yard with cedar privacy fencing, adaptable seating and planting space, no side gate, and exactly one glazed Living Room return. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -985,7 +1011,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all thirty-seven room batches were generated with the built-in
+The baseline assets and all thirty-eight room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the
