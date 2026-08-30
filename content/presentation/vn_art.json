@@ -85,7 +85,8 @@
         "port_alder_transit_depot",
         "greyport_studios",
         "undertow_nightclub",
-        "cedar_vale_street"
+        "cedar_vale_street",
+        "rachel_cedar_vale_townhouse"
       ]
     },
     "audio_in_scope": false,
@@ -598,6 +599,21 @@
           {"kind": "background", "id": "cedar_vale_street.detached_home_lane", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Connects Family Block, a generic detached-home property viewing and entry, and the Neighborhood Playground through one readable three-way residential junction."},
           {"kind": "background", "id": "cedar_vale_street.playground", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Supports empty accessible recreation, family encounters, and neighborhood scenes while exposing exactly one return to Detached Home Lane."}
         ]
+      },
+      {
+        "id": "rachel_cedar_vale_townhouse_invitation_route",
+        "title": "Rachel's Townhouse Invitation, Trust, and Recovery Route",
+        "priority": 36,
+        "goal": "Complete Rachel's invitation-gated shared townhouse from its Cedar Vale threshold through social, household, relationship-permission, restricted-private, hygiene, and recovery spaces.",
+        "assets": [
+          {"kind": "background", "id": "rachel_cedar_vale_townhouse.front_door", "status": "in_progress", "required_variants": ["day", "night", "rain", "winter"], "reason": "Connects Townhouse Row to Rachel's invitation-only home through a shallow two-route foyer with organized shared-adult and active-lifestyle cues."},
+          {"kind": "background", "id": "rachel_cedar_vale_townhouse.living_room", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Provides the four-way shared social hub for visits, conversations, recovery, dates, and distinct routes to the Front Door, Rachel's permission-gated Bedroom, Kitchen, and Patio."},
+          {"kind": "background", "id": "rachel_cedar_vale_townhouse.kitchen", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports simple cooking, healthy meals, hydration, and household scenes with separate Living Room and Bathroom routes."},
+          {"kind": "background", "id": "rachel_cedar_vale_townhouse.rachel_bedroom", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports relationship-permission conversations and trust scenes while reflecting Rachel's coaching, running, career ambition, and recovery without exposing private-system information."},
+          {"kind": "background", "id": "rachel_cedar_vale_townhouse.roommate_bedroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Provides a dignified identity-neutral production asset for the fully restricted roommate room without inventing a route, biography, or private details."},
+          {"kind": "background", "id": "rachel_cedar_vale_townhouse.bathroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Completes the shared hygiene space with ordinary two-adult storage and exactly one return to the Kitchen."},
+          {"kind": "background", "id": "rachel_cedar_vale_townhouse.patio", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Supports private outdoor conversation, recovery, and relationship scenes in an enclosed patio with exactly one return to the Living Room."}
+        ]
       }
     ]
   },
@@ -830,6 +846,13 @@
     {"id": "cedar_vale_street.townhouse_row", "location": "cedar_vale_street", "room": "townhouse_row", "path": "res://assets/art/backgrounds/cedar_vale_street/townhouse_row.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_street/townhouse_row.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "cedar_vale_street.family_block", "location": "cedar_vale_street", "room": "family_block", "path": "res://assets/art/backgrounds/cedar_vale_street/family_block.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_street/family_block.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "cedar_vale_street.detached_home_lane", "location": "cedar_vale_street", "room": "detached_home_lane", "path": "res://assets/art/backgrounds/cedar_vale_street/detached_home_lane.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_street/detached_home_lane.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "cedar_vale_street.playground", "location": "cedar_vale_street", "room": "playground", "path": "res://assets/art/backgrounds/cedar_vale_street/playground.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_street/playground.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "cedar_vale_street.playground", "location": "cedar_vale_street", "room": "playground", "path": "res://assets/art/backgrounds/cedar_vale_street/playground.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_street/playground.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "rachel_cedar_vale_townhouse.front_door", "location": "rachel_cedar_vale_townhouse", "room": "front_door", "path": "res://assets/art/backgrounds/rachel_cedar_vale_townhouse/front_door.png", "variants": {"day": "res://assets/art/backgrounds/rachel_cedar_vale_townhouse/front_door.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "rachel_cedar_vale_townhouse.living_room", "location": "rachel_cedar_vale_townhouse", "room": "living_room", "path": "res://assets/art/backgrounds/rachel_cedar_vale_townhouse/living_room.png", "variants": {"day": "res://assets/art/backgrounds/rachel_cedar_vale_townhouse/living_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "rachel_cedar_vale_townhouse.kitchen", "location": "rachel_cedar_vale_townhouse", "room": "kitchen", "path": "res://assets/art/backgrounds/rachel_cedar_vale_townhouse/kitchen.png", "variants": {"day": "res://assets/art/backgrounds/rachel_cedar_vale_townhouse/kitchen.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "rachel_cedar_vale_townhouse.rachel_bedroom", "location": "rachel_cedar_vale_townhouse", "room": "rachel_bedroom", "path": "res://assets/art/backgrounds/rachel_cedar_vale_townhouse/rachel_bedroom.png", "variants": {"day": "res://assets/art/backgrounds/rachel_cedar_vale_townhouse/rachel_bedroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "rachel_cedar_vale_townhouse.roommate_bedroom", "location": "rachel_cedar_vale_townhouse", "room": "roommate_bedroom", "path": "res://assets/art/backgrounds/rachel_cedar_vale_townhouse/roommate_bedroom.png", "variants": {"day": "res://assets/art/backgrounds/rachel_cedar_vale_townhouse/roommate_bedroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "rachel_cedar_vale_townhouse.bathroom", "location": "rachel_cedar_vale_townhouse", "room": "bathroom", "path": "res://assets/art/backgrounds/rachel_cedar_vale_townhouse/bathroom.png", "variants": {"day": "res://assets/art/backgrounds/rachel_cedar_vale_townhouse/bathroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "rachel_cedar_vale_townhouse.patio", "location": "rachel_cedar_vale_townhouse", "room": "patio", "path": "res://assets/art/backgrounds/rachel_cedar_vale_townhouse/patio.png", "variants": {"day": "res://assets/art/backgrounds/rachel_cedar_vale_townhouse/patio.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }

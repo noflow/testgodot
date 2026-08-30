@@ -41,7 +41,7 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The forty-one completed base-art locations are the Hale Home, Alder Heights Residential
+The forty-two completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
@@ -52,8 +52,8 @@ Westshore Bookshop, Lantern Gallery, Lantern District Street, La Brisa Kitchen,
 Tideglass Club, Harbor Companion Cooperative, the Rowan Family Home, Jade's Downtown
 Condo, Greyport Main Street, the Lee Family Apartment, the Flores Family Townhouse, and the
 Greyport Shared Apartment, the Donovan Family Apartment, Greyport Distribution, and the
-Port Alder Transit Depot, Greyport Studios, Undertow Nightclub, and Cedar Vale Residential
-Street. Together they provide 228 unique base-day PNG
+Port Alder Transit Depot, Greyport Studios, Undertow Nightclub, Cedar Vale Residential
+Street, and Rachel's Townhouse. Together they provide 235 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -939,6 +939,32 @@ Destination-specific briefs:
 | Detached Home Lane | `cedar_vale_street/detached_home_lane.png` | Three-way residential junction with left Family Block return, one centered generic detached-home property entrance, and right Neighborhood Playground continuation; other homes remain non-navigable background texture. |
 | Neighborhood Playground | `cedar_vale_street/playground.png` | Empty inclusive public playground with accessible equipment, benches, picnic table, safety surfacing, continuous planted enclosure, and exactly one left return to Detached Home Lane. |
 
+### Rachel's Townhouse batch prompt set
+
+This batch continues the specific invitation-gated door on Cedar Vale's Townhouse Row
+into the attainable two-adult rental shared by Rachel Morgan and an unnamed trainer
+roommate. The home is organized, energetic, warm, and practical without becoming a
+private gym or luxury show home. Rachel's permission-gated bedroom reflects coaching,
+running, career ambition, discipline, and recovery without exposing relationship,
+reproductive, medical, or adult-preference data. The roommate's fully restricted room
+remains dignified, identity-neutral, and deliberately route-free.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped destination inside Rachel Morgan's hidden invitation-only Cedar Vale rental townhouse in polished painterly semi-realistic grounded mature contemporary cinematic realism. Continue Cedar Vale Townhouse Row's rain-softened late-August architecture with warm cream, sage, smoked teal, muted terracotta, cedar red, honey oak, charcoal metal, moss, rain-grey blue, and restrained amber practical light. Make the shared two-adult home attainable, maintained, organized, active, comfortable, and welcoming rather than luxurious, clinical, student-dorm-like, family-with-children-coded, or a private gym. Preserve exactly the authored room-to-room routes and access level, with each exit visibly separate and generous uncluttered central or lower character-staging space. Rachel's relationship-permission bedroom may express fitness coaching, running, career ambition, discipline, and recovery through restrained equipment and dark or closed materials; the unnamed roommate's restricted room must remain dignified, identity-neutral, biography-free, and route-free. No people, reflections, silhouettes, character sprites, navigation arrows, interface, readable mail, books, schedules, workout or nutrition plans, certificates, race numbers, labels, names, addresses, signs, words, letters, numbers, logos, trademarks, brands, photo faces, active screens, pregnancy or fertility clues, medicine, sexual or fetish cues, nudity, underwear, alcohol, drugs, weapons, clutter piles, broken fixtures, or watermark; all screens must be dark and all papers, containers, and storage blank, closed, face-down, plain, or too indistinct to read.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Front Door | `rachel_cedar_vale_townhouse/front_door.png` | Shallow shared-adult foyer with rain-visible exterior threshold returning to Townhouse Row, one right Living Room opening, compact shoe and coat storage, restrained active-lifestyle details, and exactly those two routes. |
+| Living Room | `rachel_cedar_vale_townhouse/living_room.png` | Four-way social hub with left Front Door, upper stair to Rachel's permission-gated Bedroom, right Kitchen, glazed Patio door, terracotta seating, dark television, and restrained recovery storage. |
+| Kitchen | `rachel_cedar_vale_townhouse/kitchen.png` | Practical honey-oak shared kitchen with left Living Room opening, lower foreground Bathroom threshold, simple meal-preparation space, two-adult breakfast seating, and exactly those two routes. |
+| Rachel's Bedroom | `rachel_cedar_vale_townhouse/rachel_bedroom.png` | Relationship-permission adult bedroom with smoked-teal and terracotta bedding, running shoes, work bag, recovery basket, restrained training equipment, closed storage, and one foreground Living Room return. |
+| Roommate Bedroom | `rachel_cedar_vale_townhouse/roommate_bedroom.png` | Fully restricted identity-neutral adult bedroom with plain sage and rain-grey bedding, ordinary furniture, dark screen, closed storage, fixed rainy window, no personal biography clues, and zero visible navigation routes. |
+| Bathroom | `rachel_cedar_vale_townhouse/bathroom.png` | Compact cream-and-smoked-teal shared bathroom with tub-shower, ordinary paired storage, fixed frosted rain window, and exactly one rear Kitchen return. |
+| Patio | `rachel_cedar_vale_townhouse/patio.png` | Small enclosed rain-softened patio with cedar privacy fencing, modest two-adult furniture, tended containers, recovery mat, and exactly one glazed Living Room return. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -959,7 +985,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all thirty-six room batches were generated with the built-in
+The baseline assets and all thirty-seven room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the
