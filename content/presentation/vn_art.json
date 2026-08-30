@@ -74,7 +74,8 @@
         "la_brisa_kitchen",
         "tideglass_club",
         "harbor_companion_cooperative",
-        "rowan_family_home"
+        "rowan_family_home",
+        "jade_downtown_condo"
       ]
     },
     "audio_in_scope": false,
@@ -432,6 +433,20 @@
           {"kind": "background", "id": "rowan_family_home.bathroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Completes the family home's hygiene space with one clear return to the kitchen."},
           {"kind": "background", "id": "rowan_family_home.backyard", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Supports private outdoor family talks, reading, friendship, dates, and seasonal home events."}
         ]
+      },
+      {
+        "id": "jade_downtown_condo_invitation_route",
+        "title": "Jade's Downtown Condo Invitation and Private-Life Route",
+        "priority": 25,
+        "goal": "Complete Jade's invitation-only downtown condo from its secure entry through shared living spaces, her business office, and relationship-permission bedroom.",
+        "assets": [
+          {"kind": "background", "id": "jade_downtown_condo.entry", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Anchors Jade's discoverable residence and supports secure arrivals, invitations, doorstep boundaries, and returns to Harbor Centre."},
+          {"kind": "background", "id": "jade_downtown_condo.living_room", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Provides the four-way private-home hub connecting the entry, kitchen, office, and permission-gated bedroom without shortcuts."},
+          {"kind": "background", "id": "jade_downtown_condo.kitchen", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports meals, private conversations, dates, and the condo's only route to its bathroom."},
+          {"kind": "background", "id": "jade_downtown_condo.bedroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports relationship-permission scenes focused on trust, privacy, rest, and emotional intimacy while remaining mature and non-graphic."},
+          {"kind": "background", "id": "jade_downtown_condo.bathroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Completes the condo's hygiene space with one clear return to the kitchen."},
+          {"kind": "background", "id": "jade_downtown_condo.office", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports budgeting, administration, worker-safety planning, business development, and Jade's long-term financial exit plan."}
+        ]
       }
     ]
   },
@@ -597,6 +612,12 @@
     {"id": "rowan_family_home.kitchen", "location": "rowan_family_home", "room": "kitchen", "path": "res://assets/art/backgrounds/rowan_family_home/kitchen.png", "variants": {"day": "res://assets/art/backgrounds/rowan_family_home/kitchen.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "rowan_family_home.emma_bedroom", "location": "rowan_family_home", "room": "emma_bedroom", "path": "res://assets/art/backgrounds/rowan_family_home/emma_bedroom.png", "variants": {"day": "res://assets/art/backgrounds/rowan_family_home/emma_bedroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "rowan_family_home.bathroom", "location": "rowan_family_home", "room": "bathroom", "path": "res://assets/art/backgrounds/rowan_family_home/bathroom.png", "variants": {"day": "res://assets/art/backgrounds/rowan_family_home/bathroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "rowan_family_home.backyard", "location": "rowan_family_home", "room": "backyard", "path": "res://assets/art/backgrounds/rowan_family_home/backyard.png", "variants": {"day": "res://assets/art/backgrounds/rowan_family_home/backyard.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "rowan_family_home.backyard", "location": "rowan_family_home", "room": "backyard", "path": "res://assets/art/backgrounds/rowan_family_home/backyard.png", "variants": {"day": "res://assets/art/backgrounds/rowan_family_home/backyard.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "jade_downtown_condo.entry", "location": "jade_downtown_condo", "room": "entry", "path": "res://assets/art/backgrounds/jade_downtown_condo/entry.png", "variants": {"day": "res://assets/art/backgrounds/jade_downtown_condo/entry.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "jade_downtown_condo.living_room", "location": "jade_downtown_condo", "room": "living_room", "path": "res://assets/art/backgrounds/jade_downtown_condo/living_room.png", "variants": {"day": "res://assets/art/backgrounds/jade_downtown_condo/living_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "jade_downtown_condo.kitchen", "location": "jade_downtown_condo", "room": "kitchen", "path": "res://assets/art/backgrounds/jade_downtown_condo/kitchen.png", "variants": {"day": "res://assets/art/backgrounds/jade_downtown_condo/kitchen.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "jade_downtown_condo.bedroom", "location": "jade_downtown_condo", "room": "bedroom", "path": "res://assets/art/backgrounds/jade_downtown_condo/bedroom.png", "variants": {"day": "res://assets/art/backgrounds/jade_downtown_condo/bedroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "jade_downtown_condo.bathroom", "location": "jade_downtown_condo", "room": "bathroom", "path": "res://assets/art/backgrounds/jade_downtown_condo/bathroom.png", "variants": {"day": "res://assets/art/backgrounds/jade_downtown_condo/bathroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "jade_downtown_condo.office", "location": "jade_downtown_condo", "room": "office", "path": "res://assets/art/backgrounds/jade_downtown_condo/office.png", "variants": {"day": "res://assets/art/backgrounds/jade_downtown_condo/office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }

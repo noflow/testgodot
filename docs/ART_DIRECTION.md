@@ -41,7 +41,7 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The thirty completed base-art locations are the Hale Home, Alder Heights Residential
+The thirty-one completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
@@ -49,8 +49,8 @@ Downtown, Harbor Centre Apartments, Harbor View Condominiums, Port Alder Credit
 Union, Port Alder City Hall, Port Alder Realty, Harbor Centre Business Services,
 Cypress Hall Dorm, Maple Hall Dorm, the Westshore Shared Student Apartment, and the
 Westshore Bookshop, Lantern Gallery, Lantern District Street, La Brisa Kitchen,
-Tideglass Club, Harbor Companion Cooperative, and the Rowan Family Home. Together they
-provide 161 unique base-day PNG
+Tideglass Club, Harbor Companion Cooperative, the Rowan Family Home, and Jade's Downtown
+Condo. Together they provide 167 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -648,6 +648,34 @@ Destination-specific briefs:
 | Bathroom | `rowan_family_home/bathroom.png` | Compact shared bathroom with tub-shower, vanity, ordinary fixtures, folded family towels, and one return to the Kitchen. |
 | Backyard | `rowan_family_home/backyard.png` | Enclosed rain-softened garden with patio, reading chairs, raised beds, closed shed, and one rear-door return to the Living Room. |
 
+### Jade's Downtown Condo batch prompt set
+
+This batch establishes Jade Mercer's discoverable, invitation-only private home in Harbor
+Centre. The Residential Block, Harbor View Condominiums, and Harbor Companion Cooperative
+provide exterior, residential, and character continuity without making the attainable
+one-bedroom condo feel like a penthouse or workplace. Deep ink blue, muted plum, smoky
+rose, warm walnut, cream, charcoal stone, brushed bronze, and restrained sage express
+Jade's composed, elegant, pragmatic, private personality. The Living Room is the four-way
+hub; her Bedroom remains relationship-permission-only; and the Office supports budgeting,
+administration, safety planning, cooperative development, and her financial exit plan. A
+targeted Living Room edit added the distinct foreground Office doorway while preserving
+the Entry, Bedroom, and Kitchen routes.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped destination in Jade Mercer's secure one-bedroom downtown condo in grounded mature cinematic contemporary realism. The condo belongs to a composed, elegant, pragmatic, private 25-year-old professional with strong boundaries, a business certificate, and a careful financial exit plan. Keep the home tasteful, controlled, attainable, lived in, and separate from her workplace rather than luxurious, sterile, sexualized, or hotel-like. Use deep ink blue, muted plum, smoky rose, warm walnut, cream, charcoal stone, brushed bronze, restrained sage, rain-softened Harbor Centre daylight, and warm practical lighting. Preserve exactly the authored room-to-room routes and access level, provide a generous uncluttered lower and central character-staging area, and keep fixed skyline windows from implying an unmapped balcony. No people or reflections of people, character sprites, navigation arrows, interface, readable books, records, client data, schedules, labels, names, addresses, words, letters, numbers, logos, trademarks, brands, screen content, photo faces, nudity, sexualized imagery, lingerie, suggestive objects, alcohol, drugs, weapons, cash, or watermark; all screens must be dark and all panels, papers, folders, containers, and boards must be blank, closed, face-down, secured, plain, or abstract.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Secure Entry | `jade_downtown_condo/entry.png` | Controlled private foyer with substantial unit door, blank intercom, coat and shoe storage, and one right opening into the Living Room. |
+| Living Room | `jade_downtown_condo/living_room.png` | Four-way hub with distinct Entry, Bedroom, Kitchen, and foreground Office routes, rainy fixed skyline windows, restrained seating, and no balcony door. |
+| Kitchen | `jade_downtown_condo/kitchen.png` | Compact capable kitchen with walnut cabinetry, charcoal counters, two-seat dining ledge, left Living Room opening, and one rear Bathroom doorway. |
+| Bedroom | `jade_downtown_condo/bedroom.png` | Permission-gated private room with opaque made bed, closed storage, reading chair, blackout curtains, fixed city window, and one Living Room return. |
+| Bathroom | `jade_downtown_condo/bathroom.png` | Practical cream, charcoal, and walnut room with fluted-glass tub-shower, ordinary fixtures, folded towels, and one Kitchen return. |
+| Home Office | `jade_downtown_condo/office.png` | Confidential planning room with practical desk, equal visitor chairs, dark screens, secure records, blank planning board, and one Living Room return. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -668,7 +696,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all twenty-five room batches were generated with the built-in
+The baseline assets and all twenty-six room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the
