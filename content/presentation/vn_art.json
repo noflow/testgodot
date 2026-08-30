@@ -81,7 +81,8 @@
         "flores_family_townhouse",
         "greyport_shared_apartment",
         "donovan_family_apartment",
-        "greyport_distribution"
+        "greyport_distribution",
+        "port_alder_transit_depot"
       ]
     },
     "audio_in_scope": false,
@@ -537,6 +538,19 @@
           {"kind": "background", "id": "greyport_distribution.break_room", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Provides a dignified employee recovery and coworker-conversation space with one clear return to the Warehouse Floor."},
           {"kind": "background", "id": "greyport_distribution.supervisor_office", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports interviews, scheduling, performance reviews, discipline, promotions, and operations planning with one clear return to Security."}
         ]
+      },
+      {
+        "id": "port_alder_transit_depot_employment_route",
+        "title": "Port Alder Transit Depot Public Service and Mechanics Route",
+        "priority": 32,
+        "goal": "Complete the municipal transit workplace from its public-service entrance through repair operations, parts inventory, staff recovery, and foreman appointments and training.",
+        "assets": [
+          {"kind": "background", "id": "port_alder_transit_depot.public_counter", "status": "in_progress", "required_variants": ["day", "night", "rain"], "reason": "Connects Industrial Corner to bus passes, employment entry, and mechanics training while separating the employee Repair Bays and appointment-based Foreman Office routes."},
+          {"kind": "background", "id": "port_alder_transit_depot.repair_bays", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Provides the employee-only mechanics hub for technical skill, stamina, reliability, coworker, and promotion gameplay with routes to parts, breaks, and the Public Counter."},
+          {"kind": "background", "id": "port_alder_transit_depot.parts_room", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports organized parts handling, inventory knowledge, and maintenance preparation with one clear return to the Repair Bays."},
+          {"kind": "background", "id": "port_alder_transit_depot.break_room", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Provides a dignified employee recovery and coworker-conversation space with one clear return to the Repair Bays."},
+          {"kind": "background", "id": "port_alder_transit_depot.foreman_office", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports appointments, interviews, mechanics training discussions, scheduling, performance reviews, and promotions with one clear return to the Public Counter."}
+        ]
       }
     ]
   },
@@ -744,6 +758,11 @@
     {"id": "greyport_distribution.warehouse_floor", "location": "greyport_distribution", "room": "warehouse_floor", "path": "res://assets/art/backgrounds/greyport_distribution/warehouse_floor.png", "variants": {"day": "res://assets/art/backgrounds/greyport_distribution/warehouse_floor.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "greyport_distribution.loading_bays", "location": "greyport_distribution", "room": "loading_bays", "path": "res://assets/art/backgrounds/greyport_distribution/loading_bays.png", "variants": {"day": "res://assets/art/backgrounds/greyport_distribution/loading_bays.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "greyport_distribution.break_room", "location": "greyport_distribution", "room": "break_room", "path": "res://assets/art/backgrounds/greyport_distribution/break_room.png", "variants": {"day": "res://assets/art/backgrounds/greyport_distribution/break_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "greyport_distribution.supervisor_office", "location": "greyport_distribution", "room": "supervisor_office", "path": "res://assets/art/backgrounds/greyport_distribution/supervisor_office.png", "variants": {"day": "res://assets/art/backgrounds/greyport_distribution/supervisor_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "greyport_distribution.supervisor_office", "location": "greyport_distribution", "room": "supervisor_office", "path": "res://assets/art/backgrounds/greyport_distribution/supervisor_office.png", "variants": {"day": "res://assets/art/backgrounds/greyport_distribution/supervisor_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "port_alder_transit_depot.public_counter", "location": "port_alder_transit_depot", "room": "public_counter", "path": "res://assets/art/backgrounds/port_alder_transit_depot/public_counter.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_transit_depot/public_counter.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "port_alder_transit_depot.repair_bays", "location": "port_alder_transit_depot", "room": "repair_bays", "path": "res://assets/art/backgrounds/port_alder_transit_depot/repair_bays.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_transit_depot/repair_bays.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "port_alder_transit_depot.parts_room", "location": "port_alder_transit_depot", "room": "parts_room", "path": "res://assets/art/backgrounds/port_alder_transit_depot/parts_room.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_transit_depot/parts_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "port_alder_transit_depot.break_room", "location": "port_alder_transit_depot", "room": "break_room", "path": "res://assets/art/backgrounds/port_alder_transit_depot/break_room.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_transit_depot/break_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "port_alder_transit_depot.foreman_office", "location": "port_alder_transit_depot", "room": "foreman_office", "path": "res://assets/art/backgrounds/port_alder_transit_depot/foreman_office.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_transit_depot/foreman_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }
