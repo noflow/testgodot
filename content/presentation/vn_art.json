@@ -76,7 +76,8 @@
         "harbor_companion_cooperative",
         "rowan_family_home",
         "jade_downtown_condo",
-        "greyport_street"
+        "greyport_street",
+        "lee_family_apartment"
       ]
     },
     "audio_in_scope": false,
@@ -462,6 +463,20 @@
           {"kind": "background", "id": "greyport_street.industrial_corner", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Connects the housing district to warehouse employment, the transit depot, and nightlife while preserving four distinct outdoor routes."},
           {"kind": "background", "id": "greyport_street.nightlife_alley", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Provides the safe converted-warehouse approach to Undertow Nightclub and a clear return to Industrial Corner."}
         ]
+      },
+      {
+        "id": "lee_family_apartment_invitation_route",
+        "title": "Lee Family Apartment Invitation and Marcus Story Route",
+        "priority": 27,
+        "goal": "Complete Marcus Lee's invitation-only Greyport family home from its private threshold through shared rooms, his creative bedroom, and the household's restricted cousin room.",
+        "assets": [
+          {"kind": "background", "id": "lee_family_apartment.front_door", "status": "in_progress", "required_variants": ["day", "night", "rain"], "reason": "Connects North Residential Lane to the apartment while supporting invitations, arrivals, household boundaries, and one clear Living Room route."},
+          {"kind": "background", "id": "lee_family_apartment.living_room", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Provides the shared three-way family hub connecting the entry, kitchen, and invitation-gated route to Marcus's bedroom."},
+          {"kind": "background", "id": "lee_family_apartment.kitchen", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports family meals, casual visits, friendship scenes, and the apartment's only route to its shared bathroom."},
+          {"kind": "background", "id": "lee_family_apartment.marcus_bedroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports Marcus's friendship, romance, student-film, rough-cut, reliability, and creative-confidence scenes after an invitation."},
+          {"kind": "background", "id": "lee_family_apartment.cousin_bedroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Preserves complete household geography for restricted or scripted events without exposing the unnamed adult cousin's private room in ordinary navigation."},
+          {"kind": "background", "id": "lee_family_apartment.bathroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Completes the household hygiene space with one clear return to the kitchen."}
+        ]
       }
     ]
   },
@@ -639,6 +654,12 @@
     {"id": "greyport_street.north_residences", "location": "greyport_street", "room": "north_residences", "path": "res://assets/art/backgrounds/greyport_street/north_residences.png", "variants": {"day": "res://assets/art/backgrounds/greyport_street/north_residences.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "greyport_street.south_residences", "location": "greyport_street", "room": "south_residences", "path": "res://assets/art/backgrounds/greyport_street/south_residences.png", "variants": {"day": "res://assets/art/backgrounds/greyport_street/south_residences.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "greyport_street.industrial_corner", "location": "greyport_street", "room": "industrial_corner", "path": "res://assets/art/backgrounds/greyport_street/industrial_corner.png", "variants": {"day": "res://assets/art/backgrounds/greyport_street/industrial_corner.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "greyport_street.nightlife_alley", "location": "greyport_street", "room": "nightlife_alley", "path": "res://assets/art/backgrounds/greyport_street/nightlife_alley.png", "variants": {"day": "res://assets/art/backgrounds/greyport_street/nightlife_alley.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "greyport_street.nightlife_alley", "location": "greyport_street", "room": "nightlife_alley", "path": "res://assets/art/backgrounds/greyport_street/nightlife_alley.png", "variants": {"day": "res://assets/art/backgrounds/greyport_street/nightlife_alley.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "lee_family_apartment.front_door", "location": "lee_family_apartment", "room": "front_door", "path": "res://assets/art/backgrounds/lee_family_apartment/front_door.png", "variants": {"day": "res://assets/art/backgrounds/lee_family_apartment/front_door.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "lee_family_apartment.living_room", "location": "lee_family_apartment", "room": "living_room", "path": "res://assets/art/backgrounds/lee_family_apartment/living_room.png", "variants": {"day": "res://assets/art/backgrounds/lee_family_apartment/living_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "lee_family_apartment.kitchen", "location": "lee_family_apartment", "room": "kitchen", "path": "res://assets/art/backgrounds/lee_family_apartment/kitchen.png", "variants": {"day": "res://assets/art/backgrounds/lee_family_apartment/kitchen.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "lee_family_apartment.marcus_bedroom", "location": "lee_family_apartment", "room": "marcus_bedroom", "path": "res://assets/art/backgrounds/lee_family_apartment/marcus_bedroom.png", "variants": {"day": "res://assets/art/backgrounds/lee_family_apartment/marcus_bedroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "lee_family_apartment.cousin_bedroom", "location": "lee_family_apartment", "room": "cousin_bedroom", "path": "res://assets/art/backgrounds/lee_family_apartment/cousin_bedroom.png", "variants": {"day": "res://assets/art/backgrounds/lee_family_apartment/cousin_bedroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "lee_family_apartment.bathroom", "location": "lee_family_apartment", "room": "bathroom", "path": "res://assets/art/backgrounds/lee_family_apartment/bathroom.png", "variants": {"day": "res://assets/art/backgrounds/lee_family_apartment/bathroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }

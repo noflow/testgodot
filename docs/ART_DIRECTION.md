@@ -41,7 +41,7 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The thirty-two completed base-art locations are the Hale Home, Alder Heights Residential
+The thirty-three completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
@@ -50,7 +50,7 @@ Union, Port Alder City Hall, Port Alder Realty, Harbor Centre Business Services,
 Cypress Hall Dorm, Maple Hall Dorm, the Westshore Shared Student Apartment, and the
 Westshore Bookshop, Lantern Gallery, Lantern District Street, La Brisa Kitchen,
 Tideglass Club, Harbor Companion Cooperative, the Rowan Family Home, Jade's Downtown
-Condo, and Greyport Main Street. Together they provide 173 unique base-day PNG
+Condo, Greyport Main Street, and the Lee Family Apartment. Together they provide 179 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -703,6 +703,33 @@ Destination-specific briefs:
 | Industrial Corner | `greyport_street/industrial_corner.png` | Four-way working junction with left housing return, rear controlled warehouse entry, right transit-depot public entrance, and foreground descent into Nightlife Alley. |
 | Nightlife Alley | `greyport_street/nightlife_alley.png` | Safe blue-hour converted-warehouse alley with rear Industrial Corner return and one right Undertow entrance using abstract teal-and-plum accents. |
 
+### Lee Family Apartment batch prompt set
+
+This batch carries North Residential Lane's upper invitation-only entrance into the
+compact family apartment shared by Marcus Lee, a parent, and an unnamed adult cousin. The
+home is long-lived, affordable, practical, safe, and cared for, using warm cream plaster,
+aged honey oak, faded ocean blue trim, forest green, muted burnt orange, charcoal, and
+blackened metal. Shared rooms mix inherited furniture with sensible updates, while
+Marcus's room expresses his filmmaking, humor, big plans, unfinished short film, and
+creative disorganization through dark editing screens, blank storyboard cards, camera
+equipment, and closed media storage. The cousin's room remains restricted, anonymous, and
+free of invented identity or biography.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped destination inside the invitation-only Lee Family Apartment in grounded mature cinematic contemporary realism. Continue the older Greyport brick walk-up seen on North Residential Lane and make the compact home feel long-lived, practical, safe, affordable, welcoming, and cared for rather than luxurious, shabby, student-only, culturally stereotyped, or overdecorated. Use warm cream plaster, aged honey oak, faded ocean blue trim and tile, forest green, muted burnt orange, charcoal, blackened metal, restrained amber practical light, and rain-softened fixed windows. Preserve exactly the authored room-to-room routes and access level with a generous uncluttered lower and central character-staging area. Shared rooms serve three adults; Marcus's invitation-only room may show affordable filmmaking and editing tools; the cousin's restricted room must remain deliberately neutral and private. No people or reflections of people, character sprites, navigation arrows, interface, readable mail, books, scripts, storyboards, calendars, labels, names, addresses, movie titles, copyrighted posters or characters, words, letters, numbers, logos, trademarks, brands, photo faces, active screen content, religious or cultural stereotypes, nudity, sexualized imagery, underwear, alcohol, drugs, weapons, garbage piles, broken fixtures, or watermark; all screens must be dark and all papers, storage, containers, and boards must be blank, closed, face-down, plain, abstract, or too indistinct to read.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Apartment Door | `lee_family_apartment/front_door.png` | Shallow threshold with exterior landing return on the left, right Living Room opening, shoe bench, coat hooks, umbrella stand, old radiator, and blank mail tray. |
+| Living Room | `lee_family_apartment/living_room.png` | Three-way family hub with left Entry, rear Marcus Bedroom, right Kitchen, mismatched cared-for seating, compact dining table, dark television, and closed film gear. |
+| Kitchen | `lee_family_apartment/kitchen.png` | Gradually updated honey-oak family kitchen with left Living Room opening, rear Bathroom doorway, three-person eating space, and ordinary practical appliances. |
+| Marcus's Bedroom | `lee_family_apartment/marcus_bedroom.png` | Invitation-only creative room with bed, dark dual-monitor editing desk, blank storyboard cards, camera and tripod, spine-away books, gear cases, and one Living Room return. |
+| Cousin's Bedroom | `lee_family_apartment/cousin_bedroom.png` | Restricted neutral adult room with made bed, closed storage, closed laptop, abstract art, fixed rainy window, and no invented identity clues. |
+| Bathroom | `lee_family_apartment/bathroom.png` | Shared cream-and-blue bathroom with tub-shower, ordinary fixtures, three towel sets, old radiator, plain toiletries, and one Kitchen return. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -723,7 +750,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all twenty-seven room batches were generated with the built-in
+The baseline assets and all twenty-eight room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the
