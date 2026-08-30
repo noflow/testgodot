@@ -66,7 +66,8 @@
         "port_alder_realty",
         "harbor_business_services",
         "cypress_hall_dorm",
-        "maple_hall_dorm"
+        "maple_hall_dorm",
+        "westshore_shared_student_apartment"
       ]
     },
     "audio_in_scope": false,
@@ -323,6 +324,21 @@
           {"kind": "background", "id": "maple_hall_dorm.theo_room", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Theo's invitation-only residence for friendship, technology, gaming, and relationship scenes."},
           {"kind": "background", "id": "maple_hall_dorm.available_room", "status": "in_progress", "required_variants": ["day", "night"], "reason": "A leasable private student room that can become the player's college home base."}
         ]
+      },
+      {
+        "id": "westshore_shared_student_apartment_housing",
+        "title": "Westshore Shared Student Apartment Housing",
+        "priority": 17,
+        "goal": "Complete the invitation-or-lease-only shared apartment from its campus-facing entry through common rooms, private bedrooms, bathroom, and balcony.",
+        "assets": [
+          {"kind": "background", "id": "westshore_shared_student_apartment.entry", "status": "in_progress", "required_variants": ["day", "night", "rain"], "reason": "Provides the private transition between the Westshore Transit Loop and the invitation-or-lease-only home."},
+          {"kind": "background", "id": "westshore_shared_student_apartment.living_room", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Central roommate hub for household gatherings, visits, and routes to every major apartment area."},
+          {"kind": "background", "id": "westshore_shared_student_apartment.kitchen", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports cooking, meals, household chores, and routes to the rentable bedroom and bathroom."},
+          {"kind": "background", "id": "westshore_shared_student_apartment.chloe_bedroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Chloe's invitation-only creative workspace and private room for friendship, freelance, and relationship scenes."},
+          {"kind": "background", "id": "westshore_shared_student_apartment.available_bedroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "A leasable private bedroom that can become the player's shared student-apartment home base."},
+          {"kind": "background", "id": "westshore_shared_student_apartment.bathroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports private hygiene routines and ordinary shared-household care."},
+          {"kind": "background", "id": "westshore_shared_student_apartment.balcony", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain"], "reason": "Provides a private outdoor roommate, quiet-scene, and date destination overlooking the college district."}
+        ]
       }
     ]
   },
@@ -451,6 +467,13 @@
     {"id": "maple_hall_dorm.shared_bathroom", "location": "maple_hall_dorm", "room": "shared_bathroom", "path": "res://assets/art/backgrounds/maple_hall_dorm/shared_bathroom.png", "variants": {"day": "res://assets/art/backgrounds/maple_hall_dorm/shared_bathroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "maple_hall_dorm.laundry", "location": "maple_hall_dorm", "room": "laundry", "path": "res://assets/art/backgrounds/maple_hall_dorm/laundry.png", "variants": {"day": "res://assets/art/backgrounds/maple_hall_dorm/laundry.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "maple_hall_dorm.game_lounge", "location": "maple_hall_dorm", "room": "game_lounge", "path": "res://assets/art/backgrounds/maple_hall_dorm/game_lounge.png", "variants": {"day": "res://assets/art/backgrounds/maple_hall_dorm/game_lounge.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "maple_hall_dorm.shared_kitchen", "location": "maple_hall_dorm", "room": "shared_kitchen", "path": "res://assets/art/backgrounds/maple_hall_dorm/shared_kitchen.png", "variants": {"day": "res://assets/art/backgrounds/maple_hall_dorm/shared_kitchen.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "maple_hall_dorm.shared_kitchen", "location": "maple_hall_dorm", "room": "shared_kitchen", "path": "res://assets/art/backgrounds/maple_hall_dorm/shared_kitchen.png", "variants": {"day": "res://assets/art/backgrounds/maple_hall_dorm/shared_kitchen.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "westshore_shared_student_apartment.entry", "location": "westshore_shared_student_apartment", "room": "entry", "path": "res://assets/art/backgrounds/westshore_shared_student_apartment/entry.png", "variants": {"day": "res://assets/art/backgrounds/westshore_shared_student_apartment/entry.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "westshore_shared_student_apartment.living_room", "location": "westshore_shared_student_apartment", "room": "living_room", "path": "res://assets/art/backgrounds/westshore_shared_student_apartment/living_room.png", "variants": {"day": "res://assets/art/backgrounds/westshore_shared_student_apartment/living_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "westshore_shared_student_apartment.kitchen", "location": "westshore_shared_student_apartment", "room": "kitchen", "path": "res://assets/art/backgrounds/westshore_shared_student_apartment/kitchen.png", "variants": {"day": "res://assets/art/backgrounds/westshore_shared_student_apartment/kitchen.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "westshore_shared_student_apartment.chloe_bedroom", "location": "westshore_shared_student_apartment", "room": "chloe_bedroom", "path": "res://assets/art/backgrounds/westshore_shared_student_apartment/chloe_bedroom.png", "variants": {"day": "res://assets/art/backgrounds/westshore_shared_student_apartment/chloe_bedroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "westshore_shared_student_apartment.available_bedroom", "location": "westshore_shared_student_apartment", "room": "available_bedroom", "path": "res://assets/art/backgrounds/westshore_shared_student_apartment/available_bedroom.png", "variants": {"day": "res://assets/art/backgrounds/westshore_shared_student_apartment/available_bedroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "westshore_shared_student_apartment.bathroom", "location": "westshore_shared_student_apartment", "room": "bathroom", "path": "res://assets/art/backgrounds/westshore_shared_student_apartment/bathroom.png", "variants": {"day": "res://assets/art/backgrounds/westshore_shared_student_apartment/bathroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "westshore_shared_student_apartment.balcony", "location": "westshore_shared_student_apartment", "room": "balcony", "path": "res://assets/art/backgrounds/westshore_shared_student_apartment/balcony.png", "variants": {"day": "res://assets/art/backgrounds/westshore_shared_student_apartment/balcony.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }

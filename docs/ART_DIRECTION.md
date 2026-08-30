@@ -41,13 +41,14 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The twenty-two completed base-art locations are the Hale Home, Alder Heights Residential
+The twenty-three completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
 Downtown, Harbor Centre Apartments, Harbor View Condominiums, Port Alder Credit
 Union, Port Alder City Hall, Port Alder Realty, Harbor Centre Business Services,
-Cypress Hall Dorm, and Maple Hall Dorm. Together they provide 124 unique base-day PNG
+Cypress Hall Dorm, Maple Hall Dorm, and the Westshore Shared Student Apartment.
+Together they provide 131 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -466,6 +467,32 @@ Destination-specific briefs:
 | Theo's Shared Room | `maple_hall_dorm/theo_room.png` | Invitation-only two-student room with beds, desks, wardrobes, powered-off computer setup, organized electronics-repair tools, neutral roommate side, and left-side Bathroom route. |
 | Rentable Dorm Room | `maple_hall_dorm/available_room.png` | Neutral single-occupancy furnished room with bed, desk, wardrobe, storage, mini-fridge, campus window, and right-side Bathroom route. |
 
+### Westshore Shared Student Apartment batch prompt set
+
+This batch completes all seven mapped destinations in the hidden-until-invited-or-leased
+shared apartment. Westshore Campus's Transit Loop establishes the rainy college-district
+continuity, while the Apartment Entry defines a warmer private-home palette. The Living
+Room becomes the four-way household hub for the Entry, Chloe's Bedroom, Kitchen, and
+Balcony; the Kitchen continues to the rentable room and Bathroom. Chloe's room expresses
+her illustration, fashion, and freelance work without revealing private identity details,
+while the rentable bedroom remains neutral for player customization.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped Westshore Shared Student Apartment destination in grounded mature cinematic contemporary realism. Match the supplied reference's modest private adult-student home, rain-softened late-August Pacific Northwest daylight, warm natural oak, cream plaster or tile, charcoal, sage, muted teal, restrained dusty rose and ochre accents, dark metal, warm household lighting, ordinary student-owned furniture, plants, creative details, privacy features, and accessible circulation. Preserve the authored route and access level, clear character staging, floating-arrow placement, and an uncluttered lower region for dialogue UI. Keep the home youthful, expressive, safe, attainable, lived-in, and clearly less institutional than the dorms without becoming luxurious. No people or reflections of people, character sprites, navigation arrows, interface, readable resident names, addresses, unit numbers, schedules, prices, notes, book or game titles, food or appliance labels, private documents, letters, numbers, logos, trademarks, captions, portraits, identity slogans, or watermark; all signs, boards, books, folders, papers, packages, machines, and screens must be blank or abstract.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Apartment Entry | `westshore_shared_student_apartment/entry.png` | Secure private foyer with bench, coat and shoe storage, umbrella stand, rainy campus glimpse, exterior door, and right-side Living Room route. |
+| Living Room | `westshore_shared_student_apartment/living_room.png` | Central four-way shared-home hub with mismatched seating, blank television, creative details, and routes to Entry, Chloe's Bedroom, Kitchen, and Balcony. |
+| Kitchen | `westshore_shared_student_apartment/kitchen.png` | Compact shared kitchen with island, storage, ordinary appliances, and distinct routes to Living Room, Rentable Bedroom, and Bathroom. |
+| Chloe's Bedroom | `westshore_shared_student_apartment/chloe_bedroom.png` | Invitation-only creative room with bed, wardrobe, clothing rack, illustration workstation, blank screens, art materials, abstract work, and one Living Room return. |
+| Rentable Bedroom | `westshore_shared_student_apartment/available_bedroom.png` | Neutral private room with full bed, desk, wardrobe, dresser, empty storage, rainy window, and one Kitchen return. |
+| Bathroom | `westshore_shared_student_apartment/bathroom.png` | Full shared bathroom with closed tub-shower, double vanity, toilet, storage, frosted window, and one Kitchen return. |
+| Balcony | `westshore_shared_student_apartment/balcony.png` | Covered rainy balcony with safe railing, shared seating, planters, storage bench, college-district view, and one Living Room return. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -486,7 +513,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all seventeen room batches were generated with the built-in
+The baseline assets and all eighteen room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the
