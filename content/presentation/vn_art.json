@@ -93,7 +93,8 @@
         "cedar_vale_family_centre",
         "mariner_row_shopping_street",
         "mariner_market",
-        "northline_outfitters"
+        "northline_outfitters",
+        "harbor_formalwear"
       ]
     },
     "audio_in_scope": false,
@@ -721,6 +722,17 @@
           {"kind": "background", "id": "northline_outfitters.checkout", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports purchases and clothing-store employment through separate routes to Outerwear and the employee Stockroom."},
           {"kind": "background", "id": "northline_outfitters.stockroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Provides secure employee-only clothing storage and shift scenes with one return to Checkout and no exterior or loading shortcut."}
         ]
+      },
+      {
+        "id": "harbor_formalwear_interview_and_alterations_route",
+        "title": "Harbor Formalwear Interview Clothing, Fitting, and Alterations Route",
+        "priority": 44,
+        "goal": "Complete Harbor Formalwear from its three-way showroom through a private fitting salon and professional tailoring desk for formalwear, interview clothing, special occasions, and alterations gameplay.",
+        "assets": [
+          {"kind": "background", "id": "harbor_formalwear.showroom", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Provides the three-way public hub connecting Mariner Row Fashion Block, the private Fitting Room, and the Tailoring Desk."},
+          {"kind": "background", "id": "harbor_formalwear.fitting_room", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports private, accessible, non-sexual fitting for suits, dresses, and interview clothing with one clear left return to the Showroom."},
+          {"kind": "background", "id": "harbor_formalwear.tailoring_desk", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports measurements, alterations, repairs, and tailoring conversations in an orderly workroom with one clear return to the Showroom."}
+        ]
       }
     ]
   },
@@ -1004,6 +1016,9 @@
     {"id": "northline_outfitters.outerwear_section", "location": "northline_outfitters", "room": "outerwear_section", "path": "res://assets/art/backgrounds/northline_outfitters/outerwear_section.png", "variants": {"day": "res://assets/art/backgrounds/northline_outfitters/outerwear_section.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "northline_outfitters.fitting_rooms", "location": "northline_outfitters", "room": "fitting_rooms", "path": "res://assets/art/backgrounds/northline_outfitters/fitting_rooms.png", "variants": {"day": "res://assets/art/backgrounds/northline_outfitters/fitting_rooms.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "northline_outfitters.checkout", "location": "northline_outfitters", "room": "checkout", "path": "res://assets/art/backgrounds/northline_outfitters/checkout.png", "variants": {"day": "res://assets/art/backgrounds/northline_outfitters/checkout.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "northline_outfitters.stockroom", "location": "northline_outfitters", "room": "stockroom", "path": "res://assets/art/backgrounds/northline_outfitters/stockroom.png", "variants": {"day": "res://assets/art/backgrounds/northline_outfitters/stockroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "northline_outfitters.stockroom", "location": "northline_outfitters", "room": "stockroom", "path": "res://assets/art/backgrounds/northline_outfitters/stockroom.png", "variants": {"day": "res://assets/art/backgrounds/northline_outfitters/stockroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_formalwear.showroom", "location": "harbor_formalwear", "room": "showroom", "path": "res://assets/art/backgrounds/harbor_formalwear/showroom.png", "variants": {"day": "res://assets/art/backgrounds/harbor_formalwear/showroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_formalwear.fitting_room", "location": "harbor_formalwear", "room": "fitting_room", "path": "res://assets/art/backgrounds/harbor_formalwear/fitting_room.png", "variants": {"day": "res://assets/art/backgrounds/harbor_formalwear/fitting_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_formalwear.tailoring_desk", "location": "harbor_formalwear", "room": "tailoring_desk", "path": "res://assets/art/backgrounds/harbor_formalwear/tailoring_desk.png", "variants": {"day": "res://assets/art/backgrounds/harbor_formalwear/tailoring_desk.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }

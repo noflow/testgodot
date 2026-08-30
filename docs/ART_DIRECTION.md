@@ -41,7 +41,7 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The forty-nine completed base-art locations are the Hale Home, Alder Heights Residential
+The fifty completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
@@ -53,7 +53,7 @@ Tideglass Club, Harbor Companion Cooperative, the Rowan Family Home, Jade's Down
 Condo, Greyport Main Street, the Lee Family Apartment, the Flores Family Townhouse, and the
 Greyport Shared Apartment, the Donovan Family Apartment, Greyport Distribution, and the
 Port Alder Transit Depot, Greyport Studios, Undertow Nightclub, Cedar Vale Residential
-Street, Rachel's Townhouse, Cedar Vale Townhouses, Cedar Vale Detached Homes, Cedar Vale Care Home, Cedar Vale Family Centre, Mariner Row Shopping Street, Mariner Market, and Northline Outfitters. Together they provide 279 unique base-day PNG
+Street, Rachel's Townhouse, Cedar Vale Townhouses, Cedar Vale Detached Homes, Cedar Vale Care Home, Cedar Vale Family Centre, Mariner Row Shopping Street, Mariner Market, Northline Outfitters, and Harbor Formalwear. Together they provide 282 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -1142,6 +1142,28 @@ Destination-specific briefs:
 | Checkout | `northline_outfitters/checkout.png` | Long navy-and-oak counter with two blank registers and terminals, broad left Outerwear opening, separate rear employee Stockroom doorway, and no street shortcut. |
 | Stockroom | `northline_outfitters/stockroom.png` | Orderly employee-only storage with navy shelving and garment rails, folded reserve clothing, covered coats, plain shoe boxes, nested baskets, safe step ladder, packing table, one Checkout return, and no loading access. |
 
+### Harbor Formalwear batch prompt set
+
+This batch distinguishes Harbor Formalwear from Northline's practical outdoor store
+through a warmer, quieter three-room interior for interview clothing, formal occasions,
+private fitting, and professional alterations. Dark walnut, warm brick, cream curtains,
+pale sandstone, deep navy, charcoal, pearl grey, muted wine, warm oak, restrained brass,
+and soft amber lighting create refined presentation without making the shop inaccessible
+or excessively luxurious. Clothing remains inclusive, modest, logo-free, mannequin-free,
+and non-sexual.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped destination inside Harbor Formalwear in polished painterly semi-realistic grounded mature contemporary cinematic realism. Continue Mariner Row's converted coastal warehouse architecture while distinguishing the store through dark walnut, warm brick, cream, pale sandstone, deep navy, charcoal, pearl grey, muted wine, warm oak, restrained brass, and soft amber gallery lighting. Make the formalwear shop refined but attainable, inclusive, private, professional, and useful for interview clothing, suits, dresses, special occasions, fitting, and alterations rather than luxurious, bridal-only, sexualized, branded, or theatrical. Preserve exactly the authored routes with every opening physically separate and keep the lower center useful for dialogue UI. No people, staff, customers, figures, silhouettes, reflections of figures, mannequins, torsos, body forms, advertising photographs, faces, navigation arrows, interface, readable words, letters, numbers, store names, prices, measurements, tags, tickets, labels, brands, logos, active screens, money left out, clutter piles, exposed fitting activity, extra routes, stairs, dereliction, or watermark; all garments, garment covers, boxes, papers, swatches, panels, and screens must be blank, generic, closed, dark, face-down, turned away, or too indistinct to read.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Showroom | `harbor_formalwear/showroom.png` | Three-way public hub with rear glazed Fashion Block entrance, separate right Fitting Room vestibule, foreground Tailoring Desk opening, dark-walnut formalwear displays, and exactly those routes. |
+| Fitting Room | `harbor_formalwear/fitting_room.png` | Spacious private fitting salon with supportive wine bench, two empty mirrors, closed garment rail, accessible turning area, modest suit and dress, and one left Showroom return. |
+| Tailoring Desk | `harbor_formalwear/tailoring_desk.png` | Orderly alterations workspace with walnut service desk, idle sewing machine, folded fabrics, blank swatches, safely stored tools, covered garments, closed storage, and one rear Showroom return. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -1162,7 +1184,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all forty-four room batches were generated with the built-in
+The baseline assets and all forty-five room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the
