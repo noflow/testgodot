@@ -41,14 +41,14 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The twenty-four completed base-art locations are the Hale Home, Alder Heights Residential
+The twenty-five completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
 Downtown, Harbor Centre Apartments, Harbor View Condominiums, Port Alder Credit
 Union, Port Alder City Hall, Port Alder Realty, Harbor Centre Business Services,
 Cypress Hall Dorm, Maple Hall Dorm, the Westshore Shared Student Apartment, and the
-Westshore Bookshop. Together they provide 133 unique base-day PNG
+Westshore Bookshop and Lantern Gallery. Together they provide 137 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -512,6 +512,28 @@ Destination-specific briefs:
 | Sales Floor | `westshore_bookshop/sales_floor.png` | Public textbook and school-supply store with browsing shelves and tables, blank kiosk, left Cafeteria return, and right Service Counter route. |
 | Service Counter | `westshore_bookshop/service_counter.png` | Checkout, returns, pickup, and employee-service area with blank POS, organized cubbies and storage, impulse supplies, and one Sales Floor return. |
 
+### Lantern Gallery batch prompt set
+
+This batch completes all four mapped destinations in Lantern Gallery's public arts,
+event, and appointment route. Westshore's Art Studios and Chloe's Bedroom provide
+creative-material continuity, while the Galleria Event Space establishes flexible event
+infrastructure. The Main Gallery defines Lantern Gallery's restored-brick identity and
+connects the street, Student Wall, and Event Room; the Event Room continues to the
+employee-or-appointment-only Gallery Office.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped Lantern Gallery destination in grounded mature cinematic contemporary realism. Match the supplied Port Alder references while giving the independent gallery its own restored urban storefront identity: cream plaster, selective aged red brick, warm cedar trim, blackened steel, dark polished concrete, professional track lighting, rain-softened late-afternoon coastal daylight, amber practical light, muted burgundy, deep teal, and restrained ochre. Preserve the authored route and access level, clear character staging, and an uncluttered lower and central foreground for dialogue sprites. Keep the gallery intimate, cultured, welcoming, accessible, attainable, and suitable for exhibitions, dates, networking, events, and employment stories. No people or reflections of people, character sprites, navigation arrows, interface, readable exhibit labels, artist or school names, event posters, schedules, prices, contracts, signs, words, letters, numbers, logos, trademarks, brands, captions, mannequins, human-shaped sculpture, recognizable real artworks, copyrighted art, portraits, or watermark; all screens, papers, folders, boards, and wall cards must be blank, abstract, closed, or powered off, and all displayed art must be original, abstract, tasteful, non-graphic, and free of legible symbols or text.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Main Gallery | `lantern_gallery/main_gallery.png` | Public exhibition hub with abstract paintings and sculpture, reception pedestal, benches, street entry, rear Event Room route, and right Student Wall route. |
+| Student Wall | `lantern_gallery/student_wall.png` | Intimate emerging-artist exhibition room with varied abstract student work, protected sketchbooks, ceramics, seating, and one Main Gallery return. |
+| Event Room | `lantern_gallery/event_room.png` | Flexible talk, workshop, opening, and reception room with blank projection surface, modular platform, chairs, stored tables, refreshment counter, Main Gallery return, and right Office route. |
+| Gallery Office | `lantern_gallery/office.png` | Private curator workspace with blank computer, visitor chairs, flat files, archival storage, art-handling materials, abstract samples, and one Event Room return. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -532,7 +554,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all nineteen room batches were generated with the built-in
+The baseline assets and all twenty room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the

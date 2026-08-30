@@ -68,7 +68,8 @@
         "cypress_hall_dorm",
         "maple_hall_dorm",
         "westshore_shared_student_apartment",
-        "westshore_bookshop"
+        "westshore_bookshop",
+        "lantern_gallery"
       ]
     },
     "audio_in_scope": false,
@@ -350,6 +351,18 @@
           {"kind": "background", "id": "westshore_bookshop.sales_floor", "status": "ready", "required_variants": ["day"], "reason": "Provides the public campus store route from the Cafeteria through textbook, school-supply, and browsing displays."},
           {"kind": "background", "id": "westshore_bookshop.service_counter", "status": "ready", "required_variants": ["day"], "reason": "Supports checkout, returns, pickups, employee conversations, and bookstore job scenes."}
         ]
+      },
+      {
+        "id": "lantern_gallery_arts_circuit",
+        "title": "Lantern Gallery Arts and Events Circuit",
+        "priority": 19,
+        "goal": "Complete the gallery route from the public exhibition floor through emerging-artist displays, events, networking, and appointment-only office scenes.",
+        "assets": [
+          {"kind": "background", "id": "lantern_gallery.main_gallery", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain"], "reason": "The gallery's public arrival hub supports exhibitions, dates, networking, and routes to every other gallery destination."},
+          {"kind": "background", "id": "lantern_gallery.student_wall", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports student and emerging-artist showcases, creative friendships, and college-to-gallery story routes."},
+          {"kind": "background", "id": "lantern_gallery.event_room", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports openings, artist talks, workshops, receptions, and recurring networking events."},
+          {"kind": "background", "id": "lantern_gallery.office", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Hosts employee-or-appointment conversations, exhibition planning, submissions, and gallery employment scenes."}
+        ]
       }
     ]
   },
@@ -487,6 +500,10 @@
     {"id": "westshore_shared_student_apartment.bathroom", "location": "westshore_shared_student_apartment", "room": "bathroom", "path": "res://assets/art/backgrounds/westshore_shared_student_apartment/bathroom.png", "variants": {"day": "res://assets/art/backgrounds/westshore_shared_student_apartment/bathroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "westshore_shared_student_apartment.balcony", "location": "westshore_shared_student_apartment", "room": "balcony", "path": "res://assets/art/backgrounds/westshore_shared_student_apartment/balcony.png", "variants": {"day": "res://assets/art/backgrounds/westshore_shared_student_apartment/balcony.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "westshore_bookshop.sales_floor", "location": "westshore_bookshop", "room": "sales_floor", "path": "res://assets/art/backgrounds/westshore_bookshop/sales_floor.png", "variants": {"day": "res://assets/art/backgrounds/westshore_bookshop/sales_floor.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "westshore_bookshop.service_counter", "location": "westshore_bookshop", "room": "service_counter", "path": "res://assets/art/backgrounds/westshore_bookshop/service_counter.png", "variants": {"day": "res://assets/art/backgrounds/westshore_bookshop/service_counter.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "westshore_bookshop.service_counter", "location": "westshore_bookshop", "room": "service_counter", "path": "res://assets/art/backgrounds/westshore_bookshop/service_counter.png", "variants": {"day": "res://assets/art/backgrounds/westshore_bookshop/service_counter.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "lantern_gallery.main_gallery", "location": "lantern_gallery", "room": "main_gallery", "path": "res://assets/art/backgrounds/lantern_gallery/main_gallery.png", "variants": {"day": "res://assets/art/backgrounds/lantern_gallery/main_gallery.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "lantern_gallery.student_wall", "location": "lantern_gallery", "room": "student_wall", "path": "res://assets/art/backgrounds/lantern_gallery/student_wall.png", "variants": {"day": "res://assets/art/backgrounds/lantern_gallery/student_wall.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "lantern_gallery.event_room", "location": "lantern_gallery", "room": "event_room", "path": "res://assets/art/backgrounds/lantern_gallery/event_room.png", "variants": {"day": "res://assets/art/backgrounds/lantern_gallery/event_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "lantern_gallery.office", "location": "lantern_gallery", "room": "office", "path": "res://assets/art/backgrounds/lantern_gallery/office.png", "variants": {"day": "res://assets/art/backgrounds/lantern_gallery/office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }
