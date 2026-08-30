@@ -41,7 +41,7 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The forty-four completed base-art locations are the Hale Home, Alder Heights Residential
+The forty-five completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
@@ -53,7 +53,7 @@ Tideglass Club, Harbor Companion Cooperative, the Rowan Family Home, Jade's Down
 Condo, Greyport Main Street, the Lee Family Apartment, the Flores Family Townhouse, and the
 Greyport Shared Apartment, the Donovan Family Apartment, Greyport Distribution, and the
 Port Alder Transit Depot, Greyport Studios, Undertow Nightclub, Cedar Vale Residential
-Street, Rachel's Townhouse, Cedar Vale Townhouses, and Cedar Vale Detached Homes. Together they provide 254 unique base-day PNG
+Street, Rachel's Townhouse, Cedar Vale Townhouses, Cedar Vale Detached Homes, and Cedar Vale Care Home. Together they provide 259 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -1022,6 +1022,30 @@ Destination-specific briefs:
 | Garage | `cedar_vale_detached_homes/garage.png` | Secure empty parking bay prepared for later player-owned vehicle representation, fully closed overhead door, blank storage, and one left Laundry return without an exterior shortcut. |
 | Yard | `cedar_vale_detached_homes/yard.png` | Larger enclosed lawn and wet-stone patio with continuous cedar fencing, adaptable planting and seating space, and one centered glazed Living Room return. |
 
+### Cedar Vale Care Home batch prompt set
+
+This batch continues Cedar Vale Family Block's residential-scale care entrance into a
+dignified five-room facility supporting employment, family visits, resident social life,
+shared meals, and accessible outdoor activity. The design uses supportive seating, wide
+clear circulation, level thresholds, and secure employee space without treating mobility
+or aging as hospital scenery. Warm butter cream, natural oak, muted teal, sage, dusty
+rose, soft burgundy, river stone, and restrained amber light keep the setting home-like,
+multigenerational, and distinct from both a clinic and a hotel.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped destination inside or immediately behind Cedar Vale Care Home in polished painterly semi-realistic grounded mature contemporary cinematic realism. Continue the residential cedar, warm-cream brick, and river-stone building on rain-softened Family Block with warm butter cream, natural oak, muted teal, sage green, dusty rose, soft burgundy, river stone, dark bronze, rain-grey blue, and restrained amber practical light. Make the care home accessible, residential, maintained, comfortable, respectful, multigenerational, and dignified rather than clinical, institutional, hospital-like, luxurious, hotel-like, childish, or gloomy. Express accessibility through wide clear circulation, level thresholds, supportive seating, fixed handrails where useful, and uncluttered staging space rather than parked mobility equipment. Preserve exactly the authored room-to-room routes, with every exit visibly separate. No people, residents, staff, parked wheelchairs, reflections of figures, silhouettes, character sprites, navigation arrows, interface, readable words, letters, numbers, room names, signs, labels, schedules, resident records, mail, paperwork, logos, trademarks, brands, photo faces, active screens, visible medication, medical charts or devices, alcohol, drugs, weapons, sexual cues, clutter piles, broken fixtures, extra routes, or watermark; all screens, panels, containers, documents, books, and storage must be dark, blank, plain, closed, face-down, or too indistinct to read.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Reception | `cedar_vale_care_home/reception.png` | Accessible three-way visitor threshold with front doors returning to Family Block, a discreet rear employee-only Care Station door, broad right Resident Lounge opening, curved oak desk, blank dark monitor, and exactly those routes. |
+| Resident Lounge | `cedar_vale_care_home/resident_lounge.png` | Home-like social hub with left Reception, rear Dining Room, centered glazed Garden doors, supportive teal, sage, rose, and burgundy seating, modest river-stone fireplace, and exactly those three routes. |
+| Dining Room | `cedar_vale_care_home/dining_room.png` | Residential shared dining room with several accessible four-seat tables, wide circulation, fixed rain-softened windows, closed sideboard and serving counter, and one lower Resident Lounge return. |
+| Care Station | `cedar_vale_care_home/care_station.png` | Secure employee-only support office with two blank dark monitors, closed oak and sage storage, fixed rainy window, no exposed records or medicine, and one full-height walkable doorway returning to Reception. |
+| Garden | `cedar_vale_care_home/garden.png` | Fully enclosed accessible courtyard with level wet paving, raised planters, supportive benches, internal returning garden loop, covered seating, continuous boundaries, and one centered glazed Resident Lounge return. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -1042,7 +1066,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all thirty-nine room batches were generated with the built-in
+The baseline assets and all forty room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the

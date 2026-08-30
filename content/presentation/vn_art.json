@@ -88,7 +88,8 @@
         "cedar_vale_street",
         "rachel_cedar_vale_townhouse",
         "cedar_vale_townhouses",
-        "cedar_vale_detached_homes"
+        "cedar_vale_detached_homes",
+        "cedar_vale_care_home"
       ]
     },
     "audio_in_scope": false,
@@ -651,6 +652,19 @@
           {"kind": "background", "id": "cedar_vale_detached_homes.garage", "status": "in_progress", "required_variants": ["day", "night", "rain", "winter"], "reason": "Provides secure empty vehicle storage, maintenance, and later car representation with one clear return to the Laundry and no exterior shortcut."},
           {"kind": "background", "id": "cedar_vale_detached_homes.yard", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Supports larger enclosed outdoor home, date, family, pet, gardening, and customization scenes with one clear return to the Living Room."}
         ]
+      },
+      {
+        "id": "cedar_vale_care_home_work_and_visits_route",
+        "title": "Cedar Vale Care Home Work, Visits, and Resident-Life Route",
+        "priority": 39,
+        "goal": "Complete Cedar Vale's residential care setting from its visitor threshold through resident social, dining, employee support, and enclosed accessible garden spaces for care work, family visits, and dignified daily-life scenes.",
+        "assets": [
+          {"kind": "background", "id": "cedar_vale_care_home.reception", "status": "in_progress", "required_variants": ["day", "night", "rain", "winter"], "reason": "Provides the accessible three-way visitor and employee threshold connecting Family Block, the employee-only Care Station, and the public Resident Lounge."},
+          {"kind": "background", "id": "cedar_vale_care_home.resident_lounge", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Supports visits, conversation, reading, games, and resident activities through separate routes to Reception, Dining Room, and the enclosed Garden."},
+          {"kind": "background", "id": "cedar_vale_care_home.dining_room", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports meals, celebrations, visits, and care-work scenes in a residential shared dining space with one clear return to the Resident Lounge."},
+          {"kind": "background", "id": "cedar_vale_care_home.care_station", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Provides a secure employee-only support workspace with blank screens, closed storage, and one unmistakable walkable return to Reception."},
+          {"kind": "background", "id": "cedar_vale_care_home.garden", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Supports accessible outdoor visits, quiet conversation, gardening, and care activities in a fully enclosed courtyard with one clear return to the Resident Lounge."}
+        ]
       }
     ]
   },
@@ -909,6 +923,11 @@
     {"id": "cedar_vale_detached_homes.bathroom", "location": "cedar_vale_detached_homes", "room": "bathroom", "path": "res://assets/art/backgrounds/cedar_vale_detached_homes/bathroom.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_detached_homes/bathroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "cedar_vale_detached_homes.laundry", "location": "cedar_vale_detached_homes", "room": "laundry", "path": "res://assets/art/backgrounds/cedar_vale_detached_homes/laundry.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_detached_homes/laundry.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "cedar_vale_detached_homes.garage", "location": "cedar_vale_detached_homes", "room": "garage", "path": "res://assets/art/backgrounds/cedar_vale_detached_homes/garage.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_detached_homes/garage.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "cedar_vale_detached_homes.yard", "location": "cedar_vale_detached_homes", "room": "yard", "path": "res://assets/art/backgrounds/cedar_vale_detached_homes/yard.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_detached_homes/yard.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "cedar_vale_detached_homes.yard", "location": "cedar_vale_detached_homes", "room": "yard", "path": "res://assets/art/backgrounds/cedar_vale_detached_homes/yard.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_detached_homes/yard.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cedar_vale_care_home.reception", "location": "cedar_vale_care_home", "room": "reception", "path": "res://assets/art/backgrounds/cedar_vale_care_home/reception.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_care_home/reception.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cedar_vale_care_home.resident_lounge", "location": "cedar_vale_care_home", "room": "resident_lounge", "path": "res://assets/art/backgrounds/cedar_vale_care_home/resident_lounge.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_care_home/resident_lounge.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cedar_vale_care_home.dining_room", "location": "cedar_vale_care_home", "room": "dining_room", "path": "res://assets/art/backgrounds/cedar_vale_care_home/dining_room.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_care_home/dining_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cedar_vale_care_home.care_station", "location": "cedar_vale_care_home", "room": "care_station", "path": "res://assets/art/backgrounds/cedar_vale_care_home/care_station.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_care_home/care_station.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cedar_vale_care_home.garden", "location": "cedar_vale_care_home", "room": "garden", "path": "res://assets/art/backgrounds/cedar_vale_care_home/garden.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_care_home/garden.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }
