@@ -69,7 +69,8 @@
         "maple_hall_dorm",
         "westshore_shared_student_apartment",
         "westshore_bookshop",
-        "lantern_gallery"
+        "lantern_gallery",
+        "lantern_district_street"
       ]
     },
     "audio_in_scope": false,
@@ -363,6 +364,17 @@
           {"kind": "background", "id": "lantern_gallery.event_room", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports openings, artist talks, workshops, receptions, and recurring networking events."},
           {"kind": "background", "id": "lantern_gallery.office", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Hosts employee-or-appointment conversations, exhibition planning, submissions, and gallery employment scenes."}
         ]
+      },
+      {
+        "id": "lantern_district_street_route",
+        "title": "Lantern District Street Entertainment Route",
+        "priority": 20,
+        "goal": "Complete the walkable entertainment-district route connecting the cinema, restaurants, gallery, nightclub, and privacy-conscious cooperative entrance.",
+        "assets": [
+          {"kind": "background", "id": "lantern_district_street.cinema_block", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain"], "reason": "Provides the district's western arrival hub, cinema entrance, and pedestrian route toward restaurants and nightlife."},
+          {"kind": "background", "id": "lantern_district_street.restaurant_lane", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain"], "reason": "The central four-way hub connects dining, the nightclub, Cinema Block, and Gallery Walk."},
+          {"kind": "background", "id": "lantern_district_street.gallery_walk", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain"], "reason": "Connects Restaurant Lane with Lantern Gallery and the cooperative's secure public reception route."}
+        ]
       }
     ]
   },
@@ -504,6 +516,9 @@
     {"id": "lantern_gallery.main_gallery", "location": "lantern_gallery", "room": "main_gallery", "path": "res://assets/art/backgrounds/lantern_gallery/main_gallery.png", "variants": {"day": "res://assets/art/backgrounds/lantern_gallery/main_gallery.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "lantern_gallery.student_wall", "location": "lantern_gallery", "room": "student_wall", "path": "res://assets/art/backgrounds/lantern_gallery/student_wall.png", "variants": {"day": "res://assets/art/backgrounds/lantern_gallery/student_wall.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "lantern_gallery.event_room", "location": "lantern_gallery", "room": "event_room", "path": "res://assets/art/backgrounds/lantern_gallery/event_room.png", "variants": {"day": "res://assets/art/backgrounds/lantern_gallery/event_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "lantern_gallery.office", "location": "lantern_gallery", "room": "office", "path": "res://assets/art/backgrounds/lantern_gallery/office.png", "variants": {"day": "res://assets/art/backgrounds/lantern_gallery/office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "lantern_gallery.office", "location": "lantern_gallery", "room": "office", "path": "res://assets/art/backgrounds/lantern_gallery/office.png", "variants": {"day": "res://assets/art/backgrounds/lantern_gallery/office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "lantern_district_street.cinema_block", "location": "lantern_district_street", "room": "cinema_block", "path": "res://assets/art/backgrounds/lantern_district_street/cinema_block.png", "variants": {"day": "res://assets/art/backgrounds/lantern_district_street/cinema_block.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "lantern_district_street.restaurant_lane", "location": "lantern_district_street", "room": "restaurant_lane", "path": "res://assets/art/backgrounds/lantern_district_street/restaurant_lane.png", "variants": {"day": "res://assets/art/backgrounds/lantern_district_street/restaurant_lane.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "lantern_district_street.gallery_walk", "location": "lantern_district_street", "room": "gallery_walk", "path": "res://assets/art/backgrounds/lantern_district_street/gallery_walk.png", "variants": {"day": "res://assets/art/backgrounds/lantern_district_street/gallery_walk.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }

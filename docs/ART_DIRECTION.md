@@ -41,14 +41,15 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The twenty-five completed base-art locations are the Hale Home, Alder Heights Residential
+The twenty-six completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
 Downtown, Harbor Centre Apartments, Harbor View Condominiums, Port Alder Credit
 Union, Port Alder City Hall, Port Alder Realty, Harbor Centre Business Services,
 Cypress Hall Dorm, Maple Hall Dorm, the Westshore Shared Student Apartment, and the
-Westshore Bookshop and Lantern Gallery. Together they provide 137 unique base-day PNG
+Westshore Bookshop, Lantern Gallery, and Lantern District Street. Together they provide
+140 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -534,6 +535,27 @@ Destination-specific briefs:
 | Event Room | `lantern_gallery/event_room.png` | Flexible talk, workshop, opening, and reception room with blank projection surface, modular platform, chairs, stored tables, refreshment counter, Main Gallery return, and right Office route. |
 | Gallery Office | `lantern_gallery/office.png` | Private curator workspace with blank computer, visitor chairs, flat files, archival storage, art-handling materials, abstract samples, and one Event Room return. |
 
+### Lantern District Street batch prompt set
+
+This batch completes all three mapped outdoor hubs in the Lantern District's walkable
+entertainment route. Harborlight Cinema and Lantern Gallery anchor their matching public
+entrances, while the newly established Cinema Block defines the district's restored-brick,
+wet-pavement, tree-lined streetscape. Restaurant Lane becomes the four-way hub for dining,
+nightlife, and east-west movement; Gallery Walk joins the arts destination to the
+privacy-conscious cooperative route.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped Lantern District Street destination in grounded mature cinematic contemporary realism. Match the supplied Port Alder references while giving the district a coherent walkable entertainment-neighborhood identity: restored low-rise aged-red-brick buildings, dark cedar, charcoal and black metal, muted teal, warm cream, burgundy, restrained amber, broad accessible stone sidewalks, mature trees, planters, benches, bicycle racks, blank canvas awnings, lantern-like streetlights, rain-softened late-afternoon coastal daylight, warm storefront light, and wet-pavement reflections. Preserve the authored route, clear character staging, and a generous uncluttered lower and central foreground for dialogue sprites and floating navigation controls. Keep the district safe, mature, inviting, attainable, and empty for sprite staging. No people or reflections of people, character sprites, vehicles, navigation arrows, interface, readable venue names, film titles, showtimes, restaurant menus, club advertising, gallery labels, service lists, prices, hours, addresses, street signs, words, letters, numbers, logos, trademarks, brands, captions, recognizable copyrighted characters or artworks, sexualized imagery, adult advertising, or watermark; all marquees, posters, awnings, signs, screens, boards, menus, window cards, display cases, and intercom panels must be blank, abstract, dark, or softly lit without symbols.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Cinema Block | `lantern_district_street/cinema_block.png` | Western district hub with unbranded cinema facade, blank marquee and poster cases, sheltered entrance, wet sidewalk, and right-side continuation to Restaurant Lane. |
+| Restaurant Lane | `lantern_district_street/restaurant_lane.png` | Central four-way dining hub with empty covered patios, prominent La Brisa entrance, discreet safe Tideglass entrance, and clear left/right street continuations. |
+| Gallery Walk | `lantern_district_street/gallery_walk.png` | Quieter arts-focused route with Lantern Gallery storefront, abstract display windows, benches, and right-side continuation toward the cooperative's secure reception. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -554,7 +576,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all twenty room batches were generated with the built-in
+The baseline assets and all twenty-one room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the
