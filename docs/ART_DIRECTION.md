@@ -41,15 +41,15 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The twenty-seven completed base-art locations are the Hale Home, Alder Heights Residential
+The twenty-eight completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
 Downtown, Harbor Centre Apartments, Harbor View Condominiums, Port Alder Credit
 Union, Port Alder City Hall, Port Alder Realty, Harbor Centre Business Services,
 Cypress Hall Dorm, Maple Hall Dorm, the Westshore Shared Student Apartment, and the
-Westshore Bookshop, Lantern Gallery, Lantern District Street, and La Brisa Kitchen. Together they provide
-145 unique base-day PNG
+Westshore Bookshop, Lantern Gallery, Lantern District Street, La Brisa Kitchen, and
+Tideglass Club. Together they provide 150 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -578,6 +578,28 @@ Destination-specific briefs:
 | Manager Office | `la_brisa_kitchen/manager_office.png` | Compact private supervisor workspace with blank planning board and screen, secure storage, visitor chair, and one left return to the Kitchen. |
 | Patio | `la_brisa_kitchen/patio.png` | Sheltered brick-and-plaster courtyard with pergola, awning, greenery, date seating, district rooftops, and one return to the Dining Room. |
 
+### Tideglass Club batch prompt set
+
+This batch carries Restaurant Lane's discreet below-street club entrance through a
+strict adults-only nightlife route. The Entry leads only to the Dance Floor; the Dance
+Floor branches left to the Bar and right to the quieter Lounge; and the Lounge provides
+the sole route to the inclusive Restrooms. A targeted Dance Floor edit replaced an
+unmapped decorative console with the required visible return to the Entry.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped Tideglass Club destination in grounded mature cinematic contemporary realism. Continue the restored-brick shell seen on Restaurant Lane while giving the intimate, attainable nightclub its own identity through smoked and fluted glass, deep petrol teal, muted plum, dark oak, blackened steel, brushed bronze, charcoal stone, controlled abstract ripple lighting, and readable nighttime ambience. Preserve the authored room-to-room route, clear lower and central character staging, accessible circulation, intoxication-aware safety, and a visible distinction between dancing, drink service, quiet conversation, and hygiene spaces. No people or reflections of people, character sprites, navigation arrows, interface, readable signs, menus, prices, labels, names, words, letters, numbers, logos, trademarks, brands, screen content, drugs, weapons, sexualized imagery, audio equipment, or watermark; all bottles, panels, screens, fixtures, and signs must be plain, unmarked, dark, or abstract.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Entry | `tideglass_club/entry.png` | Compact below-street vestibule with blank host pedestal, seating, street return, and one broad opening to the Dance Floor. |
+| Dance Floor | `tideglass_club/dance_floor.png` | Clear central dance and sprite-staging floor with a rear Entry return, left Bar opening, right Lounge opening, and restrained ripple ceiling light. |
+| Bar | `tideglass_club/bar.png` | Sculptural bronze-and-dark-oak service counter with plain bottles, accessible ordering point, and one right return to the Dance Floor. |
+| Lounge | `tideglass_club/lounge.png` | Quieter plum-and-teal conversation room with open Dance Floor return on the left and a short rear route to the Restrooms. |
+| Restrooms | `tideglass_club/restrooms.png` | Clean inclusive restroom suite with accessible vanity, closed unmarked privacy compartments, and one visible return to the Lounge. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -598,7 +620,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all twenty-two room batches were generated with the built-in
+The baseline assets and all twenty-three room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the

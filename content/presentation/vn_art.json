@@ -71,7 +71,8 @@
         "westshore_bookshop",
         "lantern_gallery",
         "lantern_district_street",
-        "la_brisa_kitchen"
+        "la_brisa_kitchen",
+        "tideglass_club"
       ]
     },
     "audio_in_scope": false,
@@ -389,6 +390,19 @@
           {"kind": "background", "id": "la_brisa_kitchen.manager_office", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Provides a private employee-only setting for interviews, scheduling, promotions, discipline, and management conversations."},
           {"kind": "background", "id": "la_brisa_kitchen.patio", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain"], "reason": "Supports outdoor dining, dates, private conversations, and weather-sensitive restaurant scenes."}
         ]
+      },
+      {
+        "id": "tideglass_club_nightlife_route",
+        "title": "Tideglass Club Nightlife and Social Route",
+        "priority": 22,
+        "goal": "Complete Tideglass Club's adults-only evening route from its discreet street entry through dancing, drinks, quieter conversations, and inclusive restroom facilities.",
+        "assets": [
+          {"kind": "background", "id": "tideglass_club.entry", "status": "in_progress", "required_variants": ["night", "rain"], "reason": "Connects Restaurant Lane to the club while supporting arrival, age-check, invitation, and date-entry scenes."},
+          {"kind": "background", "id": "tideglass_club.dance_floor", "status": "in_progress", "required_variants": ["night"], "reason": "Provides the central nightlife hub for dancing, social events, encounters, and routes to the bar and lounge."},
+          {"kind": "background", "id": "tideglass_club.bar", "status": "in_progress", "required_variants": ["night"], "reason": "Supports drink service, conversations, dates, and intoxication-aware social choices without introducing a staff shortcut."},
+          {"kind": "background", "id": "tideglass_club.lounge", "status": "in_progress", "required_variants": ["night"], "reason": "Supports quieter friendship, romance, companion-safety, and private conversation scenes beside the dance floor."},
+          {"kind": "background", "id": "tideglass_club.restrooms", "status": "in_progress", "required_variants": ["night"], "reason": "Completes the lounge route with clean, accessible, inclusive facilities and one clear return."}
+        ]
       }
     ]
   },
@@ -538,6 +552,11 @@
     {"id": "la_brisa_kitchen.bar", "location": "la_brisa_kitchen", "room": "bar", "path": "res://assets/art/backgrounds/la_brisa_kitchen/bar.png", "variants": {"day": "res://assets/art/backgrounds/la_brisa_kitchen/bar.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "la_brisa_kitchen.kitchen", "location": "la_brisa_kitchen", "room": "kitchen", "path": "res://assets/art/backgrounds/la_brisa_kitchen/kitchen.png", "variants": {"day": "res://assets/art/backgrounds/la_brisa_kitchen/kitchen.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "la_brisa_kitchen.manager_office", "location": "la_brisa_kitchen", "room": "manager_office", "path": "res://assets/art/backgrounds/la_brisa_kitchen/manager_office.png", "variants": {"day": "res://assets/art/backgrounds/la_brisa_kitchen/manager_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "la_brisa_kitchen.patio", "location": "la_brisa_kitchen", "room": "patio", "path": "res://assets/art/backgrounds/la_brisa_kitchen/patio.png", "variants": {"day": "res://assets/art/backgrounds/la_brisa_kitchen/patio.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "la_brisa_kitchen.patio", "location": "la_brisa_kitchen", "room": "patio", "path": "res://assets/art/backgrounds/la_brisa_kitchen/patio.png", "variants": {"day": "res://assets/art/backgrounds/la_brisa_kitchen/patio.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "tideglass_club.entry", "location": "tideglass_club", "room": "entry", "path": "res://assets/art/backgrounds/tideglass_club/entry.png", "variants": {"day": "res://assets/art/backgrounds/tideglass_club/entry.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "tideglass_club.dance_floor", "location": "tideglass_club", "room": "dance_floor", "path": "res://assets/art/backgrounds/tideglass_club/dance_floor.png", "variants": {"day": "res://assets/art/backgrounds/tideglass_club/dance_floor.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "tideglass_club.bar", "location": "tideglass_club", "room": "bar", "path": "res://assets/art/backgrounds/tideglass_club/bar.png", "variants": {"day": "res://assets/art/backgrounds/tideglass_club/bar.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "tideglass_club.lounge", "location": "tideglass_club", "room": "lounge", "path": "res://assets/art/backgrounds/tideglass_club/lounge.png", "variants": {"day": "res://assets/art/backgrounds/tideglass_club/lounge.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "tideglass_club.restrooms", "location": "tideglass_club", "room": "restrooms", "path": "res://assets/art/backgrounds/tideglass_club/restrooms.png", "variants": {"day": "res://assets/art/backgrounds/tideglass_club/restrooms.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }
