@@ -41,7 +41,7 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The fifty-seven completed base-art locations are the Hale Home, Alder Heights Residential
+The fifty-eight completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
@@ -53,7 +53,7 @@ Tideglass Club, Harbor Companion Cooperative, the Rowan Family Home, Jade's Down
 Condo, Greyport Main Street, the Lee Family Apartment, the Flores Family Townhouse, and the
 Greyport Shared Apartment, the Donovan Family Apartment, Greyport Distribution, and the
 Port Alder Transit Depot, Greyport Studios, Undertow Nightclub, Cedar Vale Residential
-Street, Rachel's Townhouse, Cedar Vale Townhouses, Cedar Vale Detached Homes, Cedar Vale Care Home, Cedar Vale Family Centre, Mariner Row Shopping Street, Mariner Market, Northline Outfitters, Harbor Formalwear, Mariner Home Goods, Port Alder Auto, St. Maren Medical Center, St. Maren Community Clinic, St. Maren Family Doctors, Harbor Wellness Therapy, and St. Maren Sexual Health Centre. Together they provide 321 unique base-day PNG
+Street, Rachel's Townhouse, Cedar Vale Townhouses, Cedar Vale Detached Homes, Cedar Vale Care Home, Cedar Vale Family Centre, Mariner Row Shopping Street, Mariner Market, Northline Outfitters, Harbor Formalwear, Mariner Home Goods, Port Alder Auto, St. Maren Medical Center, St. Maren Community Clinic, St. Maren Family Doctors, Harbor Wellness Therapy, St. Maren Sexual Health Centre, and Bay Pharmacy. Together they provide 324 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -1327,6 +1327,26 @@ Destination-specific briefs:
 | Testing Room | `st_maren_sexual_health/testing_room.png` | Non-graphic collection room with upright adjustable chair, privacy screen, sink, blank monitor, closed supplies, and one left Consultation return. |
 | Treatment Room | `st_maren_sexual_health/treatment_room.png` | Distinct outpatient room with horizontal exam table, visitor chair, folded screen, sink, blank monitor, closed supplies, and one centered rear Consultation return. |
 
+### Bay Pharmacy batch prompt set
+
+This three-room batch completes the public pharmacy on Wellness Walk. The Sales Floor
+supports accessible everyday shopping with generic unreadable packaging, the Counter
+keeps prescription work secured behind closed storage, and the restricted Consultation
+Room provides a private conversation setting. The Counter's rear consultation route uses
+a corrected flush, level threshold with no steps or raised platform.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped destination inside Bay Pharmacy in polished painterly semi-realistic grounded mature contemporary cinematic realism. Continue the St. Maren campus through warm off-white walls, pale limestone, soft sea-green privacy glass, muted teal, weathered walnut, light-grey resilient flooring or quiet carpet tile, charcoal accents, abstract coastal art without faces, indoor plants, cool coastal daylight, and warm even task lighting. Make the neighborhood pharmacy practical, calm, accessible, professionally maintained, confidential where required, and human-scaled rather than luxurious, crowded, or supermarket-sized. Preserve exactly the authored routes, distinguish the public Sales Floor and Counter from the employee-or-appointment Consultation Room, and keep the lower center useful for dialogue UI. No people, staff, shoppers, figures, silhouettes, reflections of figures, photographic faces, navigation arrows, interface, readable words, letters, numbers, prices, patient or prescription names, product names, aisle signs, notices, schedules, forms, calendars, signs, logos, brands, active screens, clocks, exposed or identifiable medicine, visible pills, loose tablets, syringes, needles, anatomical imagery, blood, injuries, bodily fluids, weapons, clutter, extra routes, stairs, steps, raised thresholds, fisheye distortion, or watermark; all packages, bottles, boxes, screens, paperwork, bags, drawers, cabinets, shelves, panels, signs, and labels must be blank, dark, closed, locked, capped, sealed, frosted, abstract, turned away, or too indistinct to read.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Sales Floor | `bay_pharmacy/sales_floor.png` | Three low accessible retail islands with generic hygiene and wellness goods, blank packaging, foreground Wellness Walk doors, and one right Counter opening. |
+| Pharmacy Counter | `bay_pharmacy/pharmacy_counter.png` | Walnut-and-stone service counter with accessible pickup ledge, blank terminals, locked frosted storage, left Sales Floor opening, and level rear Consultation doorway. |
+| Private Consultation Room | `bay_pharmacy/consultation_room.png` | Round three-chair table, blank side workstation, sink, locked storage, frosted privacy glass, and one foreground Counter return. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -1347,7 +1367,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all fifty-two room batches were generated with the built-in
+The baseline assets and all fifty-three room batches were generated with the built-in
 OpenAI image-generation tool during 2026-08-29 and 2026-08-30 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the

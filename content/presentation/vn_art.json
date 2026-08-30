@@ -101,7 +101,8 @@
         "st_maren_community_clinic",
         "st_maren_doctors_office",
         "harbor_wellness_therapy",
-        "st_maren_sexual_health"
+        "st_maren_sexual_health",
+        "bay_pharmacy"
       ]
     },
     "audio_in_scope": false,
@@ -835,6 +836,17 @@
           {"kind": "background", "id": "st_maren_sexual_health.testing_room", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports private non-graphic STI screening in a collection-focused room with one leftward return to Consultation."},
           {"kind": "background", "id": "st_maren_sexual_health.treatment_room", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports private non-graphic outpatient care in a distinct exam-table room with one upward return to Consultation."}
         ]
+      },
+      {
+        "id": "bay_pharmacy_retail_and_prescription_route",
+        "title": "Bay Pharmacy Retail, Prescription, and Private Consultation Route",
+        "priority": 52,
+        "goal": "Complete the pharmacy from its Wellness Walk retail floor through the secure prescription counter into the restricted private consultation room.",
+        "assets": [
+          {"kind": "background", "id": "bay_pharmacy.sales_floor", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Supports public hygiene and wellness shopping with separate routes to Wellness Walk and the Pharmacy Counter."},
+          {"kind": "background", "id": "bay_pharmacy.pharmacy_counter", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports secure prescription pickup and pharmacist service with a level route between the Sales Floor and restricted Consultation Room."},
+          {"kind": "background", "id": "bay_pharmacy.consultation_room", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports confidential medication and contraception conversations in an employee-or-appointment room with one downward return to the Counter."}
+        ]
       }
     ]
   },
@@ -1160,6 +1172,9 @@
     {"id": "st_maren_sexual_health.private_reception", "location": "st_maren_sexual_health", "room": "private_reception", "path": "res://assets/art/backgrounds/st_maren_sexual_health/private_reception.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_sexual_health/private_reception.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "st_maren_sexual_health.consultation_room", "location": "st_maren_sexual_health", "room": "consultation_room", "path": "res://assets/art/backgrounds/st_maren_sexual_health/consultation_room.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_sexual_health/consultation_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "st_maren_sexual_health.testing_room", "location": "st_maren_sexual_health", "room": "testing_room", "path": "res://assets/art/backgrounds/st_maren_sexual_health/testing_room.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_sexual_health/testing_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "st_maren_sexual_health.treatment_room", "location": "st_maren_sexual_health", "room": "treatment_room", "path": "res://assets/art/backgrounds/st_maren_sexual_health/treatment_room.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_sexual_health/treatment_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "st_maren_sexual_health.treatment_room", "location": "st_maren_sexual_health", "room": "treatment_room", "path": "res://assets/art/backgrounds/st_maren_sexual_health/treatment_room.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_sexual_health/treatment_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "bay_pharmacy.sales_floor", "location": "bay_pharmacy", "room": "sales_floor", "path": "res://assets/art/backgrounds/bay_pharmacy/sales_floor.png", "variants": {"day": "res://assets/art/backgrounds/bay_pharmacy/sales_floor.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "bay_pharmacy.pharmacy_counter", "location": "bay_pharmacy", "room": "pharmacy_counter", "path": "res://assets/art/backgrounds/bay_pharmacy/pharmacy_counter.png", "variants": {"day": "res://assets/art/backgrounds/bay_pharmacy/pharmacy_counter.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "bay_pharmacy.consultation_room", "location": "bay_pharmacy", "room": "consultation_room", "path": "res://assets/art/backgrounds/bay_pharmacy/consultation_room.png", "variants": {"day": "res://assets/art/backgrounds/bay_pharmacy/consultation_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }
