@@ -57,7 +57,8 @@
         "bayview_cafe",
         "port_alder_marina",
         "alder_bay_beach",
-        "port_alder_galleria"
+        "port_alder_galleria",
+        "harbor_centre_downtown"
       ]
     },
     "audio_in_scope": false,
@@ -192,6 +193,20 @@
           {"kind": "background", "id": "port_alder_galleria.west_expansion", "status": "ready", "required_variants": ["day"], "reason": "Reserves clean modular storefront shells for future game content and mods."},
           {"kind": "background", "id": "port_alder_galleria.east_expansion", "status": "ready", "required_variants": ["day"], "reason": "Reserves clean modular storefront shells for future game content and mods."}
         ]
+      },
+      {
+        "id": "harbor_centre_downtown_route",
+        "title": "Harbor Centre Downtown Route",
+        "priority": 8,
+        "goal": "Complete the walkable downtown route from the transit plaza to employment, financial, residential, civic, and Galleria destinations.",
+        "assets": [
+          {"kind": "background", "id": "harbor_centre_downtown.transit_plaza", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain"], "reason": "The district's bus arrival, taxi pickup, route planner, and central pedestrian hub."},
+          {"kind": "background", "id": "harbor_centre_downtown.employment_block", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain"], "reason": "Connects the Employment Centre, business services, transit plaza, and financial route."},
+          {"kind": "background", "id": "harbor_centre_downtown.financial_block", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain"], "reason": "Connects downtown banking services to the employment and residential blocks."},
+          {"kind": "background", "id": "harbor_centre_downtown.residential_block", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain"], "reason": "Provides the public approach to downtown apartments and Harbor View Condos."},
+          {"kind": "background", "id": "harbor_centre_downtown.civic_square", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain"], "reason": "Connects City Hall, the Realty gallery, public events, and the transit plaza."},
+          {"kind": "background", "id": "harbor_centre_downtown.galleria_entrance", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain"], "reason": "Completes the immersive street-level transition between downtown and the Galleria."}
+        ]
       }
     ]
   },
@@ -270,6 +285,12 @@
     {"id": "port_alder_galleria.home_wing", "location": "port_alder_galleria", "room": "home_wing", "path": "res://assets/art/backgrounds/port_alder_galleria/home_wing.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_galleria/home_wing.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "port_alder_galleria.event_space", "location": "port_alder_galleria", "room": "event_space", "path": "res://assets/art/backgrounds/port_alder_galleria/event_space.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_galleria/event_space.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "port_alder_galleria.west_expansion", "location": "port_alder_galleria", "room": "west_expansion", "path": "res://assets/art/backgrounds/port_alder_galleria/west_expansion.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_galleria/west_expansion.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "port_alder_galleria.east_expansion", "location": "port_alder_galleria", "room": "east_expansion", "path": "res://assets/art/backgrounds/port_alder_galleria/east_expansion.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_galleria/east_expansion.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "port_alder_galleria.east_expansion", "location": "port_alder_galleria", "room": "east_expansion", "path": "res://assets/art/backgrounds/port_alder_galleria/east_expansion.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_galleria/east_expansion.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_centre_downtown.transit_plaza", "location": "harbor_centre_downtown", "room": "transit_plaza", "path": "res://assets/art/backgrounds/harbor_centre_downtown/transit_plaza.png", "variants": {"day": "res://assets/art/backgrounds/harbor_centre_downtown/transit_plaza.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_centre_downtown.employment_block", "location": "harbor_centre_downtown", "room": "employment_block", "path": "res://assets/art/backgrounds/harbor_centre_downtown/employment_block.png", "variants": {"day": "res://assets/art/backgrounds/harbor_centre_downtown/employment_block.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_centre_downtown.financial_block", "location": "harbor_centre_downtown", "room": "financial_block", "path": "res://assets/art/backgrounds/harbor_centre_downtown/financial_block.png", "variants": {"day": "res://assets/art/backgrounds/harbor_centre_downtown/financial_block.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_centre_downtown.residential_block", "location": "harbor_centre_downtown", "room": "residential_block", "path": "res://assets/art/backgrounds/harbor_centre_downtown/residential_block.png", "variants": {"day": "res://assets/art/backgrounds/harbor_centre_downtown/residential_block.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_centre_downtown.civic_square", "location": "harbor_centre_downtown", "room": "civic_square", "path": "res://assets/art/backgrounds/harbor_centre_downtown/civic_square.png", "variants": {"day": "res://assets/art/backgrounds/harbor_centre_downtown/civic_square.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "harbor_centre_downtown.galleria_entrance", "location": "harbor_centre_downtown", "room": "galleria_entrance", "path": "res://assets/art/backgrounds/harbor_centre_downtown/galleria_entrance.png", "variants": {"day": "res://assets/art/backgrounds/harbor_centre_downtown/galleria_entrance.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }

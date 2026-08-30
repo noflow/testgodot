@@ -41,11 +41,11 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The thirteen completed base-art locations are the Hale Home, Alder Heights Residential
+The fourteen completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, and Port Alder Galleria. Together
-they provide 74 unique base-day PNG backgrounds. Each base image is marked ready in the
+with Harbor Centre Downtown, they provide 80 unique base-day PNG backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
 
@@ -255,6 +255,29 @@ Destination-specific briefs:
 | West Expansion | `port_alder_galleria/west_expansion.png` | Maintained mod-ready corridor of vacant storefront shells returning to Tech Wing. |
 | East Expansion | `port_alder_galleria/east_expansion.png` | Maintained mod-ready corridor of vacant storefront shells returning to Home Wing. |
 
+### Harbor Centre Downtown batch prompt set
+
+This batch completes all six mapped Harbor Centre Downtown destinations. The Galleria
+Street Entrance anchored the district-side Galleria Entrance, which established the
+public materials and wet coastal atmosphere. The Transit Plaza then became the central
+reference for the Employment Block and Civic Square, while the Financial and Residential
+blocks continue the same pedestrian spine south from employment services.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped Harbor Centre Downtown destination in grounded mature cinematic contemporary realism. Match the supplied reference's wet late-August Pacific Northwest atmosphere, charcoal stone paving, cedar and dark-metal details, muted teal, cream civic stone, glass towers, mature street trees, planters, warm practical lamps, rain gardens, and accessible pedestrian design. Preserve the authored room-to-room and building-entry routes, clear open character staging, floating-arrow placement, and an uncluttered lower region for dialogue UI. No people or reflections of people, vehicles blocking routes, character sprites, navigation arrows, interface, readable signs, route maps, property listings, addresses, prices, account details, letters, numbers, logos, trademarks, captions, or watermark; signs and screens must be blank or abstract.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Harbor Transit Plaza | `harbor_centre_downtown/transit_plaza.png` | Sheltered central hub with blank route kiosks, covered bus bays, taxi lay-by, accessible curbs, and routes to Employment Block, Civic Square, and the Galleria. |
+| Employment Block | `harbor_centre_downtown/employment_block.png` | Office forecourt connecting Harbor Business Services, the Employment Centre, Transit Plaza, and Financial Block. |
+| Financial Block | `harbor_centre_downtown/financial_block.png` | Professional banking corridor with a sheltered blank-screen credit-union ATM lobby and north/south pedestrian spine. |
+| Residential Towers | `harbor_centre_downtown/residential_block.png` | End-of-route residential forecourt with distinct apartment and condominium lobby entrances and no forward public exit. |
+| Civic Square | `harbor_centre_downtown/civic_square.png` | Formal public square connecting City Hall, Port Alder Realty, and Transit Plaza around a rain garden and abstract geometric artwork. |
+| Galleria Entrance | `harbor_centre_downtown/galleria_entrance.png` | Broad exterior approach with the covered Galleria doors on the right and the Transit Plaza route continuing left. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -275,7 +298,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all eight room batches were generated with the built-in
+The baseline assets and all nine room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the
