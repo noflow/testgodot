@@ -41,7 +41,7 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The fifty-one completed base-art locations are the Hale Home, Alder Heights Residential
+The fifty-two completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
@@ -53,7 +53,7 @@ Tideglass Club, Harbor Companion Cooperative, the Rowan Family Home, Jade's Down
 Condo, Greyport Main Street, the Lee Family Apartment, the Flores Family Townhouse, and the
 Greyport Shared Apartment, the Donovan Family Apartment, Greyport Distribution, and the
 Port Alder Transit Depot, Greyport Studios, Undertow Nightclub, Cedar Vale Residential
-Street, Rachel's Townhouse, Cedar Vale Townhouses, Cedar Vale Detached Homes, Cedar Vale Care Home, Cedar Vale Family Centre, Mariner Row Shopping Street, Mariner Market, Northline Outfitters, Harbor Formalwear, and Mariner Home Goods. Together they provide 286 unique base-day PNG
+Street, Rachel's Townhouse, Cedar Vale Townhouses, Cedar Vale Detached Homes, Cedar Vale Care Home, Cedar Vale Family Centre, Mariner Row Shopping Street, Mariner Market, Northline Outfitters, Harbor Formalwear, Mariner Home Goods, and Port Alder Auto. Together they provide 290 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -1186,6 +1186,28 @@ Destination-specific briefs:
 | Décor Section | `mariner_home_goods/decor_section.png` | Practical cushions, throws, rugs, lamps, vases, planters, mirrors, baskets and abstract art with one clear Furniture Floor return. |
 | Checkout | `mariner_home_goods/checkout.png` | Navy-and-oak service counter with blank register and terminal, plain wrapping and delivery supplies, one left Kitchen Section return, and no public or loading shortcut. |
 
+### Port Alder Auto batch prompt set
+
+This batch carries Mariner Row's converted-warehouse retail language into an
+independent, attainable vehicle dealership supporting vehicle purchases, financing,
+used-car browsing, and maintenance arrangements. Warm brick, pale sandstone, deep
+navy metal, weathered oak, charcoal concrete, broad glass, cool coastal daylight,
+rain-softened exteriors, and warm practical lamps distinguish it from the neighboring
+home store while preserving the shared Home and Auto Block architecture.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped destination inside Port Alder Auto in polished painterly semi-realistic grounded mature contemporary cinematic realism. Continue Mariner Row's converted coastal warehouse architecture with warm brick, pale sandstone, deep navy metal framing, weathered oak, polished charcoal concrete, broad glass, cool rainy overcast daylight, and warm practical lighting. Make the independent dealership maintained, professional, approachable, and attainable rather than luxurious, branded, corporate, or oversized. Use clean generic compact cars, sedans, hatchbacks, and family vehicles without identifying marks. Preserve exactly the authored routes with every opening physically separate and keep the lower center useful for dialogue UI. No people, staff, customers, mechanics, figures, silhouettes, reflections of figures, photographic faces, navigation arrows, interface, readable words, letters, numbers, dealership names, prices, rates, contracts, service menus, tags, brands, logos, emblems, model badges, license plate text, active screens, money, keys left out, weapons, hazardous spills, clutter, extra routes, stairs, dereliction, fisheye distortion, or watermark; all papers, tags, stickers, plates, screens, cabinets, wall panels, forms, and signs must be blank, dark, abstract, closed, face-down, turned away, or too indistinct to read.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Showroom | `port_alder_auto/showroom.png` | Four-way public hub with far-left Home and Auto Block exit, rear Finance Office, far-right Used Car Lot doors, foreground Service Desk connection, practical generic display vehicles, and exactly those routes. |
+| Used Car Lot | `port_alder_auto/used_lot.png` | Secure rain-wet exterior lot with orderly attainable used vehicles, an enclosed perimeter, canopy lighting, and one clear left return through the Showroom doors. |
+| Finance Office | `port_alder_auto/finance_office.png` | Private brick-and-glass customer office with oak desk, three chairs, blank dark monitor, closed files, face-down paperwork, and one clear downward return to the Showroom. |
+| Service Desk | `port_alder_auto/service_desk.png` | Navy-and-oak service reception with blank dark terminals, waiting chairs, sealed workshop observation glass, and one clear upward return to the Showroom. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -1206,7 +1228,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all forty-six room batches were generated with the built-in
+The baseline assets and all forty-seven room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the

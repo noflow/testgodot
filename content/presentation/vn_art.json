@@ -95,7 +95,8 @@
         "mariner_market",
         "northline_outfitters",
         "harbor_formalwear",
-        "mariner_home_goods"
+        "mariner_home_goods",
+        "port_alder_auto"
       ]
     },
     "audio_in_scope": false,
@@ -746,6 +747,18 @@
           {"kind": "background", "id": "mariner_home_goods.decor_section", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports residence decoration and customization with practical accessories and one clear return to the Furniture Floor."},
           {"kind": "background", "id": "mariner_home_goods.checkout", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports household purchases and arranging furniture delivery with one clear left return to the Kitchen Section."}
         ]
+      },
+      {
+        "id": "port_alder_auto_vehicle_purchase_and_service_route",
+        "title": "Port Alder Auto Vehicle Purchase, Finance, Used Lot, and Service Route",
+        "priority": 46,
+        "goal": "Complete Port Alder Auto from its four-way showroom through used-vehicle browsing, financing, and the customer service desk for vehicle ownership and maintenance.",
+        "assets": [
+          {"kind": "background", "id": "port_alder_auto.showroom", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Provides the four-way dealership hub connecting Mariner Row, the Used Car Lot, Finance Office, and Service Desk through an attainable unbranded showroom."},
+          {"kind": "background", "id": "port_alder_auto.used_lot", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Supports browsing practical used vehicles in a secure exterior lot with one clear left return to the Showroom."},
+          {"kind": "background", "id": "port_alder_auto.finance_office", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports private vehicle purchase and financing conversations with one clear downward return to the Showroom."},
+          {"kind": "background", "id": "port_alder_auto.service_desk", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports arranging vehicle maintenance and repairs with one clear upward return to the Showroom."}
+        ]
       }
     ]
   },
@@ -1036,6 +1049,10 @@
     {"id": "mariner_home_goods.furniture_floor", "location": "mariner_home_goods", "room": "furniture_floor", "path": "res://assets/art/backgrounds/mariner_home_goods/furniture_floor.png", "variants": {"day": "res://assets/art/backgrounds/mariner_home_goods/furniture_floor.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "mariner_home_goods.kitchen_section", "location": "mariner_home_goods", "room": "kitchen_section", "path": "res://assets/art/backgrounds/mariner_home_goods/kitchen_section.png", "variants": {"day": "res://assets/art/backgrounds/mariner_home_goods/kitchen_section.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "mariner_home_goods.decor_section", "location": "mariner_home_goods", "room": "decor_section", "path": "res://assets/art/backgrounds/mariner_home_goods/decor_section.png", "variants": {"day": "res://assets/art/backgrounds/mariner_home_goods/decor_section.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "mariner_home_goods.checkout", "location": "mariner_home_goods", "room": "checkout", "path": "res://assets/art/backgrounds/mariner_home_goods/checkout.png", "variants": {"day": "res://assets/art/backgrounds/mariner_home_goods/checkout.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "mariner_home_goods.checkout", "location": "mariner_home_goods", "room": "checkout", "path": "res://assets/art/backgrounds/mariner_home_goods/checkout.png", "variants": {"day": "res://assets/art/backgrounds/mariner_home_goods/checkout.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "port_alder_auto.showroom", "location": "port_alder_auto", "room": "showroom", "path": "res://assets/art/backgrounds/port_alder_auto/showroom.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_auto/showroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "port_alder_auto.used_lot", "location": "port_alder_auto", "room": "used_lot", "path": "res://assets/art/backgrounds/port_alder_auto/used_lot.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_auto/used_lot.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "port_alder_auto.finance_office", "location": "port_alder_auto", "room": "finance_office", "path": "res://assets/art/backgrounds/port_alder_auto/finance_office.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_auto/finance_office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "port_alder_auto.service_desk", "location": "port_alder_auto", "room": "service_desk", "path": "res://assets/art/backgrounds/port_alder_auto/service_desk.png", "variants": {"day": "res://assets/art/backgrounds/port_alder_auto/service_desk.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }
