@@ -102,7 +102,8 @@
         "st_maren_doctors_office",
         "harbor_wellness_therapy",
         "st_maren_sexual_health",
-        "bay_pharmacy"
+        "bay_pharmacy",
+        "hannah_medical_district_apartment"
       ]
     },
     "audio_in_scope": false,
@@ -847,6 +848,20 @@
           {"kind": "background", "id": "bay_pharmacy.pharmacy_counter", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports secure prescription pickup and pharmacist service with a level route between the Sales Floor and restricted Consultation Room."},
           {"kind": "background", "id": "bay_pharmacy.consultation_room", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports confidential medication and contraception conversations in an employee-or-appointment room with one downward return to the Counter."}
         ]
+      },
+      {
+        "id": "hannah_medical_district_apartment_invitation_and_recovery_route",
+        "title": "Hannah's Medical District Apartment Invitation, Recovery, and Relationship Route",
+        "priority": 53,
+        "goal": "Complete Hannah's invitation-only one-bedroom home from its campus-connected entry through daily living and shift recovery into the relationship-gated bedroom and private balcony.",
+        "assets": [
+          {"kind": "background", "id": "hannah_medical_district_apartment.entry", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Provides the invitation-controlled arrival point with separate routes to the Campus Plaza and Living Room."},
+          {"kind": "background", "id": "hannah_medical_district_apartment.living_room", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Provides the apartment's four-way social hub connecting Entry, Bedroom, Kitchen, and Balcony."},
+          {"kind": "background", "id": "hannah_medical_district_apartment.kitchen", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports cooking, quiet meals, and home conversations with separate routes to the Living Room and Bathroom."},
+          {"kind": "background", "id": "hannah_medical_district_apartment.bedroom", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports shift recovery and relationship-gated private scenes with one downward return to the Living Room."},
+          {"kind": "background", "id": "hannah_medical_district_apartment.bathroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports household hygiene in a level private room with one upward return to the Kitchen."},
+          {"kind": "background", "id": "hannah_medical_district_apartment.balcony", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Supports decompression, private conversations, and medical-district views with one upward return to the Living Room."}
+        ]
       }
     ]
   },
@@ -1175,6 +1190,12 @@
     {"id": "st_maren_sexual_health.treatment_room", "location": "st_maren_sexual_health", "room": "treatment_room", "path": "res://assets/art/backgrounds/st_maren_sexual_health/treatment_room.png", "variants": {"day": "res://assets/art/backgrounds/st_maren_sexual_health/treatment_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "bay_pharmacy.sales_floor", "location": "bay_pharmacy", "room": "sales_floor", "path": "res://assets/art/backgrounds/bay_pharmacy/sales_floor.png", "variants": {"day": "res://assets/art/backgrounds/bay_pharmacy/sales_floor.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "bay_pharmacy.pharmacy_counter", "location": "bay_pharmacy", "room": "pharmacy_counter", "path": "res://assets/art/backgrounds/bay_pharmacy/pharmacy_counter.png", "variants": {"day": "res://assets/art/backgrounds/bay_pharmacy/pharmacy_counter.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "bay_pharmacy.consultation_room", "location": "bay_pharmacy", "room": "consultation_room", "path": "res://assets/art/backgrounds/bay_pharmacy/consultation_room.png", "variants": {"day": "res://assets/art/backgrounds/bay_pharmacy/consultation_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "bay_pharmacy.consultation_room", "location": "bay_pharmacy", "room": "consultation_room", "path": "res://assets/art/backgrounds/bay_pharmacy/consultation_room.png", "variants": {"day": "res://assets/art/backgrounds/bay_pharmacy/consultation_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "hannah_medical_district_apartment.entry", "location": "hannah_medical_district_apartment", "room": "entry", "path": "res://assets/art/backgrounds/hannah_medical_district_apartment/entry.png", "variants": {"day": "res://assets/art/backgrounds/hannah_medical_district_apartment/entry.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "hannah_medical_district_apartment.living_room", "location": "hannah_medical_district_apartment", "room": "living_room", "path": "res://assets/art/backgrounds/hannah_medical_district_apartment/living_room.png", "variants": {"day": "res://assets/art/backgrounds/hannah_medical_district_apartment/living_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "hannah_medical_district_apartment.kitchen", "location": "hannah_medical_district_apartment", "room": "kitchen", "path": "res://assets/art/backgrounds/hannah_medical_district_apartment/kitchen.png", "variants": {"day": "res://assets/art/backgrounds/hannah_medical_district_apartment/kitchen.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "hannah_medical_district_apartment.bedroom", "location": "hannah_medical_district_apartment", "room": "bedroom", "path": "res://assets/art/backgrounds/hannah_medical_district_apartment/bedroom.png", "variants": {"day": "res://assets/art/backgrounds/hannah_medical_district_apartment/bedroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "hannah_medical_district_apartment.bathroom", "location": "hannah_medical_district_apartment", "room": "bathroom", "path": "res://assets/art/backgrounds/hannah_medical_district_apartment/bathroom.png", "variants": {"day": "res://assets/art/backgrounds/hannah_medical_district_apartment/bathroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "hannah_medical_district_apartment.balcony", "location": "hannah_medical_district_apartment", "room": "balcony", "path": "res://assets/art/backgrounds/hannah_medical_district_apartment/balcony.png", "variants": {"day": "res://assets/art/backgrounds/hannah_medical_district_apartment/balcony.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }

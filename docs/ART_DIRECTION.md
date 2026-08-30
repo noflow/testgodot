@@ -41,7 +41,7 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The fifty-eight completed base-art locations are the Hale Home, Alder Heights Residential
+The fifty-nine completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
@@ -53,7 +53,7 @@ Tideglass Club, Harbor Companion Cooperative, the Rowan Family Home, Jade's Down
 Condo, Greyport Main Street, the Lee Family Apartment, the Flores Family Townhouse, and the
 Greyport Shared Apartment, the Donovan Family Apartment, Greyport Distribution, and the
 Port Alder Transit Depot, Greyport Studios, Undertow Nightclub, Cedar Vale Residential
-Street, Rachel's Townhouse, Cedar Vale Townhouses, Cedar Vale Detached Homes, Cedar Vale Care Home, Cedar Vale Family Centre, Mariner Row Shopping Street, Mariner Market, Northline Outfitters, Harbor Formalwear, Mariner Home Goods, Port Alder Auto, St. Maren Medical Center, St. Maren Community Clinic, St. Maren Family Doctors, Harbor Wellness Therapy, St. Maren Sexual Health Centre, and Bay Pharmacy. Together they provide 324 unique base-day PNG
+Street, Rachel's Townhouse, Cedar Vale Townhouses, Cedar Vale Detached Homes, Cedar Vale Care Home, Cedar Vale Family Centre, Mariner Row Shopping Street, Mariner Market, Northline Outfitters, Harbor Formalwear, Mariner Home Goods, Port Alder Auto, St. Maren Medical Center, St. Maren Community Clinic, St. Maren Family Doctors, Harbor Wellness Therapy, St. Maren Sexual Health Centre, Bay Pharmacy, and Hannah's Medical District Apartment. Together they provide 330 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -1347,6 +1347,31 @@ Destination-specific briefs:
 | Pharmacy Counter | `bay_pharmacy/pharmacy_counter.png` | Walnut-and-stone service counter with accessible pickup ledge, blank terminals, locked frosted storage, left Sales Floor opening, and level rear Consultation doorway. |
 | Private Consultation Room | `bay_pharmacy/consultation_room.png` | Round three-chair table, blank side workstation, sink, locked storage, frosted privacy glass, and one foreground Counter return. |
 
+### Hannah's Medical District Apartment batch prompt set
+
+This six-room batch creates Hannah Brooks's invitation-only one-bedroom apartment near
+the hospital. The home reflects her tired-optimist nursing schedule through calm blue-grey
+and teal textiles, warm oak, practical closed storage, blackout-friendly privacy, and
+modest recovery comforts without exposing patient or workplace information. The Living
+Room presents all four interior routes; the Bedroom remains relationship-gated. A faint
+corner artifact was removed from the Entry, and the Bathroom-to-Kitchen threshold was
+corrected to a flush level connection.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped destination inside Hannah Brooks's medical-district apartment in polished painterly semi-realistic grounded mature contemporary cinematic realism. Use a coherent modest mid-rise home palette of cream, blue-grey, muted teal, warm oak, charcoal, soft clay accents, simple coastal artwork without faces, healthy plants, cool bay daylight, and warm shaded lamps. Make the one-bedroom apartment carefully kept, responsible, restful, lived-in, and suited to a 27-year-old registered nurse with rotating shifts rather than luxurious, clinical, childish, or staged. Preserve exactly the authored routes and permission boundaries, use level accessible floors and thresholds, and keep the lower center useful for dialogue UI. No people, Hannah, neighbors, figures, silhouettes, reflections of figures, photographic faces, navigation arrows, interface, readable words, letters, numbers, apartment number, patient or hospital information, notices, schedules, forms, charts, mail, name tags, ID badges, signs, logos, brands, active screens, clocks, visible medication, medical equipment, alcohol, cigarettes, lingerie, sexual objects, blood, bodily fluids, weapons, clutter, extra routes, stairs, steps, raised thresholds, fisheye distortion, symbols, corner marks, or watermark; all papers, bags, clothing, packages, screens, signs, and labels must be blank, closed, folded, turned away, abstract, or too indistinct to read.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Apartment Entry | `hannah_medical_district_apartment/entry.png` | Secure foreground front door, oak console and shoe storage, plain work jacket and tote, bench, plant, and one right Living Room opening. |
+| Living Room | `hannah_medical_district_apartment/living_room.png` | Blue-grey sofa and armchair hub with left Entry, centered rear Bedroom, right Kitchen, foreground Balcony threshold, blank screen, and recovery comforts. |
+| Kitchen | `hannah_medical_district_apartment/kitchen.png` | Compact oak-and-cream galley with practical appliances, two-seat ledge, left Living Room opening, and foreground Bathroom doorway. |
+| Bedroom | `hannah_medical_district_apartment/bedroom.png` | Relationship-gated recovery room with queen bed, blackout curtains, closed wardrobe, dresser, reading chair, and one foreground Living Room return. |
+| Bathroom | `hannah_medical_district_apartment/bathroom.png` | Walk-in shower, vanity, toilet, towels, hamper, high frosted window, and one level centered rear Kitchen return. |
+| Balcony | `hannah_medical_district_apartment/balcony.png` | Covered medical-district balcony with bistro seating, coastal planters, bay-and-campus view, safe railing, and one level rear Living Room return. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -1367,7 +1392,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all fifty-three room batches were generated with the built-in
+The baseline assets and all fifty-four room batches were generated with the built-in
 OpenAI image-generation tool during 2026-08-29 and 2026-08-30 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the
