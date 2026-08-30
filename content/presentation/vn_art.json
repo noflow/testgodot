@@ -87,7 +87,8 @@
         "undertow_nightclub",
         "cedar_vale_street",
         "rachel_cedar_vale_townhouse",
-        "cedar_vale_townhouses"
+        "cedar_vale_townhouses",
+        "cedar_vale_detached_homes"
       ]
     },
     "audio_in_scope": false,
@@ -631,6 +632,25 @@
           {"kind": "background", "id": "cedar_vale_townhouses.laundry", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports clothing care and household chores with one clear return to the Kitchen."},
           {"kind": "background", "id": "cedar_vale_townhouses.yard", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Supports enclosed outdoor home, date, family, and customization scenes with one clear return to the Living Room."}
         ]
+      },
+      {
+        "id": "cedar_vale_detached_homes_family_housing_route",
+        "title": "Cedar Vale Detached Homes Purchase, Rental, and Family-Life Route",
+        "priority": 38,
+        "goal": "Complete Cedar Vale's representative three-bedroom detached house from its property-viewing threshold through social, dining, private, future-family, household-service, vehicle, and enclosed-yard spaces for rental, purchase, and long-term player-home gameplay.",
+        "assets": [
+          {"kind": "background", "id": "cedar_vale_detached_homes.foyer", "status": "in_progress", "required_variants": ["day", "night", "rain", "winter"], "reason": "Supports property viewing, Detached Home Lane arrival, and owner access through an attainable two-route threshold connecting the street and Living Room."},
+          {"kind": "background", "id": "cedar_vale_detached_homes.living_room", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Provides the four-way social and family-life hub with visibly separate routes to the Foyer, Primary Bedroom, Dining Room, and Yard."},
+          {"kind": "background", "id": "cedar_vale_detached_homes.kitchen", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports cooking and household scenes through a practical two-route connection between the Dining Room and Laundry."},
+          {"kind": "background", "id": "cedar_vale_detached_homes.dining_room", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Provides the three-way meal, conversation, date, and family hub connecting the Living Room, Kitchen, and Second Bedroom."},
+          {"kind": "background", "id": "cedar_vale_detached_homes.primary_bedroom", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports player or partner sleep, wardrobe, relationship, and customization scenes while connecting the Living Room and future Child Bedroom."},
+          {"kind": "background", "id": "cedar_vale_detached_homes.child_bedroom", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Provides an age-flexible future-player-child room without a preassigned identity and with one clear return to the Primary Bedroom."},
+          {"kind": "background", "id": "cedar_vale_detached_homes.second_bedroom", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports an adult guest, roommate, relative, study use, or customization while connecting the Dining Room and Bathroom."},
+          {"kind": "background", "id": "cedar_vale_detached_homes.bathroom", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports household hygiene and future family routines with one clear return to the Second Bedroom."},
+          {"kind": "background", "id": "cedar_vale_detached_homes.laundry", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports clothing care and chores through the two-route household-service link between the Kitchen and Garage."},
+          {"kind": "background", "id": "cedar_vale_detached_homes.garage", "status": "in_progress", "required_variants": ["day", "night", "rain", "winter"], "reason": "Provides secure empty vehicle storage, maintenance, and later car representation with one clear return to the Laundry and no exterior shortcut."},
+          {"kind": "background", "id": "cedar_vale_detached_homes.yard", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Supports larger enclosed outdoor home, date, family, pet, gardening, and customization scenes with one clear return to the Living Room."}
+        ]
       }
     ]
   },
@@ -878,6 +898,17 @@
     {"id": "cedar_vale_townhouses.second_bedroom", "location": "cedar_vale_townhouses", "room": "second_bedroom", "path": "res://assets/art/backgrounds/cedar_vale_townhouses/second_bedroom.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_townhouses/second_bedroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "cedar_vale_townhouses.bathroom", "location": "cedar_vale_townhouses", "room": "bathroom", "path": "res://assets/art/backgrounds/cedar_vale_townhouses/bathroom.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_townhouses/bathroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "cedar_vale_townhouses.laundry", "location": "cedar_vale_townhouses", "room": "laundry", "path": "res://assets/art/backgrounds/cedar_vale_townhouses/laundry.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_townhouses/laundry.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "cedar_vale_townhouses.yard", "location": "cedar_vale_townhouses", "room": "yard", "path": "res://assets/art/backgrounds/cedar_vale_townhouses/yard.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_townhouses/yard.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "cedar_vale_townhouses.yard", "location": "cedar_vale_townhouses", "room": "yard", "path": "res://assets/art/backgrounds/cedar_vale_townhouses/yard.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_townhouses/yard.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cedar_vale_detached_homes.foyer", "location": "cedar_vale_detached_homes", "room": "foyer", "path": "res://assets/art/backgrounds/cedar_vale_detached_homes/foyer.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_detached_homes/foyer.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cedar_vale_detached_homes.living_room", "location": "cedar_vale_detached_homes", "room": "living_room", "path": "res://assets/art/backgrounds/cedar_vale_detached_homes/living_room.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_detached_homes/living_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cedar_vale_detached_homes.kitchen", "location": "cedar_vale_detached_homes", "room": "kitchen", "path": "res://assets/art/backgrounds/cedar_vale_detached_homes/kitchen.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_detached_homes/kitchen.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cedar_vale_detached_homes.dining_room", "location": "cedar_vale_detached_homes", "room": "dining_room", "path": "res://assets/art/backgrounds/cedar_vale_detached_homes/dining_room.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_detached_homes/dining_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cedar_vale_detached_homes.primary_bedroom", "location": "cedar_vale_detached_homes", "room": "primary_bedroom", "path": "res://assets/art/backgrounds/cedar_vale_detached_homes/primary_bedroom.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_detached_homes/primary_bedroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cedar_vale_detached_homes.child_bedroom", "location": "cedar_vale_detached_homes", "room": "child_bedroom", "path": "res://assets/art/backgrounds/cedar_vale_detached_homes/child_bedroom.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_detached_homes/child_bedroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cedar_vale_detached_homes.second_bedroom", "location": "cedar_vale_detached_homes", "room": "second_bedroom", "path": "res://assets/art/backgrounds/cedar_vale_detached_homes/second_bedroom.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_detached_homes/second_bedroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cedar_vale_detached_homes.bathroom", "location": "cedar_vale_detached_homes", "room": "bathroom", "path": "res://assets/art/backgrounds/cedar_vale_detached_homes/bathroom.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_detached_homes/bathroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cedar_vale_detached_homes.laundry", "location": "cedar_vale_detached_homes", "room": "laundry", "path": "res://assets/art/backgrounds/cedar_vale_detached_homes/laundry.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_detached_homes/laundry.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cedar_vale_detached_homes.garage", "location": "cedar_vale_detached_homes", "room": "garage", "path": "res://assets/art/backgrounds/cedar_vale_detached_homes/garage.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_detached_homes/garage.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "cedar_vale_detached_homes.yard", "location": "cedar_vale_detached_homes", "room": "yard", "path": "res://assets/art/backgrounds/cedar_vale_detached_homes/yard.png", "variants": {"day": "res://assets/art/backgrounds/cedar_vale_detached_homes/yard.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }

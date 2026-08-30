@@ -41,7 +41,7 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The forty-three completed base-art locations are the Hale Home, Alder Heights Residential
+The forty-four completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
@@ -53,7 +53,7 @@ Tideglass Club, Harbor Companion Cooperative, the Rowan Family Home, Jade's Down
 Condo, Greyport Main Street, the Lee Family Apartment, the Flores Family Townhouse, and the
 Greyport Shared Apartment, the Donovan Family Apartment, Greyport Distribution, and the
 Port Alder Transit Depot, Greyport Studios, Undertow Nightclub, Cedar Vale Residential
-Street, Rachel's Townhouse, and Cedar Vale Townhouses. Together they provide 243 unique base-day PNG
+Street, Rachel's Townhouse, Cedar Vale Townhouses, and Cedar Vale Detached Homes. Together they provide 254 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -991,6 +991,37 @@ Destination-specific briefs:
 | Laundry | `cedar_vale_townhouses/laundry.png` | Compact household service room with blank dark appliance panels, plain closed storage, uncluttered work surface, and exactly one left Kitchen return. |
 | Small Yard | `cedar_vale_townhouses/yard.png` | Modest enclosed rain-softened yard with cedar privacy fencing, adaptable seating and planting space, no side gate, and exactly one glazed Living Room return. |
 
+### Cedar Vale Detached Homes batch prompt set
+
+This batch continues the property entrance on Cedar Vale's Detached Home Lane into a
+representative three-bedroom house available to rent or purchase. It is a meaningful
+housing upgrade from the townhouse without becoming a mansion: the larger plan adds a
+dining room, future-child bedroom, garage, and expanded yard while remaining attainable,
+professionally staged, identity-neutral, and ready for long-term player customization.
+Warm cream, caramel oak, moss green, slate blue, muted rust, river stone, and dark bronze
+connect the interior to the cedar-and-stone exterior and distinguish it from both generic
+townhouse and Rachel's home.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped destination inside or immediately behind a representative rentable-and-purchasable three-bedroom Cedar Vale detached house in polished painterly semi-realistic grounded mature contemporary cinematic realism. Continue the cedar-and-stone house shown on rain-softened Detached Home Lane with warm cream, caramel oak, moss green, slate blue, muted rust, river stone, dark bronze, and rain-grey blue. Make the house larger and better equipped than the townhouse while remaining attainable, professionally staged, maintained, family-ready, identity-neutral, move-in-ready, and suitable for a property viewing or future player residence rather than luxurious, mansion-like, character-owned, child-cluttered, student-like, or clinical. Preserve exactly the authored room-to-room routes, with every exit visibly separate and generous uncluttered central or lower character-staging space. No people, children, animals, reflections of figures, silhouettes, character sprites, navigation arrows, interface, readable words, letters, numbers, addresses, listings, prices, signs, labels, mail, paperwork, logos, trademarks, brands, photo faces, active screens, resident identity, medicine, alcohol, drugs, weapons, sexual cues, underwear, clutter piles, broken fixtures, extra routes, or watermark; all screens, appliance panels, containers, and storage must be dark, blank, plain, or closed.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Home Foyer | `cedar_vale_detached_homes/foyer.png` | Spacious viewing threshold with a wet front-walk return to Detached Home Lane, one separate right Living Room opening, practical closed storage, and exactly those two routes. |
+| Living Room | `cedar_vale_detached_homes/living_room.png` | Four-way social and family hub with left Foyer, upper stair to the Primary Bedroom, right Dining Room, centered glazed Yard doors, modest river-stone fireplace, and exactly those routes. |
+| Kitchen | `cedar_vale_detached_homes/kitchen.png` | Better-equipped but attainable moss-grey and warm-ivory kitchen viewed from the lower Dining Room return, with one separate right Laundry doorway and exactly those two routes. |
+| Dining Room | `cedar_vale_detached_homes/dining_room.png` | Three-way meal, conversation, date, and family room with separate left Living Room, rear Kitchen, and right Second Bedroom openings around an unobstructed six-seat table. |
+| Primary Bedroom | `cedar_vale_detached_homes/primary_bedroom.png` | Neutral adult room with closed storage, a lower Living Room or stair-landing return, separate right Child Bedroom doorway, and no ensuite or balcony shortcut. |
+| Child Bedroom | `cedar_vale_detached_homes/child_bedroom.png` | Safe age-flexible future-player-child room with a single bed, blank desk, closed toy storage, nonbranded wooden toys, no preassigned identity, and one left Primary Bedroom return. |
+| Second Bedroom | `cedar_vale_detached_homes/second_bedroom.png` | Flexible adult guest, roommate, relative, or study room with a left Dining Room doorway, lower tiled Bathroom threshold, closed storage, and exactly those two routes. |
+| Bathroom | `cedar_vale_detached_homes/bathroom.png` | Full warm-ivory and river-stone household bathroom with tub-shower, closed vanity, fixed frosted window, and one rear Second Bedroom return. |
+| Laundry | `cedar_vale_detached_homes/laundry.png` | Organized two-route service room with left Kitchen, right Garage, blank dark appliance panels, closed moss-grey storage, and clear circulation. |
+| Garage | `cedar_vale_detached_homes/garage.png` | Secure empty parking bay prepared for later player-owned vehicle representation, fully closed overhead door, blank storage, and one left Laundry return without an exterior shortcut. |
+| Yard | `cedar_vale_detached_homes/yard.png` | Larger enclosed lawn and wet-stone patio with continuous cedar fencing, adaptable planting and seating space, and one centered glazed Living Room return. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -1011,7 +1042,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all thirty-eight room batches were generated with the built-in
+The baseline assets and all thirty-nine room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the
