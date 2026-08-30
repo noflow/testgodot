@@ -41,7 +41,7 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The thirty-six completed base-art locations are the Hale Home, Alder Heights Residential
+The thirty-seven completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
@@ -51,7 +51,7 @@ Cypress Hall Dorm, Maple Hall Dorm, the Westshore Shared Student Apartment, and 
 Westshore Bookshop, Lantern Gallery, Lantern District Street, La Brisa Kitchen,
 Tideglass Club, Harbor Companion Cooperative, the Rowan Family Home, Jade's Downtown
 Condo, Greyport Main Street, the Lee Family Apartment, the Flores Family Townhouse, and the
-Greyport Shared Apartment, and the Donovan Family Apartment. Together they provide 198 unique base-day PNG
+Greyport Shared Apartment, the Donovan Family Apartment, and Greyport Distribution. Together they provide 203 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -810,6 +810,30 @@ Destination-specific briefs:
 | Mother's Bedroom | `donovan_family_apartment/mother_bedroom.png` | Restricted neutral adult room with made bed, comfortable chair, closed storage, fixed rainy window, restrained abstract art, one closed privacy door, and no invented identity or health clues. |
 | Bathroom | `donovan_family_apartment/bathroom.png` | Shared cream, denim, and dusty-rose bathroom with tub-shower, ordinary fixtures, closed storage, plain toiletries, radiator, and one clear Kitchen return. |
 
+### Greyport Distribution batch prompt set
+
+This batch carries Greyport Industrial Corner's controlled warehouse entrance through a
+safe, regulated workplace supporting interviews, warehouse employment, physical job
+requirements, inventory development, performance, and promotion. The restored industrial
+interior uses weathered umber brick, muted industrial green, galvanized steel, charcoal
+concrete, navy accents, restrained safety amber, and warm cedar. It feels active,
+organized, accessible, humane, and hard-working rather than dangerous, abandoned,
+dystopian, prison-like, or excessively automated.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped destination inside Greyport Distribution in grounded mature cinematic contemporary realism. Continue the restored brick-and-corrugated industrial complex on Greyport's Industrial Corner and make the distribution workplace feel safe, regulated, active, maintained, accessible, efficient, ordinary, and hard-working rather than dangerous, abandoned, dystopian, prison-like, or excessively automated. Use weathered umber brick, muted industrial green, galvanized steel, charcoal concrete, navy accents, restrained safety amber, warm cedar surfaces, rain-softened cool daylight, and warm practical fixtures. Preserve exactly the authored room-to-room routes and access level with all exits visibly separate and a generous uncluttered central and lower character-staging area. Workplace equipment must be parked or inactive, cargo stable, pedestrian lanes clear, and employee spaces dignified. No people or reflections of people, character sprites, navigation arrows, interface, readable safety signs, schedules, shift boards, manifests, package labels, names, addresses, company names, advertisements, words, letters, numbers, barcodes, logos, trademarks, brands, photo faces, active monitor content, weapons, drugs, blood, accidents, damaged parcels, falling cargo, spills, sparks, smoke, broken equipment, exposed hazards, prison imagery, dystopia, garbage, or watermark; all screens must be dark and all documents, labels, boxes, badges, panels, and papers must be blank, closed, face-down, abstract, turned away, or too indistinct to read.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Security Desk | `greyport_distribution/security.png` | Three-way employee-and-interview entry with rear controlled Warehouse Floor gate, right Supervisor Office door, foreground Industrial Corner return, low security desk, dark monitors, visitor seating, and blank badge station. |
+| Warehouse Floor | `greyport_distribution/warehouse_floor.png` | Employee-only three-way operations hub with left Loading Bays, right Break Room, foreground Security return, organized racking, blank sealed cargo, parked pallet equipment, and clear pedestrian lanes. |
+| Loading Bays | `greyport_distribution/loading_bays.png` | Employee-only indoor dock with three closed roll-up doors, clean levelers and staging lanes, wrapped blank pallet, parked hand jack, fixed rainy panels, and one right Warehouse Floor return. |
+| Break Room | `greyport_distribution/break_room.png` | Humane employee room with left Warehouse Floor return, sturdy tables, kitchenette, blank vending display, closed lockers, bench, fixed high rain window, and no other exit. |
+| Supervisor Office | `greyport_distribution/supervisor_office.png` | Appointment-or-employee office with left Security return, dark monitor, interview chairs, closed files, blank planner grid, fixed rain window, and interior glazing that is not a passage. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -830,7 +854,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all thirty-one room batches were generated with the built-in
+The baseline assets and all thirty-two room batches were generated with the built-in
 OpenAI image-generation tool on 2026-08-29 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the
