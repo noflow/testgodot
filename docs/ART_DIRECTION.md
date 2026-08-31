@@ -41,7 +41,7 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The sixty-three completed base-art locations are the Hale Home, Alder Heights Residential
+The sixty-four completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
@@ -53,7 +53,7 @@ Tideglass Club, Harbor Companion Cooperative, the Rowan Family Home, Jade's Down
 Condo, Greyport Main Street, the Lee Family Apartment, the Flores Family Townhouse, and the
 Greyport Shared Apartment, the Donovan Family Apartment, Greyport Distribution, and the
 Port Alder Transit Depot, Greyport Studios, Undertow Nightclub, Cedar Vale Residential
-Street, Rachel's Townhouse, Cedar Vale Townhouses, Cedar Vale Detached Homes, Cedar Vale Care Home, Cedar Vale Family Centre, Mariner Row Shopping Street, Mariner Market, Northline Outfitters, Harbor Formalwear, Mariner Home Goods, Port Alder Auto, St. Maren Medical Center, St. Maren Community Clinic, St. Maren Family Doctors, Harbor Wellness Therapy, St. Maren Sexual Health Centre, Bay Pharmacy, Hannah's Medical District Apartment, Crown Point Boulevard, Price & Caldwell Law, Olivia's Crown Point Penthouse, and Crown Point Condominiums. Together they provide 355 unique base-day PNG
+Street, Rachel's Townhouse, Cedar Vale Townhouses, Cedar Vale Detached Homes, Cedar Vale Care Home, Cedar Vale Family Centre, Mariner Row Shopping Street, Mariner Market, Northline Outfitters, Harbor Formalwear, Mariner Home Goods, Port Alder Auto, St. Maren Medical Center, St. Maren Community Clinic, St. Maren Family Doctors, Harbor Wellness Therapy, St. Maren Sexual Health Centre, Bay Pharmacy, Hannah's Medical District Apartment, Crown Point Boulevard, Price & Caldwell Law, Olivia's Crown Point Penthouse, Crown Point Condominiums, and Crown Point Penthouses. Together they provide 363 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -1470,6 +1470,32 @@ Destination-specific briefs:
 | Resident Pool | `crown_point_condos/pool.png` | Quiet indoor harbor-view pool with pale stone deck, left glass Gym connection, and one foreground Secure Parking return. |
 | Secure Parking | `crown_point_condos/parking.png` | Clean underground resident garage with anonymous vehicles, centered rear Pool elevator vestibule, and warm-lit right Lobby doorway. |
 
+### Crown Point Penthouses batch prompt set
+
+This eight-room batch creates Crown Point's purchasable show penthouse as a lighter,
+more neutral alternative to Olivia Price's invitation-only home. Ivory travertine,
+rift-cut pale oak, champagne bronze, charcoal navy, sea-glass accents, cream upholstery,
+and sweeping harbor views establish a high-value residence prepared for viewings rather
+than a personalized character home. The Great Room forms the central four-way hub, and
+the corrected Chef Kitchen keeps its foreground Office connection completely flush.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped room inside the purchasable Crown Point show penthouse in polished cinematic semi-realistic grounded contemporary environment concept art. Use ivory and pale travertine, rift-cut light oak, champagne bronze, charcoal navy, sea-glass blue-green, cream upholstery, generic abstract coastal art, restrained plants, cool harbor daylight, warm concealed architectural lighting, and sweeping views of Port Alder's water and forested hills. Make the property expansive, expensive, pristine, owner-or-viewing controlled, and neutrally staged rather than personal, ostentatious, dark, or visually identical to Olivia Price's penthouse. Preserve exactly the authored left, right, centered rear/up, and foreground/down routes; keep all floors and thresholds completely flat and accessible and reserve clear edge and lower-center space for floating navigation labels and dialogue UI. No people, residents, viewers, staff, figures, silhouettes, faces, reflections of people, navigation arrows, interface, readable words, letters, numbers, unit numbers, signs, directories, prices, mail, papers, calendars, certificates, photographs, brands, logos, trademarks, active screens, clocks, visible keys, alcohol, clothing, luggage, lingerie, sexual objects, clutter, extra routes, stairs, steps, ramps, pits, hatches, drops, raised thresholds, unsafe railings, fisheye distortion, corner marks, signatures, or watermark; all screens, artwork, labels, storage, and vehicle details must be blank, off, abstract, closed, generic, or too indistinct to read.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Private Elevator Lobby | `crown_point_penthouses/private_elevator.png` | Travertine-and-bronze viewing arrival with centered foreground elevator return to Penthouse Towers and one broad right Great Room opening. |
+| Great Room | `crown_point_penthouses/great_room.png` | Four-way harbor-view hub with left Private Elevator, centered rear Primary Suite, right Chef Kitchen, and flat foreground Terrace threshold. |
+| Chef Kitchen | `crown_point_penthouses/kitchen.png` | Pale-oak chef kitchen with six-seat stone island, left Great Room opening, and corrected completely flush foreground Office route. |
+| Primary Suite | `crown_point_penthouses/primary_suite.png` | Harbor-view king suite with closed wardrobes, right Guest Suite doorway, and one flat foreground Great Room return. |
+| Guest Suite | `crown_point_penthouses/guest_suite.png` | Smaller queen guest room with closed storage, blank desk screen, corner harbor window, and one left Primary Suite return. |
+| Office | `crown_point_penthouses/office.png` | Neutral executive home office with blank monitor, rear Chef Kitchen doorway, and flat foreground Private Parking lift route. |
+| Terrace | `crown_point_penthouses/terrace.png` | Covered harbor terrace with safe glass railings, outdoor lounge and dining areas, and one centered rear Great Room threshold. |
+| Private Parking | `crown_point_penthouses/parking.png` | Secure two-car bay with anonymous vehicles and one centered rear private elevator leading to the Office. |
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -1490,7 +1516,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all fifty-eight room batches were generated with the built-in
+The baseline assets and all fifty-nine room batches were generated with the built-in
 OpenAI image-generation tool during 2026-08-29 and 2026-08-30 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the

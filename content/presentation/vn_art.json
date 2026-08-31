@@ -107,7 +107,8 @@
         "crown_point_boulevard",
         "price_caldwell_law",
         "olivia_crown_point_penthouse",
-        "crown_point_condos"
+        "crown_point_condos",
+        "crown_point_penthouses"
       ]
     },
     "audio_in_scope": false,
@@ -923,6 +924,22 @@
           {"kind": "background", "id": "crown_point_condos.pool", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports owner relaxation and private resident events with routes to the Gym and Secure Parking."},
           {"kind": "background", "id": "crown_point_condos.parking", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports secure owner vehicle access while completing the resident loop between the Pool and Lobby."}
         ]
+      },
+      {
+        "id": "crown_point_penthouses_purchase_and_private_residence_route",
+        "title": "Crown Point Penthouses Purchase, Viewing, and Private Residence Route",
+        "priority": 58,
+        "goal": "Complete the purchasable Crown Point show penthouse from its private elevator through the four-way Great Room into owner suites, work space, terrace entertaining, and private parking.",
+        "assets": [
+          {"kind": "background", "id": "crown_point_penthouses.private_elevator", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Provides the public-facing viewing arrival with separate routes to the Penthouse Towers frontage and owner-or-viewing Great Room."},
+          {"kind": "background", "id": "crown_point_penthouses.great_room", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Provides the residence's four-way harbor-view hub linking the Private Elevator, Primary Suite, Chef Kitchen, and Terrace."},
+          {"kind": "background", "id": "crown_point_penthouses.kitchen", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports owner cooking and luxury entertaining with a left Great Room route and corrected flush foreground Office connection."},
+          {"kind": "background", "id": "crown_point_penthouses.primary_suite", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports private owner routines with routes to the Guest Suite and Great Room."},
+          {"kind": "background", "id": "crown_point_penthouses.guest_suite", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports invited guest stays with one leftward return to the Primary Suite."},
+          {"kind": "background", "id": "crown_point_penthouses.office", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports secluded owner work with routes to the Chef Kitchen and Private Parking lift."},
+          {"kind": "background", "id": "crown_point_penthouses.terrace", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Supports private harbor-view entertaining and dates with one centered rear return to the Great Room."},
+          {"kind": "background", "id": "crown_point_penthouses.parking", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports secure two-car owner parking with one private elevator route to the Office."}
+        ]
       }
     ]
   },
@@ -1282,6 +1299,14 @@
     {"id": "crown_point_condos.two_bedroom_condo", "location": "crown_point_condos", "room": "two_bedroom_condo", "path": "res://assets/art/backgrounds/crown_point_condos/two_bedroom_condo.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_condos/two_bedroom_condo.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "crown_point_condos.gym", "location": "crown_point_condos", "room": "gym", "path": "res://assets/art/backgrounds/crown_point_condos/gym.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_condos/gym.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "crown_point_condos.pool", "location": "crown_point_condos", "room": "pool", "path": "res://assets/art/backgrounds/crown_point_condos/pool.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_condos/pool.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "crown_point_condos.parking", "location": "crown_point_condos", "room": "parking", "path": "res://assets/art/backgrounds/crown_point_condos/parking.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_condos/parking.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "crown_point_condos.parking", "location": "crown_point_condos", "room": "parking", "path": "res://assets/art/backgrounds/crown_point_condos/parking.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_condos/parking.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "crown_point_penthouses.private_elevator", "location": "crown_point_penthouses", "room": "private_elevator", "path": "res://assets/art/backgrounds/crown_point_penthouses/private_elevator.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_penthouses/private_elevator.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "crown_point_penthouses.great_room", "location": "crown_point_penthouses", "room": "great_room", "path": "res://assets/art/backgrounds/crown_point_penthouses/great_room.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_penthouses/great_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "crown_point_penthouses.kitchen", "location": "crown_point_penthouses", "room": "kitchen", "path": "res://assets/art/backgrounds/crown_point_penthouses/kitchen.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_penthouses/kitchen.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "crown_point_penthouses.primary_suite", "location": "crown_point_penthouses", "room": "primary_suite", "path": "res://assets/art/backgrounds/crown_point_penthouses/primary_suite.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_penthouses/primary_suite.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "crown_point_penthouses.guest_suite", "location": "crown_point_penthouses", "room": "guest_suite", "path": "res://assets/art/backgrounds/crown_point_penthouses/guest_suite.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_penthouses/guest_suite.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "crown_point_penthouses.office", "location": "crown_point_penthouses", "room": "office", "path": "res://assets/art/backgrounds/crown_point_penthouses/office.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_penthouses/office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "crown_point_penthouses.terrace", "location": "crown_point_penthouses", "room": "terrace", "path": "res://assets/art/backgrounds/crown_point_penthouses/terrace.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_penthouses/terrace.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "crown_point_penthouses.parking", "location": "crown_point_penthouses", "room": "parking", "path": "res://assets/art/backgrounds/crown_point_penthouses/parking.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_penthouses/parking.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }
