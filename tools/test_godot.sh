@@ -21,4 +21,5 @@ PORT_ALDER_DISABLE_AUTOSAVE=1 "$PORT_ALDER_GODOT_BIN" --headless --path . --scri
 PORT_ALDER_DISABLE_AUTOSAVE=1 "$PORT_ALDER_GODOT_BIN" --headless --path . res://scenes/tests/home_runtime_probe.tscn
 PORT_ALDER_DISABLE_AUTOSAVE=1 "$PORT_ALDER_GODOT_BIN" --headless --path . res://scenes/tests/city_runtime_probe.tscn
 PORT_ALDER_DISABLE_AUTOSAVE=1 "$PORT_ALDER_GODOT_BIN" --headless --path . res://scenes/tests/dialogue_accessibility_probe.tscn
+PORT_ALDER_DISABLE_AUTOSAVE=1 "$PORT_ALDER_GODOT_BIN" --headless --path . res://scenes/tests/background_gallery_probe.tscn
 PORT_ALDER_DISABLE_AUTOSAVE=1 "$PORT_ALDER_GODOT_BIN" --headless --path . res://scenes/tests/vertical_slice_runtime_probe.tscn

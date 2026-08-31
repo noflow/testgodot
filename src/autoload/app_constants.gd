@@ -5,6 +5,7 @@ const APP_VERSION: String = "0.1.0-dev"
 const TARGET_GODOT_VERSION: String = "4.7.2"
 
 const MAIN_MENU_SCENE: String = "res://scenes/menus/main_menu.tscn"
+const BACKGROUND_GALLERY_SCENE: String = "res://scenes/menus/background_gallery.tscn"
 const BOOT_SCENE: String = "res://scenes/boot/boot.tscn"
 const CHARACTER_CREATION_SCENE: String = "res://scenes/creation/character_creation.tscn"
 const VN_DIALOGUE_SCENE: String = "res://scenes/dialogue/vn_dialogue.tscn"

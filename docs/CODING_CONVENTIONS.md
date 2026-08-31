@@ -43,6 +43,7 @@ compatibility alias.
 ## Testing
 
 - Content validation: `python3 tools/validate_characters.py`
+- Background coverage: `python3 tools/validate_backgrounds.py`
 - Godot foundation tests: `tools/test_godot.sh`
 - Complete local check: `tools/test_all.sh`
 - A bug fix should include a regression test where practical.
@@ -52,4 +53,3 @@ compatibility alias.
 
 Each commit should represent one coherent milestone, pass content validation and
 Godot headless tests, and avoid generated `.godot/` or exported `build/` files.
-

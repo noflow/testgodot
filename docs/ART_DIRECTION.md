@@ -1526,6 +1526,16 @@ With this batch, all 371 currently mapped rooms and travel destinations have uni
 base-day backgrounds. Further background production can move to systematic time,
 weather, and season variants or accompany newly mapped locations.
 
+### In-game background gallery
+
+The main menu's **Background Gallery (Test)** opens every ready production background
+without requiring or changing a save and without altering gameplay access rules.
+Testers can select any of the 65 mapped locations and its rooms or move sequentially
+through all 371 images.
+The gallery uses the same `VNAssetService` resolution path as home, city, and dialogue
+scenes, shows the resolved resource path, warns if a fallback appears, and bounds its
+texture cache so a complete review does not retain hundreds of full-size images.
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom

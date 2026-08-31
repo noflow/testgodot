@@ -43,6 +43,10 @@ func _on_content_pressed() -> void:
 	_show_foundation_message("Validated %d foundation and character documents." % document_count)
 
 
+func _on_background_gallery_pressed() -> void:
+	get_tree().change_scene_to_file(AppConstants.BACKGROUND_GALLERY_SCENE)
+
+
 func _on_credits_pressed() -> void:
 	_show_foundation_message("Port Alder Life Sim — First Week Foundations")
 

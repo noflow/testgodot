@@ -1,0 +1,175 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://src/menus/background_gallery.gd" id="1_gallery"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_header"]
+bg_color = Color(0.025, 0.055, 0.073, 0.94)
+border_width_bottom = 2
+border_color = Color(0.404, 0.776, 0.765, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_footer"]
+bg_color = Color(0.025, 0.055, 0.073, 0.96)
+border_width_top = 2
+border_color = Color(0.404, 0.776, 0.765, 1)
+
+[node name="BackgroundGallery" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_gallery")
+
+[node name="Backdrop" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.035, 0.063, 0.086, 1)
+mouse_filter = 2
+
+[node name="BackgroundImage" type="TextureRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="ImageShade" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.01, 0.02, 0.03, 0.08)
+mouse_filter = 2
+
+[node name="Header" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 96.0
+grow_horizontal = 2
+theme_override_styles/panel = SubResource("StyleBox_header")
+
+[node name="Margin" type="MarginContainer" parent="Header"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 10
+
+[node name="Layout" type="VBoxContainer" parent="Header/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Top" type="HBoxContainer" parent="Header/Margin/Layout"]
+layout_mode = 2
+
+[node name="GalleryLabel" type="Label" parent="Header/Margin/Layout/Top"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.404, 0.776, 0.765, 1)
+theme_override_font_sizes/font_size = 16
+text = "BACKGROUND GALLERY • TEST"
+
+[node name="CounterLabel" type="Label" parent="Header/Margin/Layout/Top"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.914, 0.659, 0.424, 1)
+theme_override_font_sizes/font_size = 17
+text = "0 / 0"
+
+[node name="TitleLabel" type="Label" parent="Header/Margin/Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.94, 0.97, 0.97, 1)
+theme_override_font_sizes/font_size = 24
+text = "Production Background"
+text_overrun_behavior = 3
+
+[node name="Footer" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -154.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBox_footer")
+
+[node name="Margin" type="MarginContainer" parent="Footer"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 14
+
+[node name="Layout" type="VBoxContainer" parent="Footer/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="PathLabel" type="Label" parent="Footer/Margin/Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 0.81, 0.81, 1)
+text = "res://assets/art/backgrounds/..."
+text_overrun_behavior = 3
+
+[node name="Controls" type="HBoxContainer" parent="Footer/Margin/Layout"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="BackButton" type="Button" parent="Footer/Margin/Layout/Controls"]
+custom_minimum_size = Vector2(110, 46)
+layout_mode = 2
+text = "Back"
+
+[node name="PreviousButton" type="Button" parent="Footer/Margin/Layout/Controls"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 46)
+layout_mode = 2
+text = "‹ Previous"
+
+[node name="LocationOption" type="OptionButton" parent="Footer/Margin/Layout/Controls"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(270, 46)
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "Choose a mapped location"
+
+[node name="RoomOption" type="OptionButton" parent="Footer/Margin/Layout/Controls"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(250, 46)
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "Choose a room or travel destination"
+
+[node name="NextButton" type="Button" parent="Footer/Margin/Layout/Controls"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 46)
+layout_mode = 2
+text = "Next ›"
+
+[node name="StatusLabel" type="Label" parent="Footer/Margin/Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.404, 0.776, 0.765, 1)
+text = "Production background loaded"
+horizontal_alignment = 1
+
+[connection signal="pressed" from="Footer/Margin/Layout/Controls/BackButton" to="." method="_on_back_pressed"]
+[connection signal="pressed" from="Footer/Margin/Layout/Controls/PreviousButton" to="." method="_on_previous_pressed"]
+[connection signal="item_selected" from="Footer/Margin/Layout/Controls/LocationOption" to="." method="_on_location_selected"]
+[connection signal="item_selected" from="Footer/Margin/Layout/Controls/RoomOption" to="." method="_on_room_selected"]
+[connection signal="pressed" from="Footer/Margin/Layout/Controls/NextButton" to="." method="_on_next_pressed"]

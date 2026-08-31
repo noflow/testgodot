@@ -111,6 +111,12 @@ custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 text = "Content"
 
+[node name="BackgroundGalleryButton" type="Button" parent="SafeArea/Layout/MenuPanel/Margin/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+text = "Background Gallery (Test)"
+
 [node name="CreditsButton" type="Button" parent="SafeArea/Layout/MenuPanel/Margin/Buttons"]
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
@@ -193,6 +199,7 @@ text = "Back"
 [connection signal="pressed" from="SafeArea/Layout/MenuPanel/Margin/Buttons/LoadGameButton" to="." method="_on_load_game_pressed"]
 [connection signal="pressed" from="SafeArea/Layout/MenuPanel/Margin/Buttons/SettingsButton" to="." method="_on_settings_pressed"]
 [connection signal="pressed" from="SafeArea/Layout/MenuPanel/Margin/Buttons/ContentButton" to="." method="_on_content_pressed"]
+[connection signal="pressed" from="SafeArea/Layout/MenuPanel/Margin/Buttons/BackgroundGalleryButton" to="." method="_on_background_gallery_pressed"]
 [connection signal="pressed" from="SafeArea/Layout/MenuPanel/Margin/Buttons/CreditsButton" to="." method="_on_credits_pressed"]
 [connection signal="pressed" from="SafeArea/Layout/MenuPanel/Margin/Buttons/QuitButton" to="." method="_on_quit_pressed"]
 [connection signal="pressed" from="LoadPanel/Margin/Layout/CloseLoadButton" to="." method="_on_close_load_pressed"]

@@ -38,6 +38,7 @@ func _run_all() -> void:
 	_test_project_configuration()
 	_test_persistent_settings_and_remapping()
 	_test_dialogue_ui_scenes()
+	_test_background_gallery_scene()
 	_test_character_creation_scene()
 	_test_hale_home_scene()
 	_test_required_json_documents()
@@ -211,6 +212,7 @@ func _test_dialogue_ui_scenes() -> void:
 		var menu_instance: Node = menu_scene.instantiate()
 		_expect(menu_instance.get_node_or_null("LoadPanel/Margin/Layout/Scroll/SaveList") != null, "Main menu contains its dynamic load-slot list.")
 		_expect(menu_instance.get_node_or_null("SettingsPanel/Panel/Margin/Layout/Columns/ActionScroll/SettingsActions") != null, "Main menu contains the complete reusable settings panel.")
+		_expect(menu_instance.get_node_or_null("SafeArea/Layout/MenuPanel/Margin/Buttons/BackgroundGalleryButton") != null, "Main menu exposes the production background gallery for testing.")
 		menu_instance.free()
 	var settings_scene: PackedScene = load("res://scenes/menus/settings_panel.tscn")
 	_expect(settings_scene != null, "Reusable settings panel scene loads.")
@@ -219,6 +221,19 @@ func _test_dialogue_ui_scenes() -> void:
 		_expect(settings_instance.get_node_or_null("Panel/Margin/Layout/Columns/SettingsSummary") != null, "Settings panel contains an accessible settings summary.")
 		_expect(settings_instance.get_node_or_null("Panel/Margin/Layout/Columns/ActionScroll/SettingsActions") != null, "Settings panel contains dynamic accessibility, audio, display, and control actions.")
 		settings_instance.free()
+
+
+func _test_background_gallery_scene() -> void:
+	_expect(AppConstants.BACKGROUND_GALLERY_SCENE == "res://scenes/menus/background_gallery.tscn", "Background gallery uses the shared scene constant.")
+	var gallery_scene: PackedScene = load(AppConstants.BACKGROUND_GALLERY_SCENE)
+	_expect(gallery_scene != null, "Production background gallery scene loads.")
+	if gallery_scene == null:
+		return
+	var gallery_instance: Node = gallery_scene.instantiate()
+	_expect(gallery_instance.get_node_or_null("BackgroundImage") != null, "Background gallery contains a full-screen artwork layer.")
+	_expect(gallery_instance.get_node_or_null("Footer/Margin/Layout/Controls/LocationOption") != null and gallery_instance.get_node_or_null("Footer/Margin/Layout/Controls/RoomOption") != null, "Background gallery provides location and room selectors.")
+	_expect(gallery_instance.get_node_or_null("Footer/Margin/Layout/Controls/PreviousButton") != null and gallery_instance.get_node_or_null("Footer/Margin/Layout/Controls/NextButton") != null, "Background gallery provides sequential review controls.")
+	gallery_instance.free()
 
 
 func _test_hale_home_scene() -> void:
@@ -1496,7 +1511,7 @@ func _test_content_registry() -> void:
 			if str(background_value.get("path", "")).ends_with(".png") and str(background_value.get("status", "")) == "ready" and background_value.get("variants", {}).get("day", "") == background_value.get("path", ""):
 				production_base_backgrounds += 1
 	_expect(hale_production_backgrounds == 14, "Every Hale Home room and exterior has unique ready base-day production artwork.")
-	_expect(production_base_backgrounds == 349, "Sixty-two complete locations provide 349 unique ready base-day backgrounds.")
+	_expect(production_base_backgrounds == 371, "All sixty-five mapped locations provide 371 unique ready base-day backgrounds.")
 	_expect(vn_art.get("vn_audio", []).is_empty(), "VN audio remains deliberately disabled while the artwork pipeline is developed.")
 	var elena_assets: Dictionary = _registry.get_character("elena_reyes_hale").get("asset_refs", {})
 	_expect(elena_assets.get("portraits", []).size() == 2 and str(elena_assets["portraits"][0].get("path", "")).ends_with("elena_reyes_hale/default.png"), "Elena provides production default and neutral portraits for the opening scene.")

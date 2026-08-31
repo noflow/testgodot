@@ -3,8 +3,10 @@ extends Node
 const ART_PACKAGE_ID: String = "port_alder_vn_art"
 const DEFAULT_BACKGROUND_PATH: String = "res://assets/art/backgrounds/_shared/coastal_city.svg"
 const DEFAULT_PORTRAIT_PATH: String = "res://assets/art/characters/_fallback_portrait.svg"
+const MAX_TEXTURE_CACHE_ENTRIES: int = 12
 
 var _texture_cache: Dictionary = {}
+var _texture_cache_order: PackedStringArray = []
 var _audio_cache: Dictionary = {}
 
 
@@ -155,6 +157,7 @@ func apply_audio(target: AudioStreamPlayer, cue_id: String, cue_type: String = "
 
 func clear_cache() -> void:
 	_texture_cache.clear()
+	_texture_cache_order.clear()
 	_audio_cache.clear()
 
 
@@ -162,11 +165,29 @@ func _load_texture(path: String) -> Texture2D:
 	if path.is_empty():
 		return null
 	if _texture_cache.has(path):
+		_touch_texture_cache_entry(path)
 		return _texture_cache[path]
 	var resource: Resource = load(path) if ResourceLoader.exists(path) else null
 	var texture: Texture2D = resource if resource is Texture2D else null
-	_texture_cache[path] = texture
+	if texture != null:
+		_texture_cache[path] = texture
+		_texture_cache_order.append(path)
+		_trim_texture_cache()
 	return texture
+
+
+func _touch_texture_cache_entry(path: String) -> void:
+	var existing_index: int = _texture_cache_order.find(path)
+	if existing_index >= 0:
+		_texture_cache_order.remove_at(existing_index)
+	_texture_cache_order.append(path)
+
+
+func _trim_texture_cache() -> void:
+	while _texture_cache_order.size() > MAX_TEXTURE_CACHE_ENTRIES:
+		var oldest_path: String = _texture_cache_order[0]
+		_texture_cache_order.remove_at(0)
+		_texture_cache.erase(oldest_path)
 
 
 func _load_audio(path: String) -> AudioStream:
