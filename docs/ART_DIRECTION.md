@@ -41,7 +41,7 @@ Locations are completed one at a time so connected rooms share believable
 architecture, materials, sightlines, and exterior continuity. Character portrait
 work is deferred; existing portrait data and completed assets remain intact.
 
-The sixty-four completed base-art locations are the Hale Home, Alder Heights Residential
+The sixty-five completed base-art locations are the Hale Home, Alder Heights Residential
 Street, Alder Heights Bus Stop, Westshore Administration Office, Harbor Employment
 Centre, Alder Bay Park, Harborlight Cinema, Forge Fitness, Westshore Campus, and
 Bayview Café, plus Port Alder Marina, Alder Bay Beach, Port Alder Galleria, Harbor Centre
@@ -53,7 +53,7 @@ Tideglass Club, Harbor Companion Cooperative, the Rowan Family Home, Jade's Down
 Condo, Greyport Main Street, the Lee Family Apartment, the Flores Family Townhouse, and the
 Greyport Shared Apartment, the Donovan Family Apartment, Greyport Distribution, and the
 Port Alder Transit Depot, Greyport Studios, Undertow Nightclub, Cedar Vale Residential
-Street, Rachel's Townhouse, Cedar Vale Townhouses, Cedar Vale Detached Homes, Cedar Vale Care Home, Cedar Vale Family Centre, Mariner Row Shopping Street, Mariner Market, Northline Outfitters, Harbor Formalwear, Mariner Home Goods, Port Alder Auto, St. Maren Medical Center, St. Maren Community Clinic, St. Maren Family Doctors, Harbor Wellness Therapy, St. Maren Sexual Health Centre, Bay Pharmacy, Hannah's Medical District Apartment, Crown Point Boulevard, Price & Caldwell Law, Olivia's Crown Point Penthouse, Crown Point Condominiums, and Crown Point Penthouses. Together they provide 363 unique base-day PNG
+Street, Rachel's Townhouse, Cedar Vale Townhouses, Cedar Vale Detached Homes, Cedar Vale Care Home, Cedar Vale Family Centre, Mariner Row Shopping Street, Mariner Market, Northline Outfitters, Harbor Formalwear, Mariner Home Goods, Port Alder Auto, St. Maren Medical Center, St. Maren Community Clinic, St. Maren Family Doctors, Harbor Wellness Therapy, St. Maren Sexual Health Centre, Bay Pharmacy, Hannah's Medical District Apartment, Crown Point Boulevard, Price & Caldwell Law, Olivia's Crown Point Penthouse, Crown Point Condominiums, Crown Point Penthouses, and Crown Point Hotel & Spa. Together they provide 371 unique base-day PNG
 backgrounds. Each base image is marked ready in the
 art registry, while backlog tasks with additional time, weather, or season
 requirements remain in progress until those variants are finished.
@@ -1496,6 +1496,36 @@ Destination-specific briefs:
 | Terrace | `crown_point_penthouses/terrace.png` | Covered harbor terrace with safe glass railings, outdoor lounge and dining areas, and one centered rear Great Room threshold. |
 | Private Parking | `crown_point_penthouses/parking.png` | Secure two-car bay with anonymous vehicles and one centered rear private elevator leading to the Office. |
 
+### Crown Point Hotel & Spa batch prompt set
+
+This eight-room batch completes the mapped base-day room-art pass with a distinct
+coastal hospitality identity. Cream marble, fluted espresso walnut, satin antique
+brass, deep ocean-blue velvet, muted coral, sculptural glass chandeliers, and tidal
+abstract art distinguish the hotel from Crown Point's residential properties. Public
+guest spaces remain welcoming, booked rooms and amenities feel controlled, and the
+employee corridor is visibly functional and private.
+
+Shared prompt specification:
+
+> Use case: stylized-concept. Asset type: production 16:9 visual-novel environment background for the Godot game Port Alder. Create the named mapped room inside Crown Point Hotel & Spa in polished cinematic semi-realistic grounded contemporary environment concept art. Use cream marble and upholstery, fluted espresso walnut, satin antique brass, deep ocean-blue velvet, muted coral accents, sculptural glass lighting, generic tidal abstract art, restrained coastal greenery, cool harbor daylight, and warm hospitality lighting. Keep the property upscale, cohesive, dramatic, and clearly a hotel rather than a private residence. Preserve exactly the authored left, right, centered rear/up, and foreground/down routes; keep all floors and thresholds completely flat and accessible and reserve clear edge and lower-center space for floating navigation labels and dialogue UI. No people, guests, staff, figures, silhouettes, faces, reflections of people, navigation arrows, interface, readable words, letters, numbers, room numbers, signs, directories, prices, papers, schedules, photographs, brands, logos, trademarks, active screens, clocks, visible keys, luggage, clothing, clutter, extra routes, stairs, steps, ramps, pits, hatches, drops, raised thresholds, unsafe railings, fisheye distortion, corner marks, signatures, or watermark; all screens, artwork, labels, storage, and service details must be blank, off, abstract, closed, generic, or too indistinct to read.
+
+Destination-specific briefs:
+
+| Destination | Production file | Brief |
+| --- | --- | --- |
+| Hotel Lobby | `crown_point_hotel_spa/lobby.png` | Four-way hospitality hub with left Staff Corridor, centered rear Restaurant, right Bar, and flat foreground return to the Hotel Block. |
+| Hotel Restaurant | `crown_point_hotel_spa/restaurant.png` | Refined coastal dining room with one flat foreground return to the Lobby. |
+| Hotel Bar | `crown_point_hotel_spa/bar.png` | Ocean-blue and brass lounge with left Lobby, centered rear Spa, and right Ballroom routes. |
+| Standard Room | `crown_point_hotel_spa/standard_room.png` | Compact upscale guest room with closed storage, modest harbor view, and one foreground Ballroom return. |
+| Luxury Suite | `crown_point_hotel_spa/suite.png` | Premium open-plan living and sleeping suite with broad harbor view and one far-left Ballroom return. |
+| Spa | `crown_point_hotel_spa/spa.png` | Quiet two-table wellness room with sea-glass accents and one foreground return to the Bar. |
+| Ballroom | `crown_point_hotel_spa/ballroom.png` | Formal event hall linking the left Bar, centered rear Standard Room route, and right Luxury Suite route. |
+| Staff Corridor | `crown_point_hotel_spa/staff_corridor.png` | Ordered employee-only service area with closed cupboards and one right-side return to the Lobby. |
+
+With this batch, all 371 currently mapped rooms and travel destinations have unique
+base-day backgrounds. Further background production can move to systematic time,
+weather, and season variants or accompany newly mapped locations.
+
 ## Opening production references
 
 ### Hale Home — Player Bedroom
@@ -1516,7 +1546,7 @@ Prompt:
 
 ## Provenance
 
-The baseline assets and all fifty-nine room batches were generated with the built-in
+The baseline assets and all sixty room batches were generated with the built-in
 OpenAI image-generation tool during 2026-08-29 and 2026-08-30 for the Port Alder project. They are
 original project assets intended for redistribution and modification with the
 game. Source generations remain in the local Codex generated-image store; the

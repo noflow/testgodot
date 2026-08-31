@@ -108,7 +108,8 @@
         "price_caldwell_law",
         "olivia_crown_point_penthouse",
         "crown_point_condos",
-        "crown_point_penthouses"
+        "crown_point_penthouses",
+        "crown_point_hotel_spa"
       ]
     },
     "audio_in_scope": false,
@@ -940,6 +941,22 @@
           {"kind": "background", "id": "crown_point_penthouses.terrace", "status": "in_progress", "required_variants": ["day", "sunset", "night", "rain", "winter"], "reason": "Supports private harbor-view entertaining and dates with one centered rear return to the Great Room."},
           {"kind": "background", "id": "crown_point_penthouses.parking", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports secure two-car owner parking with one private elevator route to the Office."}
         ]
+      },
+      {
+        "id": "crown_point_hotel_spa_guest_wellness_events_and_staff_route",
+        "title": "Crown Point Hotel & Spa Guest, Wellness, Events, and Staff Route",
+        "priority": 59,
+        "goal": "Complete Crown Point's coastal hotel from its public lobby, restaurant, and bar through booking-controlled guest rooms, spa, and ballroom into its employee-only service corridor.",
+        "assets": [
+          {"kind": "background", "id": "crown_point_hotel_spa.lobby", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Provides the public hotel hub linking Crown Point Boulevard, the Restaurant, Bar, and employee-only Staff Corridor."},
+          {"kind": "background", "id": "crown_point_hotel_spa.restaurant", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports hotel dining and dates with one foreground return to the Lobby."},
+          {"kind": "background", "id": "crown_point_hotel_spa.bar", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports drinks, dates, and hospitality work while linking the Lobby, appointment-controlled Spa, and Ballroom."},
+          {"kind": "background", "id": "crown_point_hotel_spa.standard_room", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports booked hotel stays and private scenes with one foreground return to the Ballroom route."},
+          {"kind": "background", "id": "crown_point_hotel_spa.suite", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports premium booked stays and private events with one leftward return to the Ballroom."},
+          {"kind": "background", "id": "crown_point_hotel_spa.spa", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports appointment-controlled wellness activities with one foreground return to the Bar."},
+          {"kind": "background", "id": "crown_point_hotel_spa.ballroom", "status": "in_progress", "required_variants": ["day", "sunset", "night"], "reason": "Supports booked formal events while linking the Bar, Standard Room, and Luxury Suite routes."},
+          {"kind": "background", "id": "crown_point_hotel_spa.staff_corridor", "status": "in_progress", "required_variants": ["day", "night"], "reason": "Supports employee-only hotel work with one rightward return to the public Lobby."}
+        ]
       }
     ]
   },
@@ -1307,6 +1324,14 @@
     {"id": "crown_point_penthouses.guest_suite", "location": "crown_point_penthouses", "room": "guest_suite", "path": "res://assets/art/backgrounds/crown_point_penthouses/guest_suite.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_penthouses/guest_suite.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "crown_point_penthouses.office", "location": "crown_point_penthouses", "room": "office", "path": "res://assets/art/backgrounds/crown_point_penthouses/office.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_penthouses/office.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
     {"id": "crown_point_penthouses.terrace", "location": "crown_point_penthouses", "room": "terrace", "path": "res://assets/art/backgrounds/crown_point_penthouses/terrace.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_penthouses/terrace.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
-    {"id": "crown_point_penthouses.parking", "location": "crown_point_penthouses", "room": "parking", "path": "res://assets/art/backgrounds/crown_point_penthouses/parking.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_penthouses/parking.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
+    {"id": "crown_point_penthouses.parking", "location": "crown_point_penthouses", "room": "parking", "path": "res://assets/art/backgrounds/crown_point_penthouses/parking.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_penthouses/parking.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "crown_point_hotel_spa.lobby", "location": "crown_point_hotel_spa", "room": "lobby", "path": "res://assets/art/backgrounds/crown_point_hotel_spa/lobby.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_hotel_spa/lobby.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "crown_point_hotel_spa.restaurant", "location": "crown_point_hotel_spa", "room": "restaurant", "path": "res://assets/art/backgrounds/crown_point_hotel_spa/restaurant.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_hotel_spa/restaurant.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "crown_point_hotel_spa.bar", "location": "crown_point_hotel_spa", "room": "bar", "path": "res://assets/art/backgrounds/crown_point_hotel_spa/bar.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_hotel_spa/bar.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "crown_point_hotel_spa.standard_room", "location": "crown_point_hotel_spa", "room": "standard_room", "path": "res://assets/art/backgrounds/crown_point_hotel_spa/standard_room.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_hotel_spa/standard_room.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "crown_point_hotel_spa.suite", "location": "crown_point_hotel_spa", "room": "suite", "path": "res://assets/art/backgrounds/crown_point_hotel_spa/suite.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_hotel_spa/suite.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "crown_point_hotel_spa.spa", "location": "crown_point_hotel_spa", "room": "spa", "path": "res://assets/art/backgrounds/crown_point_hotel_spa/spa.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_hotel_spa/spa.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "crown_point_hotel_spa.ballroom", "location": "crown_point_hotel_spa", "room": "ballroom", "path": "res://assets/art/backgrounds/crown_point_hotel_spa/ballroom.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_hotel_spa/ballroom.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"},
+    {"id": "crown_point_hotel_spa.staff_corridor", "location": "crown_point_hotel_spa", "room": "staff_corridor", "path": "res://assets/art/backgrounds/crown_point_hotel_spa/staff_corridor.png", "variants": {"day": "res://assets/art/backgrounds/crown_point_hotel_spa/staff_corridor.png"}, "status": "ready", "credit": "OpenAI image generation; original Port Alder production asset"}
   ]
 }
