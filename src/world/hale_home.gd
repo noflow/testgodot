@@ -193,6 +193,7 @@ var _current_room: String = "player_bedroom"
 var _schedule_engine: RefCounted
 var _npc_resolutions: Dictionary = {}
 var _schedule_signature: String = ""
+var _background_block: String = ""
 
 
 func _ready() -> void:
@@ -215,6 +216,7 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	_sync_household_schedule()
+	_refresh_background()
 	_refresh_hud()
 
 
@@ -289,7 +291,7 @@ func _render_room() -> void:
 		return
 	var room: Dictionary = ROOMS[_current_room]
 	backdrop.color = room.get("color", Color("243b4b"))
-	VNAssetService.apply_background(background_image, "hale_home", _current_room, str(GameState.current_state["clock"].get("block", "")))
+	_refresh_background(true)
 	room_label.text = str(room["name"])
 	scene_title.text = str(room["name"]).to_upper()
 	scene_description.text = str(room["description"])
@@ -297,6 +299,16 @@ func _render_room() -> void:
 	_refresh_directional_navigation()
 	_rebuild_character_stage()
 	_rebuild_room_actions()
+
+
+func _refresh_background(force: bool = false) -> void:
+	if not GameState.has_active_game():
+		return
+	var block: String = str(GameState.current_state.get("clock", {}).get("block", "day"))
+	if not force and block == _background_block:
+		return
+	_background_block = block
+	VNAssetService.apply_background(background_image, "hale_home", _current_room, block)
 
 
 func _rebuild_room_buttons() -> void:

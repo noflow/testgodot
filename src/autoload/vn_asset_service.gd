@@ -13,11 +13,19 @@ var _audio_cache: Dictionary = {}
 func resolve_background(location_id: String, room_id: String, variant: String = "") -> Dictionary:
 	var asset_id: String = "%s.%s" % [location_id, room_id]
 	var definition: Variant = ContentRegistry.get_content("vn_backgrounds", asset_id)
+	var requested_variant: String = variant.strip_edges()
+	if requested_variant.is_empty():
+		requested_variant = str(GameState.current_state.get("clock", {}).get("block", "day"))
+	var resolved_variant: String = "base"
 	var path: String = ""
 	var used_fallback: bool = false
 	if definition is Dictionary:
-		if not variant.is_empty():
-			path = str(definition.get("variants", {}).get(variant, ""))
+		for candidate: String in background_variant_candidates(requested_variant):
+			var candidate_path: String = str(definition.get("variants", {}).get(candidate, ""))
+			if _asset_exists(candidate_path):
+				path = candidate_path
+				resolved_variant = candidate
+				break
 		if path.is_empty():
 			path = str(definition.get("path", ""))
 	if path.is_empty():
@@ -30,8 +38,25 @@ func resolve_background(location_id: String, room_id: String, variant: String = 
 		"path": path,
 		"texture": _load_texture(path),
 		"used_fallback": used_fallback,
+		"requested_variant": requested_variant,
+		"resolved_variant": resolved_variant,
 		"credit": definition.get("credit", "") if definition is Dictionary else "",
 	}
+
+
+func background_variant_candidates(variant: String) -> PackedStringArray:
+	# Exact authored blocks win; optional dawn/sunset art precedes the day base.
+	match variant:
+		"early_morning":
+			return ["early_morning", "dawn", "day"]
+		"morning", "lunch", "afternoon":
+			return [variant, "day"]
+		"evening":
+			return ["evening", "sunset", "day"]
+		"late_evening":
+			return ["late_evening", "night"]
+		_:
+			return [variant]
 
 
 func resolve_portrait(character_id: String, portrait_id: String = "default") -> Dictionary:

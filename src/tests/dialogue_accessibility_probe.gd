@@ -46,6 +46,20 @@ func _run_probe() -> void:
 	if background_image.texture == null or portrait_image.texture == null:
 		_fail("dialogue did not resolve its location background and Elena portrait")
 		return
+	var background_test_state: Dictionary = GameState.current_state.duplicate(true)
+	var night_test_state: Dictionary = background_test_state.duplicate(true)
+	night_test_state["clock"]["block"] = "late_evening"
+	GameState.replace_state(night_test_state)
+	dialogue.call("_render_artwork", {"background_variant": ""})
+	if not background_image.texture.resource_path.ends_with("/player_bedroom_night.png"):
+		_fail("blank dialogue variant did not inherit night from the clock")
+		return
+	dialogue.call("_render_artwork", {"background_variant": "day"})
+	if not background_image.texture.resource_path.ends_with("/player_bedroom.png"):
+		_fail("dialogue's explicit day override was ignored at night")
+		return
+	GameState.replace_state(background_test_state)
+	dialogue.call("_render_artwork", {"background_variant": ""})
 	if not is_equal_approx(ThemeDB.fallback_base_scale, 1.75) or line.visible_characters != -1:
 		_fail("175% text or reduced-motion instant line reveal did not apply")
 		return

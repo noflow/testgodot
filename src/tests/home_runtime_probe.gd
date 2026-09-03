@@ -38,6 +38,21 @@ func _run_probe() -> void:
 		get_tree().quit(1)
 		return
 	var scene_style: StyleBox = scene_panel.get_theme_stylebox("panel")
+	var background_test_state: Dictionary = GameState.current_state.duplicate(true)
+	for block: String in ["late_evening", "night", "early_morning"]:
+		var clock_test_state: Dictionary = background_test_state.duplicate(true)
+		clock_test_state["clock"]["block"] = block
+		GameState.replace_state(clock_test_state)
+		await get_tree().process_frame
+		await get_tree().process_frame
+		var suffix: String = "player_bedroom_night.png" if block in ["late_evening", "night"] else "player_bedroom.png"
+		if not background_image.texture.resource_path.ends_with(suffix):
+			printerr("PROBE: bedroom artwork did not follow the clock without leaving the room")
+			get_tree().quit(1)
+			return
+	GameState.replace_state(background_test_state)
+	await get_tree().process_frame
+	await get_tree().process_frame
 	if scene_title.visible or scene_description.visible or character_text.visible or not scene_style is StyleBoxFlat or (scene_style as StyleBoxFlat).bg_color.a > 0.001:
 		printerr("PROBE: home stage still displayed the framed location or occupancy overlay")
 		get_tree().quit(1)

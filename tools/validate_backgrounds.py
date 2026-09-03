@@ -23,6 +23,23 @@ def png_size(path: Path) -> tuple[int, int]:
     return struct.unpack(">II", header[16:24])
 
 
+def validate_image(resource_path: str, asset_id: str, errors: list[str]) -> None:
+    if not resource_path.startswith("res://"):
+        errors.append(f"invalid resource path for {asset_id}: {resource_path}")
+        return
+    file_path = ROOT / resource_path.removeprefix("res://")
+    if not file_path.is_file():
+        errors.append(f"missing background file for {asset_id}: {file_path}")
+        return
+    try:
+        dimensions = png_size(file_path)
+    except (OSError, ValueError) as exc:
+        errors.append(f"invalid PNG for {asset_id}: {exc}")
+        return
+    if dimensions != EXPECTED_SIZE:
+        errors.append(f"wrong dimensions for {asset_id}: {dimensions[0]}x{dimensions[1]}")
+
+
 def main() -> int:
     art = json.loads(ART_PATH.read_text(encoding="utf-8"))
     world = json.loads(WORLD_PATH.read_text(encoding="utf-8"))
@@ -43,6 +60,8 @@ def main() -> int:
         errors.append(f"unmapped registry entry: {location_id}.{room_id}")
 
     ids: set[str] = set()
+    extra_variant_count = 0
+    night_pair_count = 0
     for entry in backgrounds:
         asset_id = str(entry.get("id", ""))
         expected_id = f"{entry.get('location', '')}.{entry.get('room', '')}"
@@ -52,24 +71,24 @@ def main() -> int:
         if asset_id != expected_id:
             errors.append(f"background id mismatch: {asset_id} != {expected_id}")
         resource_path = str(entry.get("path", ""))
-        if not resource_path.startswith("res://"):
-            errors.append(f"invalid resource path for {asset_id}: {resource_path}")
-            continue
-        file_path = ROOT / resource_path.removeprefix("res://")
-        if not file_path.is_file():
-            errors.append(f"missing background file for {asset_id}: {file_path}")
-            continue
-        try:
-            dimensions = png_size(file_path)
-        except (OSError, ValueError) as exc:
-            errors.append(f"invalid PNG for {asset_id}: {exc}")
-            continue
-        if dimensions != EXPECTED_SIZE:
-            errors.append(f"wrong dimensions for {asset_id}: {dimensions[0]}x{dimensions[1]}")
+        validate_image(resource_path, asset_id, errors)
         if entry.get("status") != "ready":
             errors.append(f"background is not ready: {asset_id}")
-        if entry.get("variants", {}).get("day") != resource_path:
+        variants = entry.get("variants", {})
+        if not isinstance(variants, dict):
+            errors.append(f"variants must be an object: {asset_id}")
+            continue
+        if variants.get("day") != resource_path:
             errors.append(f"day variant does not match base path: {asset_id}")
+        for variant, variant_path in variants.items():
+            if not isinstance(variant_path, str) or not variant_path:
+                errors.append(f"invalid variant path: {asset_id}.{variant}")
+                continue
+            if variant_path != resource_path:
+                validate_image(variant_path, f"{asset_id}.{variant}", errors)
+                extra_variant_count += 1
+        if variants.get("night") and variants["night"] != resource_path:
+            night_pair_count += 1
 
     if errors:
         print("Background validation failed:", file=sys.stderr)
@@ -79,6 +98,10 @@ def main() -> int:
     print(
         f"Validated {len(backgrounds)} production backgrounds across "
         f"{len(world.get('locations', []))} mapped locations at {EXPECTED_SIZE[0]}x{EXPECTED_SIZE[1]}."
+    )
+    print(
+        f"Validated {extra_variant_count} additional variant assignments; "
+        f"{night_pair_count}/{len(backgrounds)} rooms have separate day/night art."
     )
     return 0
 

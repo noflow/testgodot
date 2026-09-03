@@ -20,6 +20,13 @@ Room selection itself does not advance time. Artwork changes immediately when th
 player selects another room. Dialogue can change portrait poses or background
 variants per node without loading a different gameplay scene.
 
+An empty dialogue background variant follows the current activity block. Home and
+city backgrounds also refresh when the block changes, even without leaving the
+room. Early Morning through Evening use day art; Late Evening and Night use night
+art. Exact block variants take priority, with optional `dawn` for Early Morning
+and `sunset` for Evening before falling back to `day`. Explicit Director variants
+such as `day`, `night`, or `rain` override the clock.
+
 ## Background files
 
 Store backgrounds under:
@@ -29,7 +36,7 @@ assets/art/backgrounds/<location_id>/<room_id>.webp
 ```
 
 PNG, JPG, and SVG are also supported. The resolver prefers WebP, PNG, JPG, then SVG
-when using the naming convention. Recommended production size is 1920×1080 with
+when using the naming convention. Current production size is 1672×941 with
 important subjects kept away from the bottom 35%, where the dialogue box appears.
 
 `content/presentation/vn_art.json` can explicitly assign a file:
@@ -48,8 +55,16 @@ important subjects kept away from the bottom 35%, where the dialogue box appears
 ```
 
 The `id` must be `<location_id>.<room_id>`. A manifest assignment takes priority
-over convention-based discovery. A requested variant falls back to `path` when the
-variant is not declared.
+over convention-based discovery. A requested variant tries the matching activity
+block aliases above, then falls back to `path` if no matching variant file exists.
+Missing optional files do not replace a valid base image with the shared placeholder.
+
+Keep the base/day PNG in place and register each night edit as a sibling
+`<room_id>_night.png`. Variants are not additional rooms. The main-menu Background
+Gallery includes a Day/Night selector; it reports unavailable variants instead of
+claiming the base image is night art. The selection does not change the game clock.
+See [day/night production notes](DAY_NIGHT_BACKGROUNDS.md) for current coverage,
+the first batch, and generation prompts.
 
 ## Shared artwork vocabulary
 

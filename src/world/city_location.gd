@@ -29,6 +29,7 @@ var _rooms: Array = []
 var _current_room_id: String = ""
 var _navigation_access: RefCounted
 var _presence_engine: RefCounted
+var _background_block: String = ""
 
 
 func _ready() -> void:
@@ -63,6 +64,7 @@ func _ready() -> void:
 
 
 func _process(_delta: float) -> void:
+	_refresh_background()
 	_refresh_hud()
 
 
@@ -132,11 +134,21 @@ func _render_location() -> void:
 	scene_title.text = _room_name(_current_room_id).to_upper()
 	scene_description.text = _room_description(_current_room_id)
 	backdrop.color = _location_color(str(_location.get("type", "city_location")))
-	VNAssetService.apply_background(background_image, _location_id, _current_room_id, str(GameState.current_state["clock"].get("block", "")))
+	_refresh_background(true)
 	_rebuild_room_buttons()
 	_refresh_directional_navigation()
 	_rebuild_encounter_stage()
 	_render_room_actions()
+
+
+func _refresh_background(force: bool = false) -> void:
+	if not GameState.has_active_game() or _location_id.is_empty() or _current_room_id.is_empty():
+		return
+	var block: String = str(GameState.current_state.get("clock", {}).get("block", "day"))
+	if not force and block == _background_block:
+		return
+	_background_block = block
+	VNAssetService.apply_background(background_image, _location_id, _current_room_id, block)
 
 
 func _rebuild_room_buttons() -> void:

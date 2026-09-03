@@ -231,6 +231,7 @@ func _test_background_gallery_scene() -> void:
 		return
 	var gallery_instance: Node = gallery_scene.instantiate()
 	_expect(gallery_instance.get_node_or_null("BackgroundImage") != null, "Background gallery contains a full-screen artwork layer.")
+	_expect(gallery_instance.get_node_or_null("Header/Margin/Layout/Top/VariantOption") != null, "Background gallery provides a day/night preview selector.")
 	_expect(gallery_instance.get_node_or_null("Footer/Margin/Layout/Controls/LocationOption") != null and gallery_instance.get_node_or_null("Footer/Margin/Layout/Controls/RoomOption") != null, "Background gallery provides location and room selectors.")
 	_expect(gallery_instance.get_node_or_null("Footer/Margin/Layout/Controls/PreviousButton") != null and gallery_instance.get_node_or_null("Footer/Margin/Layout/Controls/NextButton") != null, "Background gallery provides sequential review controls.")
 	gallery_instance.free()

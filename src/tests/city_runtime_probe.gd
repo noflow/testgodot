@@ -38,6 +38,23 @@ func _run_probe() -> void:
 		get_tree().quit(1)
 		return
 	var scene_style: StyleBox = scene_panel.get_theme_stylebox("panel")
+	var artwork_test_state: Dictionary = GameState.current_state.duplicate(true)
+	var night_artwork_state: Dictionary = artwork_test_state.duplicate(true)
+	night_artwork_state["clock"]["block"] = "late_evening"
+	GameState.replace_state(night_artwork_state)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	if not background_image.texture.resource_path.ends_with("/advisor_office_night.png"):
+		printerr("CITY PROBE: city artwork did not change to night without leaving the room")
+		get_tree().quit(1)
+		return
+	GameState.replace_state(artwork_test_state)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	if not background_image.texture.resource_path.ends_with("/advisor_office.png"):
+		printerr("CITY PROBE: city artwork did not return to day after restoring the clock")
+		get_tree().quit(1)
+		return
 	if scene_title.visible or scene_description.visible or encounter_text.visible or not scene_style is StyleBoxFlat or (scene_style as StyleBoxFlat).bg_color.a > 0.001:
 		printerr("CITY PROBE: destination stage still displayed the framed location or encounter overlay")
 		get_tree().quit(1)

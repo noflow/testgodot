@@ -3,6 +3,7 @@ extends Control
 @onready var background_image: TextureRect = %BackgroundImage
 @onready var location_option: OptionButton = %LocationOption
 @onready var room_option: OptionButton = %RoomOption
+@onready var variant_option: OptionButton = %VariantOption
 @onready var title_label: Label = %TitleLabel
 @onready var counter_label: Label = %CounterLabel
 @onready var path_label: Label = %PathLabel
@@ -21,6 +22,11 @@ func _ready() -> void:
 		SettingsService.settings_changed.connect(_apply_accessibility_settings)
 	_collect_backgrounds()
 	_populate_location_options()
+	variant_option.add_item("Day")
+	variant_option.set_item_metadata(0, "day")
+	variant_option.add_item("Night")
+	variant_option.set_item_metadata(1, "night")
+	variant_option.select(0)
 	if _backgrounds.is_empty():
 		_show_empty_state()
 	else:
@@ -84,13 +90,19 @@ func _show_index(index: int) -> void:
 	_select_room_option(_current_index)
 	_syncing_selectors = false
 
-	var resolved: Dictionary = VNAssetService.resolve_background(location_id, room_id, "day")
+	var variant: String = str(variant_option.get_selected_metadata())
+	var resolved: Dictionary = VNAssetService.resolve_background(location_id, room_id, variant)
 	background_image.texture = resolved.get("texture")
 	background_image.visible = background_image.texture != null
 	title_label.text = "%s  •  %s" % [_location_name(location_id), _room_name(location_id, room_id)]
 	counter_label.text = "%d / %d" % [_current_index + 1, _backgrounds.size()]
 	path_label.text = str(resolved.get("path", background.get("path", "")))
-	status_label.text = "Fallback displayed — production asset could not load." if bool(resolved.get("used_fallback", false)) else "Production background loaded"
+	if bool(resolved.get("used_fallback", false)):
+		status_label.text = "Fallback displayed — production asset could not load."
+	elif str(resolved.get("resolved_variant", "base")) != variant:
+		status_label.text = "%s variant unavailable — showing base/day background." % variant.capitalize()
+	else:
+		status_label.text = "%s background loaded" % variant.capitalize()
 	previous_button.disabled = _backgrounds.size() < 2
 	next_button.disabled = _backgrounds.size() < 2
 
@@ -123,6 +135,11 @@ func _on_room_selected(index: int) -> void:
 	if _syncing_selectors or index < 0:
 		return
 	_show_index(int(room_option.get_item_metadata(index)))
+
+
+func _on_variant_selected(index: int) -> void:
+	if index >= 0:
+		_show_index(_current_index)
 
 
 func _on_previous_pressed() -> void:
